@@ -113,7 +113,7 @@ export default function Navbar() {
 
           {/* Center Logo for Mobile & Tablet */}
           <div className="flex justify-center items-center">
-            <Link href="/" className="relative h-8 w-24 sm:h-10 sm:w-28 md:h-12 md:w-32 overflow-hidden">
+            <Link href="/" className="relative h-12 w-24 sm:h-12 sm:w-28 md:h-12 md:w-32 overflow-hidden">
               <Image
                 src="/assets/images/logoChattisgarh.png"
                 alt="Chhattisgarh Web Logo"
