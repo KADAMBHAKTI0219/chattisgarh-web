@@ -75,7 +75,7 @@ export default function HeroSection() {
     >
       
       {/* 1. Official Banner Container (Full bleed background negating page wrapper paddings, no borders) */}
-      <div className="relative w-screen min-h-screen -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden flex flex-col items-center justify-start lg:justify-center pt-20 sm:pt-24 md:pt-28 lg:pt-6 p-6 select-none z-10 bg-white">
+      <div className="relative w-screen min-h-screen -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden flex flex-col items-center justify-start lg:justify-center pt-[160px] sm:pt-[180px] md:pt-[200px] lg:pt-[110px] p-6 select-none z-10 bg-white">
         
         {/* Hero Background Image (Desktop: herosection.png, Mobile/Tablet: mob-hero.png) */}
         <div className="absolute inset-0 -z-10 w-full h-full pointer-events-none select-none hidden lg:block">
@@ -146,7 +146,7 @@ export default function HeroSection() {
             </svg>
           </div>
 
-          <div className="relative border border-black sm:border-2 bg-[#F87C22] text-white font-extrabold text-[8px] sm:text-xs xl:text-sm px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full shadow-[1.5px_1.5px_0px_0px_rgba(0,0,0,1)] sm:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <div className="relative border border-black sm:border-2 bg-[#F87C22] text-white font-extrabold text-[8px] sm:text-xs xl:text-sm px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-none shadow-[1.5px_1.5px_0px_0px_rgba(0,0,0,1)] sm:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 h-2 w-2 rotate-45 border-l border-b border-black sm:border-l-2 sm:border-b-2 bg-[#F87C22]"></div>
             Monday, 31st August 2026
           </div>
@@ -173,7 +173,7 @@ export default function HeroSection() {
         </div>
 
         {/* Nomination Status Badge (Scaled down on mobile) */}
-        <div className="rotate-[-2deg] bg-[#F3819F] border border-black px-3 py-1 sm:border-2 sm:px-5 sm:py-2 rounded-lg sm:rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] lg:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] inline-block mt-3 sm:mt-4 hover:rotate-[0deg] transition-transform duration-200 cursor-default select-none z-20">
+        <div className="rotate-[-2deg] bg-[#F3819F] border border-black px-3 py-1 sm:border-2 sm:px-5 sm:py-2 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] lg:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] inline-block mt-3 sm:mt-4 hover:rotate-[0deg] transition-transform duration-200 cursor-default select-none z-20">
           <span className="font-display font-black text-[10px] sm:text-sm md:text-base xl:text-lg uppercase text-black tracking-wide">
             Nomination Opening Soon
           </span>
@@ -237,7 +237,7 @@ export default function HeroSection() {
                 return (
                   <div
                     key={card.id}
-                    className={`absolute inset-0 w-full h-full border-3 border-black rounded-[28px] sm:rounded-[36px] overflow-hidden bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 ease-out ${rotation} ${translateX} ${translateY} ${scale} ${opacity} ${zIndex}`}
+                    className={`absolute inset-0 w-full h-full border-2 border-black rounded-none overflow-hidden bg-white shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all duration-500 ease-out ${rotation} ${translateX} ${translateY} ${scale} ${opacity} ${zIndex}`}
                   >
                     <Image
                       src={card.src}
@@ -249,7 +249,7 @@ export default function HeroSection() {
                     />
                     
                     {/* Custom Card label */}
-                    <div className="absolute bottom-5 left-5 bg-white border-2 border-black rounded-xl px-4 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-bold text-xs sm:text-sm select-none">
+                    <div className="absolute bottom-5 left-5 bg-white border-2 border-black rounded-none px-4 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-bold text-xs sm:text-sm select-none">
                       {card.title}
                     </div>
                   </div>
@@ -260,7 +260,7 @@ export default function HeroSection() {
               <div className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 z-40">
                 <button
                   onClick={handleShuffle}
-                  className="rounded-full border-2 border-black bg-white px-6 py-2.5 font-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all cursor-pointer flex items-center gap-2 select-none text-xs sm:text-sm"
+                  className="rounded-none border-2 border-black bg-white px-6 py-2.5 font-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1.5px] hover:translate-y-[1.5px] active:translate-x-[2.5px] active:translate-y-[2.5px] active:shadow-none transition-all cursor-pointer flex items-center gap-2 select-none text-xs sm:text-sm"
                 >
                   <span>🔁</span> Shuffle
                 </button>
@@ -272,7 +272,7 @@ export default function HeroSection() {
              {/* Navy Blue Message Container (Scroll-animated, Parallax Background) */}
             <div 
               ref={cardContainerRef}
-              className={`group border-4 border-black bg-gradient-to-br from-[#080F1E] via-[#0D1830] to-[#122345] p-6 sm:p-8 md:p-10 rounded-[32px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 w-full min-h-[280px] sm:min-h-[320px] md:min-h-[360px] xl:min-h-[390px] 2xl:min-h-[420px] flex flex-col justify-center items-center gap-4 text-center z-10 relative overflow-hidden transition-all duration-700 ease-out transform ${
+              className={`group border-2 border-black bg-gradient-to-br from-[#080F1E] via-[#0D1830] to-[#122345] p-6 sm:p-8 md:p-10 rounded-none shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 w-full min-h-[280px] sm:min-h-[320px] md:min-h-[360px] xl:min-h-[390px] 2xl:min-h-[420px] flex flex-col justify-center items-center gap-4 text-center z-10 relative overflow-hidden transition-all duration-700 ease-out transform ${
                 isCardVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
@@ -327,12 +327,12 @@ export default function HeroSection() {
               </p>
               
               {/* Premium Gradient Divider */}
-              <div className="h-[3px] w-1/3 bg-gradient-to-r from-[#F3819F] via-[#FFA025] to-[#6EC192] my-3 rounded-full z-10"></div>
+              <div className="h-[3px] w-1/3 bg-gradient-to-r from-[#F3819F] via-[#FFA025] to-[#6EC192] my-3 rounded-none z-10"></div>
               
               {/* Sub-text with styled badge */}
               <p className="text-zinc-300 text-sm sm:text-base xl:text-lg font-bold flex flex-col items-center gap-3 z-10">
                 <span>The stage is set for</span>
-                <span className="inline-block px-4 py-2 bg-[#FFA025] text-zinc-950 font-black rounded-xl border-2 border-black rotate-[-1.5deg] shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:rotate-0 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
+                <span className="inline-block px-4 py-2 bg-[#FFA025] text-zinc-950 font-black rounded-none border-2 border-black rotate-[-1.5deg] shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:rotate-0 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
                   Chhattisgarh's biggest digital celebration
                 </span>
               </p>

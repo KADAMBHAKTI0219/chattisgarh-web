@@ -1,154 +1,133 @@
 "use client";
 
-import { useState } from "react";
-
 export default function AwardCategoriesSection() {
-  const [activeAwardId, setActiveAwardId] = useState(null);
-
-  // Local image assets matching the uploaded folder list
   const awards = [
-    {
-      id: 1,
-      title: "Best Youtube Creator",
-      color: "bg-[#F87C22]",
-      image: "/assets/images/category-1.jpg"
-    },
-    {
-      id: 2,
-      title: "Best Instagram Creator",
-      color: "bg-[#F3819F]",
-      image: "/assets/images/instagramaward.avif"
-    },
-    {
-      id: 3,
-      title: "Best Emerging Creator",
-      color: "bg-[#4585F6]",
-      image: "/assets/images/emerging awards.jpg"
-    },
-    {
-      id: 4,
-      title: "Best Influencer",
-      color: "bg-[#F8D053]",
-      image: "/assets/images/creator-award.jpg"
-    },
-    {
-      id: 5,
-      title: "Best Food Creator",
-      color: "bg-[#6EC192]",
-      image: "/assets/images/food-award.webp"
-    },
-    {
-      id: 6,
-      title: "Best Travel Creator",
-      color: "bg-[#00A3A3]",
-      image: "/assets/images/travellor award.jpg"
-    },
-    {
-      id: 7,
-      title: "Best Fashion Creator",
-      color: "bg-[#E85D3B]",
-      image: "/assets/images/fashion-awards.avif"
-    },
-    {
-      id: 8,
-      title: "People's Choice Award",
-      color: "bg-[#8A3FFC]",
-      image: "/assets/images/proplechoiceawards.jpg"
-    }
+    { id: 1, title: "Chhattisgarhiya Sanskriti Ambassador", color: "bg-[#F87C22]", tier: "Tier A", image: "/assets/images/chattisgarh_fall.jpg" },
+    { id: 2, title: "Bastar & Tribal Heritage Creator", color: "bg-[#F3819F]", tier: "Tier A", image: "/assets/images/about-2.jpg" },
+    { id: 3, title: "Emerging Tech & Edu Creator", color: "bg-[#4585F6]", tier: "Tier B", image: "/assets/images/about-1.jpg" },
+    { id: 4, title: "Best Youtube Creator", color: "bg-[#F8D053]", tier: "Tier C", image: "/assets/images/category-1.jpg" },
+    { id: 5, title: "Best Instagram Creator", color: "bg-[#6EC192]", tier: "Tier C", image: "/assets/images/instagramaward.avif" },
+    { id: 6, title: "Best Emerging Creator", color: "bg-[#00A3A3]", tier: "Tier C", image: "/assets/images/emerging awards.jpg" },
+    { id: 7, title: "Best Influencer", color: "bg-[#E85D3B]", tier: "Tier C", image: "/assets/images/creator-award.jpg" },
+    { id: 8, title: "Best Food Creator", color: "bg-[#8A3FFC]", tier: "Tier C", image: "/assets/images/food-award.webp" },
+    { id: 9, title: "Best Travel Creator", color: "bg-[#F87C22]", tier: "Tier C", image: "/assets/images/travellor award.jpg" },
+    { id: 10, title: "Best Fashion Creator", color: "bg-[#F3819F]", tier: "Tier C", image: "/assets/images/fashion-awards.avif" },
+    { id: 11, title: "People's Choice Award", color: "bg-[#4585F6]", tier: "Tier C", image: "/assets/images/proplechoiceawards.jpg" },
+    { id: 12, title: "Swachh Chhattisgarh Advocate", color: "bg-[#F8D053]", tier: "Tier B", image: "/assets/images/about-3.jpg" },
+    { id: 13, title: "Agriculture & Farming Innovator", color: "bg-[#6EC192]", tier: "Tier B", image: "/assets/images/about-5.jpg" },
+    { id: 14, title: "Local Art & Dhokra Craft Promoter", color: "bg-[#00A3A3]", tier: "Tier A", image: "/assets/images/event_awards.jpg" },
+    { id: 15, title: "Folk Music & Song Sensation", color: "bg-[#E85D3B]", tier: "Tier A", image: "/assets/images/event_networking.jpg" },
+    { id: 16, title: "Health & Wellness Coach", color: "bg-[#8A3FFC]", tier: "Tier C", image: "/assets/images/event_presentation.jpg" },
+    { id: 17, title: "Wildlife & Nature Conservationist", color: "bg-[#F87C22]", tier: "Tier B", image: "/assets/images/raipur_landmark.jpg" },
+    { id: 18, title: "Women Empowerment Icon", color: "bg-[#F3819F]", tier: "Tier B", image: "/assets/images/about-2.webp" },
+    { id: 19, title: "Youth Voice & Podcaster", color: "bg-[#4585F6]", tier: "Tier C", image: "/assets/images/about-4.webp" },
+    { id: 20, title: "Sports & Fitness Promoter", color: "bg-[#F8D053]", tier: "Tier C", image: "/assets/images/about-6.webp" },
+    { id: 21, title: "Public Policy & Welfare Explainer", color: "bg-[#6EC192]", tier: "Tier B", image: "/assets/images/chattisgarh_fall.jpg" },
+    { id: 22, title: "Gaming & Esports Star", color: "bg-[#00A3A3]", tier: "Tier C", image: "/assets/images/category-1.jpg" },
+    { id: 23, title: "Regional Cinema & Acting Talent", color: "bg-[#E85D3B]", tier: "Tier A", image: "/assets/images/creator-award.jpg" },
+    { id: 24, title: "Comedy & Clean Humour Artist", color: "bg-[#8A3FFC]", tier: "Tier C", image: "/assets/images/emerging awards.jpg" },
+    { id: 25, title: "Green & Organic Farming Pioneer", color: "bg-[#F87C22]", tier: "Tier B", image: "/assets/images/about-5.jpg" }
   ];
 
-  return (
-    <section id="categories" className="w-full max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto flex flex-col md:flex-row border-4 border-black rounded-[32px] bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 relative my-8 md:my-16 lg:my-20 xl:my-28 scroll-mt-24 overflow-visible">
-      
-      {/* Left Column: Vertical Category Title Block */}
-      <div className="bg-zinc-950 text-white border-b-4 md:border-b-0 md:border-r-4 border-black flex md:flex-col items-center justify-between p-6 md:py-12 md:px-8 w-full md:w-[140px] xl:w-[180px] 2xl:w-[210px] select-none shrink-0 relative rounded-t-[28px] md:rounded-t-0 md:rounded-l-[28px] z-10">
-        <h3 className="font-display font-black text-2xl sm:text-3xl md:text-4xl xl:text-5xl 2xl:text-6xl uppercase tracking-wider md:[writing-mode:vertical-lr] md:rotate-180 text-center mx-auto md:my-auto">
-          Award Categories
-        </h3>
-        
-        {/* Smiley Sun face at bottom left */}
-        <div className="absolute bottom-4 left-4 hidden md:block">
-          <svg 
-            className="w-10 h-10 xl:w-12 xl:h-12 drop-shadow-[1.5px_1.5px_0px_rgba(255,255,255,1)]" 
-            viewBox="0 0 100 100" 
-            xmlns="http://www.w3.org/2000/svg"
+  // Split categories: 13 on the left, 12 on the right
+  const leftColumnAwards = awards.slice(0, 13);
+  const rightColumnAwards = awards.slice(13, 25);
+
+  const renderListColumn = (items) => (
+    <div className="flex flex-col w-full border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] divide-y-2 divide-black overflow-visible bg-white">
+      {items.map((award) => {
+        const isLeftCard = award.id % 2 !== 0;
+        return (
+          <div 
+            key={award.id} 
+            className={`flex items-center justify-center p-4 sm:p-5 relative ${award.color} hover:z-30 transition-all duration-200 cursor-default group overflow-visible min-h-[70px] sm:min-h-[85px]`}
           >
-            <circle cx="50" cy="50" r="45" fill="#F8D053" stroke="black" strokeWidth="4.5" />
-            <circle cx="35" cy="45" r="5" fill="black" />
-            <circle cx="65" cy="45" r="5" fill="black" />
-            <path 
-              d="M 33,62 Q 50,75 67,62" 
-              stroke="black" 
-              strokeWidth="5" 
-              strokeLinecap="round" 
-              fill="none" 
-            />
-          </svg>
-        </div>
-      </div>
-
-      {/* Right Column: Horizontal category banners with alternating left/right click-reveal and hover-reveal */}
-      <div className="flex-1 flex flex-col w-full relative overflow-visible">
-        {awards.map((award, idx) => {
-          const isEven = idx % 2 === 1; // Alternating index (left vs right)
-          const isActive = activeAwardId === award.id;
-
-          // Position class: Keep images fully inside the border container (never bleed out horizontally)
-          const imagePositionClass = isEven 
-            ? "right-[15px] sm:right-[30px] md:right-[40px] xl:right-[60px] 2xl:right-[80px]" 
-            : "left-[15px] sm:left-[30px] md:left-[40px] xl:left-[60px] 2xl:left-[80px]";
-
-          // Visibility styling: active stays 100% visible, otherwise triggers on hover
-          const visibilityClass = isActive
-            ? "scale-100 opacity-100 z-30"
-            : "scale-0 opacity-0 group-hover:scale-100 group-hover:opacity-100 z-30";
-
-          // Rotation setting: active gets a fixed tilt, hover gets dynamic tilt
-          const rotateClass = isEven
-            ? isActive ? "rotate-[6deg]" : "group-hover:rotate-[6deg]"
-            : isActive ? "rotate-[-6deg]" : "group-hover:rotate-[-6deg]";
-
-          // Dynamic corner rounding for the top and bottom banner items to map to parent container
-          let cornerClass = "";
-          if (idx === 0) {
-            cornerClass = "md:rounded-tr-[28px]";
-          } else if (idx === awards.length - 1) {
-            cornerClass = "rounded-b-[28px] md:rounded-b-0 md:rounded-br-[28px]";
-          }
-
-          return (
-            <div
-              key={award.id}
-              onClick={() => setActiveAwardId(isActive ? null : award.id)}
-              className={`group relative flex items-center justify-center h-[90px] sm:h-[100px] md:h-[110px] xl:h-[125px] 2xl:h-[140px] w-full text-center ${award.color} ${cornerClass} ${
-                idx < awards.length - 1 ? "border-b-4 border-black" : ""
-              } cursor-pointer overflow-visible transition-colors duration-200`}
-            >
-              {/* Floating Image Preview (Click-Reveal & Hover-Reveal - Fully inside container horizontally, unclipped vertically) */}
-              <div 
-                className={`absolute ${imagePositionClass} ${visibilityClass} ${rotateClass} top-1/2 -translate-y-1/2 w-[110px] h-[145px] sm:w-[130px] sm:h-[175px] md:w-[150px] md:h-[200px] xl:w-[170px] xl:h-[230px] 2xl:w-[190px] 2xl:h-[255px] pointer-events-none rounded-[20px] sm:rounded-[28px] border-3 border-black bg-white overflow-hidden shadow-[5px_5px_0px_rgba(0,0,0,1)] transition-all duration-300 ease-out origin-center z-20`}
-                style={{ willChange: "transform, opacity" }}
-              >
-                <img
-                  src={award.image}
+            {/* Tilted Image Card on Left Side for Odd IDs */}
+            {isLeftCard && (
+              <div className="absolute left-4 sm:left-8 lg:left-12 top-1/2 -translate-y-1/2 w-12 h-16 sm:w-16 sm:h-20 lg:w-20 lg:h-24 opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-105 group-hover:rotate-[-6deg] transition-all duration-300 pointer-events-none z-20 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none">
+                <img 
+                  src={award.image} 
                   alt={award.title}
-                  className="w-full h-full object-cover pointer-events-none"
-                  loading="lazy"
+                  className="w-full h-full object-cover"
                 />
               </div>
+            )}
 
-              {/* Banner text */}
-              <span className="font-display font-black text-xl sm:text-3xl md:text-4xl lg:text-[40px] xl:text-[46px] 2xl:text-[54px] uppercase text-white text-stroke-black tracking-wide group-hover:scale-[1.03] transition-transform duration-200 select-none z-10">
-                {award.title}
-              </span>
+            {/* Tilted Image Card on Right Side for Even IDs */}
+            {!isLeftCard && (
+              <div className="absolute right-4 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 w-12 h-16 sm:w-16 sm:h-20 lg:w-20 lg:h-24 opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-105 group-hover:rotate-[6deg] transition-all duration-300 pointer-events-none z-20 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none">
+                <img 
+                  src={award.image} 
+                  alt={award.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
 
-              {/* Subtle stripe hover/active feedback */}
-              <div className={`absolute inset-0 transition-opacity duration-200 pointer-events-none ${cornerClass} ${
-                isActive ? "bg-black/15 opacity-100" : "bg-black/5 opacity-0 group-hover:opacity-100"
-              }`}></div>
-            </div>
-          );
-        })}
+            {/* Center-Aligned Number & Title */}
+            <h3 
+              className="font-display font-black text-center text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white uppercase tracking-wide z-10 select-text leading-tight px-16 sm:px-20 lg:px-24"
+              style={{ textShadow: "1.5px 1.5px 0px #000" }}
+            >
+              {String(award.id).padStart(2, '0')}. {award.title}
+            </h3>
+
+            {/* Tier tag inline absolute top-1 right-2 */}
+            <span 
+              className="absolute top-1 sm:top-1.5 right-2.5 text-[8px] font-sans font-black uppercase tracking-wider text-white/50 select-none z-10"
+              style={{ textShadow: "1px 1px 0px rgba(0,0,0,0.5)" }}
+            >
+              {award.tier}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <section 
+      id="categories" 
+      className="w-full max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1500px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 overflow-visible text-center"
+    >
+      
+      {/* Centered Heading */}
+      <div className="flex flex-col items-center justify-center gap-3 max-w-3xl mx-auto mb-10 md:mb-14">
+        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#4585F6]">
+          Award Categories
+        </span>
+        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tighter leading-none text-zinc-950">
+          THE 25 <span className="text-[#F87C22]">CATEGORIES</span>
+        </h2>
+        {/* Centered block line divider */}
+        <div className="h-[5px] w-44 bg-[#4585F6] rounded-none mt-1"></div>
+        <p className="text-zinc-600 font-semibold text-sm sm:text-base leading-relaxed mt-3">
+          Recognizing and celebrating digital excellence, social impact, and regional cultural representation across 25 distinct awards.
+        </p>
+      </div>
+
+      {/* 1. Mobile & Tablet Layout (Single merged list of all 25 categories, no column header labels) */}
+      <div className="block lg:hidden w-full overflow-visible">
+        {renderListColumn(awards)}
+      </div>
+
+      {/* 2. Desktop Layout (Two Column Layout: Left Column (1-13) and Right Column (14-25) with headers) */}
+      <div className="hidden lg:grid grid-cols-2 gap-8 lg:gap-10 xl:gap-12 items-start overflow-visible">
+        {/* Left Column (Categories 1 - 13) */}
+        <div className="w-full flex flex-col gap-4">
+          <div className="text-left font-display font-black text-xs sm:text-sm text-zinc-400 uppercase tracking-widest pl-2">
+            Categories 01 - 13
+          </div>
+          {renderListColumn(leftColumnAwards)}
+        </div>
+
+        {/* Right Column (Categories 14 - 25) */}
+        <div className="w-full flex flex-col gap-4">
+          <div className="text-left font-display font-black text-xs sm:text-sm text-zinc-400 uppercase tracking-widest pl-2">
+            Categories 14 - 25
+          </div>
+          {renderListColumn(rightColumnAwards)}
+        </div>
       </div>
 
     </section>

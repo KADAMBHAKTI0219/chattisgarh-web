@@ -51,14 +51,14 @@ export default function TermsSection() {
   ];
 
   return (
-    <section id="terms" className="border-4 border-black bg-white p-6 sm:p-10 md:p-12 xl:p-16 rounded-[32px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto flex flex-col gap-8 scroll-mt-24 my-8 md:my-16 lg:my-20 xl:my-28">
+    <section id="terms" className="border-2 border-black bg-white p-6 sm:p-10 md:p-12 xl:p-16 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10 w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto flex flex-col gap-8 scroll-mt-24 my-8 md:my-16 lg:my-20 xl:my-28">
       
       {/* Title */}
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase tracking-tight">
           Terms & Conditions
         </h2>
-        <div className="h-2 w-32 xl:w-44 bg-[#4585F6] rounded-full"></div>
+        <div className="h-2 w-32 xl:w-44 bg-[#4585F6] rounded-none"></div>
       </div>
 
       {/* Grid of Sections */}

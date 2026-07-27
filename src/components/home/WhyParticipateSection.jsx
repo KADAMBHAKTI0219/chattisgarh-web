@@ -87,7 +87,7 @@ export default function WhyParticipateSection() {
           WHY <span className="text-[#F87C22]">PARTICIPATE?</span>
         </h2>
         {/* Underline line from mockup */}
-        <div className="h-[5px] w-48 bg-gradient-to-r from-[#F87C22] via-[#BE2079] to-[#3623B6] rounded-full mt-1"></div>
+        <div className="h-[5px] w-48 bg-gradient-to-r from-[#F87C22] via-[#BE2079] to-[#3623B6] rounded-none mt-1"></div>
       </div>
 
       {/* Grid of 4 cards styled in a unique, premium staggered format */}
@@ -99,7 +99,7 @@ export default function WhyParticipateSection() {
           return (
             <div
               key={idx}
-              className={`relative border-3 border-black bg-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-5 sm:gap-6 shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 hover:rotate-0 transition-all duration-300 transform text-left overflow-hidden group cursor-pointer ${rotationClass} ${
+              className={`relative border-2 border-black bg-white rounded-none p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-5 sm:gap-6 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 hover:rotate-0 transition-all duration-300 transform text-left overflow-hidden group cursor-pointer ${rotationClass} ${
                 isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-12 scale-95"
               }`}
               style={{ 
@@ -111,9 +111,9 @@ export default function WhyParticipateSection() {
               {/* Backglow gradient overlay on hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${benefit.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
 
-              {/* Large Colored Icon Badge Circle */}
+              {/* Large Colored Icon Badge Square */}
               <div 
-                className="w-16 h-16 rounded-full border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300"
+                className="w-16 h-16 rounded-none border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300"
                 style={{ backgroundColor: benefit.color }}
               >
                 {benefit.icon}

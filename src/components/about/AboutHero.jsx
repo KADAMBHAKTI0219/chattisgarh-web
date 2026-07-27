@@ -95,7 +95,7 @@ export default function AboutHero() {
           <div
             key={idx}
             onClick={() => setSelectedIdx(idx)}
-            className={`relative rounded-[24px] md:rounded-[32px] overflow-hidden border-4 border-black bg-white shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-[10px_10px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0 transition-all duration-300 cursor-pointer group ${item.sizeClass}`}
+            className={`relative rounded-none overflow-hidden border-2 border-black bg-white shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0 transition-all duration-300 cursor-pointer group ${item.sizeClass}`}
           >
             {/* Image */}
             <div className="absolute inset-0 w-full h-full">
@@ -110,11 +110,11 @@ export default function AboutHero() {
             </div>
 
             {/* Neon Accent Border inside card */}
-            <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#F3819F] rounded-[20px] md:rounded-[28px] pointer-events-none transition-all duration-300" />
+            <div className="absolute inset-0 border border-transparent group-hover:border-[#F3819F] rounded-none pointer-events-none transition-all duration-300" />
 
             {/* Hover details overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 md:p-8 text-left">
-              <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-[#F8D053] bg-black/40 py-1 px-3.5 rounded-full w-fit mb-2 border border-[#F8D053]/30">
+              <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-[#F8D053] bg-black/40 py-1 px-3.5 rounded-none w-fit mb-2 border border-[#F8D053]/30">
                 {item.tag}
               </span>
               <h3 className="font-display font-black text-lg sm:text-xl md:text-2xl text-white tracking-tight uppercase leading-snug">
@@ -126,7 +126,7 @@ export default function AboutHero() {
             </div>
 
             {/* Zoom In Badge Top Right */}
-            <div className="absolute top-4 right-4 bg-white/90 border-2 border-black p-2.5 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,1)] opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300">
+            <div className="absolute top-4 right-4 bg-white/90 border-2 border-black p-2.5 rounded-none shadow-[2px_2px_0px_rgba(0,0,0,1)] opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300">
               <svg className="w-4 h-4 text-zinc-950" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
               </svg>
@@ -141,7 +141,7 @@ export default function AboutHero() {
           {/* Close button */}
           <button
             onClick={() => setSelectedIdx(null)}
-            className="absolute top-6 right-6 bg-white border-4 border-black p-3 rounded-full shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-0 transition-transform cursor-pointer z-50"
+            className="absolute top-6 right-6 bg-white border-2 border-black p-3 rounded-none shadow-[2.5px_2.5px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-0 transition-transform cursor-pointer z-50"
           >
             <svg className="w-6 h-6 text-zinc-950 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -151,7 +151,7 @@ export default function AboutHero() {
           {/* Left Arrow Button */}
           <button
             onClick={() => setSelectedIdx((prev) => (prev - 1 + bentoItems.length) % bentoItems.length)}
-            className="absolute left-6 bg-white border-4 border-black p-3 rounded-full shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-0 transition-transform cursor-pointer z-50 hidden sm:block"
+            className="absolute left-6 bg-white border-2 border-black p-3 rounded-none shadow-[2.5px_2.5px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] active:translate-y-0 transition-transform cursor-pointer z-50 hidden sm:block"
           >
             <svg className="w-6 h-6 text-zinc-950 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -160,7 +160,7 @@ export default function AboutHero() {
 
           {/* Image Container */}
           <div className="relative w-full max-w-5xl h-[50vh] sm:h-[70vh] flex flex-col items-center justify-center">
-            <div className="relative w-full h-full border-4 border-black rounded-[24px] sm:rounded-[32px] overflow-hidden bg-zinc-900 shadow-[8px_8px_0px_rgba(243,129,159,1)]">
+            <div className="relative w-full h-full border-2 border-black rounded-none overflow-hidden bg-zinc-900 shadow-[4px_4px_0px_rgba(243,129,159,1)]">
               <Image
                 src={bentoItems[selectedIdx].src}
                 alt={bentoItems[selectedIdx].alt}

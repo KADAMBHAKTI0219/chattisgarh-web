@@ -125,9 +125,9 @@ export default function HowToApplySection() {
                 className="grid grid-cols-1 md:grid-cols-2 w-full items-center relative"
               >
                 
-                {/* Timeline node circle containing step number */}
+                {/* Timeline node square containing step number */}
                 <div 
-                  className={`absolute left-8 md:left-1/2 -translate-x-1/2 w-12 h-12 rounded-full border-4 bg-white z-20 flex items-center justify-center font-display font-black text-lg transition-all duration-500 shadow-[2px_2px_0px_rgba(0,0,0,1)] ${
+                  className={`absolute left-8 md:left-1/2 -translate-x-1/2 w-12 h-12 rounded-none border-2 border-black bg-white z-20 flex items-center justify-center font-display font-black text-lg transition-all duration-500 shadow-[2px_2px_0px_rgba(0,0,0,1)] ${
                     step.nodeColor
                   } ${isActive ? "scale-110 rotate-[360deg]" : "scale-100"}`}
                 >
@@ -146,15 +146,15 @@ export default function HowToApplySection() {
                 {/* Column 1 (Left on desktop, full-width on mobile for Left cards, hidden for Right cards) */}
                 <div className={`flex pl-20 md:pl-0 ${isLeft ? "md:justify-end md:pr-24 lg:pr-28" : "hidden md:block"}`}>
                   {isLeft && (
-                    <div className="w-full max-w-md bg-white border-3 border-black rounded-[28px] p-6 flex items-center gap-6 shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group text-left cursor-pointer">
+                    <div className="w-full max-w-md bg-white border-2 border-black rounded-none p-6 flex flex-col lg:flex-row items-center gap-6 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group text-center lg:text-left cursor-pointer">
                       
                       {/* Step Icon Badge */}
-                      <div className="flex items-center justify-center shrink-0 w-16 h-16 rounded-2xl border-2 border-black bg-zinc-50 shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-[#E14B18]/5 group-hover:rotate-3 transition-all duration-300">
+                      <div className="flex items-center justify-center shrink-0 w-16 h-16 rounded-none border-2 border-black bg-zinc-50 shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-[#E14B18]/5 group-hover:rotate-3 transition-all duration-300">
                         {step.icon}
                       </div>
 
                       {/* Content */}
-                      <div className="flex flex-col gap-0.5 text-left">
+                      <div className="flex flex-col gap-0.5 items-center lg:items-start text-center lg:text-left">
                         <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-[#E14B18]">
                           {step.id}
                         </span>
@@ -173,15 +173,15 @@ export default function HowToApplySection() {
                 {/* Column 2 (Right on desktop, full-width on mobile for Right cards, hidden for Left cards) */}
                 <div className={`flex pl-20 md:pl-0 ${!isLeft ? "md:justify-start md:pl-24 lg:pl-28" : "hidden md:block"}`}>
                   {!isLeft && (
-                    <div className="w-full max-w-md bg-white border-3 border-black rounded-[28px] p-6 flex items-center gap-6 shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group text-left cursor-pointer">
+                    <div className="w-full max-w-md bg-white border-2 border-black rounded-none p-6 flex flex-col lg:flex-row items-center gap-6 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group text-center lg:text-left cursor-pointer">
                       
                       {/* Step Icon Badge */}
-                      <div className="flex items-center justify-center shrink-0 w-16 h-16 rounded-2xl border-2 border-black bg-zinc-50 shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-[#701B84]/5 group-hover:rotate-3 transition-all duration-300">
+                      <div className="flex items-center justify-center shrink-0 w-16 h-16 rounded-none border-2 border-black bg-zinc-50 shadow-[2px_2px_0px_rgba(0,0,0,1)] group-hover:bg-[#701B84]/5 group-hover:rotate-3 transition-all duration-300">
                         {step.icon}
                       </div>
 
                       {/* Content */}
-                      <div className="flex flex-col gap-0.5 text-left">
+                      <div className="flex flex-col gap-0.5 items-center lg:items-start text-center lg:text-left">
                         <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-[#701B84]">
                           {step.id}
                         </span>

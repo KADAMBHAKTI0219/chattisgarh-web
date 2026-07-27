@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -9,14 +9,20 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Space Grotesk', sans-serif;
-  --font-display: 'Space Grotesk', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Tribal pattern background watermark class */
+.bg-tribal-watermark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M0 40 L40 0 L80 40 L40 80 Z M0 0 L80 80 M80 0 L0 80' fill='none' stroke='%23000000' stroke-width='0.75' stroke-opacity='0.015'/%3E%3C/svg%3E");
 }
 
 /* Custom Text Outline for Neo-brutalist Typography (Responsive) */
