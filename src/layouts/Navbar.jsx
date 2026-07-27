@@ -26,13 +26,13 @@ export default function Navbar() {
       <div className="mx-auto w-full max-w-[1440px]">
         
         {/* Desktop Layout (Visible from lg / 1024px upwards) */}
-        <div className="hidden lg:grid grid-cols-3 items-center w-full py-5 lg:py-6">
+        <div className="hidden lg:grid grid-cols-3 items-center w-full py-4 lg:py-4">
           {/* Left Column: Logo */}
           <div className="flex justify-start items-center">
             <Link href="/" className="flex items-center">
-              <div className="relative lg:h-12 lg:w-32 xl:h-14 xl:w-36 2xl:h-16 2xl:w-40 overflow-hidden">
+              <div className="relative lg:h-16 lg:w-32 xl:h-18 xl:w-36 2xl:h-18 2xl:w-40 overflow-hidden">
                 <Image
-                  src="/assets/images/logo.jpeg"
+                  src="/assets/images/logoChattisgarh.png"
                   alt="Chhattisgarh Web Logo"
                   fill
                   priority
@@ -44,7 +44,7 @@ export default function Navbar() {
           </div>
 
           {/* Center Column: Navigation Links */}
-          <div className="flex justify-center items-center gap-4 xl:gap-6 2xl:gap-8 text-zinc-900 font-semibold tracking-wide lg:text-xs xl:text-sm 2xl:text-base">
+          <div className="flex justify-center items-center gap-4 xl:gap-6 2xl:gap-8 text-zinc-900 font-semibold tracking-wide lg:text-base xl:text-lg ">
             <Link href="/" className="hover:text-[#F082A2] transition-colors duration-200 shrink-0">
               Home
             </Link>
@@ -115,7 +115,7 @@ export default function Navbar() {
           <div className="flex justify-center items-center">
             <Link href="/" className="relative h-8 w-24 sm:h-10 sm:w-28 md:h-12 md:w-32 overflow-hidden">
               <Image
-                src="/assets/images/logo.jpeg"
+                src="/assets/images/logoChattisgarh.png"
                 alt="Chhattisgarh Web Logo"
                 fill
                 priority

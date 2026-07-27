@@ -77,11 +77,21 @@ export default function HeroSection() {
       {/* 1. Official Banner Container (Full bleed background negating page wrapper paddings, no borders) */}
       <div className="relative w-screen min-h-screen -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden flex flex-col items-center justify-center p-6 select-none z-10 bg-white">
         
-        {/* Hero Background Image (hero.png) */}
-        <div className="absolute inset-0 -z-10 w-full h-full pointer-events-none select-none">
+        {/* Hero Background Image (Desktop: herosection.png, Mobile/Tablet: mob-hero.png) */}
+        <div className="absolute inset-0 -z-10 w-full h-full pointer-events-none select-none hidden lg:block">
           <Image
             src="/assets/images/herosection.png"
             alt="Hero Background Banner"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center opacity-100"
+          />
+        </div>
+        <div className="absolute inset-0 -z-10 w-full h-full pointer-events-none select-none block lg:hidden">
+          <Image
+            src="/assets/images/mob-hero.png"
+            alt="Hero Background Banner Mobile"
             fill
             priority
             sizes="100vw"
@@ -128,12 +138,12 @@ export default function HeroSection() {
         <div className="flex flex-col items-center gap-1 md:gap-2 max-w-[80%] md:max-w-[42%] z-10 px-4 mx-auto">
           
           {/* Chhattisgarh's Biggest Sub-heading */}
-          <span className="font-sans font-black text-base sm:text-xl md:text-2xl lg:text-3xl text-[#0B1528] uppercase tracking-[0.08em] select-none text-center">
+          <span className="font-sans font-black text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#0B1528] uppercase tracking-[0.08em] select-none text-center">
             CHHATTISGARH'S BIGGEST
           </span>
 
           {/* Creator & Influencer Title */}
-          <h1 className="font-display font-black text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[4.5rem] uppercase tracking-tighter leading-none select-none my-2 text-white text-stroke-black-thick text-center block w-full">
+          <h1 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-[4.5rem] uppercase tracking-tighter leading-none select-none my-2 text-white text-stroke-black-thick text-center block w-full">
             <span style={{ textShadow: "3.5px 3.5px 0px #000" }}>CREATOR & INFLUENCER</span>
           </h1>
 

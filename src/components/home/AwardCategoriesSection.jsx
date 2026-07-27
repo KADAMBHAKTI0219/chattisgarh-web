@@ -58,7 +58,7 @@ export default function AwardCategoriesSection() {
   ];
 
   return (
-    <section id="categories" className="w-full max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto flex flex-col md:flex-row border-4 border-black rounded-[32px] bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 relative my-20 xl:my-28 scroll-mt-24 overflow-visible">
+    <section id="categories" className="w-full max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto flex flex-col md:flex-row border-4 border-black rounded-[32px] bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 relative my-8 md:my-16 lg:my-20 xl:my-28 scroll-mt-24 overflow-visible">
       
       {/* Left Column: Vertical Category Title Block */}
       <div className="bg-zinc-950 text-white border-b-4 md:border-b-0 md:border-r-4 border-black flex md:flex-col items-center justify-between p-6 md:py-12 md:px-8 w-full md:w-[140px] xl:w-[180px] 2xl:w-[210px] select-none shrink-0 relative rounded-t-[28px] md:rounded-t-0 md:rounded-l-[28px] z-10">

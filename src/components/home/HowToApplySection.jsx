@@ -90,7 +90,7 @@ export default function HowToApplySection() {
     <section 
       ref={sectionRef} 
       id="how-to-apply"
-      className="relative w-full max-w-6xl mx-auto py-20 px-4 select-none overflow-visible"
+      className="relative w-full max-w-6xl mx-auto py-8 md:py-20 lg:py-28 px-4 select-none overflow-visible"
     >
       
       {/* Centered Heading and Description */}

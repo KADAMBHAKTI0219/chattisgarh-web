@@ -59,7 +59,7 @@ export default function TestimonialsSection() {
   return (
     <section 
       id="testimonials" 
-      className="w-screen left-1/2 -translate-x-1/2 bg-zinc-950 text-white py-16 sm:py-20 xl:py-28 flex flex-col items-center gap-10 scroll-mt-24 select-none relative border-y-4 border-black overflow-hidden z-10 my-10"
+      className="w-screen left-1/2 -translate-x-1/2 bg-zinc-950 text-white py-8 md:py-20 lg:py-28 flex flex-col items-center gap-10 scroll-mt-24 select-none relative border-y-4 border-black overflow-hidden z-10 my-6 md:my-10"
     >
       {/* Inline styles for CSS keyframe animation */}
       <style dangerouslySetInnerHTML={{ __html: `

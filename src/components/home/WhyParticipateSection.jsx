@@ -75,7 +75,7 @@ export default function WhyParticipateSection() {
     <section 
       ref={sectionRef}
       id="why-participate"
-      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-16 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 overflow-visible"
+      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 overflow-visible"
     >
       
       {/* Centered Heading with responsive styling */}

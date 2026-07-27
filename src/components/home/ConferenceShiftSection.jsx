@@ -122,7 +122,7 @@ export default function ConferenceShiftSection() {
   }, [viewportWidth]);
 
   return (
-    <section className="relative w-screen left-1/2 -translate-x-1/2 bg-[#FAF7F0] py-20 xl:py-28 flex flex-col items-center justify-center overflow-hidden select-none">
+    <section className="relative w-screen left-1/2 -translate-x-1/2 bg-[#FAF7F0] py-8 md:py-20 lg:py-28 flex flex-col items-center justify-center overflow-hidden select-none">
       
       {/* Background rays */}
       <div className="absolute top-0 left-0 right-0 h-[550px] pointer-events-none opacity-[0.03] z-0 overflow-hidden flex justify-center">
