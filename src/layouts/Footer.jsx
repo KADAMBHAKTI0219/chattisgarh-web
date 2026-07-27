@@ -9,7 +9,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-[#070b19] border-t-4 border-[#6EC192] text-white sticky bottom-0 z-10">
+    <footer className="w-full bg-[#070b19] border-t-4 border-[#6EC192] text-white relative lg:sticky bottom-0 lg:z-10 z-[30]">
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-6 pt-12 pb-8 md:pt-16 xl:pt-20 xl:pb-12">
         
         {/* Top Section: 4 Columns */}

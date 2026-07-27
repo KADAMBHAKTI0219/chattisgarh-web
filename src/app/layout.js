@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
         
         <ParticipateModalProvider>
           {/* Parallax Content Wrapper: sits on top of sticky footer with higher z-index and shadow */}
-          <div className="relative z-20 bg-[#FAF7F0] min-h-screen shadow-[0_15px_30px_rgba(0,0,0,0.15)] pb-1">
+          <div className="relative lg:z-20 bg-[#FAF7F0] min-h-screen lg:shadow-[0_15px_30px_rgba(0,0,0,0.15)] pb-1">
             <Navbar />
             <main className="flex-1">
               {children}

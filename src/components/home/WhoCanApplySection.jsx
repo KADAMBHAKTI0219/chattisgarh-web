@@ -200,7 +200,7 @@ export default function WhoCanApplySection() {
       </div>
 
       {/* Dynamic Responsive Honeycomb Grid */}
-      <div className="flex flex-col items-center justify-center overflow-visible">
+      <div className="flex flex-col items-center justify-center overflow-visible z-40">
         {screenType === "desktop" && (
           <div className="flex flex-col items-center justify-center overflow-visible">
             {/* Row 1 (4 Hexagons) */}
@@ -210,13 +210,13 @@ export default function WhoCanApplySection() {
               ))}
             </div>
             {/* Row 2 (5 Hexagons) */}
-            <div className="flex justify-center gap-4 lg:gap-5 xl:gap-6 overflow-visible w-full -mt-6 lg:-mt-8 xl:-mt-9 2xl:-mt-11 z-20">
+            <div className="flex justify-center gap-4 lg:gap-5 xl:gap-6 overflow-visible w-full -mt-6 lg:-mt-8 xl:-mt-9 2xl:-mt-11">
               {candidates.slice(4, 9).map((cand, idx) => (
                 <HexCard key={idx + 4} cand={cand} idx={idx + 4} />
               ))}
             </div>
             {/* Row 3 (2 Hexagons) */}
-            <div className="flex justify-center gap-4 lg:gap-5 xl:gap-6 overflow-visible w-full -mt-6 lg:-mt-8 xl:-mt-9 2xl:-mt-11 z-30">
+            <div className="flex justify-center gap-4 lg:gap-5 xl:gap-6 overflow-visible w-full -mt-6 lg:-mt-8 xl:-mt-9 2xl:-mt-11">
               {candidates.slice(9, 11).map((cand, idx) => (
                 <HexCard key={idx + 9} cand={cand} idx={idx + 9} />
               ))}
@@ -233,25 +233,25 @@ export default function WhoCanApplySection() {
               ))}
             </div>
             {/* Row 2 (2 Hexagons) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full -mt-6 z-20">
+            <div className="flex justify-center gap-4 overflow-visible w-full -mt-6">
               {candidates.slice(3, 5).map((cand, idx) => (
                 <HexCard key={idx + 3} cand={cand} idx={idx + 3} />
               ))}
             </div>
             {/* Row 3 (3 Hexagons) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full -mt-6 z-30">
+            <div className="flex justify-center gap-4 overflow-visible w-full -mt-6">
               {candidates.slice(5, 8).map((cand, idx) => (
                 <HexCard key={idx + 5} cand={cand} idx={idx + 5} />
               ))}
             </div>
             {/* Row 4 (2 Hexagons) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full -mt-6 z-40">
+            <div className="flex justify-center gap-4 overflow-visible w-full -mt-6">
               {candidates.slice(8, 10).map((cand, idx) => (
                 <HexCard key={idx + 8} cand={cand} idx={idx + 8} />
               ))}
             </div>
             {/* Row 5 (1 Hexagon) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full -mt-6 z-50">
+            <div className="flex justify-center gap-4 overflow-visible w-full -mt-6">
               {candidates.slice(10, 11).map((cand, idx) => (
                 <HexCard key={idx + 10} cand={cand} idx={idx + 10} />
               ))}
@@ -268,37 +268,37 @@ export default function WhoCanApplySection() {
               ))}
             </div>
             {/* Row 2 (1 Hexagon) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5 z-20">
+            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5">
               {candidates.slice(2, 3).map((cand, idx) => (
                 <HexCard key={idx + 2} cand={cand} idx={idx + 2} />
               ))}
             </div>
             {/* Row 3 (2 Hexagons) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5 z-30">
+            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5">
               {candidates.slice(3, 5).map((cand, idx) => (
                 <HexCard key={idx + 3} cand={cand} idx={idx + 3} />
               ))}
             </div>
             {/* Row 4 (1 Hexagon) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5 z-40">
+            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5">
               {candidates.slice(5, 6).map((cand, idx) => (
                 <HexCard key={idx + 5} cand={cand} idx={idx + 5} />
               ))}
             </div>
             {/* Row 5 (2 Hexagons) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5 z-50">
+            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5">
               {candidates.slice(6, 8).map((cand, idx) => (
                 <HexCard key={idx + 6} cand={cand} idx={idx + 6} />
               ))}
             </div>
             {/* Row 6 (1 Hexagon) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5 z-60">
+            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5">
               {candidates.slice(8, 9).map((cand, idx) => (
                 <HexCard key={idx + 8} cand={cand} idx={idx + 8} />
               ))}
             </div>
             {/* Row 7 (2 Hexagons) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5 z-70">
+            <div className="flex justify-center gap-3 overflow-visible w-full -mt-5">
               {candidates.slice(9, 11).map((cand, idx) => (
                 <HexCard key={idx + 9} cand={cand} idx={idx + 9} />
               ))}

@@ -272,12 +272,12 @@ export function CrowdCanvas({ src, rows = 15, cols = 7 }) {
 
 export default function CrowdSection() {
   return (
-    <section className="relative w-full h-[500px] xl:h-[600px] bg-[#FAF7F0] mt-28 mb-16 overflow-visible z-10 flex items-end">
+    <section className="relative w-full h-[220px] sm:h-[280px] md:h-[340px] lg:h-[400px] xl:h-[450px] bg-[#FAF7F0] mt-16 md:mt-24 mb-0 overflow-visible z-10 flex items-end">
       
       {/* Title stacked with vertical line matching user image mockup */}
       <div className="absolute inset-x-0 top-0 flex flex-col justify-start items-center pt-4 text-center select-none pointer-events-none">
         <span className="font-sans font-black text-xs xl:text-sm uppercase tracking-[0.25em] text-zinc-400 leading-tight">
-          Croud
+          Crowd
         </span>
         <span className="font-sans font-black text-xs xl:text-sm uppercase tracking-[0.25em] text-zinc-400 leading-tight mt-1">
           Canvas

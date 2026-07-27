@@ -12,7 +12,7 @@ import CrowdSection from "@/components/home/CrowdSection";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-4 md:px-8 lg:px-12 pt-0 pb-12 flex flex-col gap-24 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-4 md:px-8 lg:px-12 pt-0 pb-0 flex flex-col gap-24 relative overflow-x-hidden">
       
       {/* Refactored Hero Section (includes top title, cards shuffle) */}
       <HeroSection />
