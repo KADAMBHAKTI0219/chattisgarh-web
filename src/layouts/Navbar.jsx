@@ -7,6 +7,7 @@ import { useParticipateModal } from "@/context/ParticipateModalContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { openModal } = useParticipateModal();
 
   useEffect(() => {
@@ -20,8 +21,26 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <nav className="sticky top-0 z-50 w-full bg-[#FAF7F0] border-b-2 border-black px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
+    <nav className={`z-50 w-full transition-all duration-300 ${
+      isScrolled 
+        ? "fixed top-0 left-0 bg-[#FAF7F0] border-b-2 border-black shadow-md animate-[slideDown_0.2s_ease-in-out]" 
+        : "relative bg-[#FAF7F0] border-b-2 border-black"
+    } px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20`}>
       {/* Maximum width container to prevent layout from stretching too wide on ultra-wide monitors */}
       <div className="mx-auto w-full max-w-[1440px]">
         
