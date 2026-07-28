@@ -91,7 +91,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile & Tablet Layout (Visible below lg / 1024px) */}
-        <div className="flex lg:hidden justify-between items-center w-full py-3 sm:py-3.5 relative">
+        <div className="flex lg:hidden justify-between items-center w-full py-6 sm:py-8 relative">
           {/* Mobile/Tablet Menu Button (Stays as a hamburger icon, since the sidebar slides from the left and overlays it) */}
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -115,8 +115,8 @@ export default function Navbar() {
           </button>
 
           {/* Center Logo for Mobile & Tablet (Absolute Centered) */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-10">
-            <Link href="/" className="relative h-14 w-14 sm:h-16 sm:w-16 md:h-18 md:w-18 overflow-hidden block">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-10 ">
+            <Link href="/" className="relative h-20 w-20 sm:h-22 sm:w-22 md:h-24 md:w-24 overflow-hidden block">
               <Image
                 src="/assets/images/logoChattisgarh.png"
                 alt="Chhattisgarh Web Logo"
