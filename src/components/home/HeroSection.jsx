@@ -155,17 +155,17 @@ export default function HeroSection() {
           </div>
 
           {/* Hero Main Typography Block constrained to center 42% sky area */}
-          <div className="flex flex-col items-center gap-0.5 xs:gap-1.5 sm:gap-2.5 max-w-[95%] lg:max-w-[45%] z-10 px-4 mx-auto">
+          <div className="flex flex-col items-center gap-1 sm:gap-3 max-w-[95%] lg:max-w-[55%] z-10 px-4 mx-auto">
             
-            {/* Chhattisgarh's Biggest Sub-heading */}
-            <span className="font-sans font-black text-[12px] xs:text-[14px] sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-[#0B1528] uppercase tracking-[0.08em] select-none text-center whitespace-nowrap">
-              CHHATTISGARH'S BIGGEST
+            {/* Sub-heading */}
+            <span className="font-sans font-black text-[16px] xs:text-[20px] sm:text-3xl md:text-4xl lg:text-5xl text-[#E78330] uppercase tracking-[0.25em] select-none text-center">
+              STATE
             </span>
 
             {/* Creator & Influencer Title (Responsive wrap on mobile, single line on tablet/desktop) */}
-            <h1 className="font-display font-black text-[24px] xs:text-[28px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[4.5rem] uppercase tracking-tighter leading-[1.05] sm:leading-none select-none my-1 md:my-2 text-white text-stroke-black-thick text-center block w-full">
-              <span style={{ textShadow: "2.5px 2.5px 0px #000" }} className="block sm:inline-block">CREATOR & </span>
-              <span style={{ textShadow: "2.5px 2.5px 0px #000" }} className="block sm:inline-block sm:ml-2">INFLUENCER</span>
+            <h1 className="font-display font-black text-[30px] xs:text-[38px] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl uppercase tracking-tighter leading-[1.05] sm:leading-none select-none my-1.5 md:my-3 text-center block w-full">
+              <span className="bg-gradient-to-r from-[#F87C22] via-[#E64C8A] via-[#8A3FFC] to-[#1AA3A3] bg-clip-text text-transparent block sm:inline-block">CREATOR &</span>
+              <span className="text-[#123E4A] block sm:inline-block sm:ml-3">INFLUENCER</span>
             </h1>
 
             {/* Awards 2026 line */}
