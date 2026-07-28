@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
 export default function TestimonialsSection() {
-  const [isMarqueeActive, setIsMarqueeActive] = useState(false);
-
   const testimonials = [
     {
       id: 1,
@@ -59,7 +55,7 @@ export default function TestimonialsSection() {
   return (
     <section 
       id="testimonials" 
-      className="w-screen left-1/2 -translate-x-1/2 bg-[#FAF7F0] text-zinc-950 py-8 md:py-20 lg:py-28 flex flex-col items-center gap-10 scroll-mt-24 select-none relative border-y-4 border-black overflow-hidden z-10 my-6 md:my-10"
+      className="w-screen left-1/2 -translate-x-1/2 bg-[#FAF7F0] text-zinc-950 py-8 md:py-16 lg:py-20 flex flex-col items-center gap-8 md:gap-10 scroll-mt-24 select-none relative border-y-4 border-black overflow-hidden z-10 my-6 md:my-10"
     >
       {/* Inline styles for CSS keyframe animation */}
       <style dangerouslySetInnerHTML={{ __html: `
@@ -86,115 +82,41 @@ export default function TestimonialsSection() {
           What Creators <span className="text-[#F87C22]">Are Saying</span>
         </h2>
         <div className="h-1.5 w-32 bg-[#BE2079] rounded-none mt-1"></div>
-        <p className="text-zinc-600 font-semibold text-sm xl:text-base mt-3 transition-all">
-          {isMarqueeActive 
-            ? "Hover to pause • Click a card to stack them back." 
-            : "Click the deck to reveal all cards."}
+        <p className="text-zinc-600 font-semibold text-sm xl:text-base mt-3">
+          Hover over any card to pause the scrolling marquee and read their stories.
         </p>
       </div>
 
-      {/* Conditional Rendering: Stacked Deck vs Horizontal Marquee */}
-      {!isMarqueeActive ? (
-        
-        /* 1. STACKED DECK STATE */
-        <div 
-          onClick={() => setIsMarqueeActive(true)}
-          className="relative w-[300px] h-[380px] sm:w-[340px] sm:h-[420px] xl:w-[380px] xl:h-[460px] 2xl:w-[420px] 2xl:h-[500px] cursor-pointer mt-6 flex items-center justify-center group"
-        >
-          {testimonials.map((test, idx) => {
-            let rotation = "rotate-[0deg]";
-            let translate = "translate-x-0 translate-y-0";
-            let zIndex = "z-0";
-
-            if (idx === 0) { // Top card
-              rotation = "rotate-[-1deg]";
-              zIndex = "z-50";
-            } else if (idx === 1) {
-              rotation = "rotate-[4deg]";
-              translate = "translate-x-[6px] translate-y-[-2px]";
-              zIndex = "z-40";
-            } else if (idx === 2) {
-              rotation = "rotate-[-2deg]";
-              translate = "translate-x-[-4px] translate-y-[2px]";
-              zIndex = "z-30";
-            } else if (idx === 3) {
-              rotation = "rotate-[3deg]";
-              translate = "translate-x-[4px] translate-y-[-6px]";
-              zIndex = "z-20";
-            } else if (idx === 4) {
-              rotation = "rotate-[-4deg]";
-              translate = "translate-x-[-8px] translate-y-[4px]";
-              zIndex = "z-10";
-            } else { // Bottom card
-              rotation = "rotate-[6deg]";
-              translate = "translate-x-3 translate-y-3";
-              zIndex = "z-0";
-            }
-
-            return (
-              <div
-                key={test.id}
-                className={`absolute inset-0 w-full h-full p-6 sm:p-8 xl:p-10 flex flex-col justify-between rounded-none border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] text-left transition-all duration-300 origin-center ${test.bg} ${rotation} ${translate} ${zIndex} group-hover:scale-[1.02]`}
-              >
-                {/* Quote */}
-                <p className="font-sans font-semibold text-sm sm:text-base xl:text-lg 2xl:text-xl leading-relaxed line-clamp-6">
-                  &ldquo;{test.quote}&rdquo;
-                </p>
-                
-                {/* Author Info */}
-                <div className="flex items-center gap-3 mt-4 border-t border-zinc-200/50 pt-4">
-                  <img 
-                    src={test.avatar} 
-                    alt={test.name} 
-                    className="w-10 h-10 xl:w-12 xl:h-12 rounded-none border border-black object-cover" 
-                  />
-                  <div className="flex flex-col">
-                    <span className="font-sans font-black text-sm xl:text-base">{test.name}</span>
-                    <span className="font-sans font-bold text-xs xl:text-sm opacity-60">{test.role}</span>
-                  </div>
+      {/* 2. AUTOMATIC INFINITE SCROLLING MARQUEE */}
+      <div className="w-full relative overflow-hidden py-4 mt-2">
+        {/* Double-render list for seamless infinite loop */}
+        <div className="animate-marquee-testimonials gap-6">
+          {[...testimonials, ...testimonials].map((test, idx) => (
+            <div
+              key={`${test.id}-${idx}`}
+              className="w-[260px] h-[340px] sm:w-[310px] sm:h-[370px] xl:w-[350px] xl:h-[410px] 2xl:w-[390px] 2xl:h-[450px] shrink-0 p-6 sm:p-8 xl:p-10 flex flex-col justify-between rounded-none border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] text-left hover:scale-[1.01] hover:-translate-y-1 transition-all duration-200 bg-white"
+            >
+              {/* Quote */}
+              <p className="font-sans font-semibold text-sm sm:text-base xl:text-lg 2xl:text-xl leading-relaxed text-zinc-900">
+                &ldquo;{test.quote}&rdquo;
+              </p>
+              
+              {/* Author Info */}
+              <div className="flex items-center gap-3 mt-4 border-t border-zinc-200/40 pt-4">
+                <img 
+                  src={test.avatar} 
+                  alt={test.name} 
+                  className="w-10 h-10 xl:w-12 xl:h-12 rounded-none border border-black object-cover" 
+                />
+                <div className="flex flex-col">
+                  <span className="font-sans font-black text-sm xl:text-base text-zinc-950">{test.name}</span>
+                  <span className="font-sans font-bold text-xs xl:text-sm opacity-60 text-zinc-500">{test.role}</span>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
-
-      ) : (
-
-        /* 2. INFINITE SCROLLING MARQUEE STATE */
-        <div 
-          onClick={() => setIsMarqueeActive(false)}
-          className="w-full relative overflow-hidden py-4 cursor-pointer mt-4"
-        >
-          {/* Double-render list for seamless infinite loop */}
-          <div className="animate-marquee-testimonials gap-6">
-            {[...testimonials, ...testimonials].map((test, idx) => (
-              <div
-                key={`${test.id}-${idx}`}
-                className={`w-[260px] h-[340px] sm:w-[310px] sm:h-[370px] xl:w-[350px] xl:h-[410px] 2xl:w-[390px] 2xl:h-[450px] shrink-0 p-6 sm:p-8 xl:p-10 flex flex-col justify-between rounded-none border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] text-left hover:scale-[1.01] hover:-translate-y-1 transition-all duration-200 ${test.bg}`}
-              >
-                {/* Quote */}
-                <p className="font-sans font-semibold text-sm sm:text-base xl:text-lg 2xl:text-xl leading-relaxed">
-                  &ldquo;{test.quote}&rdquo;
-                </p>
-                
-                {/* Author Info */}
-                <div className="flex items-center gap-3 mt-4 border-t border-zinc-200/40 pt-4">
-                  <img 
-                    src={test.avatar} 
-                    alt={test.name} 
-                    className="w-10 h-10 xl:w-12 xl:h-12 rounded-none border border-black object-cover" 
-                  />
-                  <div className="flex flex-col">
-                    <span className="font-sans font-black text-sm xl:text-base">{test.name}</span>
-                    <span className="font-sans font-bold text-xs xl:text-sm opacity-60">{test.role}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-      )}
+      </div>
 
     </section>
   );

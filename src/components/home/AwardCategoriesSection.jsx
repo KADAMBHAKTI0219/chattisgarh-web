@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
+
 export default function AwardCategoriesSection() {
+  const [hoveredId, setHoveredId] = useState(null);
+
   const awards = [
     { id: 1, title: "Chhattisgarhiya Sanskriti Ambassador", color: "bg-[#F87C22]", tier: "Tier A", image: "/assets/images/chattisgarh_fall.jpg" },
     { id: 2, title: "Bastar & Tribal Heritage Creator", color: "bg-[#F3819F]", tier: "Tier A", image: "/assets/images/about-2.jpg" },
@@ -37,14 +41,28 @@ export default function AwardCategoriesSection() {
     <div className="flex flex-col w-full border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] divide-y-2 divide-black overflow-visible bg-white">
       {items.map((award) => {
         const isLeftCard = award.id % 2 !== 0;
+        const isActive = hoveredId === award.id;
+
         return (
           <div 
             key={award.id} 
-            className={`flex items-center justify-center p-4 sm:p-5 relative ${award.color} hover:z-30 transition-all duration-200 cursor-default group overflow-visible min-h-[70px] sm:min-h-[85px]`}
+            className={`flex items-center justify-center p-4 sm:p-5 relative ${award.color} ${
+              isActive ? "z-30" : "hover:z-20"
+            } transition-all duration-200 cursor-pointer overflow-visible min-h-[75px] sm:min-h-[85px]`}
+            onMouseEnter={() => setHoveredId(award.id)}
+            onMouseLeave={() => setHoveredId(null)}
+            onClick={() => setHoveredId(isActive ? null : award.id)}
           >
-            {/* Tilted Image Card on Left Side for Odd IDs */}
+            {/* Left Image:
+               - Visible on hover/tap/active if isLeftCard is true.
+               - Large sizing on desktop (lg:w-[110px] lg:h-[138px]), proportional sizing on mobile.
+            */}
             {isLeftCard && (
-              <div className="absolute left-4 sm:left-8 lg:left-12 top-1/2 -translate-y-1/2 w-12 h-16 sm:w-16 sm:h-20 lg:w-20 lg:h-24 opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-105 group-hover:rotate-[-6deg] transition-all duration-300 pointer-events-none z-20 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none">
+              <div className={`absolute left-2 sm:left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 w-14 h-18 sm:w-18 sm:h-22 lg:w-[110px] lg:h-[138px] transition-all duration-300 pointer-events-none z-20 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] lg:shadow-[3.5px_3.5px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none ${
+                isActive 
+                  ? "opacity-100 scale-105 rotate-[-6deg]" 
+                  : "opacity-0 scale-75 rotate-0"
+              }`}>
                 <img 
                   src={award.image} 
                   alt={award.title}
@@ -53,9 +71,16 @@ export default function AwardCategoriesSection() {
               </div>
             )}
 
-            {/* Tilted Image Card on Right Side for Even IDs */}
+            {/* Right Image:
+               - Visible on hover/tap/active if isLeftCard is false.
+               - Large sizing on desktop (lg:w-[110px] lg:h-[138px]), proportional sizing on mobile.
+            */}
             {!isLeftCard && (
-              <div className="absolute right-4 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 w-12 h-16 sm:w-16 sm:h-20 lg:w-20 lg:h-24 opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-105 group-hover:rotate-[6deg] transition-all duration-300 pointer-events-none z-20 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none">
+              <div className={`absolute right-2 sm:right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 w-14 h-18 sm:w-18 sm:h-22 lg:w-[110px] lg:h-[138px] transition-all duration-300 pointer-events-none z-20 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] lg:shadow-[3.5px_3.5px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none ${
+                isActive 
+                  ? "opacity-100 scale-105 rotate-[6deg]" 
+                  : "opacity-0 scale-75 rotate-0"
+              }`}>
                 <img 
                   src={award.image} 
                   alt={award.title}
@@ -66,7 +91,7 @@ export default function AwardCategoriesSection() {
 
             {/* Center-Aligned Number & Title */}
             <h3 
-              className="font-display font-black text-center text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white uppercase tracking-wide z-10 select-text leading-tight px-16 sm:px-20 lg:px-24"
+              className="font-display font-black text-center text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white uppercase tracking-wide z-10 select-text leading-tight px-12 sm:px-20 lg:px-24"
               style={{ textShadow: "1.5px 1.5px 0px #000" }}
             >
               {String(award.id).padStart(2, '0')}. {award.title}

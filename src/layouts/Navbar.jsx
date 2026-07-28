@@ -92,43 +92,26 @@ export default function Navbar() {
 
         {/* Mobile & Tablet Layout (Visible below lg / 1024px) */}
         <div className="flex lg:hidden justify-between items-center w-full py-3 sm:py-3.5 relative">
-          {/* Mobile/Tablet Menu Button */}
+          {/* Mobile/Tablet Menu Button (Stays as a hamburger icon, since the sidebar slides from the left and overlays it) */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-none border-2 border-black bg-white p-2 text-black shadow-[2.5px_2.5px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer z-10"
             aria-label="Toggle Menu"
           >
-            {isOpen ? (
-              <svg
-                className="h-5.5 w-5.5 sm:h-6.5 sm:w-6.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="h-5.5 w-5.5 sm:h-6.5 sm:w-6.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            )}
+            <svg
+              className="h-5.5 w-5.5 sm:h-6.5 sm:w-6.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
           </button>
 
           {/* Center Logo for Mobile & Tablet (Absolute Centered) */}
@@ -156,40 +139,98 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile & Tablet Drawer Menu (Full width block) */}
+        {/* Mobile & Tablet Drawer Menu (Left-sliding Sidebar overlay of height 100vh, z-50) */}
         {isOpen && (
-          <div className="fixed left-0 right-0 bottom-0 top-[80px] sm:top-[88px] flex flex-col gap-6 border-t-2 border-black bg-white p-6 lg:hidden animate-in slide-in-from-top duration-300 z-50 overflow-y-auto">
-            <div className="flex flex-col gap-3 font-semibold text-zinc-950 text-sm sm:text-base">
-              <Link
-                href="/"
-                onClick={() => setIsOpen(false)}
-                className="rounded-none px-3 py-2.5 hover:bg-[#F3819F]/10 hover:text-[#BE2079] transition-all duration-200"
-              >
-                Home
-              </Link>
-              <Link
-                href="/#awards"
-                onClick={() => setIsOpen(false)}
-                className="rounded-none px-3 py-2.5 hover:bg-[#F3819F]/10 hover:text-[#BE2079] transition-all duration-200"
-              >
-                Awards
-              </Link>
-              <Link
-                href="/#categories"
-                onClick={() => setIsOpen(false)}
-                className="rounded-none px-3 py-2.5 hover:bg-[#F3819F]/10 hover:text-[#BE2079] transition-all duration-200"
-              >
-                Categories
-              </Link>
-              <Link
-                href="/about"
-                onClick={() => setIsOpen(false)}
-                className="rounded-none px-3 py-2.5 hover:bg-[#F3819F]/10 hover:text-[#BE2079] transition-all duration-200"
-              >
-                About Us
-              </Link>
+          <>
+            {/* Backdrop overlay */}
+            <div 
+              className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Sidebar panel (Slides in from the Left, overlapping the navbar's menu button) */}
+            <div className="fixed left-0 top-0 bottom-0 h-screen w-[285px] sm:w-[320px] bg-[#FAF7F0] border-r-2 border-black z-50 p-6 flex flex-col justify-between lg:hidden shadow-[4px_0px_0px_rgba(0,0,0,1)] animate-in slide-in-from-left duration-300 overflow-y-auto">
+              
+              {/* Top part: logo + close button */}
+              <div className="flex justify-between items-center pb-4 border-b border-black/10">
+                <div className="relative h-12 w-12 overflow-hidden">
+                  <Image
+                    src="/assets/images/logoChattisgarh.png"
+                    alt="Chhattisgarh Web Logo"
+                    fill
+                    sizes="48px"
+                    className="object-contain"
+                  />
+                </div>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="h-10 w-10 flex items-center justify-center border-2 border-black bg-white rounded-none shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+                  aria-label="Close Menu"
+                >
+                  <svg
+                    className="h-5.5 w-5.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2.5"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="flex flex-col gap-4 font-display font-black text-xl text-zinc-950 uppercase tracking-tight text-left mt-6 flex-1">
+                <Link
+                  href="/"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-none py-2.5 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/#awards"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-none py-2.5 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                >
+                  Awards
+                </Link>
+                <Link
+                  href="/#categories"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-none py-2.5 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                >
+                  Categories
+                </Link>
+                <Link
+                  href="/about"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-none py-2.5 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                >
+                  About Us
+                </Link>
+              </div>
+
+              {/* Bottom: Participate CTA button */}
+              <div className="pt-6 border-t border-black/10 mt-auto">
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    openModal();
+                  }}
+                  className="w-full text-center py-3.5 bg-[#F3819F] text-black font-black uppercase text-sm border-2 border-black rounded-none shadow-[2.5px_2.5px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1.5px] hover:translate-y-[1.5px] active:translate-x-[2.5px] active:translate-y-[2.5px] transition-all cursor-pointer"
+                >
+                  Participate Now
+                </button>
+              </div>
+
             </div>
-          </div>
+          </>
         )}
       </div>
     </nav>
