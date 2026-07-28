@@ -75,7 +75,7 @@ export default function HeroSection() {
     >
       
       {/* 1. Official Banner Container (Full bleed background negating page wrapper paddings, no borders) */}
-      <div className="relative w-screen min-h-screen -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden flex flex-col items-center justify-start lg:justify-center pt-10 sm:pt-12 md:pt-16 lg:pt-14 pb-6 p-6 select-none z-10 bg-white">
+      <div className="relative w-screen min-h-screen -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden flex flex-col items-center justify-start lg:justify-center pt-[70px] sm:pt-[80px] md:pt-[95px] lg:pt-14 pb-6 p-6 select-none z-10 bg-white">
         
         {/* Hero Background Image (Desktop: herosection.png, Mobile/Tablet: mob-hero.png) */}
         <div className="absolute inset-0 -z-10 w-full h-full pointer-events-none select-none hidden lg:block">
@@ -121,7 +121,7 @@ export default function HeroSection() {
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-gradient-to-tr from-[#FFA025]/15 to-[#8A3FFC]/10 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none -z-10"></div>
         
         {/* Top Speech Bubble & Smiley Sun Row (Moved to absolute top) */}
-        <div className="flex items-center gap-2 sm:gap-4 select-none z-10 mb-1.5 md:mb-4">
+        <div className="flex items-center gap-2 sm:gap-4 select-none z-10 mb-2 sm:mb-4">
           <div className="relative hover:rotate-12 transition-transform duration-300 cursor-pointer">
             <svg 
               className="w-8 h-8 sm:w-12 sm:h-12 xl:w-14 xl:h-14 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]" 
@@ -153,27 +153,28 @@ export default function HeroSection() {
         </div>
 
         {/* Hero Main Typography Block constrained to center 42% sky area */}
-        <div className="flex flex-col items-center gap-0.5 md:gap-2 max-w-[95%] lg:max-w-[42%] z-10 px-4 mx-auto">
+        <div className="flex flex-col items-center gap-1 md:gap-2.5 max-w-[95%] lg:max-w-[45%] z-10 px-4 mx-auto">
           
-          {/* Chhattisgarh's Biggest Sub-heading (Force 1 line on mobile) */}
-          <span className="font-sans font-black text-[13px] sm:text-lg md:text-xl lg:text-2xl xl:text-3xl lg:text-4xl text-[#0B1528] uppercase tracking-[0.08em] select-none text-center whitespace-nowrap">
+          {/* Chhattisgarh's Biggest Sub-heading */}
+          <span className="font-sans font-black text-[11px] xs:text-[13px] sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-[#0B1528] uppercase tracking-[0.08em] select-none text-center whitespace-nowrap">
             CHHATTISGARH'S BIGGEST
           </span>
 
-          {/* Creator & Influencer Title (Scaled down on mobile) */}
-          <h1 className="font-display font-black text-[22px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[4.5rem] uppercase tracking-tighter leading-none select-none my-1.5 md:my-2 text-white text-stroke-black-thick text-center block w-full">
-            <span style={{ textShadow: "2.5px 2.5px 0px #000" }}>CREATOR & INFLUENCER</span>
+          {/* Creator & Influencer Title (Responsive wrap on mobile, single line on tablet/desktop) */}
+          <h1 className="font-display font-black text-[24px] xs:text-[28px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[4.5rem] uppercase tracking-tighter leading-[1.1] sm:leading-none select-none my-1.5 md:my-2 text-white text-stroke-black-thick text-center block w-full">
+            <span style={{ textShadow: "2.5px 2.5px 0px #000" }} className="block sm:inline-block">CREATOR & </span>
+            <span style={{ textShadow: "2.5px 2.5px 0px #000" }} className="block sm:inline-block sm:ml-2">INFLUENCER</span>
           </h1>
 
-          {/* Awards 2026 line (Scaled down on mobile) */}
-          <span className="font-display font-black text-xs sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl lg:text-5xl text-[#8A3FFC] uppercase tracking-widest mt-0.5 text-center">
+          {/* Awards 2026 line */}
+          <span className="font-display font-black text-[10px] xs:text-xs sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl text-[#8A3FFC] uppercase tracking-widest mt-0.5 text-center">
             — AWARDS 2026 —
           </span>
 
         </div>
 
         {/* Nomination Status Badge (Scaled down on mobile) */}
-        <div className="rotate-[-2deg] bg-[#F3819F] border border-black px-3 py-1 sm:border-2 sm:px-5 sm:py-2 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] lg:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] inline-block mt-3 sm:mt-4 hover:rotate-[0deg] transition-transform duration-200 cursor-default select-none z-20">
+        <div className="rotate-[-2deg] bg-[#F3819F] border border-black px-3 py-1 sm:border-2 sm:px-5 sm:py-2 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] lg:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] inline-block mt-3.5 sm:mt-4 hover:rotate-[0deg] transition-transform duration-200 cursor-default select-none z-20">
           <span className="font-display font-black text-[10px] sm:text-sm md:text-base xl:text-lg uppercase text-black tracking-wide">
             Nomination Opening Soon
           </span>
