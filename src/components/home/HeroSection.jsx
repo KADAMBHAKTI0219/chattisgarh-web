@@ -75,7 +75,7 @@ export default function HeroSection() {
     >
       
       {/* 1. Official Banner Container (Full bleed background negating page wrapper paddings, no borders) */}
-      <div className="relative w-screen min-h-screen -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden flex flex-col items-center justify-start lg:justify-center pt-[70px] sm:pt-[80px] md:pt-[95px] lg:pt-14 pb-6 p-6 select-none z-10 bg-white">
+      <div className="relative w-screen min-h-screen -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden flex flex-col items-center justify-center pt-24 sm:pt-28 pb-12 sm:pb-16 p-6 select-none z-10 bg-white">
         
         {/* Hero Background Image (Desktop: herosection.png, Mobile/Tablet: mob-hero.png) */}
         <div className="absolute inset-0 -z-10 w-full h-full pointer-events-none select-none hidden lg:block">
@@ -95,7 +95,7 @@ export default function HeroSection() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-100"
+            className="object-cover object-bottom opacity-100"
           />
         </div>
        
@@ -108,7 +108,7 @@ export default function HeroSection() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-100"
+            className="object-cover object-bottom opacity-100"
           />
         </div>
 
