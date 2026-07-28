@@ -9,55 +9,55 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-[#070b19] border-t-4 border-[#6EC192] text-white relative lg:sticky bottom-0 lg:z-10 z-[30]">
+    <footer className="w-full bg-[#FAF7F0] border-t-2 border-black text-zinc-950 relative lg:sticky bottom-0 lg:z-10 z-[30]">
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-6 pt-12 pb-8 md:pt-16 xl:pt-20 xl:pb-12">
         
         {/* Top Section: 4 Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-zinc-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-black/10">
           
           {/* Column 1: Logo & Text */}
           <div className="flex flex-col items-start gap-4">
             <div className="flex items-center gap-3">
               <img 
-                src="/assets/images/logo.jpeg" 
+                src="/assets/images/logoChattisgarh.png" 
                 alt="Digital Chhattisgarh Logo" 
-                className="w-14 h-14 xl:w-16 xl:h-16 rounded-full border-2 border-[#6EC192] bg-white p-0.5 object-cover"
+                className="w-14 h-14 xl:w-16 xl:h-16 object-contain"
                 onError={(e) => {
                   e.target.style.display = 'none';
                 }}
               />
-              <span className="font-display font-black tracking-wide uppercase text-sm xl:text-base">
+              <span className="font-display font-black tracking-wide uppercase text-sm xl:text-base text-zinc-950">
                 Digital Chhattisgarh
               </span>
             </div>
-            <p className="text-zinc-400 text-xs sm:text-sm xl:text-base leading-relaxed max-w-sm">
+            <p className="text-zinc-600 text-xs sm:text-sm xl:text-base leading-relaxed max-w-sm font-semibold">
               Content owned, updated and maintained by the Creator Awards Cell. This platform belongs to Digital Chhattisgarh, Government of Chhattisgarh. Designed, developed and hosted by the State Informatics Centre.
             </p>
           </div>
 
           {/* Column 2: Sections */}
           <div className="flex flex-col gap-4 text-left">
-            <h4 className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#6EC192]">
+            <h4 className="font-display font-black text-xs xl:text-sm uppercase tracking-widest text-[#4585F6]">
               Sections
             </h4>
-            <ul className="flex flex-col gap-2.5 text-zinc-400 font-semibold text-sm xl:text-base">
+            <ul className="flex flex-col gap-2.5 text-zinc-600 font-bold text-sm xl:text-base">
               <li>
-                <a href="#home" className="hover:text-white transition-colors duration-200">
+                <a href="#home" className="hover:text-[#BE2079] transition-colors duration-200">
                   Home
                 </a>
               </li>
               <li>
-                <a href="#about" className="hover:text-white transition-colors duration-200">
+                <a href="#about" className="hover:text-[#BE2079] transition-colors duration-200">
                   About
                 </a>
               </li>
               <li>
-                <a href="#categories" className="hover:text-white transition-colors duration-200">
+                <a href="#categories" className="hover:text-[#BE2079] transition-colors duration-200">
                   Categories
                 </a>
               </li>
               <li>
-                <a href="#awards" className="hover:text-white transition-colors duration-200">
+                <a href="#awards" className="hover:text-[#BE2079] transition-colors duration-200">
                   Awards
                 </a>
               </li>
@@ -66,32 +66,32 @@ export default function Footer() {
 
           {/* Column 3: Pages */}
           <div className="flex flex-col gap-4 text-left">
-            <h4 className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#6EC192]">
+            <h4 className="font-display font-black text-xs xl:text-sm uppercase tracking-widest text-[#4585F6]">
               Pages
             </h4>
-            <ul className="flex flex-col gap-2.5 text-zinc-400 font-semibold text-sm xl:text-base">
+            <ul className="flex flex-col gap-2.5 text-zinc-600 font-bold text-sm xl:text-base">
               <li>
-                <a href="#guidelines" className="hover:text-white transition-colors duration-200">
+                <a href="#guidelines" className="hover:text-[#BE2079] transition-colors duration-200">
                   Guidelines
                 </a>
               </li>
               <li>
-                <a href="#gallery" className="hover:text-white transition-colors duration-200">
+                <a href="#gallery" className="hover:text-[#BE2079] transition-colors duration-200">
                   Gallery
                 </a>
               </li>
               <li>
-                <a href="#contact" className="hover:text-white transition-colors duration-200">
+                <a href="#contact" className="hover:text-[#BE2079] transition-colors duration-200">
                   Contact
                 </a>
               </li>
               <li>
-                <a href="#faq" className="hover:text-white transition-colors duration-200">
+                <a href="#faq" className="hover:text-[#BE2079] transition-colors duration-200">
                   FAQ
                 </a>
               </li>
               <li>
-                <a href="#terms" className="hover:text-white transition-colors duration-200">
+                <a href="#terms" className="hover:text-[#BE2079] transition-colors duration-200">
                   Terms & Conditions
                 </a>
               </li>
@@ -100,7 +100,7 @@ export default function Footer() {
 
           {/* Column 4: Follow Us & Download Apps */}
           <div className="flex flex-col gap-4 text-left">
-            <h4 className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#6EC192]">
+            <h4 className="font-display font-black text-xs xl:text-sm uppercase tracking-widest text-[#4585F6]">
               Follow Us
             </h4>
             
@@ -116,7 +116,7 @@ export default function Footer() {
                 <a 
                   key={i}
                   href={`#${soc.name}`} 
-                  className="bg-zinc-800 hover:bg-[#6EC192] text-white hover:text-zinc-950 flex items-center justify-center w-8 h-8 xl:w-9 xl:h-9 rounded-full transition-all duration-200 shadow-sm"
+                  className="bg-white border-2 border-black text-zinc-950 hover:bg-[#F3819F] flex items-center justify-center w-8 h-8 xl:w-9 xl:h-9 rounded-none transition-all duration-200 hover:-translate-y-0.5"
                   aria-label={`Follow on ${soc.name}`}
                 >
                   <svg className="w-4 h-4 xl:w-4.5 xl:h-4.5 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -130,7 +130,7 @@ export default function Footer() {
             <div className="flex items-center gap-4 mt-2">
               
               {/* White styled QR Code box */}
-              <div className="bg-white p-1.5 rounded-xl w-20 h-20 xl:w-24 xl:h-24 shadow-md flex items-center justify-center shrink-0 border border-zinc-800 select-none">
+              <div className="bg-white p-1.5 rounded-none w-20 h-20 xl:w-24 xl:h-24 flex items-center justify-center shrink-0 border-2 border-black select-none">
                 <svg className="w-16 h-16 xl:w-20 xl:h-20 text-zinc-950" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                   {/* Outer corner squares */}
                   <rect x="5" y="5" width="30" height="30" stroke="currentColor" strokeWidth="6" />
@@ -176,7 +176,7 @@ export default function Footer() {
                     <span className="text-[10px] xl:text-[11px] text-white font-black leading-none">App Store</span>
                   </div>
                 </a>
- 
+
                 {/* Google Play */}
                 <a 
                   href="#playstore" 
@@ -190,17 +190,17 @@ export default function Footer() {
                     <span className="text-[10px] xl:text-[11px] text-white font-black leading-none">Google Play</span>
                   </div>
                 </a>
- 
+
               </div>
- 
+
             </div>
- 
+
           </div>
- 
+
         </div>
- 
+
         {/* Bottom Section: Copyright & Scroll to Top */}
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 mt-4 text-zinc-500 text-xs sm:text-sm xl:text-base font-semibold select-none gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-8 mt-4 text-zinc-600 text-xs sm:text-sm xl:text-base font-bold select-none gap-4">
           <p className="text-center md:text-left leading-relaxed">
             Copyright &copy; Digital Chhattisgarh 2026 &middot; Creator Awards Portal
           </p>
@@ -208,7 +208,7 @@ export default function Footer() {
           {/* Scroll to Top Circle Button */}
           <button 
             onClick={handleScrollTop}
-            className="w-10 h-10 xl:w-11 xl:h-11 bg-[#6EC192] hover:bg-[#5bb081] text-zinc-950 rounded-full flex items-center justify-center transition-all duration-200 hover:-translate-y-1 active:translate-y-0 cursor-pointer shadow-lg group shrink-0"
+            className="w-10 h-10 xl:w-11 xl:h-11 bg-[#F3819F] hover:bg-[#d66f8a] text-zinc-950 border-2 border-black rounded-full flex items-center justify-center transition-all duration-200 hover:-translate-y-1 active:translate-y-0 cursor-pointer group shrink-0"
             aria-label="Scroll to top"
           >
             <svg 
@@ -221,7 +221,7 @@ export default function Footer() {
             </svg>
           </button>
         </div>
- 
+
       </div>
     </footer>
   );
