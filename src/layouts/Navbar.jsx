@@ -187,90 +187,102 @@ export default function Navbar() {
                 onClick={() => setIsOpen(false)}
               />
 
-              {/* Sidebar panel */}
-              <div className="fixed left-0 top-0 bottom-0 h-screen w-[285px] sm:w-[320px] bg-[#FAF7F0] border-r border-zinc-250 z-50 p-6 flex flex-col justify-between lg:hidden shadow-lg animate-in slide-in-from-left duration-300 overflow-y-auto">
-                
-                {/* Top part: logo + close button */}
-                <div className="flex justify-between items-center pb-4 border-b border-black/10">
-                  <div className="relative h-12 w-12 overflow-hidden">
-                    <Image
-                      src="/assets/images/logoChattisgarh.png"
-                      alt="State Awards Logo"
-                      fill
-                      sizes="48px"
-                      className="object-contain"
-                    />
-                  </div>
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className="h-10 w-10 flex items-center justify-center border border-zinc-200 bg-white rounded-full shadow-sm cursor-pointer"
-                    aria-label="Close Menu"
-                  >
-                    <svg
-                      className="h-5.5 w-5.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2.5"
-                        d="M6 18L18 6M6 6l12 12"
+              {/* Sidebar panel — uses dvh (dynamic viewport height) instead of
+                  h-screen so it respects the mobile browser's real visible
+                  area (address bar / bottom toolbar), and the CTA at the
+                  bottom gets safe-area padding so it never sits behind the
+                  browser chrome or the iPhone home-indicator bar. */}
+              <div className="fixed left-0 top-0 bottom-0 h-dvh w-[285px] sm:w-[320px] bg-[#FAF7F0] border-r border-zinc-250 z-50 flex flex-col lg:hidden shadow-lg animate-in slide-in-from-left duration-300">
+
+                {/* Scrollable content area (logo/close + links) */}
+                <div className="flex-1 overflow-y-auto p-6">
+                  {/* Top part: logo + close button */}
+                  <div className="flex justify-between items-center pb-4 border-b border-black/10">
+                    <div className="relative h-12 w-12 overflow-hidden">
+                      <Image
+                        src="/assets/images/logoChattisgarh.png"
+                        alt="State Awards Logo"
+                        fill
+                        sizes="48px"
+                        className="object-contain"
                       />
-                    </svg>
-                  </button>
+                    </div>
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="h-10 w-10 flex items-center justify-center border border-zinc-200 bg-white rounded-full shadow-sm cursor-pointer"
+                      aria-label="Close Menu"
+                    >
+                      <svg
+                        className="h-5.5 w-5.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2.5"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Navigation Links */}
+                  <div className="flex flex-col gap-3 font-display font-black text-lg text-zinc-950 uppercase tracking-tight text-left mt-6">
+                    <Link
+                      href="/about"
+                      onClick={() => setIsOpen(false)}
+                      className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                    >
+                      {t("About Us")}
+                    </Link>
+                    <Link
+                      href="/#who-can-apply"
+                      onClick={() => setIsOpen(false)}
+                      className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                    >
+                      {t("Eligibility")}
+                    </Link>
+                    <Link
+                      href="/#categories"
+                      onClick={() => setIsOpen(false)}
+                      className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                    >
+                      {t("Categories")}
+                    </Link>
+                    <Link
+                      href="/#timeline"
+                      onClick={() => setIsOpen(false)}
+                      className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                    >
+                      {t("Timeline")}
+                    </Link>
+                    <Link
+                      href="/#faq"
+                      onClick={() => setIsOpen(false)}
+                      className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                    >
+                      {t("FAQ")}
+                    </Link>
+                    <Link
+                      href="/#contact"
+                      onClick={() => setIsOpen(false)}
+                      className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
+                    >
+                      {t("Contact")}
+                    </Link>
+                  </div>
                 </div>
 
-                {/* Navigation Links */}
-                <div className="flex flex-col gap-3 font-display font-black text-lg text-zinc-950 uppercase tracking-tight text-left mt-6 flex-1">
-                  <Link
-                    href="/about"
-                    onClick={() => setIsOpen(false)}
-                    className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
-                  >
-                    {t("About Us")}
-                  </Link>
-                  <Link
-                    href="/#who-can-apply"
-                    onClick={() => setIsOpen(false)}
-                    className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
-                  >
-                    {t("Eligibility")}
-                  </Link>
-                  <Link
-                    href="/#categories"
-                    onClick={() => setIsOpen(false)}
-                    className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
-                  >
-                    {t("Categories")}
-                  </Link>
-                  <Link
-                    href="/#timeline"
-                    onClick={() => setIsOpen(false)}
-                    className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
-                  >
-                    {t("Timeline")}
-                  </Link>
-                  <Link
-                    href="/#faq"
-                    onClick={() => setIsOpen(false)}
-                    className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
-                  >
-                    {t("FAQ")}
-                  </Link>
-                  <Link
-                    href="/#contact"
-                    onClick={() => setIsOpen(false)}
-                    className="rounded-none py-2 border-b border-black/5 hover:text-[#BE2079] transition-colors"
-                  >
-                    {t("Contact")}
-                  </Link>
-                </div>
-
-                {/* Bottom: Language switch options & Apply CTA */}
-                <div className="pt-6 border-t border-black/10 mt-auto flex flex-col gap-4">
+                {/* Bottom: Language switch options & Apply CTA — pinned to the
+                    bottom of the flex column, with safe-area-aware padding so
+                    it always stays fully visible above the browser/home-bar. */}
+                <div
+                  className="shrink-0 px-6 pt-4 border-t border-black/10 flex flex-col gap-4 bg-[#FAF7F0]"
+                  style={{ paddingBottom: "max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem))" }}
+                >
                   <div className="flex justify-between items-center bg-white border border-zinc-200 p-2 rounded-xl">
                     <span className="font-sans font-bold text-xs text-zinc-500 uppercase">Language</span>
                     <select
@@ -288,7 +300,7 @@ export default function Navbar() {
                       setIsOpen(false);
                       openModal();
                     }}
-                    className="w-full text-center py-3.5 bg-[#F3819F] text-white font-black uppercase text-white text-sm border border-black/10 rounded-full shadow-sm hover:bg-[#e67593] transition-all cursor-pointer"
+                    className="w-full text-center py-3.5 bg-[#F3819F] text-white font-black uppercase text-sm border border-black/10 rounded-full shadow-sm hover:bg-[#e67593] transition-all cursor-pointer"
                   >
                     {t("Apply Now")}
                   </button>

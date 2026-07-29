@@ -14,9 +14,11 @@ export default function HeroSection() {
     >
 
       {/* 1. Banner Container */}
-      {/* Mobile: full-screen height, image cropped to fill (object-cover) */}
-      {/* Tablet (md) & Desktop (lg+): height follows each image's own aspect ratio, so the FULL image is always visible, nothing cropped */}
-      <div className="relative w-full min-h-screen md:min-h-0 md:h-auto flex items-center justify-center overflow-hidden bg-[#FAF7F0]">
+      {/* No forced viewport height on any breakpoint — the container simply
+          sizes itself to whichever image is rendering, so the FULL image is
+          always visible (object-contain), nothing cropped, and there is no
+          blank gap above/below on mobile or tablet. */}
+      <div className="relative w-full flex items-center justify-center overflow-hidden bg-[#FAF7F0]">
 
         {/* Hero Background Image - Desktop (full image, no cropping) */}
         <img
@@ -25,18 +27,18 @@ export default function HeroSection() {
           className="hidden lg:block relative w-full h-auto object-contain select-none z-0"
         />
 
-        {/* Hero Background Image - Mobile */}
+        {/* Hero Background Image - Mobile (full image, no cropping) */}
         <img
           src="/assets/images/mob-hero.png"
           alt="Hero Background Banner"
-          className="relative w-full h-auto object-contain pointer-events-none select-none z-0 opacity-100 block md:hidden"
+          className="block md:hidden relative w-full h-auto object-contain select-none z-0"
         />
 
         {/* Hero Background Image - Tablet (full image, no cropping) */}
         <img
           src="/assets/images/tablet-hero.png"
           alt="Hero Background Banner"
-          className="relative w-full h-auto object-contain pointer-events-none select-none z-0 opacity-100 hidden md:block lg:hidden"
+          className="hidden md:block lg:hidden relative w-full h-auto object-contain select-none z-0"
         />
 
         {/* Apply Now Button — overlaid at the bottom of the banner image, styled to match the banner's pink pill button */}
