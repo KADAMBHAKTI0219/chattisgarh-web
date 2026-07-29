@@ -1,321 +1,167 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
+import { 
+  FaUserAlt, FaYoutube, FaInstagram, FaGlobe, FaPenFancy, 
+  FaAward, FaCamera, FaMicrophone, FaGamepad, FaTshirt, FaHandsHelping 
+} from "react-icons/fa";
 
 export default function WhoCanApplySection() {
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
+  const { t } = useLanguage();
   const { openModal } = useParticipateModal();
-
-  const [screenType, setScreenType] = useState("desktop");
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.05 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setScreenType("mobile");
-      } else if (window.innerWidth < 1024) {
-        setScreenType("tablet");
-      } else {
-        setScreenType("desktop");
-      }
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
 
   const candidates = [
     {
-      title: "YouTubers",
-      desc: "Vloggers, filmmakers, review channels, and educational hosts.",
-      emoji: "🎥",
+      icon: FaUserAlt,
       color: "#F87C22",
-      bgHover: "hover:bg-[#FFF5ED]"
+      title: "Individual Creators",
+      desc: "Solo content makers publishing native audio, video, or graphics."
     },
     {
-      title: "Instagram",
-      desc: "Reels makers, visual storytellers, and micro-influencers.",
-      emoji: "📸",
-      color: "#F6662E",
-      bgHover: "hover:bg-[#FFF2ED]"
+      icon: FaYoutube,
+      color: "#FF0000",
+      title: "YouTube Storytellers",
+      desc: "Channels generating long-form vlogs, reviews, or educational tutorials."
     },
     {
-      title: "Podcasters",
-      desc: "Audio show hosts, digital voice artists, and interviewers.",
-      emoji: "🎙️",
-      color: "#F34D3D",
-      bgHover: "hover:bg-[#FFF0EF]"
-    },
-    {
-      title: "Speakers",
-      desc: "Keynote motivators, educators, and community guides.",
-      emoji: "🗣️",
-      color: "#E8394F",
-      bgHover: "hover:bg-[#FFF0F1]"
-    },
-    {
-      title: "Educators",
-      desc: "Tutorial channels, academic mentors, and tech guides.",
-      emoji: "🎓",
-      color: "#D62963",
-      bgHover: "hover:bg-[#FFF0F4]"
-    },
-    {
-      title: "Travelers",
-      desc: "Wanderers, explorers, and heritage documenters.",
-      emoji: "✈️",
+      icon: FaInstagram,
       color: "#BE2079",
-      bgHover: "hover:bg-[#FDF2F9]"
+      title: "Instagram Influencers",
+      desc: "Active handles producing reels, cultural fashion, and micro-vlogs."
     },
     {
-      title: "Foodies",
-      desc: "Home chefs, street food critics, and recipe creators.",
-      emoji: "🍳",
-      color: "#A11C8E",
-      bgHover: "hover:bg-[#FCF2FC]"
+      icon: FaGlobe,
+      color: "#4585F6",
+      title: "Bloggers & Web Leaders",
+      desc: "Website developers, tech writers, and independent newsletter writers."
     },
     {
-      title: "Tech Gurus",
-      desc: "Gadget reviewers, coding channels, and tech analysts.",
-      emoji: "💻",
-      color: "#801CA0",
-      bgHover: "hover:bg-[#FAF2FC]"
+      icon: FaPenFancy,
+      color: "#00A3A3",
+      title: "Creative Writers",
+      desc: "Poets, short story writers, and digital scriptwriters writing in local languages."
     },
     {
-      title: "Fashionistas",
-      desc: "Stylists, beauty curators, and handloom advocates.",
-      emoji: "👗",
-      color: "#5D1FAD",
-      bgHover: "hover:bg-[#F7F2FD]"
+      icon: FaAward,
+      color: "#FFA025",
+      title: "Artists & Craftsmen",
+      desc: "Promoters of state heritage, traditional painting, metal, or wood crafts."
     },
     {
-      title: "Lifestyle",
-      desc: "Daily life vloggers, wellness guides, and home designers.",
-      emoji: "🌿",
-      color: "#3623B6",
-      bgHover: "hover:bg-[#F4F2FD]"
+      icon: FaCamera,
+      color: "#9C27B0",
+      title: "Visual Designers",
+      desc: "Digital painters, photographers, UI designers, and animators."
     },
     {
-      title: "Brands",
-      desc: "Start-ups, creator-led agencies, and local businesses.",
-      emoji: "💼",
-      color: "#0B1528",
-      bgHover: "hover:bg-[#F2F4F7]"
+      icon: FaMicrophone,
+      color: "#E91E63",
+      title: "Podcasters & Hosts",
+      desc: "Audio show hosts, interview moderators, and conversational voices."
+    },
+    {
+      icon: FaGamepad,
+      color: "#673AB7",
+      title: "Gaming & Esports Stars",
+      desc: "Gamers streaming active gameplay, tech critics, and developers."
+    },
+    {
+      icon: FaTshirt,
+      color: "#FF9800",
+      title: "Fashion Stylists",
+      desc: "Designers presenting ethnic dress styling, local handloom, and kosa silk."
+    },
+    {
+      icon: FaHandsHelping,
+      color: "#4CAF50",
+      title: "Social Advocates",
+      desc: "Welfare campaigners, environmentalists, and cleanliness advocates."
     }
   ];
 
-  // Clip path styles for standard vertical pointed-top hexagon
-  const hexClipPath = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
-
-  // Reusable Hexagon Card Component
-  const HexCard = ({ cand, idx }) => {
-    return (
-      <div
-        className={`relative w-[165px] sm:w-[180px] md:w-[190px] lg:w-[200px] xl:w-[210px] 2xl:w-[220px] aspect-[1/1.15] bg-black p-[3.5px] shadow-lg transition-all duration-500 transform hover:scale-105 group cursor-pointer shrink-0 ${
-          isVisible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-90 translate-y-12"
-        }`}
-        style={{
-          clipPath: hexClipPath,
-          transitionDelay: isVisible ? `${idx * 40}ms` : "0ms",
-          willChange: "transform, opacity"
-        }}
-      >
-        {/* Inner Hexagon Container */}
-        <div 
-          className={`w-full h-full bg-white flex flex-col items-center justify-center p-3 sm:p-4 text-center transition-colors duration-300 ${cand.bgHover}`}
-          style={{ clipPath: hexClipPath }}
-        >
-          
-          {/* Checkbox Badge Square with white checkmark inside */}
-          <div 
-            className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-none border border-black shrink-0 group-hover:scale-110 transition-transform duration-300 mb-1.5"
-            style={{ backgroundColor: cand.color }}
-          >
-            <svg 
-              className="w-3.5 h-3.5 text-white stroke-[3.5]" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-            </svg>
-          </div>
-
-          {/* Emoji Icon */}
-          <span className="text-2xl sm:text-3xl lg:text-4xl mb-0.5 group-hover:animate-bounce shrink-0 select-none">
-            {cand.emoji}
-          </span>
-
-          {/* Card Title */}
-          <h3 className="font-display font-black text-xs sm:text-sm lg:text-base uppercase text-zinc-950 tracking-tight leading-tight">
-            {cand.title}
-          </h3>
-
-          {/* Card Description */}
-          <p className="text-zinc-500 font-semibold text-[9px] sm:text-[10px] lg:text-xs leading-tight sm:leading-normal mt-1 max-w-[110px] sm:max-w-[150px] line-clamp-3">
-            {cand.desc}
-          </p>
-
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <section 
-      ref={sectionRef}
+    <section
       id="who-can-apply"
-      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 overflow-visible text-center"
+      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-visible"
     >
-      
-      {/* Centered Heading and Description */}
-      <div className="flex flex-col items-center justify-center gap-3 max-w-3xl mx-auto mb-12 md:mb-16">
-        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#F87C22]">
-          Eligibility Guidelines
+      {/* Centered Heading */}
+      <div className="flex flex-col items-center justify-center gap-3 max-w-3xl mx-auto mb-16">
+        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#BE2079]">
+          {t("Who Can Apply")}
         </span>
-        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tighter leading-none text-zinc-950">
-          WHO CAN <span className="text-[#BE2079]">APPLY?</span>
+        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tight leading-none text-zinc-950">
+          {t("ELIGIBLE")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE2079] to-[#E64C8A]">{t("CANDIDATES")}</span>
         </h2>
-        {/* Centered gradient line */}
-        <div className="h-[5px] w-44 bg-gradient-to-r from-[#F87C22] via-[#BE2079] to-[#3623B6] rounded-none mt-1"></div>
-        <p className="text-zinc-600 font-semibold text-sm sm:text-base leading-relaxed mt-3">
-          The Chhattisgarh State Creator Awards celebrates all digital creators, influencers, and brands. If you create original content on eligible social platforms, you are invited to nominate yourself or others.
-        </p>
+        <div className="h-[4px] w-44 bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full mt-1"></div>
       </div>
 
-      {/* Dynamic Responsive Honeycomb Grid */}
-      <div className="flex flex-col items-center justify-center overflow-visible z-40">
-        {screenType === "desktop" && (
-          <div className="flex flex-col items-center justify-center overflow-visible">
-            {/* Row 1 (4 Hexagons) */}
-            <div className="flex justify-center gap-4 lg:gap-5 xl:gap-6 overflow-visible w-full">
-              {candidates.slice(0, 4).map((cand, idx) => (
-                <HexCard key={idx} cand={cand} idx={idx} />
-              ))}
-            </div>
-            {/* Row 2 (5 Hexagons) */}
-            <div className="flex justify-center gap-4 lg:gap-5 xl:gap-6 overflow-visible w-full -mt-[46px] lg:-mt-[50px] xl:-mt-[56px] 2xl:-mt-[60px]">
-              {candidates.slice(4, 9).map((cand, idx) => (
-                <HexCard key={idx + 4} cand={cand} idx={idx + 4} />
-              ))}
-            </div>
-            {/* Row 3 (2 Hexagons) */}
-            <div className="flex justify-center gap-4 lg:gap-5 xl:gap-6 overflow-visible w-full -mt-[46px] lg:-mt-[50px] xl:-mt-[56px] 2xl:-mt-[60px]">
-              {candidates.slice(9, 11).map((cand, idx) => (
-                <HexCard key={idx + 9} cand={cand} idx={idx + 9} />
-              ))}
-            </div>
-          </div>
-        )}
+      {/* Grid of 11 card categories (Modern rounded corners, soft shadows) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+        {candidates.map((cand, idx) => {
+          const IconComponent = cand.icon;
+          const isHovered = hoveredIdx === idx;
+          const numString = String(idx + 1).padStart(2, "0");
+          
+          return (
+            <div
+              key={idx}
+              onMouseEnter={() => setHoveredIdx(idx)}
+              onMouseLeave={() => setHoveredIdx(null)}
+              className="reveal-child relative w-full rounded-2xl border p-6 pl-8 flex flex-col items-start text-left shadow-sm transition-all duration-300 group cursor-pointer overflow-hidden"
+              style={{ 
+                borderColor: isHovered ? cand.color : '#e4e4e7',
+                backgroundColor: isHovered ? `${cand.color}03` : '#ffffff',
+                boxShadow: isHovered ? `0 10px 25px -10px ${cand.color}25` : 'none'
+              }}
+            >
+              {/* Left-side dynamic accent stripe (pill shape that grows to full height on hover) */}
+              <div 
+                className={`absolute left-0 w-1.5 transition-all duration-300 ${
+                  isHovered ? "h-full top-0 translate-y-0 rounded-r-none" : "h-8 top-1/2 -translate-y-1/2 rounded-r-full"
+                }`} 
+                style={{ backgroundColor: cand.color }} 
+              />
 
-        {screenType === "tablet" && (
-          <div className="flex flex-col items-center justify-center overflow-visible">
-            {/* Row 1 (3 Hexagons) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full">
-              {candidates.slice(0, 3).map((cand, idx) => (
-                <HexCard key={idx} cand={cand} idx={idx} />
-              ))}
-            </div>
-            {/* Row 2 (2 Hexagons) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full -mt-[46px]">
-              {candidates.slice(3, 5).map((cand, idx) => (
-                <HexCard key={idx + 3} cand={cand} idx={idx + 3} />
-              ))}
-            </div>
-            {/* Row 3 (3 Hexagons) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full -mt-[46px]">
-              {candidates.slice(5, 8).map((cand, idx) => (
-                <HexCard key={idx + 5} cand={cand} idx={idx + 5} />
-              ))}
-            </div>
-            {/* Row 4 (2 Hexagons) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full -mt-[46px]">
-              {candidates.slice(8, 10).map((cand, idx) => (
-                <HexCard key={idx + 8} cand={cand} idx={idx + 8} />
-              ))}
-            </div>
-            {/* Row 5 (1 Hexagon) */}
-            <div className="flex justify-center gap-4 overflow-visible w-full -mt-[46px]">
-              {candidates.slice(10, 11).map((cand, idx) => (
-                <HexCard key={idx + 10} cand={cand} idx={idx + 10} />
-              ))}
-            </div>
-          </div>
-        )}
+              {/* Dynamic background card number */}
+              <span 
+                className="font-sans font-black text-7xl select-none pointer-events-none absolute right-3 bottom-1 transition-all duration-300"
+                style={{ 
+                  color: isHovered ? `${cand.color}15` : '#f4f4f5',
+                }}
+              >
+                {numString}
+              </span>
 
-        {screenType === "mobile" && (
-          <div className="flex flex-col items-center justify-center overflow-visible">
-            {/* Row 1 (2 Hexagons) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full">
-              {candidates.slice(0, 2).map((cand, idx) => (
-                <HexCard key={idx} cand={cand} idx={idx} />
-              ))}
+              {/* Dynamic top right color dot */}
+              <div className="absolute top-4 right-4 w-2 h-2 rounded-full opacity-40" style={{ backgroundColor: cand.color }} />
+
+              {/* Icon Badge with soft tinted background */}
+              <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300"
+                style={{ 
+                  backgroundColor: isHovered ? `${cand.color}1F` : `${cand.color}0F`, 
+                  color: cand.color,
+                  transform: isHovered ? 'scale(1.1) rotate(3deg)' : 'scale(1) rotate(0deg)'
+                }}
+              >
+                <IconComponent className="w-5 h-5" />
+              </div>
+
+              {/* Title & Desc */}
+              <h3 className="font-display font-black text-sm sm:text-base uppercase text-zinc-950 tracking-tight mb-2 leading-tight relative z-10">
+                {t(cand.title)}
+              </h3>
+              <p className="text-zinc-550 font-bold text-xs sm:text-sm leading-relaxed relative z-10 max-w-[90%]">
+                {t(cand.desc)}
+              </p>
             </div>
-            {/* Row 2 (1 Hexagon) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-[38px]">
-              {candidates.slice(2, 3).map((cand, idx) => (
-                <HexCard key={idx + 2} cand={cand} idx={idx + 2} />
-              ))}
-            </div>
-            {/* Row 3 (2 Hexagons) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-[38px]">
-              {candidates.slice(3, 5).map((cand, idx) => (
-                <HexCard key={idx + 3} cand={cand} idx={idx + 3} />
-              ))}
-            </div>
-            {/* Row 4 (1 Hexagon) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-[38px]">
-              {candidates.slice(5, 6).map((cand, idx) => (
-                <HexCard key={idx + 5} cand={cand} idx={idx + 5} />
-              ))}
-            </div>
-            {/* Row 5 (2 Hexagons) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-[38px]">
-              {candidates.slice(6, 8).map((cand, idx) => (
-                <HexCard key={idx + 6} cand={cand} idx={idx + 6} />
-              ))}
-            </div>
-            {/* Row 6 (1 Hexagon) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-[38px]">
-              {candidates.slice(8, 9).map((cand, idx) => (
-                <HexCard key={idx + 8} cand={cand} idx={idx + 8} />
-              ))}
-            </div>
-            {/* Row 7 (2 Hexagons) */}
-            <div className="flex justify-center gap-3 overflow-visible w-full -mt-[38px]">
-              {candidates.slice(9, 11).map((cand, idx) => (
-                <HexCard key={idx + 9} cand={cand} idx={idx + 9} />
-              ))}
-            </div>
-          </div>
-        )}
+          );
+        })}
       </div>
 
-      {/* Centered Participate Now CTA Button (Outside of the hexagons grid) */}
-      <div className="flex justify-center mt-12 md:mt-16 z-40 relative">
-        <button
-          onClick={openModal}
-          className="rounded-none border-2 border-black bg-[#F87C22] px-8 py-3.5 sm:px-10 sm:py-4 font-black text-white text-sm sm:text-base md:text-lg tracking-wider shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[1.5px] hover:translate-y-[1.5px] active:translate-x-[2.5px] active:translate-y-[2.5px] active:shadow-none transition-all cursor-pointer flex items-center justify-center gap-2 select-none uppercase"
-        >
-          <span>✨</span> PARTICIPATE NOW
-        </button>
-      </div>
 
     </section>
   );

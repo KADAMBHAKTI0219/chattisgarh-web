@@ -1,44 +1,92 @@
 "use client";
 
+import { useEffect } from "react";
 import HeroSection from "@/components/home/HeroSection";
 import ConferenceShiftSection from "@/components/home/ConferenceShiftSection";
-import WhoCanApplySection from "@/components/home/WhoCanApplySection";
+import LeadershipSection from "@/components/home/LeadershipSection";
 import WhyParticipateSection from "@/components/home/WhyParticipateSection";
-import HowToApplySection from "@/components/home/HowToApplySection";
 import AwardCategoriesSection from "@/components/home/AwardCategoriesSection";
+import WhoCanApplySection from "@/components/home/WhoCanApplySection";
+import HowToApplySection from "@/components/home/HowToApplySection";
+import FAQSection from "@/components/home/FAQSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TermsSection from "@/components/home/TermsSection";
 import CrowdSection from "@/components/home/CrowdSection";
 
 export default function Home() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    const elements = document.querySelectorAll(".reveal-on-scroll");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-4 md:px-8 lg:px-12 pt-0 pb-0 flex flex-col gap-0 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-0 pt-0 pb-0 flex flex-col gap-0 relative overflow-x-hidden">
       
-      {/* Refactored Hero Section (includes top title, cards shuffle) */}
-      <HeroSection />
+      {/* 1. Hero Section (includes titles, statistics, cards shuffle) */}
+      <div className="reveal-on-scroll">
+        <HeroSection />
+      </div>
 
-      {/* 3D rotating inner-cylinder carousel section */}
-      <ConferenceShiftSection />
+      {/* 2. Flat horizontal scrolling image marquee band */}
+      <div className="reveal-on-scroll">
+        <ConferenceShiftSection />
+      </div>
 
-      {/* Interactive checklist of who can apply for the awards */}
-      <WhoCanApplySection />
+      {/* 3. Leadership Message Section (Official PM & CM quotes block) */}
+      <div className="reveal-on-scroll">
+        <LeadershipSection />
+      </div>
 
-      {/* Tilted cards deck showing key benefits of participating */}
-      <WhyParticipateSection />
+      {/* 4. Benefits Section (Why Participate?) */}
+      <div className="reveal-on-scroll">
+        <WhyParticipateSection />
+      </div>
 
-      {/* Step-by-step timeline of how to nominate/apply */}
-      <HowToApplySection />
+      {/* 5. Award Categories Section (Search and filter cards) */}
+      <div className="reveal-on-scroll">
+        <AwardCategoriesSection />
+      </div>
 
-      {/* Award Categories Section (Horizontal banners with alternating click-reveal) */}
-      <AwardCategoriesSection />
+      {/* 6. Eligibility Section (Who Can Apply?) */}
+      <div className="reveal-on-scroll">
+        <WhoCanApplySection />
+      </div>
 
-      {/* Testimonials Section (Interactive stacked deck / marquee) */}
-      <TestimonialsSection />
+      {/* 7. Timeline Section (How To Apply Step-by-Step) */}
+      <div className="reveal-on-scroll">
+        <HowToApplySection />
+      </div>
 
-      {/* Terms & Conditions Section */}
-      <TermsSection />
+      {/* 8. FAQ Section Accordions */}
+      <div className="reveal-on-scroll">
+        <FAQSection />
+      </div>
 
-      {/* Walking Crowd Animation */}
+      {/* 9. Testimonials Section (Verified Creators Horizontal Marquee) */}
+      <div className="reveal-on-scroll">
+        <TestimonialsSection />
+      </div>
+
+      {/* 10. Terms & Evaluation Guidelines Section */}
+      <div className="reveal-on-scroll">
+        <TermsSection />
+      </div>
+
+      {/* 11. Walking Crowd Silhouette Animation */}
       <CrowdSection />
 
     </div>

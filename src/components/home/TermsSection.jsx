@@ -1,94 +1,155 @@
 "use client";
 
+import { useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function TermsSection() {
+  const { t } = useLanguage();
+
   const sections = [
     {
       id: "eligibility",
       title: "1. Eligibility Criteria",
       items: [
-        { label: "Age Requirement", text: "Participants must be 18 years of age or above at the time of nomination." },
-        { label: "Nationality and Residency", text: "24 categories are open exclusively to individuals of Indian nationality. One category is dedicated to international digital creators." },
-        { label: "Platforms", text: "Content must be published on one or more of the following digital platforms: Instagram, YouTube, Twitter, LinkedIn, Facebook, ShareChat, Koo, Roposo, or Moj." },
-        { label: "Language", text: "Content submission can be in English or any other Indian language." },
-        { label: "Nomination Limits", text: "Creators can self-nominate in a maximum of three categories. Those nominating others can nominate in all 25 categories." }
-      ]
-    },
-    {
-      id: "nomination",
-      title: "2. Nomination Process",
-      items: [
-        { label: "Self-Nomination", text: "Creators are allowed to nominate themselves. The nomination must include links to the content on the eligible platforms, a brief description of the content's impact, and any other supporting reasons as required by the nomination form." },
-        { label: "Nomination Limits", text: "Creators can self-nominate in a maximum of three categories. Those nominating others can propose nominations across all 25 categories." },
-        { label: "Submission Deadline", text: "All nominations must be submitted by the deadline specified in the schedule. Late submissions will not be considered." },
-        { label: "Follower Count Consideration", text: "The number of followers or subscribers will be considered as of 31st July 2026." }
+        { label: "Age Limit", text: "Participants must be 18 years of age or above at the time of nomination." },
+        { label: "Nationality & Residency", text: "Open to individuals of Indian nationality who publish digital content." },
+        { label: "Eligible Platforms", text: "Content must be published on active profiles on Instagram, YouTube, Facebook, or LinkedIn." },
+        { label: "Nomination Limits", text: "Creators can self-nominate in a maximum of three categories." }
       ]
     },
     {
       id: "evaluation",
-      title: "3. Evaluation and Selection Process",
+      title: "2. Evaluation Criteria",
       items: [
-        { label: "Criteria", text: "Nominations will be evaluated based on creativity, impact, reach, innovation, sustainability, and alignment with the goals of the Award." },
-        { label: "Jury Review", text: "A panel of domain experts from government, academia, media, and civil society will review final nominations. The Jury's decision will be final and binding." },
-        { label: "Selection", text: "Winners for each category will be decided based on a combination of the Jury's evaluation and public votes." }
+        { label: "Content Quality (40%)", text: "Originality, presentation, scripting quality, and storytelling value." },
+        { label: "Engagement (30%)", text: "Audience reach, organic interactions, comments sentiment, and likes-to-followers ratio." },
+        { label: "Social Impact (20%)", text: "Value created for local communities, civic education, and state cultural promotion." },
+        { label: "Technical Merit (10%)", text: "Audio/video production quality, editing flow, and digital innovations." }
       ]
     },
     {
-      id: "categories",
-      title: "4. Award Categories and Prizes",
+      id: "jury",
+      title: "3. Jury & Selection Board",
       items: [
-        { label: "Awards Scope", text: "Awards will be presented across 25 distinct categories. In 24 of these categories, a single winner will be selected for each. However, the International Creator Award category would have three winners." }
+        { label: "Board Composition", text: "The selection panel consists of senior administrative secretaries, industry veterans, media heads, and independent digital tech leaders." },
+        { label: "Authority", text: "The Jury's decision is final and binding. No representations against selection choices will be entertained." },
+        { label: "Public Voting", text: "For select public categories, public votes carry a 30% weightage, combined with 70% Jury evaluation weightage." }
       ]
     },
     {
       id: "compliance",
-      title: "5. Code of Conduct and Compliance",
+      title: "4. Code of Conduct & Compliance",
       items: [
-        { label: "Conduct Standards", text: "All participants are expected to maintain the highest standards of professionalism, integrity, and ethical conduct throughout the nomination and evaluation process." },
-        { label: "Content Compliance", text: "Content must comply with applicable laws, community guidelines, and must not infringe upon the intellectual property of third parties. Non-compliance will lead to immediate disqualification." },
-        { label: "Final Decision", text: "The decisions of the Jury regarding eligibility, evaluation, and selection of winners shall be final, binding, and conclusive." }
+        { label: "Ethical Standards", text: "Content must not contain hate speech, defamatory language, copyright violations, or platform guideline infringements." },
+        { label: "Verification", text: "All stats and analytics submitted in the nomination form will be cross-checked by the screening committee." },
+        { label: "Disqualification", text: "Providing falsified analytics, fake engagement, or bot-driven likes will lead to immediate disqualification." }
       ]
     }
   ];
 
+  // Track which section id is open. First one open by default.
+  const [openId, setOpenId] = useState(sections[0].id);
+
+  const toggle = (id) => {
+    setOpenId((prev) => (prev === id ? null : id));
+  };
+
+  const handleDownload = (e) => {
+    e.preventDefault();
+    alert(t("Guidelines PDF is downloading..."));
+  };
+
   return (
-    <section id="terms" className="border-2 border-black bg-white p-6 sm:p-10 md:p-12 xl:p-16 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10 w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto flex flex-col gap-8 scroll-mt-24 my-8 md:my-16 lg:my-20 xl:my-28">
-      
-      {/* Title */}
-      <div className="flex flex-col gap-2">
-        <h2 className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase tracking-tight">
-          Terms & Conditions
-        </h2>
-        <div className="h-2 w-32 xl:w-44 bg-[#4585F6] rounded-none"></div>
+    <section 
+      id="terms" 
+      className="border border-zinc-200 bg-white p-6 sm:p-10 md:p-12 xl:p-16 rounded-2xl shadow-sm z-10 w-[95%] max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto flex flex-col gap-8 scroll-mt-24 my-8 md:my-16 lg:my-20 xl:my-28 text-left"
+    >
+
+      {/* Header and Download Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-150 pb-6">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-3xl md:text-5xl xl:text-6xl font-display font-black uppercase tracking-tight text-zinc-950">
+            {t("GUIDELINES &")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE2079] to-[#E64C8A]">{t("TRUST")}</span>
+          </h2>
+          <div className="h-[4px] bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full w-24"></div>
+        </div>
+
+        {/* Downloadable Official Guidelines Button */}
+        <a
+          href="/assets/guidelines.pdf"
+          download="guidelines.pdf"
+          className="self-start sm:self-center rounded-full border border-zinc-200 bg-[#4585F6] hover:bg-[#3474e5] px-6 py-3 font-black text-white text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer select-none inline-flex items-center gap-2"
+        >
+          <span>📁</span> {t("Download Guidelines")} (PDF)
+        </a>
       </div>
 
-      {/* Grid of Sections */}
-      <div className="flex flex-col gap-8 text-left">
-        {sections.map((section) => (
-          <div key={section.id} className="flex flex-col gap-4">
-            
-            {/* Section Header */}
-            <h3 className="font-display font-black text-xl md:text-2xl xl:text-3xl uppercase text-zinc-950 tracking-wide border-b-2 border-black pb-2">
-              {section.title}
-            </h3>
+      {/* Accordion list */}
+      <div className="flex flex-col gap-4 text-left">
+        {sections.map((section) => {
+          const isOpen = openId === section.id;
+          return (
+            <div
+              key={section.id}
+              className="border border-zinc-200 bg-white rounded-2xl shadow-sm hover:shadow-md overflow-hidden transition-shadow duration-300"
+            >
+              {/* Accordion Header / Button */}
+              <button
+                type="button"
+                onClick={() => toggle(section.id)}
+                aria-expanded={isOpen}
+                aria-controls={`panel-${section.id}`}
+                id={`heading-${section.id}`}
+                className="w-full flex items-center justify-between gap-4 text-left px-5 py-4 sm:px-6 sm:py-5 bg-white hover:bg-zinc-50 transition-colors cursor-pointer select-none"
+              >
+                <h3 className="font-display font-black text-base md:text-xl uppercase text-zinc-950 tracking-wide">
+                  {t(section.title)}
+                </h3>
 
-            {/* Bullets List */}
-            <ul className="flex flex-col gap-3 pl-4 md:pl-6 list-none">
-              {section.items.map((item, idx) => (
-                <li key={idx} className="relative text-sm sm:text-base xl:text-lg 2xl:text-xl text-zinc-700 font-medium leading-relaxed pl-6 xl:pl-8">
-                  
-                  {/* Custom Neo-Brutalist bullet square */}
-                  <span className="absolute left-0 top-[7px] xl:top-[10px] w-2.5 h-2.5 xl:w-3 xl:h-3 bg-[#F3819F] border border-black rounded-sm shadow-[1px_1px_0px_rgba(0,0,0,1)]"></span>
-                  
-                  <strong className="text-zinc-950 font-extrabold uppercase text-xs sm:text-sm xl:text-base tracking-wide mr-1">
-                    {item.label}:
-                  </strong>{" "}
-                  {item.text}
-                </li>
-              ))}
-            </ul>
+                {/* Plus / Minus indicator, rounded-md */}
+                <span
+                  className={`shrink-0 flex items-center justify-center w-8 h-8 md:w-9 md:h-9 border border-zinc-200 bg-zinc-50 rounded-lg transition-transform duration-200 ${
+                    isOpen ? "rotate-45" : "rotate-0"
+                  }`}
+                >
+                  <span className="relative w-3.5 h-3.5">
+                    <span className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-zinc-400"></span>
+                    <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-zinc-400"></span>
+                  </span>
+                </span>
+              </button>
 
-          </div>
-        ))}
+              {/* Accordion Panel */}
+              <div
+                id={`panel-${section.id}`}
+                role="region"
+                aria-labelledby={`heading-${section.id}`}
+                className={`grid transition-all duration-300 ease-in-out ${
+                  isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <ul className="flex flex-col gap-3 list-none px-5 pb-5 pt-1 md:px-6 md:pb-6 border-t border-zinc-150">
+                    {section.items.map((item, idx) => (
+                      <li
+                        key={idx}
+                        className="relative text-xs sm:text-sm xl:text-base text-zinc-700 font-bold leading-relaxed pl-6 xl:pl-8 mt-3"
+                      >
+                        {/* Custom dot indicator */}
+                        <span className="absolute left-0 top-[8px] w-2 h-2 bg-[#4585F6] rounded-full"></span>
+
+                        <strong className="text-zinc-950 font-extrabold uppercase text-[10px] sm:text-xs tracking-wide mr-1">
+                          {t(item.label)}:
+                        </strong>{" "}
+                        {t(item.text)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
     </section>

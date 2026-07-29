@@ -64,3 +64,71 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Scroll-reveal Fade & Slide In Animations */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card Shine Reflection Hover Animation */
+@keyframes card-shine {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+.shine-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  z-index: 15;
+}
+
+.group:hover .shine-effect {
+  animation: card-shine 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Cascade reveal for children elements */
+.reveal-on-scroll .reveal-child {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.revealed .reveal-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered delays for children */
+.reveal-on-scroll .reveal-child:nth-child(1) { transition-delay: 50ms; }
+.reveal-on-scroll .reveal-child:nth-child(2) { transition-delay: 120ms; }
+.reveal-on-scroll .reveal-child:nth-child(3) { transition-delay: 190ms; }
+.reveal-on-scroll .reveal-child:nth-child(4) { transition-delay: 260ms; }
+.reveal-on-scroll .reveal-child:nth-child(5) { transition-delay: 330ms; }
+.reveal-on-scroll .reveal-child:nth-child(6) { transition-delay: 400ms; }
+.reveal-on-scroll .reveal-child:nth-child(7) { transition-delay: 470ms; }
+.reveal-on-scroll .reveal-child:nth-child(8) { transition-delay: 540ms; }
+.reveal-on-scroll .reveal-child:nth-child(9) { transition-delay: 610ms; }
+.reveal-on-scroll .reveal-child:nth-child(10) { transition-delay: 680ms; }
+.reveal-on-scroll .reveal-child:nth-child(11) { transition-delay: 750ms; }
+.reveal-on-scroll .reveal-child:nth-child(12) { transition-delay: 820ms; }

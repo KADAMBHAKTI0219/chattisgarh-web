@@ -1,159 +1,328 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
+import { useParticipateModal } from "@/context/ParticipateModalContext";
 
 export default function AwardCategoriesSection() {
-  const [hoveredId, setHoveredId] = useState(null);
+  const { t } = useLanguage();
+  const { openModal } = useParticipateModal();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
-  const awards = [
-    { id: 1, title: "Chhattisgarhiya Sanskriti Ambassador", color: "bg-[#F87C22]", tier: "Tier A", image: "/assets/images/chattisgarh_fall.jpg" },
-    { id: 2, title: "Bastar & Tribal Heritage Creator", color: "bg-[#F3819F]", tier: "Tier A", image: "/assets/images/about-2.jpg" },
-    { id: 3, title: "Emerging Tech & Edu Creator", color: "bg-[#4585F6]", tier: "Tier B", image: "/assets/images/about-1.jpg" },
-    { id: 4, title: "Best Youtube Creator", color: "bg-[#F8D053]", tier: "Tier C", image: "/assets/images/category-1.jpg" },
-    { id: 5, title: "Best Instagram Creator", color: "bg-[#6EC192]", tier: "Tier C", image: "/assets/images/instagramaward.avif" },
-    { id: 6, title: "Best Emerging Creator", color: "bg-[#00A3A3]", tier: "Tier C", image: "/assets/images/emerging awards.jpg" },
-    { id: 7, title: "Best Influencer", color: "bg-[#E85D3B]", tier: "Tier C", image: "/assets/images/creator-award.jpg" },
-    { id: 8, title: "Best Food Creator", color: "bg-[#8A3FFC]", tier: "Tier C", image: "/assets/images/food-award.webp" },
-    { id: 9, title: "Best Travel Creator", color: "bg-[#F87C22]", tier: "Tier C", image: "/assets/images/travellor award.jpg" },
-    { id: 10, title: "Best Fashion Creator", color: "bg-[#F3819F]", tier: "Tier C", image: "/assets/images/fashion-awards.avif" },
-    { id: 11, title: "People's Choice Award", color: "bg-[#4585F6]", tier: "Tier C", image: "/assets/images/proplechoiceawards.jpg" },
-    { id: 12, title: "Swachh Chhattisgarh Advocate", color: "bg-[#F8D053]", tier: "Tier B", image: "/assets/images/about-3.jpg" },
-    { id: 13, title: "Agriculture & Farming Innovator", color: "bg-[#6EC192]", tier: "Tier B", image: "/assets/images/about-5.jpg" },
-    { id: 14, title: "Local Art & Dhokra Craft Promoter", color: "bg-[#00A3A3]", tier: "Tier A", image: "/assets/images/event_awards.jpg" },
-    { id: 15, title: "Folk Music & Song Sensation", color: "bg-[#E85D3B]", tier: "Tier A", image: "/assets/images/event_networking.jpg" },
-    { id: 16, title: "Health & Wellness Coach", color: "bg-[#8A3FFC]", tier: "Tier C", image: "/assets/images/event_presentation.jpg" },
-    { id: 17, title: "Wildlife & Nature Conservationist", color: "bg-[#F87C22]", tier: "Tier B", image: "/assets/images/raipur_landmark.jpg" },
-    { id: 18, title: "Women Empowerment Icon", color: "bg-[#F3819F]", tier: "Tier B", image: "/assets/images/about-2.webp" },
-    { id: 19, title: "Youth Voice & Podcaster", color: "bg-[#4585F6]", tier: "Tier C", image: "/assets/images/about-4.webp" },
-    { id: 20, title: "Sports & Fitness Promoter", color: "bg-[#F8D053]", tier: "Tier C", image: "/assets/images/about-6.webp" },
-    { id: 21, title: "Public Policy & Welfare Explainer", color: "bg-[#6EC192]", tier: "Tier B", image: "/assets/images/chattisgarh_fall.jpg" },
-    { id: 22, title: "Gaming & Esports Star", color: "bg-[#00A3A3]", tier: "Tier C", image: "/assets/images/category-1.jpg" },
-    { id: 23, title: "Regional Cinema & Acting Talent", color: "bg-[#E85D3B]", tier: "Tier A", image: "/assets/images/creator-award.jpg" },
-    { id: 24, title: "Comedy & Clean Humour Artist", color: "bg-[#8A3FFC]", tier: "Tier C", image: "/assets/images/emerging awards.jpg" },
-    { id: 25, title: "Green & Organic Farming Pioneer", color: "bg-[#F87C22]", tier: "Tier B", image: "/assets/images/about-5.jpg" }
+  const groups = {
+    all: { name: "All Categories" },
+    culture: { name: "Culture & Tourism", color: "#F87C22", bg: "bg-[#F87C22]/10", border: "border-[#F87C22]" },
+    tech: { name: "Tech & Media", color: "#4585F6", bg: "bg-[#4585F6]/10", border: "border-[#4585F6]" },
+    impact: { name: "Social Impact & Welfare", color: "#00A3A3", bg: "bg-[#00A3A3]/10", border: "border-[#00A3A3]" }
+  };
+
+  const categories = [
+    { 
+      id: 1, 
+      group: "culture",
+      title: "Sanskriti Ambassador", 
+      image: "/assets/images/raipur_landmark.jpg",
+      description: "Promoting Chhattisgarh's rich heritage, historical temples, and vibrant folk festivals."
+    },
+    { 
+      id: 2, 
+      group: "culture",
+      title: "Tribal Heritage Creator", 
+      image: "/assets/images/chattisgarh_fall.jpg",
+      description: "Showcasing indigenous Bastar arts, folk traditions, and local languages."
+    },
+    { 
+      id: 3, 
+      group: "tech",
+      title: "Emerging Tech & Edu Creator", 
+      image: "/assets/images/emerging awards.jpg",
+      description: "Empowering viewers with coding tutorials, tech reviews, and educational animations."
+    },
+    { 
+      id: 4, 
+      group: "tech",
+      title: "Best YouTube Creator", 
+      image: "/assets/images/creator-award.jpg",
+      description: "Celebrating high-quality storytelling, cinematography, and long-form video excellence."
+    },
+    { 
+      id: 5, 
+      group: "tech",
+      title: "Best Instagram Creator", 
+      image: "/assets/images/instagramaward.avif",
+      description: "Recognizing high-impact vertical reels, daily trends, and cinematic short-form clips."
+    },
+    { 
+      id: 6, 
+      group: "tech",
+      title: "Best Emerging Creator", 
+      image: "/assets/images/about-4.webp",
+      description: "Spotlighting fresh, new channels with high growth potential and creative formats."
+    },
+    { 
+      id: 7, 
+      group: "tech",
+      title: "Best Influencer", 
+      image: "/assets/images/event_networking.jpg",
+      description: "Fostering positive communities through lifestyle hacks, motivation, and healthy advice."
+    },
+    { 
+      id: 8, 
+      group: "culture",
+      title: "Best Food Creator", 
+      image: "/assets/images/food-award.webp",
+      description: "Discovering classic Chhattisgarhi recipes, local ingredients, and street-food gems."
+    },
+    { 
+      id: 9, 
+      group: "culture",
+      title: "Best Travel Creator", 
+      image: "/assets/images/travellor award.jpg",
+      description: "Guiding travelers to hidden waterfalls, forests, and cultural landmarks of Chhattisgarh."
+    },
+    { 
+      id: 10, 
+      group: "culture",
+      title: "Best Fashion Creator", 
+      image: "/assets/images/fashion-awards.avif",
+      description: "Celebrating ethnic textiles, local weaves, modern trends, and modeling portfolios."
+    },
+    { 
+      id: 11, 
+      group: "tech",
+      title: "People's Choice Award", 
+      image: "/assets/images/proplechoiceawards.jpg",
+      description: "The ultimate creator selected entirely by the public through democratic online votes."
+    },
+    { 
+      id: 12, 
+      group: "impact",
+      title: "Swachh State Advocate", 
+      image: "/assets/images/about-1.jpg",
+      description: "Campaigning for public cleanliness, local recycling initiatives, and waste management."
+    },
+    { 
+      id: 13, 
+      group: "impact",
+      title: "Agriculture Innovator", 
+      image: "/assets/images/about-3.jpg",
+      description: "Educating regional farmers with smart tools, organic practices, and soil health tips."
+    },
+    { 
+      id: 14, 
+      group: "culture",
+      title: "Dhokra Art Promoter", 
+      image: "/assets/images/category-1.jpg",
+      description: "Showcasing the ancient non-ferrous metal casting craft and its tribal artisans."
+    },
+    { 
+      id: 15, 
+      group: "culture",
+      title: "Folk Music Sensation", 
+      image: "/assets/images/about-6.webp",
+      description: "Singing, composing, and popularizing traditional regional folk music tracks."
+    },
+    { 
+      id: 16, 
+      group: "impact",
+      title: "Health & Wellness Coach", 
+      image: "/assets/images/about-2.webp",
+      description: "Promoting physical fitness, yoga, mental wellness, and local nutritional diets."
+    },
+    { 
+      id: 17, 
+      group: "impact",
+      title: "Nature Conservationist", 
+      image: "/assets/images/chattisgarh_fall.jpg",
+      description: "Advocating for forestry, wildlife protection, and environment-friendly habits."
+    },
+    { 
+      id: 18, 
+      group: "impact",
+      title: "Women Empowerment Icon", 
+      image: "/assets/images/about-5.jpg",
+      description: "Supporting women entrepreneurs, self-help groups, and gender equality initiatives."
+    },
+    { 
+      id: 19, 
+      group: "tech",
+      title: "Youth Voice & Podcaster", 
+      image: "/assets/images/event_presentation.jpg",
+      description: "Amplifying local stories, deep dialogues, and societal debates via podcast series."
+    },
+    { 
+      id: 20, 
+      group: "tech",
+      title: "Sports & Fitness Promoter", 
+      image: "/assets/images/event_awards.jpg",
+      description: "Highlighting regional games, kabaddi tournaments, and local athletic champions."
+    },
+    { 
+      id: 21, 
+      group: "impact",
+      title: "Welfare Explainer", 
+      image: "/assets/images/about-2.jpg",
+      description: "Breaking down complex government welfare schemes for easy understanding."
+    },
+    { 
+      id: 22, 
+      group: "tech",
+      title: "Gaming & Esports Star", 
+      image: "/assets/images/about-4.webp",
+      description: "Streaming live, promoting gaming content, and showcasing esports talents in CG."
+    },
+    { 
+      id: 23, 
+      group: "culture",
+      title: "Regional Acting Talent", 
+      image: "/assets/images/about-3.jpg",
+      description: "Inspiring audiences with short plays, theater clips, and regional screen performances."
+    },
+    { 
+      id: 24, 
+      group: "impact",
+      title: "Comedy & Clean Humour", 
+      image: "/assets/images/about-6.webp",
+      description: "Bringing joy with clean family humor, everyday observations, and funny skits."
+    },
+    { 
+      id: 25, 
+      group: "impact",
+      title: "Organic Farming Pioneer", 
+      image: "/assets/images/about-1.jpg",
+      description: "Guiding the transition to chemical-free agriculture and sustainable local crops."
+    }
   ];
 
-  // Split categories: 13 on the left, 12 on the right
-  const leftColumnAwards = awards.slice(0, 13);
-  const rightColumnAwards = awards.slice(13, 25);
-
-  const renderListColumn = (items) => (
-    <div className="flex flex-col w-full border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] divide-y-2 divide-black overflow-visible bg-white">
-      {items.map((award) => {
-        const isLeftCard = award.id % 2 !== 0;
-        const isActive = hoveredId === award.id;
-
-        return (
-          <div 
-            key={award.id} 
-            className={`flex items-center justify-center p-4 sm:p-5 relative ${award.color} ${
-              isActive ? "z-30" : "hover:z-20"
-            } transition-all duration-200 cursor-pointer overflow-visible min-h-[75px] sm:min-h-[85px]`}
-            onMouseEnter={() => setHoveredId(award.id)}
-            onMouseLeave={() => setHoveredId(null)}
-            onClick={() => setHoveredId(isActive ? null : award.id)}
-          >
-            {/* Left Image:
-               - Visible on hover/tap/active if isLeftCard is true.
-               - Large sizing on desktop (lg:w-[110px] lg:h-[138px]), proportional sizing on mobile.
-            */}
-            {isLeftCard && (
-              <div className={`absolute left-2 sm:left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 w-14 h-18 sm:w-18 sm:h-22 lg:w-[110px] lg:h-[138px] transition-all duration-300 pointer-events-none z-20 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] lg:shadow-[3.5px_3.5px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none ${
-                isActive 
-                  ? "opacity-100 scale-105 rotate-[-6deg]" 
-                  : "opacity-0 scale-75 rotate-0"
-              }`}>
-                <img 
-                  src={award.image} 
-                  alt={award.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-
-            {/* Right Image:
-               - Visible on hover/tap/active if isLeftCard is false.
-               - Large sizing on desktop (lg:w-[110px] lg:h-[138px]), proportional sizing on mobile.
-            */}
-            {!isLeftCard && (
-              <div className={`absolute right-2 sm:right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 w-14 h-18 sm:w-18 sm:h-22 lg:w-[110px] lg:h-[138px] transition-all duration-300 pointer-events-none z-20 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] lg:shadow-[3.5px_3.5px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none ${
-                isActive 
-                  ? "opacity-100 scale-105 rotate-[6deg]" 
-                  : "opacity-0 scale-75 rotate-0"
-              }`}>
-                <img 
-                  src={award.image} 
-                  alt={award.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-
-            {/* Center-Aligned Number & Title */}
-            <h3 
-              className="font-display font-black text-center text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white uppercase tracking-wide z-10 select-text leading-tight px-12 sm:px-20 lg:px-24"
-              style={{ textShadow: "1.5px 1.5px 0px #000" }}
-            >
-              {String(award.id).padStart(2, '0')}. {award.title}
-            </h3>
-
-            {/* Tier tag inline absolute top-1 right-2 */}
-            <span 
-              className="absolute top-1 sm:top-1.5 right-2.5 text-[8px] font-sans font-black uppercase tracking-wider text-white/50 select-none z-10"
-              style={{ textShadow: "1px 1px 0px rgba(0,0,0,0.5)" }}
-            >
-              {award.tier}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
+  const filteredCategories = categories.filter((cat) => {
+    if (activeTab !== "all" && cat.group !== activeTab) return false;
+    const title = t(cat.title).toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return title.includes(query);
+  });
 
   return (
-    <section 
-      id="categories" 
-      className="w-full max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1500px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 overflow-visible text-center"
+    <section
+      id="categories"
+      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-visible"
     >
-      
       {/* Centered Heading */}
-      <div className="flex flex-col items-center justify-center gap-3 max-w-3xl mx-auto mb-10 md:mb-14">
-        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#4585F6]">
-          Award Categories
+      <div className="flex flex-col items-center justify-center gap-3 max-w-3xl mx-auto mb-10">
+        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#BE2079]">
+          {t("categories")}
         </span>
-        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tighter leading-none text-zinc-950">
-          THE 25 <span className="text-[#F87C22]">CATEGORIES</span>
+        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tight leading-none text-zinc-950">
+          {t("state")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE2079] to-[#E64C8A]">{t("categories")}</span>
         </h2>
-        {/* Centered block line divider */}
-        <div className="h-[5px] w-44 bg-[#4585F6] rounded-none mt-1"></div>
-        <p className="text-zinc-600 font-semibold text-sm sm:text-base leading-relaxed mt-3">
-          Recognizing and celebrating digital excellence, social impact, and regional cultural representation across 25 distinct awards.
-        </p>
+        <div className="h-[4px] w-40 bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full mt-1"></div>
       </div>
 
-      {/* 1. Mobile & Tablet Layout (Single merged list of all 25 categories, no column header labels) */}
-      <div className="block lg:hidden w-full overflow-visible">
-        {renderListColumn(awards)}
-      </div>
+      {/* Group Navigation Tabs & Search Row */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 w-full mb-10">
 
-      {/* 2. Desktop Layout (Two Column Layout: Left Column (1-13) and Right Column (14-25) with headers) */}
-      <div className="hidden lg:grid grid-cols-2 gap-8 lg:gap-10 xl:gap-12 items-start overflow-visible">
-        {/* Left Column (Categories 1 - 13) */}
-        <div className="w-full flex flex-col gap-4">
-          <div className="text-left font-display font-black text-xs sm:text-sm text-zinc-400 uppercase tracking-widest pl-2">
-            Categories 01 - 13
+        {/* Tabs Filter Buttons */}
+        <div className="relative -mx-4 px-4 md:mx-0 md:px-0">
+          <div className="flex md:flex-wrap items-center justify-start md:justify-start gap-2.5 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-hide pb-1 md:pb-0">
+            {Object.keys(groups).map((key) => {
+              const grp = groups[key];
+              const name = t(grp.name);
+              const isActive = activeTab === key;
+
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`shrink-0 snap-start whitespace-nowrap px-5 py-2.5 font-extrabold text-xs sm:text-sm transition-all duration-300 rounded-full border cursor-pointer select-none flex items-center gap-1.5 ${
+                    isActive
+                      ? "bg-[#123E4A] text-white border-[#123E4A] shadow-md scale-[1.03]"
+                      : "bg-white text-zinc-700 border-zinc-200 hover:border-zinc-400 hover:bg-[#123E4A]/5"
+                  }`}
+                >
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#F3819F] animate-pulse"></span>}
+                  {name}
+                </button>
+              );
+            })}
           </div>
-          {renderListColumn(leftColumnAwards)}
+          <div className="md:hidden pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-[#FAF7F0] to-transparent" />
         </div>
 
-        {/* Right Column (Categories 14 - 25) */}
-        <div className="w-full flex flex-col gap-4">
-          <div className="text-left font-display font-black text-xs sm:text-sm text-zinc-400 uppercase tracking-widest pl-2">
-            Categories 14 - 25
-          </div>
-          {renderListColumn(rightColumnAwards)}
+        {/* Search Input Bar */}
+        <div className="relative w-full md:max-w-xs flex items-center border border-zinc-200 focus-within:border-[#F3819F] focus-within:ring-2 focus-within:ring-[#F3819F]/20 bg-white rounded-full shadow-sm shrink-0 transition-all duration-300">
+          <span className="pl-3.5 text-zinc-400">🔍</span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("searchCategories")}
+            className="w-full py-2.5 px-2 text-zinc-850 font-bold text-xs sm:text-sm focus:outline-none placeholder-zinc-400 bg-transparent rounded-full"
+            aria-label={t("searchCategories")}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="pr-3.5 text-zinc-400 hover:text-zinc-700 cursor-pointer font-bold"
+            >
+              ✕
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Modern Background Image Card Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        {filteredCategories.map((cat) => {
+          const grpInfo = groups[cat.group];
+          const groupColor = grpInfo.color;
+          const groupName = grpInfo.name;
+          
+          return (
+            <div
+              key={cat.id}
+              className="reveal-child relative aspect-[4/5] rounded-2xl overflow-hidden group border border-zinc-200/50 hover:border-[#F3819F]/40 shadow-sm hover:shadow-[0_16px_36px_rgba(243,129,159,0.25)] hover:-translate-y-1.5 transition-all duration-500 select-none cursor-pointer flex flex-col justify-end p-5"
+            >
+              {/* Background Cover Image */}
+              <img
+                src={cat.image}
+                alt={t(cat.title)}
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 saturate-[0.6] contrast-[1.1] opacity-90 group-hover:saturate-100 group-hover:scale-105 group-hover:opacity-100 z-0 bg-zinc-800"
+                loading="lazy"
+              />
+
+              {/* Gradient Dark Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/10 group-hover:from-black/95 group-hover:via-black/70 transition-all duration-500 z-10" />
+
+              {/* Glass Reflection Sheen */}
+              <div className="shine-effect" />
+
+              {/* Stream Badge at the top left */}
+              <span 
+                className="absolute top-4 left-4 z-20 text-[9px] font-black uppercase px-2.5 py-1 rounded-full text-white backdrop-blur-md border border-white/20 shadow-sm"
+                style={{ backgroundColor: `${groupColor}c0` }}
+              >
+                {t(groupName)}
+              </span>
+
+              {/* Category Content Overlay at Bottom */}
+              <div className="relative z-20 flex flex-col gap-1 text-left translate-y-3 group-hover:translate-y-0 transition-transform duration-500">
+                <h3 className="font-display font-black text-sm sm:text-base md:text-lg uppercase text-white tracking-tight leading-tight group-hover:text-[#F3819F] transition-colors duration-300">
+                  {t(cat.title)}
+                </h3>
+                <p className="text-zinc-300 font-medium text-xs leading-relaxed mt-2 opacity-0 max-h-0 group-hover:opacity-100 group-hover:max-h-24 transition-all duration-500 overflow-hidden">
+                  {t(cat.description)}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {filteredCategories.length === 0 && (
+        <div className="text-zinc-400 font-bold text-base py-12">
+          No categories match your search.
+        </div>
+      )}
 
     </section>
   );

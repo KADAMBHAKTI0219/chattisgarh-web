@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function ConferenceShiftSection() {
+  const { t } = useLanguage();
   const [viewportWidth, setViewportWidth] = useState(1200);
   const containerRef = useRef(null);
   const requestRef = useRef(null);
@@ -10,22 +12,20 @@ export default function ConferenceShiftSection() {
 
   // Array of 12 local high-quality Chhattisgarh-related images
   const carouselImages = [
-    "/assets/images/chattisgarh_fall.jpg",
-    "/assets/images/about-2.jpg",
-    "/assets/images/raipur_landmark.jpg",
-    "/assets/images/about-6.webp",
-    "/assets/images/instagramaward.avif",
-    "/assets/images/about-1.jpg",
-    "/assets/images/creator-award.jpg",
-    "/assets/images/about-4.webp",
-    "/assets/images/about-3.jpg",
-    "/assets/images/travellor award.jpg",
-    "/assets/images/about-5.jpg",
-    "/assets/images/food-award.webp"
+    "/assets/images/event-1.jpg",
+    "/assets/images/event-2.jpg",
+    "/assets/images/event-3.jpg",
+    "/assets/images/event-4.jpg",
+    "/assets/images/event-5.jpg",
+    "/assets/images/event-6.jpg",
+    "/assets/images/event-7.jpg",
+    "/assets/images/event-8.jpg",
+    "/assets/images/event-9.jpg",
+    "/assets/images/event-10.jpg"
   ];
 
-  // Duplicate cards to form a 24-card row for infinite seamless horizontal looping
-  const cards = Array.from({ length: 24 }, (_, idx) => ({
+  // Duplicate cards to form a 20-card row for infinite seamless horizontal looping
+  const cards = Array.from({ length: 20 }, (_, idx) => ({
     id: idx,
     src: carouselImages[idx % carouselImages.length]
   }));
@@ -56,28 +56,28 @@ export default function ConferenceShiftSection() {
       let maxCurveY = 95;
 
       if (viewportWidth < 640) { // Mobile
-        w = 110;
-        gap = 2;
+        w = 150;
+        gap = 4;
         maxCurveY = 55;
       } else if (viewportWidth >= 640 && viewportWidth < 768) { // Small Tablet
-        w = 135;
-        gap = 4;
+        w = 180;
+        gap = 6;
         maxCurveY = 70;
       } else if (viewportWidth >= 768 && viewportWidth < 1024) { // Med Tablet
-        w = 155;
-        gap = 6;
+        w = 210;
+        gap = 8;
         maxCurveY = 80;
       } else if (viewportWidth >= 1024 && viewportWidth < 1280) { // Laptop lg
-        w = 175;
-        gap = 8;
+        w = 240;
+        gap = 10;
         maxCurveY = 95;
       } else if (viewportWidth >= 1280 && viewportWidth < 1536) { // Desktop xl
-        w = 195;
-        gap = 12;
+        w = 280;
+        gap = 14;
         maxCurveY = 110;
       } else { // Large Desktop 2xl
-        w = 215;
-        gap = 16;
+        w = 320;
+        gap = 18;
         maxCurveY = 125;
       }
 
@@ -103,15 +103,13 @@ export default function ConferenceShiftSection() {
         const dist = (cardCenter - viewportCenter) / maxDist;
         const absDist = Math.abs(dist);
 
-        // Curvature (translateY): sides slide upwards, center stays low (0)
-        const translateY = Math.pow(absDist, 1.8) * -maxCurveY;
-
-        // Scaling: slightly smaller towards the edges
-        const scale = 1 - absDist * 0.15;
+        // Keep them perfectly flat and aligned on a straight line (GIGW/institutional polish)
+        const translateY = 0;
+        const scale = 1;
 
         // Set styles dynamically
         el.style.transform = `translateX(${left}px) translateY(${translateY}px) scale(${scale})`;
-        el.style.zIndex = Math.round((1 - absDist) * 100);
+        el.style.zIndex = 10;
       });
 
       requestRef.current = requestAnimationFrame(animate);
@@ -136,22 +134,22 @@ export default function ConferenceShiftSection() {
       </div>
 
       {/* Header Info Block */}
-      <div className="px-6 text-center z-10 relative max-w-4xl xl:max-w-6xl mx-auto flex flex-col items-center gap-4">
+      <div className="px-6 text-center z-10 relative max-w-4xl xl:max-w-6xl mx-auto flex flex-col items-center gap-3">
         
-        {/* WHAT IS THIS EVENT? Heading (Single line on all screens) */}
-        <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl uppercase tracking-tighter leading-none select-none flex items-center justify-center gap-x-2 sm:gap-x-4 flex-wrap">
-          <span className="text-[#0B1528]">WHAT IS</span>
-          <span className="bg-gradient-to-r from-[#E85D3B] to-[#8A3FFC] bg-clip-text text-transparent">THIS EVENT?</span>
+        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#BE2079]">
+          {t("ABOUT THE AWARDS")}
+        </span>
+        
+        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tight leading-none text-zinc-950">
+          {t("WHAT IS")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE2079] to-[#E64C8A]">{t("THIS EVENT?")}</span>
         </h2>
 
-        {/* Decorative horizontal gradient line */}
-        <div className="h-1.5 w-32 bg-gradient-to-r from-[#E85D3B] via-[#F3819F] to-[#8A3FFC] rounded-full mt-1"></div>
+        {/* Decorative horizontal line */}
+        <div className="h-[4px] w-40 bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full mt-1"></div>
 
-        {/* Description wrapped into exactly 2 lines on desktop/tablet */}
+        {/* Description */}
         <p className="font-sans font-semibold text-zinc-900 text-base sm:text-lg md:text-xl xl:text-2xl leading-relaxed mt-6 max-w-4xl">
-          Chhattisgarh State Creator & Influencer Awards is an initiative to
-          <br className="hidden md:inline" />
-          recognize and celebrate the state's most impactful digital creators across every platform.
+          {t("Chhattisgarh State Creator & Influencer Awards is an initiative to recognize and celebrate the state's most impactful digital creators across every platform.")}
         </p>
 
         {/* Mockup platforms/icons row with dividers */}
@@ -208,15 +206,15 @@ export default function ConferenceShiftSection() {
 
       </div>
 
-      {/* Viewport container for cards curved line */}
+      {/* Viewport container for flat scrolling card row */}
       <div 
         ref={containerRef}
-        className="w-full relative h-[200px] sm:h-[300px] md:h-[340px] lg:h-[380px] xl:h-[420px] 2xl:h-[460px] mt-28 sm:mt-32 xl:mt-40 overflow-visible"
+        className="w-full relative h-[200px] sm:h-[260px] md:h-[300px] lg:h-[330px] xl:h-[360px] 2xl:h-[390px] mt-10 md:mt-12 overflow-visible"
       >
         {cards.map((card) => (
           <div
             key={card.id}
-            className="shift-card absolute top-0 left-0 w-[110px] h-[200px] sm:w-[135px] sm:h-[250px] md:w-[155px] md:h-[290px] lg:w-[175px] lg:h-[320px] xl:w-[195px] xl:h-[350px] 2xl:w-[215px] 2xl:h-[380px] rounded-[18px] sm:rounded-[24px] border-2 border-black bg-white overflow-hidden shadow-[4px_6px_20px_rgba(0,0,0,0.12)] hover:border-[#F3819F] transition-colors duration-300"
+            className="shift-card absolute top-0 left-0 w-[150px] h-[200px] sm:w-[180px] sm:h-[250px] md:w-[210px] md:h-[290px] lg:w-[240px] lg:h-[320px] xl:w-[280px] xl:h-[350px] 2xl:w-[320px] 2xl:h-[380px] rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm hover:shadow-md hover:border-[#BE2079]/50 transition-colors duration-300"
             style={{ willChange: "transform" }}
           >
             <img 
