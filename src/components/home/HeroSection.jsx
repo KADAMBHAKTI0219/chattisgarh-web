@@ -31,21 +31,15 @@ export default function HeroSection() {
         <img
           src="/assets/images/mob-hero.png"
           alt="Hero Background Banner"
-          className="block md:hidden relative w-full h-auto object-contain select-none z-0"
+          className="block lg:hidden relative w-full h-auto object-contain select-none z-0"
         />
 
-        {/* Hero Background Image - Tablet (full image, no cropping) */}
-        <img
-          src="/assets/images/tablet-hero.png"
-          alt="Hero Background Banner"
-          className="hidden md:block lg:hidden relative w-full h-auto object-contain select-none z-0"
-        />
 
         {/* Apply Now Button — overlaid at the bottom of the banner image, styled to match the banner's pink pill button */}
-        <div className="absolute inset-x-0 bottom-1/2 sm:bottom-1/2 md:bottom-2/5 lg:bottom-1/4 xl:bottom-1/5 z-20 flex justify-center px-4">
+        <div className="absolute inset-x-0 bottom-[45%] sm:bottom-[45%] md:bottom-[45%] lg:bottom-[15%] xl:bottom-[15%]  lg:left-[40] z-20 flex justify-center px-2">
           <button
             onClick={openModal}
-            className="rounded-full bg-gradient-to-b from-[#F798B4] to-[#EE5D8C] hover:from-[#F9A5BE] hover:to-[#E64C8A] px-4 py-2 sm:px-4 sm:py-3 font-bold text-white text-xs sm:text-base md:text-lg tracking-widest shadow-[0_8px_20px_rgba(230,76,138,0.45)] hover:shadow-[0_10px_24px_rgba(230,76,138,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer select-none whitespace-nowrap"
+            className="rounded-full bg-gradient-to-b from-[#F798B4] to-[#EE5D8C] hover:from-[#F9A5BE] hover:to-[#E64C8A] px-2 py-2 sm:px-4 sm:py-3 font-bold text-white text-xs sm:text-base md:text-lg tracking-wider shadow-[0_8px_20px_rgba(230,76,138,0.45)] hover:shadow-[0_10px_24px_rgba(230,76,138,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer select-none whitespace-nowrap"
           >
             {t("Participate Now")}
           </button>
