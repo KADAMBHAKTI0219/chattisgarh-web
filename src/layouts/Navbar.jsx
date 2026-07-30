@@ -174,7 +174,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile & Tablet Layout - Responsive & Prominent Logo without Overlap */}
-          <div className="flex lg:hidden justify-between items-center w-full transition-all duration-300 relative py-2 sm:py-3 min-h-[64px] sm:min-h-[76px]">
+          <div className="flex lg:hidden justify-between items-center w-full transition-all duration-300 relative py-2 sm:py-3 min-h-[84px] sm:min-h-[84px]">
 
             {/* Left: Mobile/Tablet Menu Button */}
             <button
@@ -201,7 +201,7 @@ export default function Navbar() {
             {/* Center Logo with Rotating Border (Proportionate & Centered) */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-10 pointer-events-auto">
               <Link href="/" className="block">
-                <LogoWithBorder className="h-16 w-16 sm:h-16 sm:w-16 md:h-20 md:w-20" />
+                <LogoWithBorder className="h-20 w-20 sm:h-20 sm:w-20 md:h-20 md:w-20" />
               </Link>
             </div>
 
