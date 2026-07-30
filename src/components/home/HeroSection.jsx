@@ -8,8 +8,8 @@ export default function HeroSection() {
   const { t } = useLanguage();
 
   return (
-    <section 
-      id="hero-section" 
+    <section
+      id="hero-section"
       className="flex flex-col items-center justify-center text-center w-full overflow-visible"
     >
 
@@ -42,12 +42,12 @@ export default function HeroSection() {
         />
 
         {/* Apply Now Button — overlaid at the bottom of the banner image, styled to match the banner's pink pill button */}
-        <div className="absolute inset-x-0 bottom-1/2 sm:bottom-1/2 md:bottom-1/3 lg:bottom-1/4 xl:bottom-1/5 z-20 flex justify-center px-4">
+        <div className="absolute inset-x-0 bottom-1/2 sm:bottom-1/2 md:bottom-2/5 lg:bottom-1/4 xl:bottom-1/5 z-20 flex justify-center px-4">
           <button
             onClick={openModal}
-            className="rounded-full bg-gradient-to-b from-[#F798B4] to-[#EE5D8C] hover:from-[#F9A5BE] hover:to-[#E64C8A] px-8 py-3.5 sm:px-6 sm:py-2 font-black text-white text-sm sm:text-base md:text-lg tracking-widest shadow-[0_8px_20px_rgba(230,76,138,0.45)] hover:shadow-[0_10px_24px_rgba(230,76,138,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer select-none"
+            className="rounded-full bg-gradient-to-b from-[#F798B4] to-[#EE5D8C] hover:from-[#F9A5BE] hover:to-[#E64C8A] px-4 py-2 sm:px-4 sm:py-3 font-bold text-white text-xs sm:text-base md:text-lg tracking-widest shadow-[0_8px_20px_rgba(230,76,138,0.45)] hover:shadow-[0_10px_24px_rgba(230,76,138,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer select-none whitespace-nowrap"
           >
-            {t("Apply Now")}
+            {t("Participate Now")}
           </button>
         </div>
 

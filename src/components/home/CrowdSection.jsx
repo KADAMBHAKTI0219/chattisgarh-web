@@ -31,7 +31,7 @@ export function CrowdCanvas({ src, rows = 15, cols = 7 }) {
     // TWEEN FACTORIES
     const resetPeep = ({ stage, peep }) => {
       const direction = Math.random() > 0.5 ? 1 : -1;
-      
+
       // Limit vertical offset to keep them walking nicely on the ground baseline
       const offsetY = randomRange(-20, 20);
       const startY = stage.height - peep.height + offsetY;
@@ -91,6 +91,21 @@ export function CrowdCanvas({ src, rows = 15, cols = 7 }) {
 
     const walks = [normalWalk];
 
+    const clothingColors = [
+      { r: 247, g: 152, b: 180 }, // Soft Pink
+      { r: 238, g: 93, b: 140 }, // Bright Pink
+      { r: 248, g: 124, b: 34 }, // Vibrant Orange
+      { r: 69, g: 133, b: 246 }, // Electric Blue
+      { r: 0, g: 163, b: 163 }, // Teal
+      { r: 190, g: 32, b: 121 }, // Magenta
+      { r: 156, g: 39, b: 176 }, // Purple
+      { r: 16, g: 185, b: 129 }, // Emerald
+      { r: 245, g: 158, b: 11 }, // Amber Gold
+      { r: 225, g: 29, b: 72 }, // Crimson Red
+      { r: 139, g: 92, b: 246 }, // Violet
+      { r: 6, g: 182, b: 212 }  // Cyan
+    ];
+
     // FACTORY FUNCTIONS
     const createPeep = ({ image, rect }) => {
       const peep = {
@@ -114,7 +129,7 @@ export function CrowdCanvas({ src, rows = 15, cols = 7 }) {
           off.width = peep.width;
           off.height = peep.height;
           const oCtx = off.getContext("2d");
-          
+
           if (oCtx) {
             oCtx.drawImage(
               peep.image,
@@ -127,6 +142,35 @@ export function CrowdCanvas({ src, rows = 15, cols = 7 }) {
               peep.width,
               peep.height
             );
+
+            // Colorize clothing (from 32% down to 96% height) while leaving face & skin tone natural
+            try {
+              const imgData = oCtx.getImageData(0, 0, peep.width, peep.height);
+              const data = imgData.data;
+              const color = getRandomFromArray(clothingColors);
+              const startY = Math.floor(peep.height * 0.32);
+              const endY = Math.floor(peep.height * 0.96);
+
+              for (let y = startY; y < endY; y++) {
+                for (let x = 0; x < peep.width; x++) {
+                  const idx = (y * peep.width + x) * 4;
+                  const r = data[idx];
+                  const g = data[idx + 1];
+                  const b = data[idx + 2];
+                  const a = data[idx + 3];
+
+                  // Fill white/light clothing area with vibrant color, keeping crisp black outlines
+                  if (a > 50 && r > 180 && g > 180 && b > 180) {
+                    data[idx] = color.r;
+                    data[idx + 1] = color.g;
+                    data[idx + 2] = color.b;
+                  }
+                }
+              }
+              oCtx.putImageData(imgData, 0, 0);
+            } catch (e) {
+              // fallback if canvas security prevents getImageData
+            }
           }
           peep.offscreenCanvas = off;
         },
@@ -228,7 +272,7 @@ export function CrowdCanvas({ src, rows = 15, cols = 7 }) {
       const rect = canvas.getBoundingClientRect();
       stage.width = rect.width;
       stage.height = rect.height;
-      
+
       const ratio = window.devicePixelRatio || 1;
       canvas.width = stage.width * ratio;
       canvas.height = stage.height * ratio;
@@ -273,7 +317,7 @@ export function CrowdCanvas({ src, rows = 15, cols = 7 }) {
 export default function CrowdSection() {
   return (
     <section className="relative w-full h-[450px]  bg-[#FAF7F0] mt-16 md:mt-24 mb-0 overflow-visible z-10 flex items-end">
-      
+
       {/* Title stacked with vertical line matching user image mockup */}
       <div className="absolute inset-x-0 top-0 flex flex-col justify-start items-center pt-4 text-center select-none pointer-events-none">
         <span className="font-sans font-black text-xs xl:text-sm uppercase tracking-[0.25em] text-zinc-400 leading-tight">
@@ -288,10 +332,10 @@ export default function CrowdSection() {
 
       {/* Walking crowd canvas */}
       <div className="absolute bottom-0 left-0 right-0 h-full w-full overflow-visible">
-        <CrowdCanvas 
-          src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/open-peeps-sheet.png" 
-          rows={15} 
-          cols={7} 
+        <CrowdCanvas
+          src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/open-peeps-sheet.png"
+          rows={15}
+          cols={7}
         />
       </div>
 

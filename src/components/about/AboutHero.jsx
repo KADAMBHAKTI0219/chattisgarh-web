@@ -150,7 +150,7 @@ export default function AboutHero() {
         <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#F87C22]">
           {headingSubtitle[language] || headingSubtitle["en"]}
         </span>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase text-[#123E4A] tracking-tight leading-none text-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase text-[#123E4A] tracking-tight leading-none text-center">
           {headingTitle[language] || headingTitle["en"]}
         </h1>
         <p className="text-zinc-650 font-bold text-sm sm:text-base xl:text-lg leading-relaxed mt-4">
@@ -186,7 +186,7 @@ export default function AboutHero() {
               <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest text-[#F8D053] bg-black/40 py-1 px-3.5 rounded-none w-fit mb-2 border border-[#F8D053]/30">
                 {getTag(item)}
               </span>
-              <h3 className="font-display font-black text-lg sm:text-xl md:text-2xl text-white tracking-tight uppercase leading-snug">
+              <h3 className="font-display font-bold text-lg sm:text-xl md:text-2xl text-white tracking-tight uppercase leading-snug">
                 {getTitle(item)}
               </h3>
               <p className="text-zinc-300 font-semibold text-xs mt-1">
@@ -244,7 +244,7 @@ export default function AboutHero() {
               <span className="font-sans font-extrabold text-xs uppercase tracking-widest text-[#F8D053]">
                 {getTag(bentoItems[selectedIdx])}
               </span>
-              <h4 className="font-display font-black text-xl sm:text-2xl uppercase tracking-tight text-white leading-none">
+              <h4 className="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight text-white leading-none">
                 {getTitle(bentoItems[selectedIdx])}
               </h4>
               <p className="text-zinc-450 font-bold text-xs sm:text-sm">

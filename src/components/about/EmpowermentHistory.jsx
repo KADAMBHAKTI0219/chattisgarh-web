@@ -132,7 +132,7 @@ export default function EmpowermentHistory() {
       
       {/* Section Header */}
       <div className="text-center max-w-3xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-[#0B1528] tracking-tight leading-none">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold uppercase text-[#0B1528] tracking-tight leading-none">
           {t.heading}
         </h2>
         <p className="text-zinc-500 font-semibold text-xs sm:text-sm mt-3 uppercase tracking-wider">
@@ -169,17 +169,17 @@ export default function EmpowermentHistory() {
                   className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
-                <span className="absolute top-4 left-4 bg-zinc-950 text-white font-black text-[10px] uppercase tracking-widest border border-zinc-700 px-3 py-1 rounded-none z-10">
+                <span className="absolute top-4 left-4 bg-zinc-950 text-white font-bold text-[10px] uppercase tracking-widest border border-zinc-700 px-3 py-1 rounded-none z-10">
                   {badge}
                 </span>
               </div>
 
               {/* Text Block */}
               <div className="w-full lg:w-[46%] flex flex-col gap-3 text-left">
-                <span className="font-sans font-black text-xs uppercase tracking-widest text-[#F87C22]">
+                <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
                   {subtitle}
                 </span>
-                <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl xl:text-4xl text-zinc-950 uppercase tracking-tight leading-tight">
+                <h3 className="font-display font-bold text-xl sm:text-2xl md:text-3xl xl:text-4xl text-zinc-950 uppercase tracking-tight leading-tight">
                   {title}
                 </h3>
                 <p className="text-zinc-650 font-bold text-sm sm:text-base leading-relaxed mt-2">

@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
-import { 
-  FaUserAlt, FaYoutube, FaInstagram, FaGlobe, FaPenFancy, 
-  FaAward, FaCamera, FaMicrophone, FaGamepad, FaTshirt, FaHandsHelping 
+import {
+  FaUserAlt, FaYoutube, FaInstagram, FaGlobe, FaPenFancy,
+  FaAward, FaCamera, FaMicrophone, FaGamepad, FaTshirt, FaHandsHelping
 } from "react-icons/fa";
 
 export default function WhoCanApplySection() {
@@ -88,14 +88,14 @@ export default function WhoCanApplySection() {
       className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-visible"
     >
       {/* Centered Heading */}
-      <div className="flex flex-col items-center justify-center gap-3 max-w-3xl mx-auto mb-16">
-        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#BE2079]">
+      <div className="flex flex-col items-center text-center gap-2 max-w-2xl xl:max-w-4xl px-6 mx-auto mb-16">
+        <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#F798B4]">
           {t("Who Can Apply")}
         </span>
-        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tight leading-none text-zinc-950">
-          {t("ELIGIBLE")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE2079] to-[#E64C8A]">{t("CANDIDATES")}</span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold uppercase text-zinc-950 leading-tight">
+          {t("ELIGIBLE")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("CANDIDATES")}</span>
         </h2>
-        <div className="h-[4px] w-44 bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full mt-1"></div>
+        <div className="h-[4px] w-32 bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full mt-1"></div>
       </div>
 
       {/* Grid of 11 card categories (Modern rounded corners, soft shadows) */}
@@ -104,31 +104,30 @@ export default function WhoCanApplySection() {
           const IconComponent = cand.icon;
           const isHovered = hoveredIdx === idx;
           const numString = String(idx + 1).padStart(2, "0");
-          
+
           return (
             <div
               key={idx}
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
               className="reveal-child relative w-full rounded-2xl border p-6 pl-8 flex flex-col items-start text-left shadow-sm transition-all duration-300 group cursor-pointer overflow-hidden"
-              style={{ 
+              style={{
                 borderColor: isHovered ? cand.color : '#e4e4e7',
                 backgroundColor: isHovered ? `${cand.color}03` : '#ffffff',
                 boxShadow: isHovered ? `0 10px 25px -10px ${cand.color}25` : 'none'
               }}
             >
               {/* Left-side dynamic accent stripe (pill shape that grows to full height on hover) */}
-              <div 
-                className={`absolute left-0 w-1.5 transition-all duration-300 ${
-                  isHovered ? "h-full top-0 translate-y-0 rounded-r-none" : "h-8 top-1/2 -translate-y-1/2 rounded-r-full"
-                }`} 
-                style={{ backgroundColor: cand.color }} 
+              <div
+                className={`absolute left-0 w-1.5 transition-all duration-300 ${isHovered ? "h-full top-0 translate-y-0 rounded-r-none" : "h-8 top-1/2 -translate-y-1/2 rounded-r-full"
+                  }`}
+                style={{ backgroundColor: cand.color }}
               />
 
               {/* Dynamic background card number */}
-              <span 
-                className="font-sans font-black text-7xl select-none pointer-events-none absolute right-3 bottom-1 transition-all duration-300"
-                style={{ 
+              <span
+                className="font-sans font-bold text-7xl select-none pointer-events-none absolute right-3 bottom-1 transition-all duration-300"
+                style={{
                   color: isHovered ? `${cand.color}15` : '#f4f4f5',
                 }}
               >
@@ -139,10 +138,10 @@ export default function WhoCanApplySection() {
               <div className="absolute top-4 right-4 w-2 h-2 rounded-full opacity-40" style={{ backgroundColor: cand.color }} />
 
               {/* Icon Badge with soft tinted background */}
-              <div 
+              <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300"
-                style={{ 
-                  backgroundColor: isHovered ? `${cand.color}1F` : `${cand.color}0F`, 
+                style={{
+                  backgroundColor: isHovered ? `${cand.color}1F` : `${cand.color}0F`,
                   color: cand.color,
                   transform: isHovered ? 'scale(1.1) rotate(3deg)' : 'scale(1) rotate(0deg)'
                 }}
@@ -151,7 +150,7 @@ export default function WhoCanApplySection() {
               </div>
 
               {/* Title & Desc */}
-              <h3 className="font-display font-black text-sm sm:text-base uppercase text-zinc-950 tracking-tight mb-2 leading-tight relative z-10">
+              <h3 className="font-display font-bold text-sm sm:text-base uppercase text-zinc-950 tracking-tight mb-2 leading-tight relative z-10">
                 {t(cand.title)}
               </h3>
               <p className="text-zinc-550 font-bold text-xs sm:text-sm leading-relaxed relative z-10 max-w-[90%]">

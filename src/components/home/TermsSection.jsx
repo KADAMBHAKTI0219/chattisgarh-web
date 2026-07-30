@@ -60,25 +60,25 @@ export default function TermsSection() {
   };
 
   return (
-    <section 
-      id="terms" 
+    <section
+      id="terms"
       className="border border-zinc-200 bg-white p-6 sm:p-10 md:p-12 xl:p-16 rounded-2xl shadow-sm z-10 w-[95%] max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto flex flex-col gap-8 scroll-mt-24 my-8 md:my-16 lg:my-20 xl:my-28 text-left"
     >
 
       {/* Header and Download Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-150 pb-6">
         <div className="flex flex-col gap-2">
-          <h2 className="text-3xl md:text-5xl xl:text-6xl font-display font-black uppercase tracking-tight text-zinc-950">
-            {t("GUIDELINES &")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE2079] to-[#E64C8A]">{t("TRUST")}</span>
+          <h2 className="text-3xl md:text-5xl xl:text-6xl font-display font-bold uppercase tracking-tight text-zinc-950">
+            {t("GUIDELINES &")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("TRUST")}</span>
           </h2>
-          <div className="h-[4px] bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full w-24"></div>
+          <div className="h-[4px] bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full w-24"></div>
         </div>
 
         {/* Downloadable Official Guidelines Button */}
         <a
           href="/assets/guidelines.pdf"
           download="guidelines.pdf"
-          className="self-start sm:self-center rounded-full border border-zinc-200 bg-[#4585F6] hover:bg-[#3474e5] px-6 py-3 font-black text-white text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer select-none inline-flex items-center gap-2"
+          className="self-start sm:self-center rounded-full border border-zinc-200 bg-[#4585F6] hover:bg-[#3474e5] px-6 py-3 font-bold text-white text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer select-none inline-flex items-center gap-2"
         >
           <span>📁</span> {t("Download Guidelines")} (PDF)
         </a>
@@ -102,15 +102,14 @@ export default function TermsSection() {
                 id={`heading-${section.id}`}
                 className="w-full flex items-center justify-between gap-4 text-left px-5 py-4 sm:px-6 sm:py-5 bg-white hover:bg-zinc-50 transition-colors cursor-pointer select-none"
               >
-                <h3 className="font-display font-black text-base md:text-xl uppercase text-zinc-950 tracking-wide">
+                <h3 className="font-display font-bold text-base md:text-xl uppercase text-zinc-950 tracking-wide">
                   {t(section.title)}
                 </h3>
 
                 {/* Plus / Minus indicator, rounded-md */}
                 <span
-                  className={`shrink-0 flex items-center justify-center w-8 h-8 md:w-9 md:h-9 border border-zinc-200 bg-zinc-50 rounded-lg transition-transform duration-200 ${
-                    isOpen ? "rotate-45" : "rotate-0"
-                  }`}
+                  className={`shrink-0 flex items-center justify-center w-8 h-8 md:w-9 md:h-9 border border-zinc-200 bg-zinc-50 rounded-lg transition-transform duration-200 ${isOpen ? "rotate-45" : "rotate-0"
+                    }`}
                 >
                   <span className="relative w-3.5 h-3.5">
                     <span className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-zinc-400"></span>
@@ -124,9 +123,8 @@ export default function TermsSection() {
                 id={`panel-${section.id}`}
                 role="region"
                 aria-labelledby={`heading-${section.id}`}
-                className={`grid transition-all duration-300 ease-in-out ${
-                  isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                }`}
+                className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
               >
                 <div className="overflow-hidden">
                   <ul className="flex flex-col gap-3 list-none px-5 pb-5 pt-1 md:px-6 md:pb-6 border-t border-zinc-150">

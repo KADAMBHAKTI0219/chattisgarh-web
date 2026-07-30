@@ -45,14 +45,14 @@ export default function HowToApplySection() {
       className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 overflow-visible"
     >
       {/* Centered Title */}
-      <div className="flex flex-col items-center justify-center gap-3 max-w-3xl mx-auto mb-16 text-center">
-        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#BE2079]">
+      <div className="flex flex-col items-center text-center gap-2 max-w-2xl xl:max-w-4xl px-6 mx-auto mb-16">
+        <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#F798B4]">
           {t("Process Timeline")}
         </span>
-        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tight leading-none text-zinc-950">
-          {t("HOW TO")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE2079] to-[#E64C8A]">{t("NOMINATE")}</span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold uppercase text-zinc-950 leading-tight">
+          {t("HOW TO")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("NOMINATE")}</span>
         </h2>
-        <div className="h-[4px] w-36 bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full mt-1"></div>
+        <div className="h-[4px] w-32 bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full mt-1"></div>
       </div>
 
       {/* Steps horizontal/vertical timeline wrapper */}
@@ -68,8 +68,8 @@ export default function HowToApplySection() {
               className="reveal-child flex flex-col items-center gap-4 overflow-visible"
             >
               {/* Step Badge Node */}
-              <div 
-                className="flex items-center justify-center w-11 h-11 rounded-full border border-zinc-200 font-display font-black text-sm sm:text-base shadow-sm z-10 transition-transform duration-300 hover:scale-105 select-none bg-white text-zinc-900"
+              <div
+                className="flex items-center justify-center w-11 h-11 rounded-full border border-zinc-200 font-display font-bold text-sm sm:text-base shadow-sm z-10 transition-transform duration-300 hover:scale-105 select-none bg-white text-zinc-900"
                 style={{ borderTop: `3px solid ${step.color}` }}
               >
                 {idx + 1}
@@ -87,7 +87,7 @@ export default function HowToApplySection() {
                   <span className="font-sans font-bold text-[10px] sm:text-xs uppercase tracking-widest" style={{ color: step.color }}>
                     {t(step.id)}
                   </span>
-                  <h3 className="font-display font-black text-base sm:text-lg text-zinc-950 uppercase tracking-tight leading-tight">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-zinc-950 uppercase tracking-tight leading-tight">
                     {t(step.title)}
                   </h3>
                 </div>
@@ -100,7 +100,7 @@ export default function HowToApplySection() {
         </div>
       </div>
 
-   
+
 
     </section>
   );

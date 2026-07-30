@@ -50,7 +50,7 @@ export default function ArchitectsTrustSection() {
     >
       {/* Title block */}
       <div className="text-center max-w-3xl mx-auto flex flex-col gap-2">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-zinc-950 tracking-tight leading-none">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold uppercase text-zinc-950 tracking-tight leading-none">
           DIGITAL CREATORS AS <span className="text-[#FFA025]">ARCHITECTS OF TRUST</span>
         </h2>
         <p className="text-zinc-500 font-semibold text-xs sm:text-sm mt-1 uppercase tracking-wider">
@@ -68,7 +68,7 @@ export default function ArchitectsTrustSection() {
             <div className="w-12 h-12 rounded-xl border-2 border-black flex items-center justify-center text-2xl bg-slate-50 group-hover:scale-110 transition-transform duration-300">
               {card.icon}
             </div>
-            <h3 className="font-display font-black text-lg sm:text-xl uppercase text-zinc-950">
+            <h3 className="font-display font-bold text-lg sm:text-xl uppercase text-zinc-950">
               {card.title}
             </h3>
             <p className="text-zinc-600 font-semibold text-xs sm:text-sm leading-relaxed">
@@ -81,7 +81,7 @@ export default function ArchitectsTrustSection() {
       {/* Navy block at bottom */}
       <div className="border-4 border-black bg-[#0B1528] p-6 sm:p-8 rounded-3xl shadow-[6px_6px_0px_rgba(0,0,0,1)] text-center text-white flex flex-col justify-center items-center gap-2 mt-4 relative overflow-hidden">
         <div className="absolute top-2 right-2 opacity-5 text-4xl">✨</div>
-        <p className="font-display font-black text-sm sm:text-base md:text-lg uppercase text-[#FFA025] tracking-wider max-w-3xl leading-relaxed">
+        <p className="font-display font-bold text-sm sm:text-base md:text-lg uppercase text-[#FFA025] tracking-wider max-w-3xl leading-relaxed">
           &ldquo;To create a robust, transparent digital ecosystem where local heritage is celebrated, and every creator finds a platform to grow.&rdquo;
         </p>
       </div>

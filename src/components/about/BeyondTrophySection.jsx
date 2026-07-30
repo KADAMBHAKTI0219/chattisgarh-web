@@ -91,7 +91,7 @@ export default function BeyondTrophySection() {
     >
       {/* Title block */}
       <div className="text-center max-w-3xl mx-auto flex flex-col gap-2">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-zinc-950 tracking-tight leading-none">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold uppercase text-zinc-950 tracking-tight leading-none">
           {t.heading}
         </h2>
         <p className="text-zinc-500 font-semibold text-xs sm:text-sm mt-1 uppercase tracking-wider">
@@ -113,7 +113,7 @@ export default function BeyondTrophySection() {
               <div className="w-12 h-12 rounded-none border-2 border-black flex items-center justify-center text-2xl bg-slate-50 group-hover:scale-110 transition-transform duration-300">
                 {card.icon}
               </div>
-              <h3 className="font-display font-black text-lg sm:text-xl uppercase text-zinc-950">
+              <h3 className="font-display font-bold text-lg sm:text-xl uppercase text-zinc-950">
                 {title}
               </h3>
               <p className="text-zinc-650 font-bold text-xs sm:text-sm leading-relaxed">

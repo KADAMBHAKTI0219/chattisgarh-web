@@ -43,7 +43,7 @@ export default function NarrativeSection() {
       </div>
       {/* Right Column: Narrative content */}
       <div className="flex-1 flex flex-col gap-4 text-left max-w-xl">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-zinc-950 tracking-tight leading-none">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold uppercase text-zinc-950 tracking-tight leading-none">
           DRIVING THE <span className="text-[#FFA025]">NATIONAL NARRATIVE</span>
         </h2>
         <p className="text-zinc-600 font-semibold text-sm sm:text-base leading-relaxed mt-2">
@@ -52,10 +52,10 @@ export default function NarrativeSection() {
 
         {/* Navy box insert */}
         <div className="border-3 border-black bg-[#0B1528] p-5 sm:p-6 rounded-2xl shadow-[4px_4px_0px_rgba(0,0,0,1)] text-white flex flex-col gap-2 mt-2">
-          <span className="font-sans font-black text-[10px] uppercase tracking-widest text-[#FFA025]">
+          <span className="font-sans font-bold text-[10px] uppercase tracking-widest text-[#FFA025]">
             In Focus
           </span>
-          <h4 className="font-display font-black text-base sm:text-lg uppercase text-white leading-none">
+          <h4 className="font-display font-bold text-base sm:text-lg uppercase text-white leading-none">
             Spotlighting Rural Talent & Stories
           </h4>
           <p className="text-zinc-300 text-xs sm:text-sm font-semibold leading-relaxed">

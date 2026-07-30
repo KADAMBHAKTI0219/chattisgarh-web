@@ -241,7 +241,7 @@ export default function ParticipateModal() {
               <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
                 Official Nomination Form
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 mt-1 leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold uppercase text-zinc-950 mt-1 leading-tight">
                 Creator Registration
               </h2>
             </div>
@@ -496,7 +496,7 @@ export default function ParticipateModal() {
                     onChange={handleChange}
                     className="w-4 h-4 rounded border-zinc-300 text-[#FFA025] focus:ring-[#FFA025] cursor-pointer"
                   />
-                  <span className="font-sans font-black text-[11px] uppercase tracking-wide text-zinc-700 leading-none">
+                  <span className="font-sans font-bold text-[11px] uppercase tracking-wide text-zinc-700 leading-none">
                     I am an International / NRI Creator
                   </span>
                 </label>
@@ -539,7 +539,7 @@ export default function ParticipateModal() {
               {/* Submit Button Block (Right side) */}
               <button
                 type="submit"
-                className="w-full lg:w-[320px] rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-black text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center flex items-center justify-center gap-2 shrink-0"
+                className="w-full lg:w-[320px] rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center flex items-center justify-center gap-2 shrink-0"
               >
                 <svg className="w-4 h-4 fill-current rotate-45 transform translate-y-[-1px] translate-x-[-1px]" viewBox="0 0 24 24">
                   <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -559,11 +559,11 @@ export default function ParticipateModal() {
               <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
                 Verification Code
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 mt-1 leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold uppercase text-zinc-950 mt-1 leading-tight">
                 Enter OTP
               </h2>
               <p className="text-zinc-500 font-semibold text-xs sm:text-sm mt-2">
-                We sent a 6-digit confirmation code to <span className="text-zinc-950 font-black">+91 {formData.phone}</span>.
+                We sent a 6-digit confirmation code to <span className="text-zinc-950 font-bold">+91 {formData.phone}</span>.
               </p>
             </div>
 
@@ -579,7 +579,7 @@ export default function ParticipateModal() {
                     ref={(el) => (otpInputsRef.current[idx] = el)}
                     onChange={(e) => handleOtpChange(e.target.value, idx)}
                     onKeyDown={(e) => handleOtpKeyDown(e, idx)}
-                    className="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-black rounded-xl border-3 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all"
+                    className="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-xl border-3 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all"
                   />
                 ))}
               </div>
@@ -595,7 +595,7 @@ export default function ParticipateModal() {
                   <button
                     type="button"
                     onClick={handleResendOtp}
-                    className="text-[#FFA025] hover:text-[#d3821a] text-xs sm:text-sm font-black underline cursor-pointer"
+                    className="text-[#FFA025] hover:text-[#d3821a] text-xs sm:text-sm font-bold underline cursor-pointer"
                   >
                     Resend OTP Code
                   </button>
@@ -607,7 +607,7 @@ export default function ParticipateModal() {
             <div className="flex flex-col gap-3 mt-2">
               <button
                 type="submit"
-                className="w-full rounded-xl bg-[#6EC192] hover:bg-[#52a674] py-3.5 text-sm font-black text-white hover:shadow-[0_4px_12px_rgba(110,193,146,0.3)] transition-all cursor-pointer select-none text-center"
+                className="w-full rounded-xl bg-[#6EC192] hover:bg-[#52a674] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(110,193,146,0.3)] transition-all cursor-pointer select-none text-center"
               >
                 Confirm & Register
               </button>
@@ -638,7 +638,7 @@ export default function ParticipateModal() {
               <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
                 Congratulations!
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black uppercase text-zinc-950 mt-1 leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold uppercase text-zinc-950 mt-1 leading-tight">
                 Nomination Registered
               </h2>
               <p className="text-zinc-600 font-semibold text-sm leading-relaxed mt-4 max-w-sm">
@@ -650,22 +650,22 @@ export default function ParticipateModal() {
             <div className="w-full bg-[#F4F7FC]/50 border border-zinc-200 rounded-2xl p-4 sm:p-5 text-left flex flex-col gap-2 mt-2">
               <div className="flex justify-between border-b border-dashed border-zinc-300 pb-2">
                 <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Reg ID</span>
-                <span className="text-xs sm:text-sm font-black text-zinc-900">#CWA-2026-89712</span>
+                <span className="text-xs sm:text-sm font-bold text-zinc-900">#CWA-2026-89712</span>
               </div>
               <div className="flex justify-between mt-1">
                 <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Nominee</span>
-                <span className="text-xs sm:text-sm font-black text-zinc-900 truncate max-w-[200px]">{formData.name}</span>
+                <span className="text-xs sm:text-sm font-bold text-zinc-900 truncate max-w-[200px]">{formData.name}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Category</span>
-                <span className="text-xs sm:text-sm font-black text-[#FFA025] truncate max-w-[200px]">{formData.category}</span>
+                <span className="text-xs sm:text-sm font-bold text-[#FFA025] truncate max-w-[200px]">{formData.category}</span>
               </div>
             </div>
 
             {/* Close window */}
             <button
               onClick={closeModal}
-              className="w-full mt-4 rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-black text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center"
+              className="w-full mt-4 rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center"
             >
               Close Window
             </button>

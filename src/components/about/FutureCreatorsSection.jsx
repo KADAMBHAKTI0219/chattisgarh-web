@@ -56,7 +56,7 @@ export default function FutureCreatorsSection() {
       <div className="border-4 border-black bg-white p-8 sm:p-12 rounded-[32px] shadow-[8px_8px_0px_rgba(0,0,0,1)] text-center flex flex-col items-center gap-4 relative overflow-hidden">
         <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
           Join the Future
-        </span>        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-zinc-950 tracking-tight leading-none">
+        </span>        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold uppercase text-zinc-950 tracking-tight leading-none">
           A FUTURE <span className="text-[#FFA025]">BUILT BY CREATORS</span>
         </h2>
         <p className="text-zinc-600 font-semibold text-sm sm:text-base leading-relaxed max-w-2xl mt-2">
@@ -76,7 +76,7 @@ export default function FutureCreatorsSection() {
               <span className="text-2xl group-hover:scale-125 transition-transform duration-300">
                 {link.icon}
               </span>
-              <h4 className="font-display font-black text-sm uppercase text-zinc-950">
+              <h4 className="font-display font-bold text-sm uppercase text-zinc-950">
                 {link.title}
               </h4>
               <span className="font-sans font-bold text-xs text-zinc-500 hover:text-zinc-900 transition-colors">

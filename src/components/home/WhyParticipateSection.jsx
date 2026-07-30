@@ -35,46 +35,45 @@ export default function WhyParticipateSection() {
       title: "Official Certificate",
       desc: "Every nominated creator receives an official certificate of participation from the State Government, recognizing their digital impact.",
       icon: FaCertificate,
-      color: "#BE2079",
-      gradient: "from-[#BE2079]/10 to-[#BE2079]/0",
-      hoverBg: "hover:bg-[#BE2079]/5"
+      color: "#D97706",
+      gradient: "from-[#D97706]/10 to-[#D97706]/0",
+      hoverBg: "hover:bg-[#D97706]/5"
     }
   ];
 
   return (
-    <section 
+    <section
       id="why-participate"
       className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 overflow-visible"
     >
-      
-      {/* Centered Heading with responsive styling */}
-      <div className="flex flex-col items-center justify-center gap-3 max-w-3xl mx-auto mb-16 text-center">
-        <span className="font-sans font-bold text-xs sm:text-sm uppercase tracking-widest text-[#BE2079]">
+
+      {/* Centered Heading */}
+      <div className="flex flex-col items-center text-center gap-2 max-w-2xl xl:max-w-4xl px-6 mx-auto mb-16">
+        <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#F798B4]">
           {t("Why Participate")}
         </span>
-        <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tight leading-none text-zinc-950">
-          {t("WHY")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE2079] to-[#E64C8A]">{t("PARTICIPATE?")}</span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold uppercase text-zinc-950 leading-tight">
+          {t("WHY")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("PARTICIPATE?")}</span>
         </h2>
-        {/* Underline line */}
-        <div className="h-[4px] w-48 bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full mt-1"></div>
+        <div className="h-[4px] w-32 bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full mt-1"></div>
       </div>
 
       {/* Grid of 4 cards styled in a premium, modern rounded format */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 overflow-visible">
         {benefits.map((benefit, idx) => {
           const IconComponent = benefit.icon;
-          
+
           return (
             <div
               key={idx}
               className="reveal-child relative border border-zinc-200 bg-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-5 sm:gap-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-left overflow-hidden group cursor-pointer"
             >
-              
+
               {/* Backglow gradient overlay on hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${benefit.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
 
               {/* Large Colored Icon Badge */}
-              <div 
+              <div
                 className="w-16 h-16 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300"
                 style={{ backgroundColor: `${benefit.color}15`, color: benefit.color }}
               >
@@ -83,7 +82,7 @@ export default function WhyParticipateSection() {
 
               {/* Title & Description */}
               <div className="flex flex-col gap-2 relative z-10">
-                <h3 className="font-display font-black text-lg sm:text-xl uppercase tracking-tight leading-none transition-colors" style={{ color: benefit.color }}>
+                <h3 className="font-display font-bold text-lg sm:text-xl uppercase tracking-tight leading-none transition-colors" style={{ color: benefit.color }}>
                   {t(benefit.title)}
                 </h3>
                 <p className="text-zinc-700 font-bold text-xs sm:text-sm leading-relaxed">
@@ -99,8 +98,8 @@ export default function WhyParticipateSection() {
       {/* Tagline and bottom CTA */}
       <div className="mt-16 sm:mt-20 flex flex-col items-center gap-6 text-center max-w-4xl mx-auto overflow-hidden">
         <div className="h-[4px] w-full bg-gradient-to-r from-[#BE2079] to-[#E64C8A] rounded-full"></div>
-        
-        <h4 className="font-display font-black text-base sm:text-lg md:text-xl xl:text-2xl uppercase tracking-normal text-zinc-900 leading-snug px-4">
+
+        <h4 className="font-display font-bold text-base sm:text-lg md:text-xl xl:text-2xl uppercase tracking-normal text-zinc-900 leading-snug px-4">
           {t("CELEBRATE YOUR JOURNEY WITH THE BIGGEST CREATOR COMMUNITY OF THE STATE.")}
         </h4>
       </div>

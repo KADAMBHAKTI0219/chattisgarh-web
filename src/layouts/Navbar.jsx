@@ -6,6 +6,62 @@ import Link from "next/link";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { useLanguage } from "@/context/LanguageContext";
 
+function LogoWithBorder({ className = "h-20 w-20" }) {
+  return (
+    <div className={`relative flex items-center justify-center shrink-0 ${className} group`}>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @keyframes rotateBorderClockwise {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .animate-rotate-border {
+          animation: rotateBorderClockwise 20s linear infinite;
+          transform-origin: center center;
+          will-change: transform;
+          filter: drop-shadow(0 0 10px rgba(230, 76, 138, 0.9)) drop-shadow(0 0 20px rgba(190, 32, 121, 0.7));
+        }
+      ` }} />
+
+      {/* Layer 1: Outer Ornamental Circular Border (Rotates 360° Clockwise in 20s, 50% speed on hover with 250ms brand glow) */}
+      <div
+        className="absolute inset-0 pointer-events-none z-10 animate-rotate-border"
+        style={{
+          maskImage: 'radial-gradient(circle, transparent 74%, black 76%)',
+          WebkitMaskImage: 'radial-gradient(circle, transparent 74%, black 76%)',
+        }}
+      >
+        <Image
+          src="/assets/images/logoChattisgarh.png"
+          alt="Rotating Decorative Outer Award Ring"
+          fill
+          priority
+          sizes="(max-width: 768px) 160px, 260px"
+          className="object-contain"
+        />
+      </div>
+
+      {/* Layer 2: Stationary Inner Logo Content (Map, Text, Award Branding remain perfectly static) */}
+      <div
+        className="relative w-full h-full z-20"
+        style={{
+          maskImage: 'radial-gradient(circle, black 75%, transparent 77%)',
+          WebkitMaskImage: 'radial-gradient(circle, black 75%, transparent 77%)',
+        }}
+      >
+        <Image
+          src="/assets/images/logoChattisgarh.png"
+          alt="Static Inner Award Logo Content"
+          fill
+          priority
+          sizes="(max-width: 768px) 160px, 260px"
+          className="object-contain drop-shadow-sm"
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,7 +95,7 @@ export default function Navbar() {
 
   return (
     <>
-      
+
       {/* Top Bar for GIGW compliance and official attributions */}
       <div className="w-full bg-[#123E4A] text-white py-2.5 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 border-b border-zinc-250 text-[9px] sm:text-[10px] md:text-xs select-none">
         <div className="mx-auto w-full max-w-[1440px] flex items-center justify-between">
@@ -71,26 +127,16 @@ export default function Navbar() {
       </div>
 
       {/* Main Navigation Bar */}
-      <nav className={`w-full bg-[#FAF7F0] border-b border-zinc-200 sticky top-0 z-50 transition-all duration-300 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 ${
-        isScrolled ? "shadow-md" : ""
-      }`}>
+      <nav className={`w-full bg-[#FAF7F0] border-b border-zinc-200 sticky top-0 z-50 transition-all duration-300 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 ${isScrolled ? "shadow-md" : ""
+        }`}>
         <div className="mx-auto w-full max-w-[1440px]">
-          
+
           {/* Desktop Layout */}
-          <div className={`hidden lg:grid grid-cols-3 items-center w-full transition-all duration-300 ${isScrolled ? "py-2" : "py-4"}`}>
-            {/* Left Column: Logo */}
+          <div className={`hidden lg:grid grid-cols-3 items-center w-full transition-all duration-300 ${isScrolled ? "py-2" : "py-3.5"}`}>
+            {/* Left Column: Logo with Rotating Border */}
             <div className="flex justify-start items-center">
               <Link href="/" className="flex items-center py-1">
-                <div className="relative lg:h-16 lg:w-16 xl:h-20 xl:w-20 2xl:h-22 2xl:w-22 overflow-hidden">
-                  <Image
-                    src="/assets/images/logoChattisgarh.png"
-                    alt="State Awards Logo"
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 120px, 160px"
-                    className="object-contain"
-                  />
-                </div>
+                <LogoWithBorder className="h-20 w-20 xl:h-24 xl:w-24 2xl:h-26 2xl:w-26" />
               </Link>
             </div>
 
@@ -118,26 +164,26 @@ export default function Navbar() {
 
             {/* Right Column: Dynamic Dropdown Selector & CTA Button */}
             <div className="flex justify-end items-center gap-4">
-        
-              <button 
+              <button
                 onClick={openModal}
-                className="rounded-full border border-black/10 bg-[#F3819F] hover:bg-[#e67593] lg:px-5 lg:py-2 lg:text-xs xl:px-6 xl:py-2.5 xl:text-sm 2xl:px-7 2xl:py-3 2xl:text-base font-black text-white shadow-sm transition-all cursor-pointer"
+                className="rounded-full bg-gradient-to-b from-[#F798B4] to-[#EE5D8C] hover:from-[#F9A5BE] hover:to-[#E64C8A] px-5 py-2.5 font-bold text-white text-xs sm:text-sm md:text-base tracking-widest shadow-[0_6px_18px_rgba(230,76,138,0.45)] hover:shadow-[0_8px_22px_rgba(230,76,138,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer select-none whitespace-nowrap"
               >
-                {t("Apply Now")}
+                {t("Participate Now")}
               </button>
             </div>
           </div>
 
-          {/* Mobile & Tablet Layout */}
-          <div className={`flex lg:hidden justify-between items-center w-full transition-all duration-300 relative py-6`}>
-            {/* Mobile/Tablet Menu Button */}
+          {/* Mobile & Tablet Layout - Responsive & Prominent Logo without Overlap */}
+          <div className="flex lg:hidden justify-between items-center w-full transition-all duration-300 relative py-2 sm:py-3 min-h-[64px] sm:min-h-[76px]">
+
+            {/* Left: Mobile/Tablet Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-zinc-200 bg-white p-2 text-black shadow-sm active:bg-zinc-50 transition-all cursor-pointer z-10"
+              className="flex h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11 items-center justify-center rounded-full border border-zinc-200 bg-white p-1.5 sm:p-2 text-black shadow-sm active:scale-95 transition-all cursor-pointer z-10 shrink-0"
               aria-label="Toggle Menu"
             >
               <svg
-                className="h-5.5 w-5.5 sm:h-6.5 sm:w-6.5"
+                className="h-5 w-5 sm:h-5.5 sm:w-5.5 md:h-6 md:w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -152,28 +198,20 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* Center Logo for Mobile & Tablet (Absolute Centered) */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-10">
-              <Link href="/" className="relative h-20 w-20 sm:h-22 sm:w-22 md:h-24 md:w-24 overflow-hidden block">
-                <Image
-                  src="/assets/images/logoChattisgarh.png"
-                  alt="State Awards Logo"
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 112px, 128px"
-                  className="object-contain"
-                />
+            {/* Center Logo with Rotating Border (Proportionate & Centered) */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-10 pointer-events-auto">
+              <Link href="/" className="block">
+                <LogoWithBorder className="h-16 w-16 sm:h-16 sm:w-16 md:h-20 md:w-20" />
               </Link>
             </div>
 
-            {/* Mini CTA button & selector for Mobile & Tablet */}
-            <div className="z-10 flex items-center gap-2">
-            
-              <button 
+            {/* Right: Participate Now CTA button for Mobile & Tablet (Responsive Sizing) */}
+            <div className="z-10 flex items-center shrink-0">
+              <button
                 onClick={openModal}
-                className="rounded-full border border-black/10 bg-[#F3819F] px-4 py-3 sm:px-5 sm:py-4 text-[10px] sm:text-sm font-black text-white shadow-sm hover:bg-[#e67593] transition-all cursor-pointer"
+                className="rounded-full bg-gradient-to-b from-[#F798B4] to-[#EE5D8C] hover:from-[#F9A5BE] hover:to-[#E64C8A] px-2.5 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 font-bold text-white text-[10px] sm:text-xs md:text-sm tracking-tight sm:tracking-wider shadow-[0_4px_14px_rgba(230,76,138,0.4)] hover:shadow-[0_6px_18px_rgba(230,76,138,0.5)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 cursor-pointer select-none whitespace-nowrap"
               >
-                {t("Apply Now")}
+                {t("Participate Now")}
               </button>
             </div>
           </div>
@@ -182,31 +220,19 @@ export default function Navbar() {
           {isOpen && (
             <>
               {/* Backdrop overlay */}
-              <div 
+              <div
                 className="fixed inset-0 bg-black/50 z-50 lg:hidden"
                 onClick={() => setIsOpen(false)}
               />
 
-              {/* Sidebar panel — uses dvh (dynamic viewport height) instead of
-                  h-screen so it respects the mobile browser's real visible
-                  area (address bar / bottom toolbar), and the CTA at the
-                  bottom gets safe-area padding so it never sits behind the
-                  browser chrome or the iPhone home-indicator bar. */}
+              {/* Sidebar panel */}
               <div className="fixed left-0 top-0 bottom-0 h-dvh w-[285px] sm:w-[320px] bg-[#FAF7F0] border-r border-zinc-250 z-50 flex flex-col lg:hidden shadow-lg animate-in slide-in-from-left duration-300">
 
                 {/* Scrollable content area (logo/close + links) */}
                 <div className="flex-1 overflow-y-auto p-6">
                   {/* Top part: logo + close button */}
                   <div className="flex justify-between items-center pb-4 border-b border-black/10">
-                    <div className="relative h-12 w-12 overflow-hidden">
-                      <Image
-                        src="/assets/images/logoChattisgarh.png"
-                        alt="State Awards Logo"
-                        fill
-                        sizes="48px"
-                        className="object-contain"
-                      />
-                    </div>
+                    <LogoWithBorder className="h-11 w-11" />
                     <button
                       onClick={() => setIsOpen(false)}
                       className="h-10 w-10 flex items-center justify-center border border-zinc-200 bg-white rounded-full shadow-sm cursor-pointer"
@@ -230,7 +256,7 @@ export default function Navbar() {
                   </div>
 
                   {/* Navigation Links */}
-                  <div className="flex flex-col gap-3 font-display font-black text-lg text-zinc-950 uppercase tracking-tight text-left mt-6">
+                  <div className="flex flex-col gap-3 font-display font-bold text-lg text-zinc-950 tracking-tight text-left mt-6">
                     <Link
                       href="/about"
                       onClick={() => setIsOpen(false)}
@@ -295,14 +321,11 @@ export default function Navbar() {
                       <option value="cg">छत्तीसगढ़ी</option>
                     </select>
                   </div>
-                  <button 
-                    onClick={() => {
-                      setIsOpen(false);
-                      openModal();
-                    }}
-                    className="w-full text-center py-3.5 bg-[#F3819F] text-white font-black uppercase text-sm border border-black/10 rounded-full shadow-sm hover:bg-[#e67593] transition-all cursor-pointer"
+                  <button
+                    onClick={openModal}
+                    className="w-full rounded-full bg-gradient-to-b from-[#F798B4] to-[#EE5D8C] hover:from-[#F9A5BE] hover:to-[#E64C8A] px-6 py-3 font-bold text-white text-sm sm:text-base tracking-widest shadow-[0_8px_20px_rgba(230,76,138,0.45)] hover:shadow-[0_10px_24px_rgba(230,76,138,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer select-none text-center"
                   >
-                    {t("Apply Now")}
+                    {t("Participate Now")}
                   </button>
                 </div>
 
@@ -310,7 +333,7 @@ export default function Navbar() {
             </>
           )}
         </div>
-      </nav>
+      </nav >
     </>
   );
 }

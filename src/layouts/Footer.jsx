@@ -38,7 +38,7 @@ export default function Footer() {
                   e.target.style.display = 'none';
                 }}
               />
-              <span className="font-display font-black tracking-wide uppercase text-sm xl:text-base text-zinc-950">
+              <span className="font-display font-bold tracking-wide uppercase text-sm xl:text-base text-zinc-950">
                 {t("Digital State")}
               </span>
             </div>
@@ -49,7 +49,7 @@ export default function Footer() {
 
           {/* Column 2: Navigation Links */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display font-black text-xs xl:text-sm uppercase tracking-widest text-[#BE2079]">
+            <h4 className="font-display font-bold text-xs xl:text-sm uppercase tracking-widest text-[#BE2079]">
               {t("Navigation")}
             </h4>
             <ul className="flex flex-col gap-2.5 text-zinc-650 font-bold text-sm xl:text-base">
@@ -88,7 +88,7 @@ export default function Footer() {
 
           {/* Column 3: GIGW Utility Links */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display font-black text-xs xl:text-sm uppercase tracking-widest text-[#BE2079]">
+            <h4 className="font-display font-bold text-xs xl:text-sm uppercase tracking-widest text-[#BE2079]">
               {t("GIGW Utilities")}
             </h4>
             <ul className="flex flex-col gap-2.5 text-zinc-655 font-bold text-sm xl:text-base">
@@ -127,7 +127,7 @@ export default function Footer() {
 
           {/* Column 4: Support & Helpline Desk */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display font-black text-xs xl:text-sm uppercase tracking-widest text-[#BE2079]">
+            <h4 className="font-display font-bold text-xs xl:text-sm uppercase tracking-widest text-[#BE2079]">
               {t("Support Desk")}
             </h4>
             <ul className="flex flex-col gap-3 text-zinc-600 font-bold text-sm xl:text-base">
@@ -135,7 +135,7 @@ export default function Footer() {
                 <div className="text-zinc-950 font-extrabold text-xs uppercase tracking-wider">{t("Helpline")}</div>
                 <a 
                   href="tel:+917712510123" 
-                  className="text-[#123E4A] hover:text-[#F3819F] font-black mt-0.5 text-base xl:text-lg block transition-colors duration-200"
+                  className="text-[#123E4A] hover:text-[#F3819F] font-bold mt-0.5 text-base xl:text-lg block transition-colors duration-200"
                 >
                   +91-771-2510123
                 </a>
@@ -158,7 +158,7 @@ export default function Footer() {
 
           {/* Column 5: Connect With Us */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-display font-black text-xs xl:text-sm uppercase tracking-widest text-[#BE2079]">
+            <h4 className="font-display font-bold text-xs xl:text-sm uppercase tracking-widest text-[#BE2079]">
               {t("Connect With Us")}
             </h4>
             
@@ -219,7 +219,7 @@ export default function Footer() {
 
           <button 
             onClick={handleScrollTop}
-            className="rounded-full border border-zinc-200 bg-white hover:bg-zinc-50 px-4 py-2 font-black text-zinc-950 text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer select-none"
+            className="rounded-full border border-zinc-200 bg-white hover:bg-zinc-50 px-4 py-2 font-bold text-zinc-950 text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer select-none"
           >
             ▲ {t(backToTopText)}
           </button>

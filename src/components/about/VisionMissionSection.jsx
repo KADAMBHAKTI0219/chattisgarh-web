@@ -13,7 +13,7 @@ export default function VisionMissionSection() {
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto flex flex-col gap-12 items-center">
         
         {/* Section Header */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-black uppercase text-white text-center tracking-tight leading-none">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold uppercase text-white text-center tracking-tight leading-none">
           {t("Vision & Mission")}
         </h2>
         
@@ -38,7 +38,7 @@ export default function VisionMissionSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 </svg>
               </div>
-              <h3 className="font-display font-black text-xl xl:text-2xl uppercase tracking-wider text-white">
+              <h3 className="font-display font-bold text-xl xl:text-2xl uppercase tracking-wider text-white">
                 {t("Our Vision")}
               </h3>
             </div>
@@ -71,7 +71,7 @@ export default function VisionMissionSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                 </svg>
               </div>
-              <h3 className="font-display font-black text-xl xl:text-2xl uppercase tracking-wider text-white">
+              <h3 className="font-display font-bold text-xl xl:text-2xl uppercase tracking-wider text-white">
                 {t("Our Mission")}
               </h3>
             </div>
