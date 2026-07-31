@@ -92,11 +92,11 @@ export default function Navbar() {
         <div className="mx-auto h-full w-full max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex items-center justify-between relative">
 
           {/* Left Side: Government Emblem Logo & Event Title */}
-          <div className="flex items-center shrink-0">
-            <Link href="/" className="flex items-center gap-3 sm:gap-4 group relative py-1">
+          <div className="flex items-center shrink-0 min-w-0">
+            <Link href="/" className="flex items-center gap-2 sm:gap-3.5 group relative py-1 min-w-0">
 
               {/* Subtle Warm Radial Glow Behind Logo */}
-              <div className="absolute -inset-3 bg-[radial-gradient(circle_at_center,rgba(211,155,44,0.18)_0%,transparent_70%)] blur-lg pointer-events-none -z-10 opacity-75 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute -inset-3 bg-[radial-gradient(circle_at_center,rgba(193,91,61,0.18)_0%,transparent_70%)] blur-lg pointer-events-none -z-10 opacity-75 group-hover:opacity-100 transition-opacity" />
 
               {/* Chhattisgarh State Emblem Logo */}
               <Image
@@ -105,16 +105,16 @@ export default function Navbar() {
                 width={260}
                 height={75}
                 priority
-                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-9 sm:h-11 scale-95" : "h-11 sm:h-13 scale-100"
+                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-8 sm:h-11 scale-95" : "h-9.5 sm:h-12 scale-100"
                   } group-hover:scale-[1.02]`}
               />
 
               {/* Title & Tagline Branding Block */}
-              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/25 pl-3 sm:pl-3.5">
-                <span className="font-poppins font-semibold text-xs sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-tight uppercase tracking-tight text-zinc-900 group-hover:text-[#C15B3D] transition-colors duration-300">
+              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-2.5 sm:pl-3.5 max-w-[190px] min-[370px]:max-w-[220px] min-[410px]:max-w-[260px] sm:max-w-none">
+                <span className="font-poppins font-bold text-[10.5px] min-[370px]:text-[11.5px] min-[410px]:text-[12.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-tight uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
                   {t("Chhattisgarh Creator & Influencer Awards")}
                 </span>
-                <span className="font-poppins font-semibold text-[11px] sm:text-xs md:text-[13px] text-[#2E5C31] leading-tight tracking-wide mt-0.5">
+                <span className="font-poppins font-bold text-[10px] min-[370px]:text-[11px] sm:text-xs md:text-[13px] text-[#2E5C31] group-hover:text-[#1b3827] leading-tight tracking-wide mt-0.5 transition-colors duration-300">
                   {t("छत्तीसगढ़ सबसे बढ़िया")}
                 </span>
               </div>
@@ -212,11 +212,11 @@ export default function Navbar() {
                   height={50}
                   className="h-9 w-auto object-contain shrink-0"
                 />
-                <div className="flex flex-col text-left border-l border-[#C15B3D]/30 pl-2.5">
-                  <span className="font-poppins font-semibold text-[10px] text-zinc-900 leading-tight uppercase">
+                <div className="flex flex-col text-left border-l-2 border-[#C15B3D]/30 pl-2.5">
+                  <span className="font-poppins font-bold text-[10.5px] text-[#C15B3D] leading-tight uppercase tracking-tight">
                     Chhattisgarh Awards
                   </span>
-                  <span className="font-poppins font-semibold text-[9px] text-[#2E5C31] leading-tight">
+                  <span className="font-poppins font-bold text-[10px] text-[#2E5C31] leading-tight mt-0.5">
                     छत्तीसगढ़ सबसे बढ़िया
                   </span>
                 </div>
