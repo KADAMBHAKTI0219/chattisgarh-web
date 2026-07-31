@@ -45,7 +45,7 @@ const TIERS = {
         slug: "impact",
         title: "Social Impact & Welfare",
         description: "Recognising creators driving positive social change, awareness, education, environment and community development.",
-        color: "#4585F6",
+        color: "#2E5C31",
         icon: FaHandsHelping
     },
     arts: {
