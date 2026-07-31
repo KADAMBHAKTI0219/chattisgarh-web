@@ -13,6 +13,8 @@ import {
   FaCalendarAlt
 } from "react-icons/fa";
 
+import Heading from "@/components/common/Heading";
+
 export default function FAQSection() {
   const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState(0);
@@ -66,19 +68,13 @@ export default function FAQSection() {
       className="relative w-full max-w-4xl mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-hidden"
     >
 
-      {/* Centered Heading */}
-      <div className="relative flex flex-col items-center text-center gap-2 max-w-2xl xl:max-w-4xl px-6 mx-auto mb-12 md:mb-16">
-        <span className="font-sans font-extrabold text-xs xl:text-sm uppercase tracking-widest text-[#F87C22]">
-          {t("FAQ")}
-        </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-sans font-bold uppercase text-zinc-950 leading-tight tracking-tight">
-          {t("Frequently Asked")}{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">
-            {t("Questions")}
-          </span>
-        </h2>
-        <div className="h-[4px] w-32  bg-gradient-to-r from-[#FF6B95] to-[#FF6B95] rounded-full mt-1"></div>
-      </div>
+      {/* Centered Heading Component */}
+      <Heading
+        badge={t("FAQ")}
+        title={t("Frequently Asked")}
+        highlightText={t("Questions")}
+        className="mb-12 md:mb-16"
+      />
 
       {/* Accordion List (Clean Rounded Cards, Soft Shadows) */}
       <div className="relative flex flex-col gap-4 sm:gap-5 text-left">

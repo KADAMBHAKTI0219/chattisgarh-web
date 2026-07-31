@@ -99,85 +99,59 @@ export default function ConferenceShiftSection() {
   return (
     <section
       id="about-event"
-      className="w-full bg-[#FAF7F0] border-t border-b border-zinc-200 text-zinc-950 py-12 md:py-16 lg:py-20 flex flex-col items-center select-none relative overflow-hidden z-10 my-8 md:my-12 scroll-mt-24"
+      className="w-full bg-background border-t border-b border-border text-foreground py-12 md:py-16 lg:py-20 flex flex-col items-center select-none relative overflow-hidden z-10 my-8 md:my-12 scroll-mt-24"
     >
-      <div className="flex flex-col items-center text-center max-w-4xl px-6">
-        <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#F798B4]">
-          {t("Official State Platform")}
-        </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold uppercase text-zinc-950 leading-tight">
-          {t("WHAT IS")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("THIS EVENT?")}</span>
-        </h2>
-        <div className="h-[4px] w-32 bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full mt-1"></div>
-
-        {/* Description */}
-        <p className="font-sans font-semibold text-zinc-900 text-base sm:text-lg md:text-xl xl:text-2xl leading-relaxed mt-6 max-w-4xl">
-          {t("Chhattisgarh State Creator & Influencer Awards is an initiative to recognize and celebrate the state's most impactful digital creators across every platform.")}
-        </p>
-
-        {/* Lucide React Platforms Row */}
-        <div className="flex items-center justify-center gap-4 md:gap-6 mt-8 w-full flex-wrap">
-
-          {/* YouTube */}
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white border border-zinc-200 rounded-xl flex items-center justify-center shadow-sm hover:scale-105 transition-all cursor-pointer">
-              <FaYoutube className="w-6 h-6 text-red-600" />
-            </div>
-            <span className="font-sans font-extrabold text-[10px] text-zinc-500 uppercase tracking-wider">YouTube</span>
-          </div>
-
-          <div className="h-8 w-[1.5px] bg-zinc-300 hidden sm:block"></div>
-
-          {/* Instagram */}
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white border border-zinc-200 rounded-xl flex items-center justify-center shadow-sm hover:scale-105 transition-all cursor-pointer">
-              <FaInstagram className="w-6 h-6 text-[#E1306C]" />
-            </div>
-            <span className="font-sans font-extrabold text-[10px] text-zinc-500 uppercase tracking-wider">Instagram</span>
-          </div>
-
-          <div className="h-8 w-[1.5px] bg-zinc-300 hidden sm:block"></div>
-
-          {/* Facebook */}
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white border border-zinc-200 rounded-xl flex items-center justify-center shadow-sm hover:scale-105 transition-all cursor-pointer">
-              <FaFacebookF className="w-5 h-5 text-blue-600" />
-            </div>
-            <span className="font-sans font-extrabold text-[10px] text-zinc-500 uppercase tracking-wider">Facebook</span>
-          </div>
-
-          <div className="h-8 w-[1.5px] bg-zinc-300 hidden sm:block"></div>
-
-          {/* Content Creators */}
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white border border-zinc-200 rounded-xl flex items-center justify-center shadow-sm hover:scale-105 transition-all cursor-pointer">
-              <Users className="w-6 h-6 text-emerald-600" />
-            </div>
-            <span className="font-sans font-extrabold text-[10px] text-zinc-500 uppercase tracking-wider">Creators</span>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Viewport container for flat scrolling card row */}
-      <div
-        ref={containerRef}
-        className="w-full relative h-[200px] sm:h-[260px] md:h-[300px] lg:h-[330px] xl:h-[360px] 2xl:h-[390px] mt-10 md:mt-12 overflow-visible"
-      >
-        {cards.map((card) => (
-          <div
-            key={card.id}
-            className="shift-card absolute top-0 left-0 w-[150px] h-[200px] sm:w-[180px] sm:h-[250px] md:w-[210px] md:h-[290px] lg:w-[240px] lg:h-[320px] xl:w-[280px] xl:h-[350px] 2xl:w-[320px] 2xl:h-[380px] rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm hover:shadow-md hover:border-[#BE2079]/50 transition-colors duration-300"
-            style={{ willChange: "transform" }}
-          >
+      {/* ================= LEFT IMAGE / RIGHT CONTENT ================= */}
+      <div className="w-full max-w-7xl px-6 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
+        {/* Left: Image */}
+        <div className="relative w-full order-1">
+          <div className="relative w-full aspect-[4/4] rounded-2xl md:rounded-3xl overflow-hidden border border-border shadow-sm bg-surface">
             <img
-              src={card.src}
-              alt={`shift-card-${card.id}`}
-              className="w-full h-full object-cover pointer-events-none select-none"
+              src="/assets/images/about-event.jpg"
+              alt={t("Chhattisgarh State Creator & Influencer Awards")}
+              className="w-full h-full object-cover"
               loading="lazy"
             />
+            {/* soft gradient accent overlay at bottom for polish */}
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
           </div>
-        ))}
+          {/* Accent underline strip beneath image for brand consistency */}
+          <div className="h-[4px] w-24 bg-gradient-to-r from-primary to-accent rounded-full mt-4 mx-auto md:mx-0"></div>
+        </div>
+
+        {/* Right: Heading + Text + Platforms */}
+        <div className="flex flex-col items-start text-left order-2">
+          <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-primary">
+            {t("Official State Platform")}
+          </span>
+
+          <h2 className="font-display font-bold uppercase text-foreground leading-tight text-3xl sm:text-4xl md:text-4xl lg:text-5xl mt-2">
+            {t("The Next Big ")}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+              {t("Story Starts Here.")}
+            </span>
+          </h2>
+
+          <div className="h-[4px] w-32 bg-gradient-to-r from-primary to-accent rounded-full mt-4"></div>
+
+          <p className="font-sans text-text-secondary text-sm sm:text-sm md:text-base  leading-relaxed mt-6">
+            {t(
+              "Behind every creator is a story. Behind every story is a place worth discovering. The Chhattisgarh State Creator & Influencer Awards celebrates the creators who are shaping the state's digital identity through authentic and impactful content. From breathtaking landscapes and tribal heritage to local cuisine, art, music, festivals, innovation, and everyday life—every piece of content that reflects the true spirit of Chhattisgarh deserves to be seen and celebrated."
+            )}
+          </p>
+
+          <p className="font-sans text-text-secondary text-sm sm:text-sm md:text-base  leading-relaxed mt-4">
+            {t(
+              "Whether you're a YouTuber, Instagram creator, filmmaker, photographer, blogger, educator, artist, gamer, podcaster, or storyteller, your creativity has the power to inspire people across India and around the world. This is your chance to receive official recognition, amplify your voice, and proudly represent Chhattisgarh on the global digital stage."
+            )}
+          </p>
+
+          <p className="font-sans font-semibold text-foreground text-sm sm:text-sm md:text-base xl:text-xl leading-relaxed mt-4">
+            {t("Because when your content inspires the nation, Chhattisgarh shines with you.")}
+          </p>
+
+
+        </div>
       </div>
 
     </section>

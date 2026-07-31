@@ -1,23 +1,191 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
+/* ==========================================================
+   LIGHT THEME (Default)
+========================================================== */
+
 :root {
-  --background: #FAF7F0;
-  --foreground: #171717;
+  /* Backgrounds */
+  --background: #fcfaf7;
+  --surface: #ffffff;
+  --surface-secondary: #f5f0e6;
+
+  /* Brand Colors */
+  --primary: #c15b3d;
+  --primary-hover: #a84a2f;
+
+  --secondary: #2e5c31;
+  --secondary-hover: #264c29;
+
+  --accent: #d39b2c;
+
+  /* Text */
+  --foreground: #2b211a;
+  --text-secondary: #5f5247;
+  --text-muted: #847568;
+
+  /* UI */
+  --border: #e8dfcf;
+
+  --success: #2e7d32;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --info: #2563eb;
+
+  /* Fonts */
+  --font-poppins: "Poppins", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-heading: "Poppins", sans-serif;
 }
 
+/* ==========================================================
+   DARK THEME
+========================================================== */
+
+.dark {
+  --background: #171411;
+  --surface: #231e1a;
+  --surface-secondary: #2d2621;
+
+  --primary: #e07b5d;
+  --primary-hover: #f08d70;
+
+  --secondary: #5e9c63;
+  --secondary-hover: #74b57a;
+
+  --accent: #e2b84d;
+
+  --foreground: #f5f0e6;
+  --text-secondary: #d5cbbf;
+  --text-muted: #b6a998;
+
+  --border: #40352d;
+
+  --success: #5fbf67;
+  --warning: #fbbf24;
+  --danger: #ef4444;
+  --info: #60a5fa;
+}
+
+/* ==========================================================
+   Tailwind Theme Tokens
+========================================================== */
+
 @theme inline {
+  /* Fonts */
+  --font-sans: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Poppins", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-display: "Poppins", sans-serif;
+  --font-serif: "Poppins", sans-serif;
+
+  /* Colors */
   --color-background: var(--background);
+
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+
+  --color-accent: var(--accent);
+
   --color-foreground: var(--foreground);
-  --font-serif: 'Inter', sans-serif;
-  --font-display: 'Inter', sans-serif;
-  --font-sans: 'Inter', sans-serif;
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-border: var(--border);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+/* ==========================================================
+   Base Typography & Styles
+========================================================== */
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter);
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease;
+}
+
+/* Default font families for headings & body */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins);
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+p, span, small, label, input, select, textarea, button {
+  font-family: var(--font-inter);
+}
+
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+/* Helper Font Classes */
+.font-poppins {
+  font-family: var(--font-poppins) !important;
+}
+
+.font-inter {
+  font-family: var(--font-inter) !important;
+}
+
+/* ==========================================================
+   Common Utilities
+========================================================== */
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+}
+
+.bg-gradient-earth {
+  background: linear-gradient(
+    135deg,
+    var(--background) 0%,
+    var(--surface-secondary) 50%,
+    #fff8f1 100%
+  );
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+}
+
+.card-hover {
+  transition: all 0.35s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
 }
 
 /* Tribal pattern background watermark class */
@@ -25,7 +193,7 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M0 40 L40 0 L80 40 L40 80 Z M0 0 L80 80 M80 0 L0 80' fill='none' stroke='%23000000' stroke-width='0.75' stroke-opacity='0.015'/%3E%3C/svg%3E");
 }
 
-/* Custom Text Outline for Neo-brutalist Typography (Responsive) */
+/* Custom Text Outline for Neo-brutalist Typography */
 .text-stroke-black {
   -webkit-text-stroke: 1.2px #000000;
   color: white;
@@ -41,44 +209,6 @@ body {
   }
 }
 
-.text-stroke-black-thick {
-  -webkit-text-stroke: 1.5px #000000;
-  color: white;
-}
-@media (min-width: 640px) {
-  .text-stroke-black-thick {
-    -webkit-text-stroke: 2.2px #000000;
-  }
-}
-@media (min-width: 1024px) {
-  .text-stroke-black-thick {
-    -webkit-text-stroke: 3px #000000;
-  }
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes spinSlow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-slow {
-  animation: spinSlow 18s linear infinite;
-}
-
-
 /* Scroll-reveal Fade & Slide In Animations */
 .reveal-on-scroll {
   opacity: 0;
@@ -91,62 +221,6 @@ body {
   transform: translateY(0);
 }
 
-/* Card Shine Reflection Hover Animation */
-@keyframes card-shine {
-  0% {
-    transform: translateX(-100%) skewX(-15deg);
-  }
-  100% {
-    transform: translateX(200%) skewX(-15deg);
-  }
-}
-
-.shine-effect {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transform: translateX(-100%) skewX(-15deg);
-  z-index: 15;
-}
-
-.group:hover .shine-effect {
-  animation: card-shine 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Cascade reveal for children elements */
-.reveal-on-scroll .reveal-child {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.reveal-on-scroll.revealed .reveal-child {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Staggered delays for children */
-.reveal-on-scroll .reveal-child:nth-child(1) { transition-delay: 50ms; }
-.reveal-on-scroll .reveal-child:nth-child(2) { transition-delay: 120ms; }
-.reveal-on-scroll .reveal-child:nth-child(3) { transition-delay: 190ms; }
-.reveal-on-scroll .reveal-child:nth-child(4) { transition-delay: 260ms; }
-.reveal-on-scroll .reveal-child:nth-child(5) { transition-delay: 330ms; }
-.reveal-on-scroll .reveal-child:nth-child(6) { transition-delay: 400ms; }
-.reveal-on-scroll .reveal-child:nth-child(7) { transition-delay: 470ms; }
-.reveal-on-scroll .reveal-child:nth-child(8) { transition-delay: 540ms; }
-.reveal-on-scroll .reveal-child:nth-child(9) { transition-delay: 610ms; }
-.reveal-on-scroll .reveal-child:nth-child(10) { transition-delay: 680ms; }
-.reveal-on-scroll .reveal-child:nth-child(11) { transition-delay: 750ms; }
-.reveal-on-scroll .reveal-child:nth-child(12) { transition-delay: 820ms; }
-
 /* Hide scrollbar for Chrome, Safari, Opera, IE, Edge and Firefox */
 .no-scrollbar::-webkit-scrollbar {
   display: none !important;
@@ -155,4 +229,3 @@ body {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
-

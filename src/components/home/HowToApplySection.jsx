@@ -3,6 +3,7 @@
 import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { FaEdit, FaUserCheck, FaPoll, FaTrophy } from "react-icons/fa";
+import Heading from "@/components/common/Heading";
 
 export default function HowToApplySection() {
   const { t } = useLanguage();
@@ -44,16 +45,13 @@ export default function HowToApplySection() {
       id="timeline"
       className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 overflow-visible"
     >
-      {/* Centered Title */}
-      <div className="flex flex-col items-center text-center gap-2 max-w-2xl xl:max-w-4xl px-6 mx-auto mb-16">
-        <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#F798B4]">
-          {t("Process Timeline")}
-        </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold uppercase text-zinc-950 leading-tight">
-          {t("HOW TO")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("NOMINATE")}</span>
-        </h2>
-        <div className="h-[4px] w-32 bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full mt-1"></div>
-      </div>
+      {/* Centered Heading Component */}
+      <Heading
+        badge={t("Process Timeline")}
+        title={t("HOW TO")}
+        highlightText={t("NOMINATE")}
+        className="mb-14"
+      />
 
       {/* Steps horizontal/vertical timeline wrapper */}
       <div className="relative w-full overflow-visible">

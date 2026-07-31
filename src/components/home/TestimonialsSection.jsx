@@ -2,6 +2,7 @@
 
 import { FaYoutube, FaInstagram, FaCheckCircle } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
+import Heading from "@/components/common/Heading";
 
 export default function TestimonialsSection() {
   const { t } = useLanguage();
@@ -121,19 +122,13 @@ export default function TestimonialsSection() {
         }
       ` }} />
 
-      {/* Header */}
-      <div className="flex flex-col items-center text-center gap-2 max-w-2xl xl:max-w-4xl px-6">
-        <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#F798B4]">
-          {t("The Community")}
-        </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold uppercase text-zinc-950 leading-tight">
-          {t("What Creators")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("Are Saying")}</span>
-        </h2>
-        <div className="h-[4px] w-32 bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full mt-1"></div>
-        <p className="text-zinc-700 font-bold text-xs sm:text-sm xl:text-base mt-2">
-          {t("Hover over any card to pause the scrolling marquee and visit their verified channels.")}
-        </p>
-      </div>
+      {/* Header Component */}
+      <Heading
+        badge={t("The Community")}
+        title={t("What Creators")}
+        highlightText={t("Are Saying")}
+        description={t("Hover over any card to pause the scrolling marquee and visit their verified channels.")}
+      />
 
       {/* 2. AUTOMATIC INFINITE SCROLLING MARQUEE */}
       <div className="w-full relative overflow-hidden py-4 mt-2">

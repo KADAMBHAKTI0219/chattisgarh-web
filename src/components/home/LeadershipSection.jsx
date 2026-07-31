@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
+import Heading from "@/components/common/Heading";
 
 export default function LeadershipSection() {
   const { t } = useLanguage();
@@ -11,16 +12,13 @@ export default function LeadershipSection() {
       id="leadership"
       className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 px-4 sm:px-6 md:px-8 select-none overflow-hidden"
     >
-      {/* Heading */}
-      <div className="flex flex-col items-center text-center gap-2 max-w-2xl xl:max-w-4xl px-6 mx-auto mb-12 md:mb-16">
-        <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-[#F798B4]">
-          {t("TRUST & VISION")}
-        </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold uppercase text-zinc-950 leading-tight">
-          {t("LEADERSHIP")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("MESSAGES")}</span>
-        </h2>
-        <div className="h-[4px] w-32 bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full mt-1"></div>
-      </div>
+      {/* Centered Heading Component */}
+      <Heading
+        badge={t("TRUST & VISION")}
+        title={t("LEADERSHIP")}
+        highlightText={t("MESSAGES")}
+        className="mb-12 md:mb-16"
+      />
 
       {/* Leadership Messages Dual Column */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
