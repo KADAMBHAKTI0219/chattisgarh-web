@@ -8,58 +8,62 @@ import { useLanguage } from "@/context/LanguageContext";
 import { ParticipateButton } from "@/components/common/Button";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const { openModal } = useParticipateModal();
   const { language, changeLanguage, t } = useLanguage();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
+  // Monitor scroll offset to trigger sticky glassmorphism styling
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 30) {
+      if (window.scrollY > 20) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
       }
     };
+
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [isOpen]);
 
   return (
     <>
       {/* Top Bar for GIGW compliance and official attributions */}
-      <div className="w-full bg-[#123E4A] text-white py-2 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-b border-white/10 text-[10px] sm:text-xs select-none">
+      <div className="w-full bg-gradient-to-r from-[#1e3e2b] via-[#2E5C31] to-[#1e3b2e] text-white py-2 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-b border-white/10 text-[10px] sm:text-xs select-none">
         <div className="mx-auto w-full max-w-[1440px] flex items-center justify-between">
           {/* Left: Emblem and Gov Name */}
           <div className="flex items-center gap-2 md:gap-3">
-            <svg viewBox="0 0 24 30" className="h-5 w-4 sm:h-6 sm:w-5 text-[#F87C22] shrink-0" fill="currentColor" aria-label="Emblem">
-              <path d="M12 1a4 4 0 00-4 4c0 1.2.5 2.2 1.3 3A4.5 4.5 0 007 12v6h10v-6a4.5 4.5 0 00-2.3-4c.8-.8 1.3-1.8 1.3-3a4 4 0 00-4-4zm-4.7 19v2c0 2 1.6 3 3.7 3h2c2.1 0 3.7-1 3.7-3v-2H7.3zm4.7 6a2 2 0 100-4 2 2 0 000 4zm-8 4h16v2H4v-2z" />
+            {/* Indian Flag SVG Icon */}
+            <svg viewBox="0 0 36 24" className="h-4 sm:h-5 w-auto rounded-[2px] shadow-sm shrink-0 border border-white/20" aria-label="Indian National Flag">
+              <rect width="36" height="8" fill="#FF9933" />
+              <rect y="8" width="36" height="8" fill="#FFFFFF" />
+              <rect y="16" width="36" height="8" fill="#138808" />
+              {/* Ashoka Chakra Wheel */}
+              <circle cx="18" cy="12" r="3.2" fill="none" stroke="#000080" strokeWidth="0.7" />
+              <circle cx="18" cy="12" r="0.6" fill="#000080" />
             </svg>
             <span className="font-semibold uppercase tracking-wider text-zinc-100 text-[9px] sm:text-xs">
-              {t("Directorate of Culture & Tourism, Govt. of Chhattisgarh")}
+              {t("Government Of Chattisgarh")}
             </span>
           </div>
 
           {/* Right: Language Dropdown */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-[10px] sm:text-xs text-zinc-300 font-medium uppercase tracking-wider hidden sm:inline">Language:</span>
+            <span className="text-[10px] sm:text-xs text-zinc-200 font-medium uppercase tracking-wider hidden sm:inline">Language:</span>
             <select
               value={language}
               onChange={(e) => changeLanguage(e.target.value)}
-              className="bg-[#0e2f38] border border-white/20 rounded-md px-2 py-1 text-white text-[10px] sm:text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer"
+              className="bg-[#1f4233] border border-white/20 rounded-md px-2.5 py-1 text-white text-[10px] sm:text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer"
             >
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
@@ -70,14 +74,13 @@ export default function Navbar() {
       </div>
 
       {/* Main Navigation Bar */}
-      <nav className={`w-full bg-[#FAF7F0] border-b border-zinc-200/80 sticky top-0 z-50 transition-all duration-300 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 ${
-        isScrolled ? "shadow-md bg-[#FAF7F0]/95 backdrop-blur-md py-2" : "py-3"
-      }`}>
+      <nav className={`w-full bg-[#FAF7F0] border-b border-zinc-200/80 sticky top-0 z-50 transition-all duration-300 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 ${isScrolled ? "shadow-md bg-[#FAF7F0]/95 backdrop-blur-md py-2" : "py-3"
+        }`}>
         <div className="mx-auto w-full max-w-[1440px] flex items-center justify-between">
-          
+
           {/* Left Side: Logo & Branding Text */}
-          <div className="flex items-center shrink-0 max-w-[65%] sm:max-w-none">
-            <Link href="/" className="flex items-center gap-2 sm:gap-3 group py-0.5">
+          <div className="flex items-center shrink-0 max-w-[70%] sm:max-w-none">
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group py-0.5">
               <Image
                 src="/assets/images/chattisgarh-logo.webp"
                 alt="Chhattisgarh State Creator & Influencer Awards"
@@ -86,11 +89,11 @@ export default function Navbar() {
                 priority
                 className="h-9 sm:h-11 md:h-13 lg:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02] shrink-0"
               />
-              <div className="flex flex-col text-left justify-center border-l border-zinc-300/80 pl-2 sm:pl-3">
-                <span className="font-poppins font-extrabold text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg text-zinc-900 leading-tight uppercase tracking-tight group-hover:text-[var(--primary)] transition-colors">
+              <div className="flex flex-col text-left justify-center border-l border-zinc-300/80 pl-2.5 sm:pl-3">
+                <span className="font-poppins font-extrabold text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg leading-tight uppercase tracking-tight  text-[var(--secondary)]  duration-300">
                   Chhattisgarh Creator & Influencer Awards
                 </span>
-                <span className="font-poppins font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm text-[var(--primary)] leading-tight tracking-wide">
+                <span className="font-poppins font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm text-[var(--secondary)] leading-tight tracking-wide group-hover:text-[var(--primary)] transition-colors duration-300">
                   छत्तीसगढ़ सबले बढ़िया
                 </span>
               </div>
@@ -99,22 +102,37 @@ export default function Navbar() {
 
           {/* Desktop Right Side: Navigation Links & CTA Button */}
           <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-            <div className="flex items-center gap-6 xl:gap-8 font-semibold tracking-wide text-zinc-800 text-sm xl:text-base">
-              <Link href="/" className="hover:text-[#EE5D8C] transition-colors duration-200 relative group py-1">
-                {t("Home")}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#EE5D8C] transition-all duration-300 group-hover:w-full" />
+            <div className="flex items-center gap-1 xl:gap-2">
+              <Link
+                href="/"
+                className="font-inter font-bold text-sm xl:text-base text-zinc-800 hover:text-[var(--primary)] transition-colors duration-300 relative group px-3.5 py-1.5 rounded-full hover:bg-[var(--primary)]/5"
+              >
+                <span>{t("Home")}</span>
+                <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)] scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full" />
               </Link>
-              <Link href="/about" className="hover:text-[#EE5D8C] transition-colors duration-200 relative group py-1">
-                {t("About Us")}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#EE5D8C] transition-all duration-300 group-hover:w-full" />
+
+              <Link
+                href="/about"
+                className="font-inter font-bold text-sm xl:text-base text-zinc-800 hover:text-[var(--primary)] transition-colors duration-300 relative group px-3.5 py-1.5 rounded-full hover:bg-[var(--primary)]/5"
+              >
+                <span>{t("About Us")}</span>
+                <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)] scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full" />
               </Link>
-              <Link href="/categories" className="hover:text-[#EE5D8C] transition-colors duration-200 relative group py-1">
-                {t("Categories")}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#EE5D8C] transition-all duration-300 group-hover:w-full" />
+
+              <Link
+                href="/categories"
+                className="font-inter font-bold text-sm xl:text-base text-zinc-800 hover:text-[var(--primary)] transition-colors duration-300 relative group px-3.5 py-1.5 rounded-full hover:bg-[var(--primary)]/5"
+              >
+                <span>{t("Categories")}</span>
+                <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)] scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full" />
               </Link>
-              <Link href="/#contact" className="hover:text-[#EE5D8C] transition-colors duration-200 relative group py-1">
-                {t("Contact")}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#EE5D8C] transition-all duration-300 group-hover:w-full" />
+
+              <Link
+                href="/#contact"
+                className="font-inter font-bold text-sm xl:text-base text-zinc-800 hover:text-[var(--primary)] transition-colors duration-300 relative group px-3.5 py-1.5 rounded-full hover:bg-[var(--primary)]/5"
+              >
+                <span>{t("Contact")}</span>
+                <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)] scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full" />
               </Link>
             </div>
 
@@ -126,10 +144,9 @@ export default function Navbar() {
 
           {/* Mobile & Tablet Controls (Hamburger Menu Toggle) */}
           <div className="flex lg:hidden items-center">
-            {/* Menu Toggle Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-300/80 bg-white p-2 text-zinc-800 shadow-sm active:scale-95 transition-all cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-300/80 bg-white p-2 text-zinc-800 shadow-sm active:scale-95 transition-all cursor-pointer hover:border-[var(--primary)] hover:text-[var(--primary)]"
               aria-label="Toggle Navigation Menu"
             >
               <svg
@@ -171,7 +188,7 @@ export default function Navbar() {
                     className="h-8 w-auto object-contain shrink-0"
                   />
                   <div className="flex flex-col text-left border-l border-zinc-300 pl-2">
-                    <span className="font-poppins font-extrabold text-[9px] text-zinc-900 leading-tight uppercase tracking-tight">
+                    <span className="font-poppins font-extrabold text-[9px] text-[var(--primary)] leading-tight uppercase tracking-tight">
                       Chhattisgarh Creator & Influencer Awards
                     </span>
                     <span className="font-poppins font-bold text-[8px] text-[var(--primary)] leading-tight">
@@ -181,7 +198,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm active:scale-95 cursor-pointer"
+                  className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm active:scale-95 cursor-pointer hover:border-[var(--primary)] hover:text-[var(--primary)]"
                   aria-label="Close Menu"
                 >
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,42 +208,42 @@ export default function Navbar() {
               </div>
 
               {/* Drawer Links */}
-              <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4 font-semibold text-lg text-zinc-900">
+              <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-3 font-semibold text-lg text-zinc-900">
                 <Link
                   href="/"
                   onClick={() => setIsOpen(false)}
-                  className="py-2.5 border-b border-zinc-200/60 hover:text-[#EE5D8C] transition-colors flex items-center justify-between"
+                  className="py-3 border-b border-zinc-200/80 text-zinc-900 hover:text-[var(--primary)] hover:pl-2 transition-all duration-300 flex items-center justify-between font-inter font-bold text-base group"
                 >
                   <span>{t("Home")}</span>
-                  <span className="text-zinc-400 text-sm">→</span>
+                  <span className="text-[var(--primary)] font-bold text-sm transition-transform group-hover:translate-x-1">→</span>
                 </Link>
                 <Link
                   href="/about"
                   onClick={() => setIsOpen(false)}
-                  className="py-2.5 border-b border-zinc-200/60 hover:text-[#EE5D8C] transition-colors flex items-center justify-between"
+                  className="py-3 border-b border-zinc-200/80 text-zinc-900 hover:text-[var(--primary)] hover:pl-2 transition-all duration-300 flex items-center justify-between font-inter font-bold text-base group"
                 >
                   <span>{t("About Us")}</span>
-                  <span className="text-zinc-400 text-sm">→</span>
+                  <span className="text-[var(--primary)] font-bold text-sm transition-transform group-hover:translate-x-1">→</span>
                 </Link>
                 <Link
                   href="/categories"
                   onClick={() => setIsOpen(false)}
-                  className="py-2.5 border-b border-zinc-200/60 hover:text-[#EE5D8C] transition-colors flex items-center justify-between"
+                  className="py-3 border-b border-zinc-200/80 text-zinc-900 hover:text-[var(--primary)] hover:pl-2 transition-all duration-300 flex items-center justify-between font-inter font-bold text-base group"
                 >
                   <span>{t("Categories")}</span>
-                  <span className="text-zinc-400 text-sm">→</span>
+                  <span className="text-[var(--primary)] font-bold text-sm transition-transform group-hover:translate-x-1">→</span>
                 </Link>
                 <Link
                   href="/#contact"
                   onClick={() => setIsOpen(false)}
-                  className="py-2.5 border-b border-zinc-200/60 hover:text-[#EE5D8C] transition-colors flex items-center justify-between"
+                  className="py-3 border-b border-zinc-200/80 text-zinc-900 hover:text-[var(--primary)] hover:pl-2 transition-all duration-300 flex items-center justify-between font-inter font-bold text-base group"
                 >
                   <span>{t("Contact")}</span>
-                  <span className="text-zinc-400 text-sm">→</span>
+                  <span className="text-[var(--primary)] font-bold text-sm transition-transform group-hover:translate-x-1">→</span>
                 </Link>
 
                 {/* Participate Now CTA Button inside Mobile Drawer */}
-                <div className="pt-2">
+                <div className="pt-4">
                   <ParticipateButton
                     onClick={() => {
                       setIsOpen(false);
@@ -243,12 +260,12 @@ export default function Navbar() {
 
               {/* Drawer Footer */}
               <div className="p-6 border-t border-zinc-200 bg-white/40 flex flex-col gap-4">
-                <div className="flex items-center justify-between bg-white border border-zinc-200 px-3 py-2 rounded-xl">
+                <div className="flex items-center justify-between bg-white border border-zinc-200 px-3.5 py-2.5 rounded-xl">
                   <span className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Language</span>
                   <select
                     value={language}
                     onChange={(e) => changeLanguage(e.target.value)}
-                    className="rounded border border-zinc-200 bg-white px-2 py-1 text-zinc-800 text-xs font-bold focus:outline-none cursor-pointer"
+                    className="rounded border border-zinc-200 bg-white px-2.5 py-1 text-zinc-800 text-xs font-bold focus:outline-none cursor-pointer focus:ring-1 focus:ring-[var(--primary)]"
                   >
                     <option value="en">English</option>
                     <option value="hi">हिन्दी</option>

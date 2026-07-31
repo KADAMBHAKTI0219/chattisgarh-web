@@ -131,7 +131,6 @@ body {
 /* Default font families for headings & body */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-poppins);
-  color: var(--foreground);
   font-weight: 700;
 }
 
@@ -222,6 +221,27 @@ p, span, small, label, input, select, textarea, button {
 .reveal-on-scroll.revealed {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Page entrance load animation */
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: pageEnter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Background pattern cleanup */
+.bg-tribal-pattern {
+  background-image: none;
 }
 
 /* Hide scrollbar for Chrome, Safari, Opera, IE, Edge and Firefox */

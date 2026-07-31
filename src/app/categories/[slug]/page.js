@@ -257,7 +257,7 @@ export default function CategorySlugPage({ params }) {
     });
 
     return (
-        <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden">
+        <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
 
             {/* 1. Breadcrumb & Back Navigation */}
             <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto flex items-center justify-between gap-4">
@@ -388,7 +388,7 @@ export default function CategorySlugPage({ params }) {
 
                                 {/* Content Overlay */}
                                 <div className="relative z-20 flex flex-col justify-end w-full">
-                                    <h3 className="font-poppins font-bold text-base sm:text-lg md:text-xl uppercase text-white tracking-tight leading-snug group-hover:text-amber-200 transition-colors duration-300">
+                                    <h3 className="font-poppins font-bold text-base sm:text-lg md:text-xl uppercase !text-white tracking-tight leading-snug group-hover:!text-amber-200 transition-colors duration-300">
                                         {t(cat.title)}
                                     </h3>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Heading from "@/components/common/Heading";
 
 export default function FutureCreatorsSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -53,15 +54,12 @@ export default function FutureCreatorsSection() {
 
       {/* Central block */}
       <div className="border border-border bg-surface p-8 sm:p-12 rounded-[32px] shadow-sm text-center flex flex-col items-center gap-4 relative overflow-hidden">
-        <span className="font-sans font-bold text-xs uppercase tracking-widest text-primary">
-          Join the Future
-        </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold uppercase text-foreground tracking-tight leading-tight">
-          A FUTURE <span className="text-primary">BUILT BY CREATORS</span>
-        </h2>
-        <p className="text-text-secondary font-semibold text-sm sm:text-base leading-relaxed max-w-2xl mt-2">
-          Be a part of Chhattisgarh's ultimate digital convergence. Whether you are an aspiring vlogger, a tech innovator, or a digital marketing leader, the stage is yours.
-        </p>
+        <Heading
+          badge="Join the Future"
+          title="A FUTURE"
+          highlightText="BUILT BY CREATORS"
+          description="Be a part of Chhattisgarh's ultimate digital convergence. Whether you are an aspiring vlogger, a tech innovator, or a digital marketing leader, the stage is yours."
+        />
 
         {/* Social channels flex-row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-6">

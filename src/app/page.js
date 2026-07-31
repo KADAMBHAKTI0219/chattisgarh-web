@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import HeroSection from "@/components/home/HeroSection";
 import ConferenceShiftSection from "@/components/home/ConferenceShiftSection";
 import LeadershipSection from "@/components/home/LeadershipSection";
-import WhyParticipateSection from "@/components/home/WhyParticipateSection";
+// import WhyParticipateSection from "@/components/home/WhyParticipateSection";
 import AwardCategoriesSection from "@/components/home/AwardCategoriesSection";
 import WhoCanApplySection from "@/components/home/WhoCanApplySection";
 import HowToApplySection from "@/components/home/HowToApplySection";
@@ -33,7 +33,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-0 pt-0 pb-0 flex flex-col gap-0 relative overflow-x-hidden">
+    <div className="min-h-screen bg-background font-sans text-zinc-950 px-0 pt-0 pb-0 flex flex-col gap-0 relative overflow-x-hidden animate-page-enter">
 
       {/* 1. Hero Section (includes titles, statistics, cards shuffle) */}
       <div className="reveal-on-scroll">
@@ -51,9 +51,9 @@ export default function Home() {
       </div>
 
       {/* 4. Benefits Section (Why Participate?) */}
-      <div className="reveal-on-scroll">
+      {/* <div className="reveal-on-scroll">
         <WhyParticipateSection />
-      </div>
+      </div> */}
 
       {/* 5. Award Categories Section (Search and filter cards) */}
       <div className="reveal-on-scroll">

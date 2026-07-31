@@ -321,7 +321,7 @@ export default function AwardCategoriesSection() {
               {/* Middle & Bottom Content */}
               <div className="relative z-20 flex flex-col gap-3 mt-8">
                 {/* Title */}
-                <h3 className="font-poppins font-bold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight leading-snug group-hover:text-amber-200 transition-colors duration-300">
+                <h3 className="font-poppins font-bold text-2xl sm:text-3xl lg:text-4xl !text-white tracking-tight leading-snug group-hover:!text-amber-200 transition-colors duration-300">
                   {t(tier.title)}
                 </h3>
 

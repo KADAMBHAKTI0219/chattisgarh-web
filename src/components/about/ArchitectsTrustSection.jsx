@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Heading from "@/components/common/Heading";
 
 export default function ArchitectsTrustSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -48,14 +49,12 @@ export default function ArchitectsTrustSection() {
         }`}
     >
       {/* Title block */}
-      <div className="text-center max-w-3xl mx-auto flex flex-col gap-2">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold uppercase text-foreground tracking-tight leading-tight">
-          DIGITAL CREATORS AS <span className="text-primary">ARCHITECTS OF TRUST</span>
-        </h2>
-        <p className="text-text-muted font-semibold text-xs sm:text-sm mt-1 uppercase tracking-wider">
-          Building a robust and transparent creative ecosystem
-        </p>
-      </div>
+      <Heading
+        badge="Ecosystem Trust"
+        title="DIGITAL CREATORS AS"
+        highlightText="ARCHITECTS OF TRUST"
+        description="Building a robust and transparent creative ecosystem"
+      />
 
       {/* 3 Columns Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">

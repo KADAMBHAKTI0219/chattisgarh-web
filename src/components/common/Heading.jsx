@@ -74,7 +74,7 @@ export default function Heading({
   }[align] || "items-center text-center mx-auto";
 
   const sizeClasses = {
-    1: "text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight",
+    1: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight",
     2: "text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase tracking-tight leading-tight",
     3: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight",
     4: "text-xl sm:text-2xl md:text-3xl font-semibold",
@@ -85,30 +85,30 @@ export default function Heading({
   const themeColors = {
     default: {
       badge: "text-[var(--primary)] bg-[var(--primary)]/10 border-[var(--primary)]/20",
-      title: "text-zinc-900",
+      title: "!text-zinc-900",
       highlight: "bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent",
       description: "text-zinc-600",
       line: "bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]",
     },
     dark: {
       badge: "text-amber-300 bg-amber-300/10 border-amber-300/20",
-      title: "text-white",
+      title: "!text-white font-extrabold",
       highlight: "bg-gradient-to-r from-amber-300 via-[var(--primary)] to-amber-400 bg-clip-text text-transparent",
-      description: "text-zinc-300",
+      description: "!text-zinc-200",
       line: "bg-gradient-to-r from-[var(--primary)] to-amber-400",
     },
     light: {
       badge: "text-[var(--primary)] bg-[var(--primary)]/10 border-[var(--primary)]/20",
-      title: "text-zinc-900",
+      title: "!text-zinc-900",
       highlight: "text-[var(--primary)]",
       description: "text-zinc-600",
       line: "bg-[var(--primary)]",
     },
     primary: {
       badge: "text-white bg-white/20 border-white/30",
-      title: "text-white",
+      title: "!text-white",
       highlight: "text-amber-200",
-      description: "text-white/90",
+      description: "!text-white/90",
       line: "bg-white",
     },
   }[variant] || themeColors.default;

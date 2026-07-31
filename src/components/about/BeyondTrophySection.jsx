@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import Heading from "@/components/common/Heading";
 
 export default function BeyondTrophySection() {
   const { language } = useLanguage();
@@ -89,14 +90,11 @@ export default function BeyondTrophySection() {
         }`}
     >
       {/* Title block */}
-      <div className="text-center max-w-3xl mx-auto flex flex-col gap-2">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold uppercase text-foreground tracking-tight leading-tight">
-          {t.heading}
-        </h2>
-        <p className="text-text-muted font-semibold text-xs sm:text-sm mt-1 uppercase tracking-wider">
-          {t.sub}
-        </p>
-      </div>
+      <Heading
+        badge="Core Principles"
+        title={t.heading}
+        description={t.sub}
+      />
 
       {/* 4 Columns Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
