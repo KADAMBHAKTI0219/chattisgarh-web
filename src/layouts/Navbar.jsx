@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { ParticipateButton } from "@/components/common/Button";
 
 export default function Navbar() {
   const { openModal } = useParticipateModal();
@@ -36,34 +35,41 @@ export default function Navbar() {
     }
   }, [isOpen]);
 
+  const NAV_LINKS = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Categories", href: "/categories" },
+    { name: "Contact", href: "/#contact" },
+  ];
+
   return (
     <>
       {/* Top Bar for GIGW compliance and official attributions */}
-      <div className="w-full bg-gradient-to-r from-[#1e3e2b] via-[#2E5C31] to-[#1e3b2e] text-white py-2 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-b border-white/10 text-[10px] sm:text-xs select-none">
-        <div className="mx-auto w-full max-w-[1440px] flex items-center justify-between">
-          {/* Left: Emblem and Gov Name */}
+      <div className="w-full bg-gradient-to-r from-[#1b3827] via-[#2E5C31] to-[#1b3827] text-white py-1.5 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-b border-white/10 text-[10px] sm:text-xs select-none relative z-50">
+        <div className="mx-auto w-full max-w-[1480px] flex items-center justify-between">
+          {/* Left: Indian Emblem & State Gov Name */}
           <div className="flex items-center gap-2 md:gap-3">
-            {/* Indian Flag SVG Icon */}
-            <svg viewBox="0 0 36 24" className="h-4 sm:h-5 w-auto rounded-[2px] shadow-sm shrink-0 border border-white/20" aria-label="Indian National Flag">
+            <svg viewBox="0 0 36 24" className="h-3.5 sm:h-4.5 w-auto rounded-[2px] shadow-sm shrink-0 border border-white/20" aria-label="Indian National Flag">
               <rect width="36" height="8" fill="#FF9933" />
               <rect y="8" width="36" height="8" fill="#FFFFFF" />
               <rect y="16" width="36" height="8" fill="#138808" />
-              {/* Ashoka Chakra Wheel */}
               <circle cx="18" cy="12" r="3.2" fill="none" stroke="#000080" strokeWidth="0.7" />
               <circle cx="18" cy="12" r="0.6" fill="#000080" />
             </svg>
-            <span className="font-semibold uppercase tracking-wider text-zinc-100 text-[9px] sm:text-xs">
+            <span className="font-inter font-semibold uppercase tracking-wider text-zinc-100 text-[10px] sm:text-xs">
               {t("Government Of Chattisgarh")}
             </span>
           </div>
 
-          {/* Right: Language Dropdown */}
+          {/* Right: Official Language Selector */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-[10px] sm:text-xs text-zinc-200 font-medium uppercase tracking-wider hidden sm:inline">Language:</span>
+            <span className="text-[10px] sm:text-xs text-zinc-200 font-medium uppercase tracking-wider hidden sm:inline">
+              Language:
+            </span>
             <select
               value={language}
               onChange={(e) => changeLanguage(e.target.value)}
-              className="bg-[#1f4233] border border-white/20 rounded-md px-2.5 py-1 text-white text-[10px] sm:text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer"
+              className="bg-[#1f4233] border border-white/25 rounded-md px-2.5 py-0.5 text-white text-[10px] sm:text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer transition-colors"
             >
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
@@ -73,88 +79,103 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Main Navigation Bar */}
-      <nav className={`w-full bg-[#FAF7F0] border-b border-zinc-200/80 sticky top-0 z-50 transition-all duration-300 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 ${isScrolled ? "shadow-md bg-[#FAF7F0]/95 backdrop-blur-md py-2" : "py-3"
-        }`}>
-        <div className="mx-auto w-full max-w-[1440px] flex items-center justify-between">
+      {/* Main Premium Navigation Bar */}
+      <nav
+        className={`w-full sticky top-0 z-50 transition-all duration-300 border-b border-[#E8DFCF]/70 ${isScrolled
+          ? "h-[75px] bg-[#FFFDFC]/98 backdrop-blur-[24px] shadow-[0_10px_35px_rgba(0,0,0,0.08)]"
+          : "h-[90px] bg-[#FFFDFC]/90 backdrop-blur-[18px] shadow-[0_4px_25px_rgba(0,0,0,0.04)]"
+          }`}
+      >
+        {/* Bastar Tribal Pattern Top Border Highlight Line */}
+        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#C15B3D]/40 to-transparent opacity-80 pointer-events-none" />
 
-          {/* Left Side: Logo & Branding Text */}
-          <div className="flex items-center shrink-0 max-w-[70%] sm:max-w-none">
-            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group py-0.5">
+        <div className="mx-auto h-full w-full max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex items-center justify-between relative">
+
+          {/* Left Side: Government Emblem Logo & Event Title */}
+          <div className="flex items-center shrink-0">
+            <Link href="/" className="flex items-center gap-3 sm:gap-4 group relative py-1">
+
+              {/* Subtle Warm Radial Glow Behind Logo */}
+              <div className="absolute -inset-3 bg-[radial-gradient(circle_at_center,rgba(211,155,44,0.18)_0%,transparent_70%)] blur-lg pointer-events-none -z-10 opacity-75 group-hover:opacity-100 transition-opacity" />
+
+              {/* Chhattisgarh State Emblem Logo */}
               <Image
                 src="/assets/images/chattisgarh-logo.webp"
-                alt="Chhattisgarh State Creator & Influencer Awards"
-                width={240}
-                height={70}
+                alt="Government of Chhattisgarh Logo"
+                width={260}
+                height={75}
                 priority
-                className="h-9 sm:h-11 md:h-13 lg:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02] shrink-0"
+                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-9 sm:h-11 scale-95" : "h-11 sm:h-13 scale-100"
+                  } group-hover:scale-[1.02]`}
               />
-              <div className="flex flex-col text-left justify-center border-l border-zinc-300/80 pl-2.5 sm:pl-3">
-                <span className="font-poppins font-extrabold text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg leading-tight uppercase tracking-tight  text-[var(--secondary)]  duration-300">
-                  Chhattisgarh Creator & Influencer Awards
+
+              {/* Title & Tagline Branding Block */}
+              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/25 pl-3 sm:pl-3.5">
+                <span className="font-poppins font-semibold text-xs sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-tight uppercase tracking-tight text-zinc-900 group-hover:text-[#C15B3D] transition-colors duration-300">
+                  {t("Chhattisgarh Creator & Influencer Awards")}
                 </span>
-                <span className="font-poppins font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm text-[var(--secondary)] leading-tight tracking-wide group-hover:text-[var(--primary)] transition-colors duration-300">
-                  छत्तीसगढ़ सबले बढ़िया
+                <span className="font-poppins font-semibold text-[11px] sm:text-xs md:text-[13px] text-[#2E5C31] leading-tight tracking-wide mt-0.5">
+                  {t("छत्तीसगढ़ सबसे बढ़िया")}
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Desktop Right Side: Navigation Links & CTA Button */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-            <div className="flex items-center gap-1 xl:gap-2">
-              <Link
-                href="/"
-                className="font-inter font-bold text-sm xl:text-base text-zinc-800 hover:text-[var(--primary)] transition-colors duration-300 relative group px-3.5 py-1.5 rounded-full hover:bg-[var(--primary)]/5"
-              >
-                <span>{t("Home")}</span>
-                <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)] scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full" />
-              </Link>
 
-              <Link
-                href="/about"
-                className="font-inter font-bold text-sm xl:text-base text-zinc-800 hover:text-[var(--primary)] transition-colors duration-300 relative group px-3.5 py-1.5 rounded-full hover:bg-[var(--primary)]/5"
-              >
-                <span>{t("About Us")}</span>
-                <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)] scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full" />
-              </Link>
 
+          {/* Center Navigation Links */}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 2xl:gap-3">
+            {NAV_LINKS.map((link) => (
               <Link
-                href="/categories"
-                className="font-inter font-bold text-sm xl:text-base text-zinc-800 hover:text-[var(--primary)] transition-colors duration-300 relative group px-3.5 py-1.5 rounded-full hover:bg-[var(--primary)]/5"
+                key={link.name}
+                href={link.href}
+                className="relative group px-3.5 xl:px-4 py-2 rounded-full transition-all duration-300 font-poppins font-semibold text-[15px] xl:text-[18px] text-[#2E5C31] hover:text-[#C15B3D] tracking-normal hover:tracking-wider hover:bg-[#C15B3D]/5 flex items-center justify-center"
               >
-                <span>{t("Categories")}</span>
-                <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)] scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full" />
-              </Link>
+                <span>{t(link.name)}</span>
 
-              <Link
-                href="/#contact"
-                className="font-inter font-bold text-sm xl:text-base text-zinc-800 hover:text-[var(--primary)] transition-colors duration-300 relative group px-3.5 py-1.5 rounded-full hover:bg-[var(--primary)]/5"
-              >
-                <span>{t("Contact")}</span>
-                <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)] scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full" />
-              </Link>
-            </div>
+                {/* Terracotta Underline Grows from Center */}
+                <span className="absolute bottom-1 left-3.5 right-3.5 h-[2.5px] bg-[#C15B3D] rounded-full scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100" />
 
-            {/* Participate Now Button */}
-            <ParticipateButton onClick={openModal} size="md">
-              {t("Participate Now")}
-            </ParticipateButton>
+                {/* Animated Small Tribal Diamond Motif Underneath on Hover */}
+                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 text-[#C15B3D] text-[9px] opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 group-hover:rotate-45 transition-all duration-300 pointer-events-none">
+                  ◆
+                </span>
+              </Link>
+            ))}
           </div>
 
-          {/* Mobile & Tablet Controls (Hamburger Menu Toggle) */}
+
+          {/* Right Side: Primary CTA Button */}
+          <div className="hidden lg:flex items-center shrink-0">
+            <button
+              onClick={openModal}
+              className="relative group overflow-hidden rounded-full p-[1.5px] shadow-[0_4px_16px_rgba(193,91,61,0.3)] hover:shadow-[0_0_24px_rgba(193,91,61,0.55)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-[#C15B3D] via-[#D39B2C] to-[#C15B3D] bg-[length:200%_auto] group-hover:bg-right transition-all duration-500 rounded-full" />
+              <span className="relative flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-gradient-to-r from-[#C15B3D] to-[#D39B2C] text-white font-poppins font-bold text-sm xl:text-base tracking-wide">
+                <span>{t("Participate Now")}</span>
+                <svg
+                  className="w-4.5 h-4.5 stroke-white fill-none transition-transform duration-300 group-hover:translate-x-1"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          {/* Mobile & Tablet Hamburger Controls */}
           <div className="flex lg:hidden items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-300/80 bg-white p-2 text-zinc-800 shadow-sm active:scale-95 transition-all cursor-pointer hover:border-[var(--primary)] hover:text-[var(--primary)]"
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E8DFCF] bg-[#FFFDFC] text-zinc-800 shadow-sm active:scale-95 transition-all cursor-pointer hover:border-[#C15B3D] hover:text-[#C15B3D]"
               aria-label="Toggle Navigation Menu"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -163,120 +184,115 @@ export default function Navbar() {
               </svg>
             </button>
           </div>
-
         </div>
 
-        {/* Mobile & Tablet Drawer Menu */}
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden transition-opacity duration-300"
-              onClick={() => setIsOpen(false)}
-            />
+        {/* Bastar Tribal Pattern Bottom Border Accent */}
+        <div className="absolute bottom-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2E5C31]/25 to-transparent pointer-events-none" />
+      </nav>
 
-            {/* Sidebar drawer */}
-            <div className="fixed right-0 top-0 bottom-0 h-dvh w-[85vw] max-w-[340px] bg-[#FAF7F0] z-50 flex flex-col lg:hidden shadow-2xl transition-transform duration-300 animate-in slide-in-from-right">
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between p-3.5 sm:p-4 border-b border-zinc-200 bg-white/50 gap-2">
-                <div className="flex items-center gap-2 max-w-[80%]">
-                  <Image
-                    src="/assets/images/chattisgarh-logo.webp"
-                    alt="Chhattisgarh Logo"
-                    width={160}
-                    height={50}
-                    className="h-8 w-auto object-contain shrink-0"
-                  />
-                  <div className="flex flex-col text-left border-l border-zinc-300 pl-2">
-                    <span className="font-poppins font-extrabold text-[9px] text-[var(--primary)] leading-tight uppercase tracking-tight">
-                      Chhattisgarh Creator & Influencer Awards
-                    </span>
-                    <span className="font-poppins font-bold text-[8px] text-[var(--primary)] leading-tight">
-                      छत्तीसगढ़ सबले बढ़िया
-                    </span>
-                  </div>
+      {/* Mobile Drawer Navigation */}
+      {isOpen && (
+        <>
+          {/* Backdrop Overlay */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden transition-opacity duration-300"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Sidebar Drawer */}
+          <div className="fixed right-0 top-0 bottom-0 h-dvh w-[88vw] max-w-[360px] bg-[#FFFDFC] z-50 flex flex-col lg:hidden shadow-2xl transition-transform duration-300 border-l border-[#E8DFCF]">
+
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between p-4 border-b border-[#E8DFCF] bg-[#FFFDFC]/90">
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/assets/images/chattisgarh-logo.webp"
+                  alt="Government of Chhattisgarh Logo"
+                  width={180}
+                  height={50}
+                  className="h-9 w-auto object-contain shrink-0"
+                />
+                <div className="flex flex-col text-left border-l border-[#C15B3D]/30 pl-2.5">
+                  <span className="font-poppins font-semibold text-[10px] text-zinc-900 leading-tight uppercase">
+                    Chhattisgarh Awards
+                  </span>
+                  <span className="font-poppins font-semibold text-[9px] text-[#2E5C31] leading-tight">
+                    छत्तीसगढ़ सबसे बढ़िया
+                  </span>
                 </div>
-                <button
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="h-9 w-9 flex items-center justify-center rounded-xl border border-[#E8DFCF] bg-white text-zinc-700 shadow-sm active:scale-95 cursor-pointer hover:border-[#C15B3D] hover:text-[#C15B3D]"
+                aria-label="Close Menu"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Drawer Links List */}
+            <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-2 font-poppins font-semibold text-lg text-zinc-900">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm active:scale-95 cursor-pointer hover:border-[var(--primary)] hover:text-[var(--primary)]"
-                  aria-label="Close Menu"
+                  className="py-3 border-b border-[#E8DFCF]/60 text-[#2E5C31] hover:text-[#C15B3D] hover:pl-2 transition-all duration-300 flex items-center justify-between text-base group"
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <span>{t(link.name)}</span>
+                  <span className="text-[#C15B3D] font-bold text-sm transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
+                </Link>
+              ))}
+
+              {/* Participate Now Mobile CTA Button */}
+              <div className="pt-6">
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    openModal();
+                  }}
+                  className="w-full relative group overflow-hidden rounded-full p-[1.5px] shadow-[0_4px_16px_rgba(193,91,61,0.3)] cursor-pointer"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#C15B3D] via-[#D39B2C] to-[#C15B3D] rounded-full" />
+                  <span className="relative flex items-center justify-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#C15B3D] to-[#D39B2C] text-white font-poppins font-bold text-base tracking-wide">
+                    <span>{t("Participate Now")}</span>
+                    <svg
+                      className="w-5 h-5 stroke-white fill-none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  </span>
                 </button>
               </div>
+            </div>
 
-              {/* Drawer Links */}
-              <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-3 font-semibold text-lg text-zinc-900">
-                <Link
-                  href="/"
-                  onClick={() => setIsOpen(false)}
-                  className="py-3 border-b border-zinc-200/80 text-zinc-900 hover:text-[var(--primary)] hover:pl-2 transition-all duration-300 flex items-center justify-between font-inter font-bold text-base group"
+            {/* Drawer Footer with Language Selection */}
+            <div className="p-6 border-t border-[#E8DFCF] bg-[#FFFDFC] flex flex-col gap-4">
+              <div className="flex items-center justify-between bg-white border border-[#E8DFCF] px-4 py-3 rounded-2xl shadow-sm">
+                <span className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Language</span>
+                <select
+                  value={language}
+                  onChange={(e) => changeLanguage(e.target.value)}
+                  className="rounded-lg border border-[#E8DFCF] bg-[#FFFDFC] px-3 py-1.5 text-zinc-800 text-xs font-bold focus:outline-none cursor-pointer focus:ring-1 focus:ring-[#C15B3D]"
                 >
-                  <span>{t("Home")}</span>
-                  <span className="text-[var(--primary)] font-bold text-sm transition-transform group-hover:translate-x-1">→</span>
-                </Link>
-                <Link
-                  href="/about"
-                  onClick={() => setIsOpen(false)}
-                  className="py-3 border-b border-zinc-200/80 text-zinc-900 hover:text-[var(--primary)] hover:pl-2 transition-all duration-300 flex items-center justify-between font-inter font-bold text-base group"
-                >
-                  <span>{t("About Us")}</span>
-                  <span className="text-[var(--primary)] font-bold text-sm transition-transform group-hover:translate-x-1">→</span>
-                </Link>
-                <Link
-                  href="/categories"
-                  onClick={() => setIsOpen(false)}
-                  className="py-3 border-b border-zinc-200/80 text-zinc-900 hover:text-[var(--primary)] hover:pl-2 transition-all duration-300 flex items-center justify-between font-inter font-bold text-base group"
-                >
-                  <span>{t("Categories")}</span>
-                  <span className="text-[var(--primary)] font-bold text-sm transition-transform group-hover:translate-x-1">→</span>
-                </Link>
-                <Link
-                  href="/#contact"
-                  onClick={() => setIsOpen(false)}
-                  className="py-3 border-b border-zinc-200/80 text-zinc-900 hover:text-[var(--primary)] hover:pl-2 transition-all duration-300 flex items-center justify-between font-inter font-bold text-base group"
-                >
-                  <span>{t("Contact")}</span>
-                  <span className="text-[var(--primary)] font-bold text-sm transition-transform group-hover:translate-x-1">→</span>
-                </Link>
-
-                {/* Participate Now CTA Button inside Mobile Drawer */}
-                <div className="pt-4">
-                  <ParticipateButton
-                    onClick={() => {
-                      setIsOpen(false);
-                      openModal();
-                    }}
-                    fullWidth
-                    size="lg"
-                    className="w-full justify-center text-sm font-bold shadow-md"
-                  >
-                    {t("Participate Now")}
-                  </ParticipateButton>
-                </div>
-              </div>
-
-              {/* Drawer Footer */}
-              <div className="p-6 border-t border-zinc-200 bg-white/40 flex flex-col gap-4">
-                <div className="flex items-center justify-between bg-white border border-zinc-200 px-3.5 py-2.5 rounded-xl">
-                  <span className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Language</span>
-                  <select
-                    value={language}
-                    onChange={(e) => changeLanguage(e.target.value)}
-                    className="rounded border border-zinc-200 bg-white px-2.5 py-1 text-zinc-800 text-xs font-bold focus:outline-none cursor-pointer focus:ring-1 focus:ring-[var(--primary)]"
-                  >
-                    <option value="en">English</option>
-                    <option value="hi">हिन्दी</option>
-                    <option value="cg">छत्तीसगढ़ी</option>
-                  </select>
-                </div>
+                  <option value="en">English</option>
+                  <option value="hi">हिन्दी</option>
+                  <option value="cg">छत्तीसगढ़ी</option>
+                </select>
               </div>
             </div>
-          </>
-        )}
-      </nav>
+          </div>
+        </>
+      )}
     </>
   );
 }

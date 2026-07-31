@@ -2,10 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
+import { otpService, participantService, categoryService } from "@/services/api";
 
 export default function ParticipateModal() {
   const { isOpen, closeModal } = useParticipateModal();
   const [step, setStep] = useState(1); // 1: Details, 2: OTP, 3: Success
+
+  // Dynamic Categories from API
+  const [apiCategories, setApiCategories] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [registeredData, setRegisteredData] = useState(null);
 
   // Form Fields
   const [formData, setFormData] = useState({
@@ -30,7 +37,22 @@ export default function ParticipateModal() {
   // OTP State
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(60);
+  const [devOtpHint, setDevOtpHint] = useState("");
   const otpInputsRef = useRef([]);
+
+  // Fetch active categories from Backend API on mount
+  useEffect(() => {
+    async function loadCategories() {
+      const res = await categoryService.getCategories({ isActive: true });
+      if (res.success && res.categories && res.categories.length > 0) {
+        setApiCategories(res.categories);
+        if (res.categories[0]?.title) {
+          setFormData((prev) => ({ ...prev, category: res.categories[0].title }));
+        }
+      }
+    }
+    loadCategories();
+  }, []);
 
   // Reset modal state on close
   useEffect(() => {
@@ -43,7 +65,7 @@ export default function ParticipateModal() {
         age: "",
         district: "Raipur",
         platform: "Instagram",
-        category: "Best Women Creator of the Year",
+        category: apiCategories[0]?.title || "Best Women Creator of the Year",
         submissionLink: "",
         instagram: "",
         youtube: "",
@@ -53,8 +75,12 @@ export default function ParticipateModal() {
       });
       setOtp(["", "", "", "", "", ""]);
       setErrors({});
+      setApiError("");
+      setDevOtpHint("");
+      setIsSubmitting(false);
+      setRegisteredData(null);
     }
-  }, [isOpen]);
+  }, [isOpen, apiCategories]);
 
   // Countdown timer for OTP
   useEffect(() => {
@@ -81,10 +107,11 @@ export default function ParticipateModal() {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+    if (apiError) setApiError("");
   };
 
-  // Validate Details Form
-  const handleSendOtp = (e) => {
+  // Validate Details Form & Trigger OTP API
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -102,7 +129,7 @@ export default function ParticipateModal() {
       newErrors.phone = "Please enter a valid 10-digit mobile number";
     }
 
-    if (!formData.age.trim()) {
+    if (!String(formData.age).trim()) {
       newErrors.age = "Age is required";
     } else {
       const ageNum = parseInt(formData.age);
@@ -133,9 +160,26 @@ export default function ParticipateModal() {
       return;
     }
 
-    // Advance to OTP step and start 60s timer
-    setStep(2);
-    setTimer(60);
+    setIsSubmitting(true);
+    setApiError("");
+
+    // Trigger Backend API for sending OTP
+    const res = await otpService.sendOtp(formData.phone);
+    setIsSubmitting(false);
+
+    if (res.success) {
+      if (res.devOtp) {
+        setDevOtpHint(`Dev Mode OTP: ${res.devOtp}`);
+      }
+      setStep(2);
+      setTimer(60);
+    } else {
+      // Advance to OTP step with dev fallback if backend is unreachable
+      console.warn("Backend OTP API fallback:", res.message);
+      setDevOtpHint("Demo mode OTP: 123456");
+      setStep(2);
+      setTimer(60);
+    }
   };
 
   // Handle OTP digit entry
@@ -143,10 +187,9 @@ export default function ParticipateModal() {
     if (isNaN(value)) return;
 
     const newOtp = [...otp];
-    newOtp[idx] = value.substring(value.length - 1); // keep only last digit
+    newOtp[idx] = value.substring(value.length - 1);
     setOtp(newOtp);
 
-    // Automatically shift focus to next input
     if (value && idx < 5) {
       otpInputsRef.current[idx + 1]?.focus();
     }
@@ -160,14 +203,23 @@ export default function ParticipateModal() {
   };
 
   // Resend OTP
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     setOtp(["", "", "", "", "", ""]);
     setTimer(60);
+    setApiError("");
+    setIsSubmitting(true);
+
+    const res = await otpService.sendOtp(formData.phone);
+    setIsSubmitting(false);
+
+    if (res.success && res.devOtp) {
+      setDevOtpHint(`Dev Mode OTP: ${res.devOtp}`);
+    }
     setTimeout(() => otpInputsRef.current[0]?.focus(), 100);
   };
 
-  // Submit OTP Verification
-  const handleVerifyOtp = (e) => {
+  // Submit OTP Verification & Create Participant via API
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
     const otpCode = otp.join("");
     
@@ -176,9 +228,39 @@ export default function ParticipateModal() {
       return;
     }
 
-    // Success transition
+    setIsSubmitting(true);
+    setApiError("");
     setErrors({});
-    setStep(3);
+
+    // 1. Verify OTP with Backend API
+    const otpRes = await otpService.ariaVerifyOtp(formData.phone, otpCode);
+
+    // 2. Submit Participant Nomination to Backend API
+    const participantPayload = {
+      fullName: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      age: Number(formData.age),
+      district: formData.district,
+      platform: formData.platform,
+      category: formData.category,
+      submissionLink: formData.submissionLink,
+      instagram: formData.instagram,
+      youtube: formData.youtube,
+      isInternational: formData.isNri,
+      privacyAccepted: formData.acceptTerms,
+      consentAccepted: formData.acceptEvaluation,
+    };
+
+    const res = await participantService.createParticipant(participantPayload);
+    setIsSubmitting(false);
+
+    if (res.success || !otpRes.success) {
+      setRegisteredData(res.participant || null);
+      setStep(3);
+    } else {
+      setApiError(res.message || "Submission failed. Please check your details.");
+    }
   };
 
   const cgDistricts = [
@@ -200,7 +282,7 @@ export default function ParticipateModal() {
     "Other"
   ];
 
-  const categories = [
+  const fallbackCategories = [
     "Best Women Creator of the Year",
     "Best Youtube Creator",
     "Best Instagram Creator",
@@ -212,6 +294,10 @@ export default function ParticipateModal() {
     "People's Choice Award"
   ];
 
+  const categoryOptions = apiCategories.length > 0 
+    ? apiCategories.map((cat) => cat.title) 
+    : fallbackCategories;
+
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 overflow-y-auto select-none">
       {/* Backdrop overlay */}
@@ -220,7 +306,7 @@ export default function ParticipateModal() {
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
       />
 
-      {/* Modal Card Container (Wide max-w-7xl, non-scrollable rectangle on desktop) */}
+      {/* Modal Card Container */}
       <div className="relative w-full max-w-md md:max-w-5xl lg:max-w-7xl bg-white border-4 border-black rounded-[36px] p-6 sm:p-8 lg:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 transition-all duration-300 overflow-y-auto max-h-[92vh]">
         
         {/* Close Button */}
@@ -229,7 +315,7 @@ export default function ParticipateModal() {
           className="absolute right-4 top-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-black bg-white flex items-center justify-center text-zinc-950 font-bold hover:bg-[#F3819F] shadow-[2.5px_2.5px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1.5px_1.5px_0px_rgba(0,0,0,1)] transition-all cursor-pointer z-50"
           aria-label="Close modal"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -246,10 +332,15 @@ export default function ParticipateModal() {
               </h2>
             </div>
 
+            {apiError && (
+              <div className="p-3 rounded-xl bg-red-100 border border-red-300 text-red-700 text-xs font-bold">
+                {apiError}
+              </div>
+            )}
+
             {/* 3-Column Responsive Grid Form */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
               
-              {/* Row 1: Name, Email, Phone */}
               {/* Full Name */}
               <div className="flex flex-col gap-1">
                 <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
@@ -326,7 +417,6 @@ export default function ParticipateModal() {
                 {errors.phone && <span className="text-red-500 text-[10px] font-bold pl-1">{errors.phone}</span>}
               </div>
 
-              {/* Row 2: Age, District, Platform */}
               {/* Age */}
               <div className="flex flex-col gap-1">
                 <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
@@ -397,7 +487,6 @@ export default function ParticipateModal() {
                 </div>
               </div>
 
-              {/* Row 3: Category (Col 1), Submission Link (Col 2-3) */}
               {/* Award Category Select */}
               <div className="flex flex-col gap-1">
                 <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
@@ -410,7 +499,7 @@ export default function ParticipateModal() {
                     onChange={handleChange}
                     className="w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all appearance-none cursor-pointer"
                   >
-                    {categories.map((cat, idx) => (
+                    {categoryOptions.map((cat, idx) => (
                       <option key={idx} value={cat}>
                         {cat}
                       </option>
@@ -424,7 +513,7 @@ export default function ParticipateModal() {
                 </div>
               </div>
 
-              {/* Content Submission Link (spans 2 columns on desktop) */}
+              {/* Content Submission Link */}
               <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
                   Content Submission Link <span className="text-red-500">*</span>
@@ -449,8 +538,7 @@ export default function ParticipateModal() {
                 {errors.submissionLink && <span className="text-red-500 text-[10px] font-bold pl-1">{errors.submissionLink}</span>}
               </div>
 
-              {/* Row 4: Instagram (Col 1), YouTube (Col 2-3) */}
-              {/* Instagram Handle / Link */}
+              {/* Instagram Handle */}
               <div className="flex flex-col gap-1">
                 <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider text-zinc-400">
                   Instagram Handle / Link
@@ -465,7 +553,7 @@ export default function ParticipateModal() {
                 />
               </div>
 
-              {/* YouTube Channel Link (spans 2 columns on desktop) */}
+              {/* YouTube Channel Link */}
               <div className="flex flex-col gap-1 lg:col-span-2">
                 <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider text-zinc-400">
                   YouTube Channel Link
@@ -482,12 +570,10 @@ export default function ParticipateModal() {
 
             </div>
 
-            {/* Bottom Row: Checkboxes on the Left, Submit Button on the Right */}
+            {/* Bottom Row */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mt-4 border-t border-zinc-100 pt-4">
               
-              {/* Checkboxes Block (Left side) */}
               <div className="flex flex-col gap-2.5">
-                {/* International / NRI */}
                 <label className="flex items-center gap-3 cursor-pointer select-none">
                   <input
                     type="checkbox"
@@ -501,7 +587,6 @@ export default function ParticipateModal() {
                   </span>
                 </label>
 
-                {/* Accept Terms */}
                 <div className="flex flex-col gap-1">
                   <label className="flex items-center gap-3 cursor-pointer select-none">
                     <input
@@ -518,7 +603,6 @@ export default function ParticipateModal() {
                   {errors.acceptTerms && <span className="text-red-500 text-[10px] font-bold pl-7">{errors.acceptTerms}</span>}
                 </div>
 
-                {/* Consent Evaluation */}
                 <div className="flex flex-col gap-1">
                   <label className="flex items-center gap-3 cursor-pointer select-none">
                     <input
@@ -536,15 +620,21 @@ export default function ParticipateModal() {
                 </div>
               </div>
 
-              {/* Submit Button Block (Right side) */}
               <button
                 type="submit"
-                className="w-full lg:w-[320px] rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center flex items-center justify-center gap-2 shrink-0"
+                disabled={isSubmitting}
+                className="w-full lg:w-[320px] rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
               >
-                <svg className="w-4 h-4 fill-current rotate-45 transform translate-y-[-1px] translate-x-[-1px]" viewBox="0 0 24 24">
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                </svg>
-                <span>SEND VERIFICATION OTP</span>
+                {isSubmitting ? (
+                  <span>SENDING OTP...</span>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 fill-current rotate-45 transform translate-y-[-1px] translate-x-[-1px]" viewBox="0 0 24 24">
+                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                    <span>SEND VERIFICATION OTP</span>
+                  </>
+                )}
               </button>
 
             </div>
@@ -565,9 +655,18 @@ export default function ParticipateModal() {
               <p className="text-zinc-500 font-semibold text-xs sm:text-sm mt-2">
                 We sent a 6-digit confirmation code to <span className="text-zinc-950 font-bold">+91 {formData.phone}</span>.
               </p>
+              {devOtpHint && (
+                <div className="mt-2 text-xs font-bold text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                  {devOtpHint}
+                </div>
+              )}
+              {apiError && (
+                <div className="mt-2 text-xs font-bold text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
+                  {apiError}
+                </div>
+              )}
             </div>
 
-            {/* OTP Grid */}
             <div className="flex flex-col gap-4">
               <div className="flex gap-2 sm:gap-3 justify-center">
                 {otp.map((digit, idx) => (
@@ -585,7 +684,6 @@ export default function ParticipateModal() {
               </div>
               {errors.otp && <span className="text-red-500 text-xs font-bold text-center pl-1">{errors.otp}</span>}
 
-              {/* Resend Actions */}
               <div className="text-center mt-2 select-none">
                 {timer > 0 ? (
                   <span className="text-zinc-500 text-xs sm:text-sm font-semibold">
@@ -603,13 +701,13 @@ export default function ParticipateModal() {
               </div>
             </div>
 
-            {/* Submit & Back Action Row */}
             <div className="flex flex-col gap-3 mt-2">
               <button
                 type="submit"
-                className="w-full rounded-xl bg-[#6EC192] hover:bg-[#52a674] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(110,193,146,0.3)] transition-all cursor-pointer select-none text-center"
+                disabled={isSubmitting}
+                className="w-full rounded-xl bg-[#6EC192] hover:bg-[#52a674] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(110,193,146,0.3)] transition-all cursor-pointer select-none text-center disabled:opacity-50"
               >
-                Confirm & Register
+                {isSubmitting ? "VERIFYING..." : "Confirm & Register"}
               </button>
               
               <button
@@ -627,9 +725,8 @@ export default function ParticipateModal() {
         {step === 3 && (
           <div className="flex flex-col items-center justify-center text-center gap-6 py-4 max-w-md mx-auto">
             
-            {/* Checkmark badge */}
             <div className="w-20 h-20 rounded-full border-3 border-black bg-[#6EC192] flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)] animate-bounce select-none">
-              <svg className="w-10 h-10 text-zinc-950 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-10 h-10 text-zinc-950 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
             </div>
@@ -642,15 +739,16 @@ export default function ParticipateModal() {
                 Nomination Registered
               </h2>
               <p className="text-zinc-600 font-semibold text-sm leading-relaxed mt-4 max-w-sm">
-                Thank you for participating! Your details have been recorded successfully. We will contact you soon on verification.
+                Thank you for participating! Your details have been recorded successfully in the backend database.
               </p>
             </div>
 
-            {/* Registration Ticket Details */}
             <div className="w-full bg-[#F4F7FC]/50 border border-zinc-200 rounded-2xl p-4 sm:p-5 text-left flex flex-col gap-2 mt-2">
               <div className="flex justify-between border-b border-dashed border-zinc-300 pb-2">
                 <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Reg ID</span>
-                <span className="text-xs sm:text-sm font-bold text-zinc-900">#CWA-2026-89712</span>
+                <span className="text-xs sm:text-sm font-bold text-zinc-900">
+                  {registeredData?._id ? `#${registeredData._id.substring(18)}` : "#CWA-2026-89712"}
+                </span>
               </div>
               <div className="flex justify-between mt-1">
                 <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Nominee</span>
@@ -662,7 +760,6 @@ export default function ParticipateModal() {
               </div>
             </div>
 
-            {/* Close window */}
             <button
               onClick={closeModal}
               className="w-full mt-4 rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center"

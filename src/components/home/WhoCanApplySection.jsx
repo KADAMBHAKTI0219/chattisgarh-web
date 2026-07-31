@@ -6,6 +6,7 @@ import { useParticipateModal } from "@/context/ParticipateModalContext";
 import {
   FaUserAlt, FaYoutube, FaInstagram, FaGlobe, FaPenFancy,
   FaAward, FaCamera, FaMicrophone, FaGamepad, FaTshirt, FaHandsHelping,
+  FaTimes, FaCheckCircle, FaFileContract
 } from "react-icons/fa";
 import Heading from "@/components/common/Heading";
 import { gsap } from "gsap";
@@ -19,6 +20,8 @@ export default function WhoCanApplySection() {
   const { t } = useLanguage();
   const { openModal } = useParticipateModal();
   const [revealed, setRevealed] = useState(() => new Set());
+  const [showEligibilityModal, setShowEligibilityModal] = useState(false);
+  const [activeCandidate, setActiveCandidate] = useState(null);
 
   const sectionRef = useRef(null);
   const leftRefs = useRef([]);
@@ -26,7 +29,6 @@ export default function WhoCanApplySection() {
   leftRefs.current = [];
   rightRefs.current = [];
 
-  // Authentic Desi Earthy Palette (Terracotta, Sal Forest Green, Ochre Gold, Earth Sand)
   const candidates = [
     {
       icon: FaUserAlt,
@@ -99,13 +101,9 @@ export default function WhoCanApplySection() {
   const leftItems = candidates.slice(0, 6);
   const rightItems = candidates.slice(6);
 
-  const toggleReveal = (idx) => {
-    setRevealed((prev) => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx);
-      else next.add(idx);
-      return next;
-    });
+  const handleCardClick = (cand) => {
+    setActiveCandidate(cand);
+    setShowEligibilityModal(true);
   };
 
   useEffect(() => {
@@ -143,68 +141,44 @@ export default function WhoCanApplySection() {
 
   const renderRow = (cand, refsArray) => {
     const IconComponent = cand.icon;
-    const isRevealed = revealed.has(cand.idx);
 
     return (
       <div
         key={cand.idx}
         ref={(el) => el && refsArray.current.push(el)}
-        onClick={() => toggleReveal(cand.idx)}
-        className="relative h-14 sm:h-16 cursor-pointer [perspective:1000px]"
-        style={{ "--gs": cand.c1, "--ge": cand.c2, "--ac": cand.accent }}
+        onClick={() => handleCardClick(cand)}
+        className="relative h-14 sm:h-16 cursor-pointer group"
       >
         <div
-          className={`group relative w-full h-full transition-transform duration-700 ease-out [transform-style:preserve-3d] lg:hover:[transform:rotateY(180deg)] ${isRevealed ? "[transform:rotateY(180deg)]" : ""
-            }`}
+          className="relative w-full h-full flex items-center justify-between px-3.5 sm:px-5 rounded-2xl border bg-white shadow-sm hover:shadow-md hover:border-[#D4A534] hover:-translate-y-0.5 transition-all duration-300"
+          style={{ borderColor: `${cand.accent}40` }}
         >
-          {/* FRONT */}
-          <div
-            className="absolute inset-0 [backface-visibility:hidden] flex items-center justify-between h-full px-3.5 sm:px-5 rounded-2xl border bg-surface shadow-sm transition-all duration-300 group-hover:shadow-md"
-            style={{ borderColor: `${cand.accent}40` }}
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <span
-                className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
-                style={{
-                  background: `linear-gradient(135deg, ${cand.c1}, ${cand.c2})`,
-                  color: cand.accent,
-                }}
-              >
-                <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
-              </span>
-              <span className="font-poppins font-bold text-xs sm:text-sm text-foreground truncate">
-                {t(cand.title)}
-              </span>
-            </div>
-
+          <div className="flex items-center gap-3 min-w-0">
             <span
-              className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border transition-colors"
+              className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
               style={{
-                borderColor: `${cand.accent}40`,
+                background: `linear-gradient(135deg, ${cand.c1}, ${cand.c2})`,
                 color: cand.accent,
-                backgroundColor: `${cand.c1}40`,
               }}
             >
-              <span>{t("Hover / Tap")}</span>
+              <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
+            </span>
+            <span className="font-poppins font-bold text-xs sm:text-sm text-zinc-900 truncate">
+              {t(cand.title)}
             </span>
           </div>
 
-          {/* BACK */}
-          <div
-            className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] flex items-center gap-3 h-full px-4 rounded-2xl border shadow-md"
+          <span
+            className="inline-flex items-center gap-1.5 text-[10px] font-poppins font-bold uppercase tracking-wider px-3 py-1 rounded-full border transition-all duration-300 group-hover:bg-[#C45A32] group-hover:text-white group-hover:border-[#C45A32]"
             style={{
-              background: `linear-gradient(135deg, ${cand.c1}, ${cand.c2})`,
-              borderColor: cand.accent,
+              borderColor: `${cand.accent}40`,
+              color: cand.accent,
+              backgroundColor: `${cand.c1}40`,
             }}
           >
-            <IconComponent className="w-4 h-4 shrink-0" style={{ color: cand.accent }} />
-            <p
-              className="font-inter font-bold text-xs text-left leading-snug line-clamp-2"
-              style={{ color: cand.accent }}
-            >
-              {t(cand.desc)}
-            </p>
-          </div>
+            <span>{t("View Rules")}</span>
+            <span className="text-xs">→</span>
+          </span>
         </div>
       </div>
     );
@@ -214,7 +188,7 @@ export default function WhoCanApplySection() {
     <section
       ref={sectionRef}
       id="who-can-apply"
-      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-hidden"
+      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-12 lg:py-14 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-hidden"
     >
       {/* Background Forest Green Ambient Glow */}
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-80 h-80 bg-[var(--secondary)]/10 rounded-full blur-3xl pointer-events-none" />
@@ -233,6 +207,129 @@ export default function WhoCanApplySection() {
         <div className="flex flex-col gap-4">{leftItems.map((cand) => renderRow(cand, leftRefs))}</div>
         <div className="flex flex-col gap-4">{rightItems.map((cand) => renderRow(cand, rightRefs))}</div>
       </div>
+
+
+      {/* ================= GUIDELINES & ELIGIBILITY MODAL POPUP ================= */}
+      {showEligibilityModal && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="relative w-full max-w-3xl max-h-[90vh] bg-[#FFFDFC] border-2 border-[#D4A534]/50 rounded-[32px] shadow-[0_25px_70px_rgba(0,0,0,0.35)] flex flex-col overflow-hidden text-left">
+
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 sm:p-8 border-b border-[#E8DFCF] bg-[#F8F4EA]/80">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#C45A32]/15 border border-[#C45A32]/30 flex items-center justify-center text-[#C45A32]">
+                  <FaFileContract className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] sm:text-xs font-poppins font-extrabold uppercase tracking-widest text-[#C45A32]">
+                    {t("Official State Portal")}
+                  </span>
+                  <h3 className="text-lg sm:text-2xl font-poppins font-extrabold text-[#1c2c23] tracking-tight uppercase">
+                    {t("GUIDELINES & ELIGIBILITY")}
+                  </h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowEligibilityModal(false)}
+                className="w-10 h-10 rounded-full border border-zinc-200 bg-white flex items-center justify-center text-zinc-700 hover:border-[#C45A32] hover:text-[#C45A32] transition-colors cursor-pointer"
+                aria-label="Close Rules Modal"
+              >
+                <FaTimes className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8 flex flex-col gap-6 text-[#3d4a42] font-inter text-sm sm:text-base leading-relaxed">
+
+              {activeCandidate && (
+                <div className="p-4 rounded-2xl bg-[#21593D]/10 border border-[#21593D]/25 flex items-center gap-3">
+                  <span className="font-poppins font-bold text-xs sm:text-sm text-[#21593D]">
+                    Selected Category: <span className="text-[#C45A32]">{t(activeCandidate.title)}</span> — {t(activeCandidate.desc)}
+                  </span>
+                </div>
+              )}
+
+              {/* 1. Who Can Apply? */}
+              <div className="flex flex-col gap-2">
+                <h4 className="font-poppins font-extrabold text-base sm:text-lg text-[#1c2c23] flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-lg bg-[#C45A32] text-white flex items-center justify-center text-xs font-bold">1</span>
+                  {t("Who Can Apply?")}
+                </h4>
+                <ul className="flex flex-col gap-2 pl-9 list-disc text-sm sm:text-base">
+                  <li><strong>Age:</strong> Applicants must be 18 years or older.</li>
+                  <li><strong>Nationality:</strong> Open to Indian citizens.</li>
+                  <li><strong>Platforms:</strong> Your content should be published on an active YouTube, Instagram, Facebook, or LinkedIn account.</li>
+                  <li><strong>Categories:</strong> You may apply in up to three award categories.</li>
+                </ul>
+              </div>
+
+              {/* 2. How Entries Are Evaluated */}
+              <div className="flex flex-col gap-2 border-t border-[#E8DFCF] pt-5">
+                <h4 className="font-poppins font-extrabold text-base sm:text-lg text-[#1c2c23] flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-lg bg-[#21593D] text-white flex items-center justify-center text-xs font-bold">2</span>
+                  {t("How Entries Are Evaluated")}
+                </h4>
+                <p className="pl-9 text-xs sm:text-sm font-semibold text-zinc-600">Every application is reviewed based on:</p>
+                <ul className="flex flex-col gap-2 pl-9 list-disc text-sm sm:text-base">
+                  <li>Content Quality</li>
+                  <li>Creativity & Originality</li>
+                  <li>Positive Social Impact</li>
+                  <li>Engagement & Audience Reach</li>
+                  <li>Contribution to Chhattisgarh’s Culture, Tourism, Heritage, Innovation, or Community</li>
+                </ul>
+              </div>
+
+              {/* 3. Jury & Selection Process */}
+              <div className="flex flex-col gap-2 border-t border-[#E8DFCF] pt-5">
+                <h4 className="font-poppins font-extrabold text-base sm:text-lg text-[#1c2c23] flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-lg bg-[#D4A534] text-white flex items-center justify-center text-xs font-bold">3</span>
+                  {t("Jury & Selection Process")}
+                </h4>
+                <ul className="flex flex-col gap-2 pl-9 list-disc text-sm sm:text-base">
+                  <li>Applications are reviewed by an independent jury panel.</li>
+                  <li>Each entry is evaluated fairly and transparently.</li>
+                  <li>For selected categories, public voting may also be considered.</li>
+                </ul>
+              </div>
+
+              {/* 4. Code of Conduct */}
+              <div className="flex flex-col gap-2 border-t border-[#E8DFCF] pt-5">
+                <h4 className="font-poppins font-extrabold text-base sm:text-lg text-[#1c2c23] flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-lg bg-[#C45A32] text-white flex items-center justify-center text-xs font-bold">4</span>
+                  {t("Code of Conduct")}
+                </h4>
+                <p className="pl-9 text-xs sm:text-sm font-semibold text-zinc-600">To remain eligible:</p>
+                <ul className="flex flex-col gap-2 pl-9 list-disc text-sm sm:text-base">
+                  <li>Submit original content.</li>
+                  <li>Follow the community guidelines of your platform.</li>
+                  <li>Do not submit misleading, harmful, or illegal content.</li>
+                  <li>Any false information or copyright violation may lead to disqualification.</li>
+                  <li>The decision of the jury and organizing committee will be final.</li>
+                </ul>
+              </div>
+
+            </div>
+
+            {/* Modal Footer CTA */}
+            <div className="p-4 sm:p-6 border-t border-[#E8DFCF] bg-[#F8F4EA] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-xs text-zinc-600 font-semibold text-center sm:text-left">
+                Ready to submit your nomination under these rules?
+              </span>
+              <button
+                onClick={() => {
+                  setShowEligibilityModal(false);
+                  openModal();
+                }}
+                className="w-full sm:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-[#C45A32] to-[#D4A534] text-white font-poppins font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              >
+                {t("Proceed To Participate")}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </section>
   );
 }

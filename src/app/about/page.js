@@ -1,39 +1,38 @@
 import AboutHero from "@/components/about/AboutHero";
-import EmpowermentHistory from "@/components/about/EmpowermentHistory";
-import VisionMissionSection from "@/components/about/VisionMissionSection";
 import NarrativeSection from "@/components/about/NarrativeSection";
-import ArchitectsTrustSection from "@/components/about/ArchitectsTrustSection";
+import VisionMissionSection from "@/components/about/VisionMissionSection";
 import CulturalQuoteSection from "@/components/about/CulturalQuoteSection";
-import BeyondTrophySection from "@/components/about/BeyondTrophySection";
-import FutureCreatorsSection from "@/components/about/FutureCreatorsSection";
+import ArchitectsTrustSection from "@/components/about/ArchitectsTrustSection";
+
+export const metadata = {
+  title: "About Us | Chhattisgarh Creator & Influencer Awards",
+  description:
+    "Discover the mission, vision, and stories behind the official Chhattisgarh Creator & Influencer Awards initiative by the Government of Chhattisgarh.",
+};
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-12 flex flex-col gap-12 relative overflow-x-hidden animate-page-enter">
-      
+    <div className="min-h-screen bg-[var(--background)] font-sans text-zinc-950 flex flex-col relative overflow-x-hidden animate-page-enter">
+
       {/* 1. About Hero Section */}
       <AboutHero />
 
-      {/* 2. A History of Empowerment */}
-      <EmpowermentHistory />
+      {/* Bastar Tribal Pattern Divider */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
 
-      {/* 3. Vision & Mission Section */}
-      <VisionMissionSection />
-
-      {/* 4. Driving the National Narrative */}
+      {/* 2. Narrative Section (Editorial Storytelling) */}
       <NarrativeSection />
 
-      {/* 5. Digital Creators as Architects of Trust */}
-      <ArchitectsTrustSection />
+      {/* 3. Vision & Mission Section (Dark Green Background) */}
+      <VisionMissionSection />
 
-      {/* 6. Cultural Quote & Illustration */}
+      {/* 4. Cultural Quote & Illustration (White Background) */}
       <CulturalQuoteSection />
 
-      {/* 7. Beyond the Trophy Section */}
-      <BeyondTrophySection />
+      {/* 5. Architects of Trust / Why Creators Matter (Light Beige Background) */}
+      <ArchitectsTrustSection />
 
-      {/* 8. A Future Built by Creators */}
-      <FutureCreatorsSection />
+
 
     </div>
   );

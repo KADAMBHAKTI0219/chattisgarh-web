@@ -106,7 +106,7 @@ export default function LeadershipSection() {
   return (
     <section
       id="leadership"
-      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-10 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-visible"
+      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-12 lg:py-14 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-visible"
     >
       {/* Centered Heading */}
       <Heading

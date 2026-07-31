@@ -5,22 +5,18 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { ParticipateButton } from "@/components/common/Button";
 
-// Add as many banner images as you like — the carousel adapts automatically.
-// Desktop and mobile arrays should have the same number of slides (index i
-// on desktop pairs with index i on mobile) since they share one indicator/timer.
+// Desktop and mobile slides arrays
 const DESKTOP_SLIDES = [
   "/assets/images/herosection.png",
-  // "/assets/images/herosection-2.png",
-  // "/assets/images/herosection-3.png",
+  "/assets/images/herosection-2.png",
+  "/assets/images/herosection-3.png",
 ];
 
 const MOBILE_SLIDES = [
   "/assets/images/mob-hero.png",
-  // "/assets/images/mob-hero-2.png",
-  // "/assets/images/mob-hero-3.png",
 ];
 
-const AUTOPLAY_MS = 4500;
+const AUTOPLAY_MS = 3500;
 
 export default function HeroSection() {
   const { openModal } = useParticipateModal();
@@ -33,8 +29,7 @@ export default function HeroSection() {
 
   const goTo = (idx) => setCurrent(((idx % total) + total) % total);
 
-  // Autoplay — pauses while the user is hovering the banner (desktop) and
-  // restarts cleanly whenever `current` changes so the interval never drifts.
+  // Autoplay timer
   useEffect(() => {
     if (total <= 1 || isHovered) return;
     timerRef.current = setInterval(() => {
@@ -46,20 +41,18 @@ export default function HeroSection() {
   return (
     <section
       id="hero-section"
-      className="relative flex flex-col items-center justify-center text-center w-full max-w-full overflow-hidden"
+      className="relative flex flex-col items-center justify-center text-center w-full max-w-full overflow-hidden select-none"
     >
-
       {/* 1. Banner Carousel Container */}
       <div
         className="relative w-full max-w-full flex items-center justify-center overflow-hidden bg-[#FAF7F0]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-
-        {/* Hero Background Images — Desktop (swipes automatically) */}
-        <div className="hidden lg:block relative w-full overflow-hidden">
+        {/* Hero Background Images — Desktop */}
+        <div className="hidden lg:block relative w-full max-w-full overflow-hidden">
           <div
-            className="flex transition-transform duration-1000 ease-in-out"
+            className="flex w-full transition-transform duration-1000 ease-in-out"
             style={{ transform: `translateX(-${current * 100}%)` }}
           >
             {DESKTOP_SLIDES.map((src, i) => (
@@ -67,25 +60,25 @@ export default function HeroSection() {
                 key={src + i}
                 src={src}
                 alt="Hero Background Banner"
-                className="w-full h-auto object-contain select-none shrink-0 z-0"
+                className="w-full h-auto max-w-full object-cover select-none shrink-0 z-0 block border-0 outline-none"
                 draggable={false}
               />
             ))}
           </div>
         </div>
 
-        {/* Hero Background Images — Mobile (swipes automatically) */}
-        <div className="block lg:hidden relative w-full overflow-hidden">
+        {/* Hero Background Images — Mobile */}
+        <div className="block lg:hidden relative w-full max-w-full overflow-hidden">
           <div
-            className="flex transition-transform duration-1000 ease-in-out"
-            style={{ transform: `translateX(-${current * 100}%)` }}
+            className="flex w-full transition-transform duration-1000 ease-in-out"
+            style={{ transform: `translateX(-${(current % MOBILE_SLIDES.length) * 100}%)` }}
           >
             {MOBILE_SLIDES.map((src, i) => (
               <img
                 key={src + i}
                 src={src}
                 alt="Hero Background Banner"
-                className="w-full h-auto object-contain select-none shrink-0 z-0"
+                className="w-full h-auto max-w-full object-cover select-none shrink-0 z-0 block border-0 outline-none"
                 draggable={false}
               />
             ))}
@@ -107,19 +100,19 @@ export default function HeroSection() {
           </div>
         )}
 
-        {/* Apply Now Button — overlaid at the bottom of the banner image */}
-        <div className="absolute inset-x-0 bottom-[45%] sm:bottom-[45%] md:bottom-[45%] lg:bottom-[15%] xl:bottom-[15%] z-20 flex justify-center px-2">
-          <ParticipateButton
-            onClick={openModal}
-            size="lg"
-            className="text-xs sm:text-base md:text-lg px-4 py-2.5 sm:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)]"
-          >
-            {t("Participate Now")}
-          </ParticipateButton>
-        </div>
-
+        {/* Apply Now Button — ONLY rendered on the FIRST slide (current === 0) */}
+        {current === 0 && (
+          <div className="absolute inset-x-0 bottom-[45%] sm:bottom-[45%] md:bottom-[45%] lg:bottom-[15%] xl:bottom-[15%] z-20 flex justify-center px-2">
+            <ParticipateButton
+              onClick={openModal}
+              size="lg"
+              className="text-xs sm:text-base md:text-lg px-4 py-2.5 sm:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)]"
+            >
+              {t("Participate Now")}
+            </ParticipateButton>
+          </div>
+        )}
       </div>
-
     </section>
   );
 }

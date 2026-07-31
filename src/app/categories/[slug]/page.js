@@ -1,12 +1,12 @@
 "use client";
 
-import { use, useState, useRef } from "react";
+import { use, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
+import { categoryService } from "@/services/api";
 import Heading from "@/components/common/Heading";
-import Button, { ParticipateButton } from "@/components/common/Button";
 import {
     FaLandmark,
     FaLaptopCode,
@@ -15,7 +15,9 @@ import {
     FaChevronLeft,
     FaChevronRight,
     FaArrowLeft,
-    FaSearch
+    FaSearch,
+    FaHashtag,
+    FaRupeeSign
 } from "react-icons/fa";
 
 // Tier definitions matching system design
@@ -57,9 +59,55 @@ const TIERS = {
     }
 };
 
-// Full list of Award Categories
-const CATEGORIES = [
-    // Culture & Tourism
+// Map backend tier enum string to frontend slug
+const mapTierSlug = (tierStr) => {
+    if (!tierStr) return "culture";
+    if (tierStr === "A_CULTURE_IDENTITY") return "culture";
+    if (tierStr === "B_NATION_STATE_BUILDING") return "tech";
+    if (tierStr === "C_CRAFT_PLATFORM") return "arts";
+    const lower = String(tierStr).toLowerCase();
+    if (lower.includes("culture") || lower.includes("heritage")) return "culture";
+    if (lower.includes("tech") || lower.includes("nation")) return "tech";
+    if (lower.includes("impact") || lower.includes("welfare")) return "impact";
+    if (lower.includes("craft") || lower.includes("art")) return "arts";
+    return "culture";
+};
+
+// Full fallback list of Award Categories
+const STATIC_CATEGORIES = [
+    {
+        id: 101,
+        tier: "culture",
+        title: "Chhattisgarhiya Sanskriti Ambassador",
+        image: "/assets/images/raipur_landmark.jpg",
+        description: "Celebrating creators showcasing regional heritage, folk music, and local cultural traditions.",
+        taskBrief: "Create an engaging video highlighting traditional art, dance, or folk festivals of the state.",
+        hashtag: "#ChhattisgarhiyaSanskriti",
+        cashPrizeMin: 50000,
+        cashPrizeMax: 500000
+    },
+    {
+        id: 102,
+        tier: "tech",
+        title: "Tech & Civic Innovation Pioneer",
+        image: "/assets/images/emerging awards.jpg",
+        description: "Honoring creators bringing awareness to AI, smart governance, and infrastructure development.",
+        taskBrief: "Produce a video demonstrating how digital initiatives improve public services and citizen welfare.",
+        hashtag: "#GovTechBuilder",
+        cashPrizeMin: 25000,
+        cashPrizeMax: 300000
+    },
+    {
+        id: 103,
+        tier: "arts",
+        title: "Digital Craftsman & Micro-Creator",
+        image: "/assets/images/category-1.jpg",
+        description: "Spotlighting emerging nano creators, digital artists, and handicraft storytellers.",
+        taskBrief: "Share a story celebrating local artisan skills, handlooms, or sustainable eco-crafts.",
+        hashtag: "#MicroCraftCreator",
+        cashPrizeMin: 10000,
+        cashPrizeMax: 100000
+    },
     {
         id: 1,
         tier: "culture",
@@ -89,29 +137,6 @@ const CATEGORIES = [
         description: "Guiding travelers to hidden waterfalls, forests, and cultural landmarks of Chhattisgarh."
     },
     {
-        id: 10,
-        tier: "culture",
-        title: "Best Fashion Creator",
-        image: "/assets/images/fashion-awards.avif",
-        description: "Celebrating ethnic textiles, local weaves, modern trends, and modeling portfolios."
-    },
-    {
-        id: 15,
-        tier: "culture",
-        title: "Folk Music Sensation",
-        image: "/assets/images/about-6.webp",
-        description: "Singing, composing, and popularizing traditional regional folk music tracks."
-    },
-
-    // Tech & Media
-    {
-        id: 3,
-        tier: "tech",
-        title: "Emerging Tech & Edu Creator",
-        image: "/assets/images/emerging awards.jpg",
-        description: "Empowering viewers with coding tutorials, tech reviews, and educational animations."
-    },
-    {
         id: 4,
         tier: "tech",
         title: "Best YouTube Creator",
@@ -126,36 +151,6 @@ const CATEGORIES = [
         description: "Recognizing high-impact vertical reels, daily trends, and cinematic short-form clips."
     },
     {
-        id: 6,
-        tier: "tech",
-        title: "Best Emerging Creator",
-        image: "/assets/images/about-4.webp",
-        description: "Spotlighting fresh, new channels with high growth potential and creative formats."
-    },
-    {
-        id: 7,
-        tier: "tech",
-        title: "Best Influencer",
-        image: "/assets/images/event_networking.jpg",
-        description: "Fostering positive communities through lifestyle hacks, motivation, and healthy advice."
-    },
-    {
-        id: 11,
-        tier: "tech",
-        title: "People's Choice Award",
-        image: "/assets/images/proplechoiceawards.jpg",
-        description: "The ultimate creator selected entirely by the public through democratic online votes."
-    },
-    {
-        id: 22,
-        tier: "tech",
-        title: "Gaming & Esports Star",
-        image: "/assets/images/about-4.webp",
-        description: "Streaming live, promoting gaming content, and showcasing esports talents in CG."
-    },
-
-    // Social Impact & Welfare
-    {
         id: 12,
         tier: "impact",
         title: "Swachh State Advocate",
@@ -163,67 +158,15 @@ const CATEGORIES = [
         description: "Campaigning for public cleanliness, local recycling initiatives, and waste management."
     },
     {
-        id: 13,
-        tier: "impact",
-        title: "Agriculture Innovator",
-        image: "/assets/images/about-3.jpg",
-        description: "Educating regional farmers with smart tools, organic practices, and soil health tips."
-    },
-    {
-        id: 16,
-        tier: "impact",
-        title: "Health & Wellness Coach",
-        image: "/assets/images/about-2.webp",
-        description: "Promoting physical fitness, yoga, mental wellness, and local nutritional diets."
-    },
-    {
-        id: 17,
-        tier: "impact",
-        title: "Nature Conservationist",
-        image: "/assets/images/chattisgarh_fall.jpg",
-        description: "Advocating for forestry, wildlife protection, and environment-friendly habits."
-    },
-    {
-        id: 18,
-        tier: "impact",
-        title: "Women Empowerment Icon",
-        image: "/assets/images/about-5.jpg",
-        description: "Supporting women entrepreneurs, self-help groups, and gender equality initiatives."
-    },
-
-    // Arts & Heritage
-    {
         id: 14,
         tier: "arts",
         title: "Dhokra Art Promoter",
         image: "/assets/images/category-1.jpg",
         description: "Showcasing the ancient non-ferrous metal casting craft and its tribal artisans."
-    },
-    {
-        id: 23,
-        tier: "arts",
-        title: "Regional Acting Talent",
-        image: "/assets/images/about-3.jpg",
-        description: "Inspiring audiences with short plays, theater clips, and regional screen performances."
-    },
-    {
-        id: 24,
-        tier: "arts",
-        title: "Comedy & Clean Humour",
-        image: "/assets/images/about-6.webp",
-        description: "Bringing joy with clean family humor, everyday observations, and funny skits."
-    },
-    {
-        id: 25,
-        tier: "arts",
-        title: "Organic Farming Pioneer",
-        image: "/assets/images/about-1.jpg",
-        description: "Guiding the transition to chemical-free agriculture and sustainable local crops."
     }
 ];
 
 export default function CategorySlugPage({ params }) {
-    // Unwrap params using React.use() for Next.js 16 compatibility
     const resolvedParams = use(params);
     const slug = resolvedParams?.slug?.toLowerCase() || "all";
     const router = useRouter();
@@ -231,7 +174,44 @@ export default function CategorySlugPage({ params }) {
     const { t } = useLanguage();
     const { openModal } = useParticipateModal();
     const [searchQuery, setSearchQuery] = useState("");
+    const [apiCategories, setApiCategories] = useState([]);
     const tabsRef = useRef(null);
+
+    // Fetch Categories from Backend API on mount
+    useEffect(() => {
+        async function loadCategories() {
+            const res = await categoryService.getCategories({ isActive: true });
+            if (res.success && res.categories && res.categories.length > 0) {
+                setApiCategories(res.categories);
+            }
+        }
+        loadCategories();
+    }, []);
+
+    // Merge API categories with static list
+    const allCategoriesList = apiCategories.length > 0
+        ? [
+            ...apiCategories.map((cat, idx) => ({
+                id: cat._id || `api-${idx}`,
+                tier: mapTierSlug(cat.tier),
+                title: cat.title,
+                image: cat.image || "/assets/images/raipur_landmark.jpg",
+                description: cat.shortDescription || cat.taskBrief || "",
+                taskBrief: cat.taskBrief || "",
+                hashtag: cat.hashtag || "",
+                cashPrizeMin: cat.cashPrizeMin || 0,
+                cashPrizeMax: cat.cashPrizeMax || 0,
+                prizeTier: cat.prizeTier || "",
+                isApi: true
+            })),
+            ...STATIC_CATEGORIES
+        ]
+        : STATIC_CATEGORIES;
+
+    // Deduplicate by title
+    const uniqueCategories = Array.from(
+        new Map(allCategoriesList.map((item) => [item.title.toLowerCase(), item])).values()
+    );
 
     // Fallback to "all" if slug is unrecognized
     const activeTierObj = TIERS[slug] || TIERS.all;
@@ -248,7 +228,7 @@ export default function CategorySlugPage({ params }) {
     };
 
     // Filter categories by slug tier & search text
-    const filteredCategories = CATEGORIES.filter((cat) => {
+    const filteredCategories = uniqueCategories.filter((cat) => {
         if (slug !== "all" && cat.tier !== slug) return false;
         if (!searchQuery) return true;
         const title = t(cat.title).toLowerCase();
@@ -280,7 +260,7 @@ export default function CategorySlugPage({ params }) {
                 />
             </div>
 
-            {/* 3. Interactive Filter Tabs Bar & Search Input (Matching exact screenshot design) */}
+            {/* 3. Interactive Filter Tabs Bar & Search Input */}
             <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 bg-white/80 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-zinc-200/90 shadow-sm">
 
@@ -306,10 +286,11 @@ export default function CategorySlugPage({ params }) {
                                     <button
                                         key={key}
                                         onClick={() => handleTabClick(tierInfo.slug)}
-                                        className={`shrink-0 px-5 py-2.5 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${isActive
-                                            ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
-                                            : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
-                                            }`}
+                                        className={`shrink-0 px-5 py-2.5 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${
+                                            isActive
+                                                ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
+                                                : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
+                                        }`}
                                     >
                                         {t(tierInfo.title)}
                                     </button>
@@ -326,7 +307,7 @@ export default function CategorySlugPage({ params }) {
                         </button>
                     </div>
 
-                    {/* Search Input Bar with Icon */}
+                    {/* Search Input Bar */}
                     <div className="relative w-full md:max-w-xs flex items-center border border-zinc-300 focus-within:border-[var(--primary)] bg-white rounded-full shadow-sm">
                         <span className="pl-3.5 text-[var(--primary)]">
                             <FaSearch className="w-3.5 h-3.5" />
@@ -351,7 +332,7 @@ export default function CategorySlugPage({ params }) {
                 </div>
             </div>
 
-            {/* 4. Category Cards Grid (4 columns on Desktop matching reference screenshot) */}
+            {/* 4. Category Cards Grid */}
             <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredCategories.map((cat) => {
@@ -375,12 +356,28 @@ export default function CategorySlugPage({ params }) {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent group-hover:from-black/98 group-hover:via-black/75 group-hover:to-black/30 transition-all duration-500 z-10" />
 
                                 {/* Tier Badge at top-left */}
-                                <span
-                                    className="absolute top-4 left-4 z-20 text-[9px] font-inter font-bold uppercase px-3 py-1 rounded-full text-white backdrop-blur-md border border-white/20 shadow-md"
-                                    style={{ backgroundColor: tierData.color }}
-                                >
-                                    {t(tierData.title)}
-                                </span>
+                                <div className="absolute top-4 left-4 z-20 flex flex-col gap-1 items-start">
+                                    <span
+                                        className="text-[9px] font-inter font-bold uppercase px-3 py-1 rounded-full text-white backdrop-blur-md border border-white/20 shadow-md"
+                                        style={{ backgroundColor: tierData.color }}
+                                    >
+                                        {t(tierData.title)}
+                                    </span>
+                                    {cat.hashtag && (
+                                        <span className="text-[9px] font-inter font-bold px-2.5 py-0.5 rounded-full text-amber-200 bg-black/60 backdrop-blur-md border border-amber-300/30 flex items-center gap-1">
+                                            <FaHashtag className="w-2 h-2 text-amber-300" />
+                                            <span>{cat.hashtag}</span>
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Prize Badge at top-right if available */}
+                                {cat.cashPrizeMax > 0 && (
+                                    <span className="absolute top-4 right-4 z-20 text-[9px] font-inter font-bold px-2.5 py-1 rounded-full bg-emerald-600/90 text-white backdrop-blur-md border border-emerald-400/40 shadow-md flex items-center gap-1">
+                                        <FaRupeeSign className="w-2.5 h-2.5" />
+                                        <span>Up to ₹{(cat.cashPrizeMax / 1000).toFixed(0)}k</span>
+                                    </span>
+                                )}
 
                                 {/* Content Overlay */}
                                 <div className="relative z-20 flex flex-col justify-end w-full">
@@ -388,11 +385,16 @@ export default function CategorySlugPage({ params }) {
                                         {t(cat.title)}
                                     </h3>
 
-                                    {/* Description - Expands smoothly on hover / mobile tap */}
+                                    {/* Description */}
                                     <div className="overflow-hidden">
                                         <p className="font-inter text-zinc-200 text-xs sm:text-sm leading-relaxed transform translate-y-4 opacity-0 max-h-0 group-hover:translate-y-0 group-hover:opacity-100 group-hover:max-h-36 group-hover:mt-2.5 transition-all duration-500 ease-out">
                                             {t(cat.description)}
                                         </p>
+                                        {cat.taskBrief && (
+                                            <p className="font-inter text-amber-200/90 text-[11px] leading-relaxed mt-1 hidden group-hover:block font-medium">
+                                                <strong>Brief:</strong> {t(cat.taskBrief)}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>

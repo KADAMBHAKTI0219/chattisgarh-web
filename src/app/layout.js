@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="stylesheet" href="/assets/fonts/inter.css" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#FAF7F0] text-zinc-900 font-sans">
+      <body className="min-h-full flex flex-col bg-[#FAF7F0] text-zinc-900 font-sans overflow-x-hidden w-full max-w-full">
         
         {/* WCAG Skip to Content Link */}
         <a 

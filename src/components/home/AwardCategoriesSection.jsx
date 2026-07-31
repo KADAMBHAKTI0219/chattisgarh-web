@@ -1,23 +1,22 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import Heading from "@/components/common/Heading";
-import Button from "@/components/common/Button";
+import { categoryService } from "@/services/api";
 import {
   FaLandmark,
   FaLaptopCode,
   FaHandsHelping,
   FaPalette,
-  FaChevronLeft,
-  FaChevronRight,
   FaArrowRight,
-  FaUsers
+  FaUsers,
+  FaHashtag,
+  FaTrophy
 } from "react-icons/fa";
 
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function AwardCategoriesSection() {
   const router = useRouter();
@@ -25,271 +24,175 @@ export default function AwardCategoriesSection() {
   const { openModal } = useParticipateModal();
   const [activeTier, setActiveTier] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [apiCategories, setApiCategories] = useState([]);
   const tabsRef = useRef(null);
-  const categoriesGridRef = useRef(null);
+
+  // Map backend tier enum string to frontend slug
+  const mapTierSlug = (tierStr) => {
+    if (!tierStr) return "culture";
+    if (tierStr === "A_CULTURE_IDENTITY") return "culture";
+    if (tierStr === "B_NATION_STATE_BUILDING") return "tech";
+    if (tierStr === "C_CRAFT_PLATFORM") return "arts";
+    const lower = String(tierStr).toLowerCase();
+    if (lower.includes("culture") || lower.includes("heritage")) return "culture";
+    if (lower.includes("tech") || lower.includes("nation")) return "tech";
+    if (lower.includes("impact") || lower.includes("welfare")) return "impact";
+    if (lower.includes("craft") || lower.includes("art")) return "arts";
+    return "culture";
+  };
+
+  // Fetch Categories from Backend API on mount
+  useEffect(() => {
+    async function loadApiCategories() {
+      const res = await categoryService.getCategories({ isActive: true });
+      if (res.success && res.categories && res.categories.length > 0) {
+        setApiCategories(res.categories);
+      }
+    }
+    loadApiCategories();
+  }, []);
 
   // Click handler when a user clicks "View Categories →" or a Tier card
   const handleSelectTier = (slug) => {
     router.push(`/categories/${slug}`);
   };
 
-  // 4 Main Tier Groups matching reference UI screenshot
+  // 4 Main Tier Groups
   const tiers = [
     {
       slug: "culture",
+      tierEnum: "A_CULTURE_IDENTITY",
       title: "Culture & Tourism",
       description:
         "Showcasing the beauty of Chhattisgarh's heritage, traditions, festivals, art, cuisine and breathtaking destinations.",
       icon: FaLandmark,
       color: "#C15B3D", // Primary Terracotta
       bgImage: "/assets/images/raipur_landmark.jpg",
-      count: "06 Categories"
+      defaultCount: "06 Categories"
     },
     {
       slug: "tech",
+      tierEnum: "B_NATION_STATE_BUILDING",
       title: "Tech & Media",
       description:
         "Honouring digital creators, storytellers, influencers and innovators using technology to inform, entertain and inspire.",
       icon: FaLaptopCode,
       color: "#2E5C31", // Secondary Forest Green
       bgImage: "/assets/images/event_presentation.jpg",
-      count: "07 Categories"
+      defaultCount: "07 Categories"
     },
     {
       slug: "impact",
+      tierEnum: "B_NATION_STATE_BUILDING",
       title: "Social Impact & Welfare",
       description:
         "Recognising creators driving positive social change, awareness, education, environment and community development.",
       icon: FaHandsHelping,
       color: "#2E5C31", // Secondary Forest Green
       bgImage: "/assets/images/about-5.jpg",
-      count: "05 Categories"
+      defaultCount: "05 Categories"
     },
     {
       slug: "arts",
+      tierEnum: "C_CRAFT_PLATFORM",
       title: "Arts & Heritage",
       description:
         "Celebrating artists, artisans and creators preserving Chhattisgarh's rich artistic legacy and indigenous crafts.",
       icon: FaPalette,
       color: "#D39B2C", // Amber Gold Accent
       bgImage: "/assets/images/category-1.jpg",
-      count: "06 Categories"
+      defaultCount: "06 Categories"
     }
   ];
 
-  // Detailed Sub-Categories mapping to tier slugs
-  const categories = [
-    // Culture & Tourism
+  // Default fallback static categories
+  const fallbackCategories = [
     {
       id: 1,
       tier: "culture",
-      title: "Sanskriti Ambassador",
+      title: "Chhattisgarhiya Sanskriti Ambassador",
       image: "/assets/images/raipur_landmark.jpg",
-      description: "Promoting Chhattisgarh's rich heritage, historical temples, and vibrant folk festivals."
+      description: "Celebrating creators showcasing regional heritage, folk music, and local cultural traditions.",
+      hashtag: "#ChhattisgarhiyaSanskriti",
+      cashPrizeMin: 50000,
+      cashPrizeMax: 500000
     },
     {
       id: 2,
-      tier: "culture",
-      title: "Tribal Heritage Creator",
-      image: "/assets/images/chattisgarh_fall.jpg",
-      description: "Showcasing indigenous Bastar arts, folk traditions, and local languages."
+      tier: "tech",
+      title: "Tech & Civic Innovation Pioneer",
+      image: "/assets/images/emerging awards.jpg",
+      description: "Honoring creators bringing awareness to AI, smart governance, and infrastructure development.",
+      hashtag: "#GovTechBuilder",
+      cashPrizeMin: 25000,
+      cashPrizeMax: 300000
     },
-    {
-      id: 8,
-      tier: "culture",
-      title: "Best Food Creator",
-      image: "/assets/images/food-award.webp",
-      description: "Discovering classic Chhattisgarhi recipes, local ingredients, and street-food gems."
-    },
-    {
-      id: 9,
-      tier: "culture",
-      title: "Best Travel Creator",
-      image: "/assets/images/travellor award.jpg",
-      description: "Guiding travelers to hidden waterfalls, forests, and cultural landmarks of Chhattisgarh."
-    },
-    {
-      id: 10,
-      tier: "culture",
-      title: "Best Fashion Creator",
-      image: "/assets/images/fashion-awards.avif",
-      description: "Celebrating ethnic textiles, local weaves, modern trends, and modeling portfolios."
-    },
-    {
-      id: 15,
-      tier: "culture",
-      title: "Folk Music Sensation",
-      image: "/assets/images/about-6.webp",
-      description: "Singing, composing, and popularizing traditional regional folk music tracks."
-    },
-
-    // Tech & Media
     {
       id: 3,
-      tier: "tech",
-      title: "Emerging Tech & Edu Creator",
-      image: "/assets/images/emerging awards.jpg",
-      description: "Empowering viewers with coding tutorials, tech reviews, and educational animations."
-    },
-    {
-      id: 4,
-      tier: "tech",
-      title: "Best YouTube Creator",
-      image: "/assets/images/creator-award.jpg",
-      description: "Celebrating high-quality storytelling, cinematography, and long-form video excellence."
-    },
-    {
-      id: 5,
-      tier: "tech",
-      title: "Best Instagram Creator",
-      image: "/assets/images/instagramaward.avif",
-      description: "Recognizing high-impact vertical reels, daily trends, and cinematic short-form clips."
-    },
-    {
-      id: 6,
-      tier: "tech",
-      title: "Best Emerging Creator",
-      image: "/assets/images/about-4.webp",
-      description: "Spotlighting fresh, new channels with high growth potential and creative formats."
-    },
-    {
-      id: 7,
-      tier: "tech",
-      title: "Best Influencer",
-      image: "/assets/images/event_networking.jpg",
-      description: "Fostering positive communities through lifestyle hacks, motivation, and healthy advice."
-    },
-    {
-      id: 11,
-      tier: "tech",
-      title: "People's Choice Award",
-      image: "/assets/images/proplechoiceawards.jpg",
-      description: "The ultimate creator selected entirely by the public through democratic online votes."
-    },
-    {
-      id: 22,
-      tier: "tech",
-      title: "Gaming & Esports Star",
-      image: "/assets/images/about-4.webp",
-      description: "Streaming live, promoting gaming content, and showcasing esports talents in CG."
-    },
-
-    // Social Impact & Welfare
-    {
-      id: 12,
-      tier: "impact",
-      title: "Swachh State Advocate",
-      image: "/assets/images/about-1.jpg",
-      description: "Campaigning for public cleanliness, local recycling initiatives, and waste management."
-    },
-    {
-      id: 13,
-      tier: "impact",
-      title: "Agriculture Innovator",
-      image: "/assets/images/about-3.jpg",
-      description: "Educating regional farmers with smart tools, organic practices, and soil health tips."
-    },
-    {
-      id: 16,
-      tier: "impact",
-      title: "Health & Wellness Coach",
-      image: "/assets/images/about-2.webp",
-      description: "Promoting physical fitness, yoga, mental wellness, and local nutritional diets."
-    },
-    {
-      id: 17,
-      tier: "impact",
-      title: "Nature Conservationist",
-      image: "/assets/images/chattisgarh_fall.jpg",
-      description: "Advocating for forestry, wildlife protection, and environment-friendly habits."
-    },
-    {
-      id: 18,
-      tier: "impact",
-      title: "Women Empowerment Icon",
-      image: "/assets/images/about-5.jpg",
-      description: "Supporting women entrepreneurs, self-help groups, and gender equality initiatives."
-    },
-
-    // Arts & Heritage
-    {
-      id: 14,
       tier: "arts",
-      title: "Dhokra Art Promoter",
+      title: "Digital Craftsman & Micro-Creator",
       image: "/assets/images/category-1.jpg",
-      description: "Showcasing the ancient non-ferrous metal casting craft and its tribal artisans."
-    },
-    {
-      id: 23,
-      tier: "arts",
-      title: "Regional Acting Talent",
-      image: "/assets/images/about-3.jpg",
-      description: "Inspiring audiences with short plays, theater clips, and regional screen performances."
-    },
-    {
-      id: 24,
-      tier: "arts",
-      title: "Comedy & Clean Humour",
-      image: "/assets/images/about-6.webp",
-      description: "Bringing joy with clean family humor, everyday observations, and funny skits."
-    },
-    {
-      id: 25,
-      tier: "arts",
-      title: "Organic Farming Pioneer",
-      image: "/assets/images/about-1.jpg",
-      description: "Guiding the transition to chemical-free agriculture and sustainable local crops."
+      description: "Spotlighting emerging nano creators, digital artists, and handicraft storytellers.",
+      hashtag: "#MicroCraftCreator",
+      cashPrizeMin: 10000,
+      cashPrizeMax: 100000
     }
   ];
 
+  // Format backend API categories or use fallback
+  const categories = apiCategories.length > 0
+    ? apiCategories.map((cat, idx) => ({
+        id: cat._id || idx,
+        tier: mapTierSlug(cat.tier),
+        title: cat.title,
+        image: cat.image || "/assets/images/raipur_landmark.jpg",
+        description: cat.shortDescription || cat.taskBrief || "",
+        hashtag: cat.hashtag || "",
+        cashPrizeMin: cat.cashPrizeMin || 0,
+        cashPrizeMax: cat.cashPrizeMax || 0,
+        prizeTier: cat.prizeTier || ""
+      }))
+    : fallbackCategories;
 
-
-  const scrollTabs = (direction) => {
-    if (tabsRef.current) {
-      const scrollAmount = direction === "left" ? -220 : 220;
-      tabsRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
+  // Compute live counts per tier
+  const getTierCount = (tierSlug, tierEnum, defaultCount) => {
+    if (apiCategories.length === 0) return defaultCount;
+    const matchCount = apiCategories.filter(
+      (c) => mapTierSlug(c.tier) === tierSlug || c.tier === tierEnum
+    ).length;
+    return matchCount > 0 ? `${matchCount < 10 ? '0' + matchCount : matchCount} Categories` : defaultCount;
   };
-
-  // Filter categories by active tier and search query
-  const filteredCategories = categories.filter((cat) => {
-    if (activeTier !== "all" && cat.tier !== activeTier) return false;
-    if (!searchQuery) return true;
-    const title = t(cat.title).toLowerCase();
-    const query = searchQuery.toLowerCase();
-    return title.includes(query);
-  });
 
   return (
     <section
       id="categories"
-      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-10 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-visible"
+      className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-12 lg:py-14 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-visible"
     >
       {/* Centered Heading */}
       <Heading
         badge={t("CATEGORIES")}
         title={t("STATE CREATOR")}
         highlightText={t("CATEGORIES")}
-        description={t("Explore categories across our 4 primary tiers. Click any tier to filter its specific award categories.")}
+        description={t("Explore categories across our primary tiers. Click any tier to view its specific award categories.")}
         className="mb-12 md:mb-14"
       />
 
-      {/* ==========================================================
-          1. TIER CARDS GRID (2x2 Grid on Desktop, 1 col on Mobile)
-         ========================================================== */}
+      {/* TIER CARDS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-16 text-left">
         {tiers.map((tier) => {
           const IconComp = tier.icon;
           const isSelected = activeTier === tier.slug;
+          const categoryCount = getTierCount(tier.slug, tier.tierEnum, tier.defaultCount);
 
           return (
             <div
               key={tier.slug}
               onClick={() => handleSelectTier(tier.slug)}
-              className={`relative min-h-[300px] sm:min-h-[320px] rounded-3xl overflow-hidden group cursor-pointer border transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 ${isSelected
-                ? "border-[var(--primary)] ring-4 ring-[var(--primary)]/20 shadow-xl scale-[1.01]"
-                : "border-zinc-200/80 hover:border-zinc-400 shadow-md hover:shadow-xl hover:-translate-y-1"
-                }`}
+              className={`relative min-h-[300px] sm:min-h-[320px] rounded-3xl overflow-hidden group cursor-pointer border transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 ${
+                isSelected
+                  ? "border-[var(--primary)] ring-4 ring-[var(--primary)]/20 shadow-xl scale-[1.01]"
+                  : "border-zinc-200/80 hover:border-zinc-400 shadow-md hover:shadow-xl hover:-translate-y-1"
+              }`}
             >
               {/* Card Background Cover Image */}
               <img
@@ -299,10 +202,10 @@ export default function AwardCategoriesSection() {
                 loading="lazy"
               />
 
-              {/* Gradient Dark Overlay for optimal text readability */}
+              {/* Dark Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40 group-hover:from-black/98 group-hover:via-black/75 group-hover:to-black/30 transition-colors duration-500 z-10" />
 
-              {/* Top Row: Circular Icon Badge */}
+              {/* Top Row: Icon Badge */}
               <div className="relative z-20 flex items-center justify-between">
                 <div
                   className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white shadow-lg backdrop-blur-md border border-white/20 transition-transform duration-300 group-hover:scale-110"
@@ -318,19 +221,17 @@ export default function AwardCategoriesSection() {
                 )}
               </div>
 
-              {/* Middle & Bottom Content */}
+              {/* Content */}
               <div className="relative z-20 flex flex-col gap-3 mt-8">
-                {/* Title */}
                 <h3 className="font-poppins font-bold text-2xl sm:text-3xl lg:text-4xl !text-white tracking-tight leading-snug group-hover:!text-amber-200 transition-colors duration-300">
                   {t(tier.title)}
                 </h3>
 
-                {/* Description (Visible & smoothly highlights on hover) */}
                 <p className="font-inter text-zinc-200 text-xs sm:text-sm md:text-base leading-relaxed line-clamp-3 group-hover:line-clamp-none group-hover:text-white transition-all duration-300">
                   {t(tier.description)}
                 </p>
 
-                {/* Card Footer: Action Button & Count Badge */}
+                {/* Footer Action */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/15 mt-2">
                   <button
                     onClick={(e) => {
@@ -345,7 +246,7 @@ export default function AwardCategoriesSection() {
 
                   <span className="inline-flex items-center gap-1.5 text-zinc-300 font-inter font-bold text-xs sm:text-sm">
                     <FaUsers className="w-3.5 h-3.5 text-amber-300" />
-                    <span>{tier.count}</span>
+                    <span>{categoryCount}</span>
                   </span>
                 </div>
               </div>
@@ -353,7 +254,6 @@ export default function AwardCategoriesSection() {
           );
         })}
       </div>
-
 
     </section>
   );

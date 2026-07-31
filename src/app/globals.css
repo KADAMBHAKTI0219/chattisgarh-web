@@ -6,37 +6,95 @@
 ========================================================== */
 
 :root {
-  /* Backgrounds */
-  --background: #fcfaf7;
-  --surface: #ffffff;
-  --surface-secondary: #f5f0e6;
+  /* ===============================
+     Backgrounds
+  =============================== */
 
-  /* Brand Colors */
-  --primary: #c15b3d;
-  --primary-hover: #a84a2f;
+  --background: #F8F4EA;
+  --surface: #FFFDFC;
+  --surface-secondary: #F2EADB;
 
-  --secondary: #2e5c31;
-  --secondary-hover: #264c29;
+  /* ===============================
+     Primary Brand
+     Geru / Terracotta
+  =============================== */
 
-  --accent: #d39b2c;
+  --primary: #C45A32;
+  --primary-hover: #A94824;
+  --primary-light: #E58D63;
+  --primary-soft: #F4D2BF;
 
-  /* Text */
-  --foreground: #2b211a;
-  --text-secondary: #5f5247;
-  --text-muted: #847568;
+  /* ===============================
+     Secondary
+     Forest Green
+  =============================== */
 
-  /* UI */
-  --border: #e8dfcf;
+  --secondary: #21593D;
+  --secondary-hover: #18472F;
+  --secondary-light: #4C8A66;
+  --secondary-soft: #DCEBDD;
 
-  --success: #2e7d32;
-  --warning: #f59e0b;
-  --danger: #dc2626;
-  --info: #2563eb;
+  /* ===============================
+     Accent
+     Golden
+  =============================== */
 
-  /* Fonts */
-  --font-poppins: "Poppins", sans-serif;
-  --font-inter: "Inter", sans-serif;
-  --font-heading: "Poppins", sans-serif;
+  --accent: #D4A534;
+  --accent-hover: #BB8C1C;
+  --accent-light: #F5E4A8;
+
+  /* ===============================
+     Extra Colors
+  =============================== */
+
+  --olive: #657A3B;
+  --bamboo: #8BAA63;
+  --clay: #8B4D34;
+  --earth: #6F4B32;
+  --sand: #EFE3C7;
+  --leaf: #7EA56D;
+
+  /* ===============================
+     Text
+  =============================== */
+
+  --foreground: #2D231C;
+  --heading: #203829;
+  --text-secondary: #66584A;
+  --text-muted: #8D8175;
+
+  /* ===============================
+     Borders
+  =============================== */
+
+  --border: #E7DCC9;
+  --border-light: #F2ECE2;
+
+  /* ===============================
+     Status
+  =============================== */
+
+  --success: #2F8F48;
+  --warning: #F2B233;
+  --danger: #D94A3A;
+  --info: #3876D2;
+
+  /* ===============================
+     Decorative
+  =============================== */
+
+  --tribal-red: #B64835;
+  --tribal-orange: #D76A38;
+  --tribal-green: #366344;
+  --tribal-yellow: #D7B04D;
+
+  /* ===============================
+     Shadows
+  =============================== */
+
+  --shadow-sm: rgba(0, 0, 0, 0.06);
+  --shadow-md: rgba(0, 0, 0, 0.10);
+  --shadow-lg: rgba(0, 0, 0, 0.15);
 }
 
 /* ==========================================================
@@ -129,12 +187,24 @@ body {
 }
 
 /* Default font families for headings & body */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-poppins);
   font-weight: 700;
 }
 
-p, span, small, label, input, select, textarea, button {
+p,
+span,
+small,
+label,
+input,
+select,
+textarea,
+button {
   font-family: var(--font-inter);
 }
 
@@ -161,12 +231,10 @@ p, span, small, label, input, select, textarea, button {
 }
 
 .bg-gradient-earth {
-  background: linear-gradient(
-    135deg,
-    var(--background) 0%,
-    var(--surface-secondary) 50%,
-    #fff8f1 100%
-  );
+  background: linear-gradient(135deg,
+      var(--background) 0%,
+      var(--surface-secondary) 50%,
+      #fff8f1 100%);
 }
 
 .text-gradient {
@@ -200,11 +268,13 @@ p, span, small, label, input, select, textarea, button {
   -webkit-text-stroke: 1.2px #000000;
   color: white;
 }
+
 @media (min-width: 640px) {
   .text-stroke-black {
     -webkit-text-stroke: 1.6px #000000;
   }
 }
+
 @media (min-width: 1024px) {
   .text-stroke-black {
     -webkit-text-stroke: 2px #000000;
@@ -229,6 +299,7 @@ p, span, small, label, input, select, textarea, button {
     opacity: 0;
     transform: translateY(16px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -248,7 +319,88 @@ p, span, small, label, input, select, textarea, button {
 .no-scrollbar::-webkit-scrollbar {
   display: none !important;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
+}
+
+@keyframes lineLeft {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+
+@keyframes lineRight {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+
+@keyframes tribalSpin {
+
+  0% {
+    transform: rotate(45deg);
+  }
+
+  50% {
+    transform: rotate(135deg);
+  }
+
+  100% {
+    transform: rotate(225deg);
+  }
+
+}
+
+
+
+@keyframes tribalPulse {
+
+  0%,
+  100% {
+    opacity: .5;
+    transform: scale(.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+}
+
+
+
+.animate-line-left {
+  animation: lineLeft 1s ease forwards;
+}
+
+
+.animate-line-right {
+  animation: lineRight 1s ease forwards;
+}
+
+
+.animate-tribal-spin {
+  animation: tribalSpin 6s linear infinite;
+}
+
+
+.animate-tribal-pulse {
+  animation: tribalPulse 2s ease-in-out infinite;
 }

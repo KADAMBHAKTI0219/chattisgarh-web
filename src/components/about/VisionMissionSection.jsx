@@ -1,98 +1,60 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import Heading from "@/components/common/Heading";
+import { FaCompass, FaAward } from "react-icons/fa";
 
 export default function VisionMissionSection() {
   const { t } = useLanguage();
 
   return (
-    <section
-      id="vision-mission"
-      className="w-screen left-1/2 -translate-x-1/2 bg-[#121620] !text-white py-16 sm:py-20 xl:py-24 px-6 sm:px-10 md:px-16 lg:px-20 border-y border-white/10 select-none relative overflow-hidden z-10 my-6"
-    >
-      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto flex flex-col gap-12 items-center">
+    <section className="w-full bg-[#1c3a29] text-white py-16 md:py-24 select-none">
+      <div className="max-w-[1280px] mx-auto px-6 md:px-12 flex flex-col gap-12">
 
         {/* Section Header */}
-        <Heading
-          badge={t("Core Values")}
-          title={t("Vision & Mission")}
-          variant="dark"
-        />
+        <div className="flex flex-col items-center text-center max-w-2xl mx-auto gap-3">
+          <span className="text-xs font-poppins font-bold uppercase tracking-widest text-[#D39B2C] px-3.5 py-1 rounded-full bg-[#D39B2C]/10 border border-[#D39B2C]/30">
+            {t("Strategic Direction")}
+          </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-poppins font-extrabold text-white tracking-tight">
+            {t("Vision & Mission")}
+          </h2>
+          <p className="text-base text-emerald-100/80 font-inter leading-relaxed">
+            {t(
+              "Building a transparent, inclusive, and culturally rooted framework to empower every digital voice in Chhattisgarh."
+            )}
+          </p>
+        </div>
 
-        {/* 2 Column Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12 w-full mt-4">
+        {/* 2 Premium Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
 
-          {/* Card 1: Our Vision */}
-          <div className="bg-white/5 border border-white/15 rounded-3xl p-8 xl:p-12 shadow-xl hover:scale-[1.01] hover:-translate-y-0.5 transition-all duration-300 flex flex-col gap-6 text-left relative overflow-hidden">
-
-            {/* Corner ambient glow */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-            {/* Header row with eye icon */}
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 xl:h-14 xl:w-14 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shrink-0">
-                <svg
-                  className="w-6 h-6 xl:w-7 xl:h-7 stroke-current stroke-2 fill-none"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
-              </div>
-              <h3 className="font-poppins font-bold text-xl xl:text-2xl uppercase tracking-wider !text-amber-300">
-                {t("Our Vision")}
-              </h3>
+          {/* Card 1: Vision */}
+          <div className="bg-white/5 border border-white/10 hover:border-[#D39B2C]/50 rounded-[24px] p-8 md:p-10 flex flex-col items-start text-left gap-5 shadow-lg transition-all duration-300 hover:-translate-y-2">
+            <div className="w-14 h-14 rounded-2xl bg-[#D39B2C]/20 border border-[#D39B2C]/40 flex items-center justify-center text-[#D39B2C]">
+              <FaCompass className="w-7 h-7" />
             </div>
-
-            {/* Bold highlight text */}
-            <p className="!text-white font-extrabold text-base sm:text-lg xl:text-xl leading-relaxed">
-              {t("Empowering Every Creator. Elevating Chhattisgarh. Inspiring the World.")}
-            </p>
-
-            {/* Descriptive paragraph */}
-            <p className="!text-zinc-200 font-medium text-sm sm:text-base xl:text-lg leading-relaxed mt-1">
-              {t("We envision a Chhattisgarh where every creator—whether a filmmaker, vlogger, photographer, musician, artist, gamer, educator, storyteller, or influencer—has the opportunity to transform creativity into meaningful impact. We believe the next generation of creators is not just shaping social media—they are shaping the identity of the state.")}
-            </p>
-            <p className="!text-white font-bold text-sm sm:text-base xl:text-lg leading-relaxed">
-              {t("Our vision is simple: to make Chhattisgarh one of India's most celebrated creator destinations, where local stories become global inspiration.")}
+            <h3 className="text-2xl font-poppins font-bold text-white tracking-tight">
+              {t("Our Vision")}
+            </h3>
+            <p className="text-base text-emerald-50 font-inter leading-relaxed">
+              {t(
+                "To establish Chhattisgarh as one of India's most celebrated creator destinations, where local folklore, indigenous art, and community stories inspire millions across the world."
+              )}
             </p>
           </div>
 
-          {/* Card 2: Our Mission */}
-          <div className="bg-white/5 border border-white/15 rounded-3xl p-8 xl:p-12 shadow-xl hover:scale-[1.01] hover:-translate-y-0.5 transition-all duration-300 flex flex-col gap-6 text-left relative overflow-hidden">
-
-            {/* Corner ambient glow */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary)]/15 rounded-full blur-3xl pointer-events-none"></div>
-
-            {/* Header row with rocket icon */}
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 xl:h-14 xl:w-14 items-center justify-center rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/15 text-[var(--primary)] shrink-0">
-                <svg
-                  className="w-6 h-6 xl:w-7 xl:h-7 stroke-current stroke-2 fill-none"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-                </svg>
-              </div>
-              <h3 className="font-poppins font-bold text-xl xl:text-2xl uppercase tracking-wider !text-[var(--primary)]">
-                {t("Our Mission")}
-              </h3>
+          {/* Card 2: Mission */}
+          <div className="bg-white/5 border border-white/10 hover:border-[#D39B2C]/50 rounded-[24px] p-8 md:p-10 flex flex-col items-start text-left gap-5 shadow-lg transition-all duration-300 hover:-translate-y-2">
+            <div className="w-14 h-14 rounded-2xl bg-[#C15B3D]/20 border border-[#C15B3D]/40 flex items-center justify-center text-[#C15B3D]">
+              <FaAward className="w-7 h-7" />
             </div>
-
-            {/* Bold highlight text */}
-            <p className="!text-white font-extrabold text-base sm:text-lg xl:text-xl leading-relaxed">
-              {t("Recognising Creators. Celebrating Stories. Building a Digital Legacy.")}
-            </p>
-
-            {/* Descriptive paragraph */}
-            <p className="!text-zinc-200 font-medium text-sm sm:text-base xl:text-lg leading-relaxed mt-1">
-              {t("The Chhattisgarh Creator & Influencer Awards is more than an award platform—it is a commitment by the Government of Chhattisgarh to discover, encourage, and celebrate creators who are making a meaningful impact through authentic storytelling, showcasing the state's culture, tourism, folk traditions, entrepreneurship, innovation, cuisine, art, music, wildlife, education, and community stories.")}
-            </p>
-            <p className="!text-white font-bold text-sm sm:text-base xl:text-lg leading-relaxed">
-              {t("Every story shared has the power to inspire. Every creator recognised strengthens the identity of Chhattisgarh. Every award celebrates a voice that deserves to be heard.")}
+            <h3 className="text-2xl font-poppins font-bold text-white tracking-tight">
+              {t("Our Mission")}
+            </h3>
+            <p className="text-base text-emerald-50 font-inter leading-relaxed">
+              {t(
+                "To empower, verify, and honour digital creators across all 36 districts with official state recognition, transparent jury evaluations, and global platform amplification."
+              )}
             </p>
           </div>
 
