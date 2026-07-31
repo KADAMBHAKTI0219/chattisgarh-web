@@ -61,7 +61,7 @@ export default function AwardCategoriesSection() {
       description:
         "Recognising creators driving positive social change, awareness, education, environment and community development.",
       icon: FaHandsHelping,
-      color: "#4585F6", // Royal Blue Accent
+      color: "#2E5C31", // Secondary Forest Green
       bgImage: "/assets/images/about-5.jpg",
       count: "05 Categories"
     },
