@@ -268,10 +268,6 @@ export default function CategorySlugPage({ params }) {
                     <FaArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
                     <span>Back to Home</span>
                 </Link>
-
-                <ParticipateButton onClick={openModal} size="sm">
-                    {t("Participate Now")}
-                </ParticipateButton>
             </div>
 
             {/* 2. Tier Page Header */}

@@ -26,93 +26,90 @@ export default function WhoCanApplySection() {
   leftRefs.current = [];
   rightRefs.current = [];
 
-  // Pastel palette: c1/c2 = soft gradient stops for icon + hover wash,
-  // accent = a slightly deeper tone of the same hue for icon/border/text contrast.
+  // Authentic Desi Earthy Palette (Terracotta, Sal Forest Green, Ochre Gold, Earth Sand)
   const candidates = [
     {
       icon: FaUserAlt,
-      c1: "#FFD9C2", c2: "#FFB8A3", accent: "#E07A4E",
+      c1: "#F5E0D8", c2: "#E8C8BC", accent: "#C15B3D",
       title: "Individual Creators",
       desc: "Solo content makers publishing native audio, video, or graphics."
     },
     {
       icon: FaYoutube,
-      c1: "#FFD0D3", c2: "#FFA5AC", accent: "#E0616C",
+      c1: "#E2ECD8", c2: "#C5D8B5", accent: "#2E5C31",
       title: "YouTube Storytellers",
       desc: "Channels generating long-form vlogs, reviews, or educational tutorials."
     },
     {
       icon: FaInstagram,
-      c1: "#F5CCFB", c2: "#E3B4FA", accent: "#B85FDA",
+      c1: "#FDF2D6", c2: "#F6E2AB", accent: "#D39B2C",
       title: "Instagram Influencers",
       desc: "Active handles producing reels, cultural fashion, and micro-vlogs."
     },
     {
       icon: FaGlobe,
-      c1: "#C7E0FF", c2: "#AAC9FF", accent: "#5081E0",
+      c1: "#F5E0D8", c2: "#E8C8BC", accent: "#C15B3D",
       title: "Bloggers & Web Leaders",
       desc: "Website developers, tech writers, and independent newsletter writers."
     },
     {
       icon: FaPenFancy,
-      c1: "#B9F1E8", c2: "#93E4D3", accent: "#189E8C",
+      c1: "#E2ECD8", c2: "#C5D8B5", accent: "#2E5C31",
       title: "Creative Writers",
       desc: "Poets, short story writers, and digital scriptwriters writing in local languages."
     },
     {
       icon: FaAward,
-      c1: "#FFE9AD", c2: "#FFD98E", accent: "#D69A1E",
+      c1: "#FDF2D6", c2: "#F6E2AB", accent: "#D39B2C",
       title: "Artists & Craftsmen",
       desc: "Promoters of state heritage, traditional painting, metal, or wood crafts."
     },
     {
       icon: FaCamera,
-      c1: "#E4CBFF", c2: "#CDA9FF", accent: "#8B5CF6",
+      c1: "#F5E0D8", c2: "#E8C8BC", accent: "#C15B3D",
       title: "Visual Designers",
       desc: "Digital painters, photographers, UI designers, and animators."
     },
     {
       icon: FaMicrophone,
-      c1: "#FFD6E1", c2: "#FFB3C6", accent: "#DE5A81",
-      title: "Podcasters & Hosts",
-      desc: "Audio show hosts, interview moderators, and conversational voices."
+      c1: "#E2ECD8", c2: "#C5D8B5", accent: "#2E5C31",
+      title: "Podcasters & Educators",
+      desc: "Voice artists, podcast hosts, and digital educators creating civic content."
     },
     {
       icon: FaGamepad,
-      c1: "#D9D2FF", c2: "#BCADFF", accent: "#6C63D6",
-      title: "Gaming & Esports Stars",
-      desc: "Gamers streaming active gameplay, tech critics, and developers."
+      c1: "#FDF2D6", c2: "#F6E2AB", accent: "#D39B2C",
+      title: "Gamers & Esports",
+      desc: "Streamers and gaming creators highlighting digital sports culture."
     },
     {
       icon: FaTshirt,
-      c1: "#FFD4EC", c2: "#FFB3DE", accent: "#DE56A0",
-      title: "Fashion & Stylists",
-      desc: "Designers presenting ethnic dress styling, local handloom, and kosa silk."
+      c1: "#F5E0D8", c2: "#E8C8BC", accent: "#C15B3D",
+      title: "Lifestyle & Food",
+      desc: "Culinary creators, traditional food vloggers, and lifestyle curators."
     },
     {
       icon: FaHandsHelping,
-      c1: "#CDF4DD", c2: "#A9E8C1", accent: "#2FA86A",
-      title: "Social Advocates",
-      desc: "Welfare campaigners, environmentalists, and cleanliness advocates."
+      c1: "#E2ECD8", c2: "#C5D8B5", accent: "#2E5C31",
+      title: "Social Impact Leaders",
+      desc: "Community workers and creators advocating for social change."
     }
-  ].map((c) => ({ ...c, grad: `linear-gradient(135deg, ${c.c1}, ${c.c2})` }));
+  ].map((cand, i) => ({ ...cand, idx: i }));
 
-  // Split into two lists: left (lg screens) and right (lg screens).
-  const mid = Math.ceil(candidates.length / 2); // 6 left / 5 right
-  const leftList = candidates.slice(0, mid).map((c, i) => ({ ...c, idx: i }));
-  const rightList = candidates
-    .slice(mid)
-    .map((c, i) => ({ ...c, idx: i + mid }));
+  const leftItems = candidates.slice(0, 6);
+  const rightItems = candidates.slice(6);
 
   const toggleReveal = (idx) => {
     setRevealed((prev) => {
       const next = new Set(prev);
-      next.has(idx) ? next.delete(idx) : next.add(idx);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
       return next;
     });
   };
 
   useEffect(() => {
+    if (!sectionRef.current) return;
     const ctx = gsap.context(() => {
       gsap.from(leftRefs.current, {
         x: -90,
@@ -160,34 +157,49 @@ export default function WhoCanApplySection() {
           className={`group relative w-full h-full transition-transform duration-700 ease-out [transform-style:preserve-3d] lg:hover:[transform:rotateY(180deg)] ${isRevealed ? "[transform:rotateY(180deg)]" : ""
             }`}
         >
-          {/* FRONT — icon on the left, title next to it */}
-          <div className="absolute inset-0 [backface-visibility:hidden] flex items-center gap-3 sm:gap-4 h-full px-3.5 sm:px-4 rounded-xl border border-zinc-200 bg-white">
-            <div
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
-              style={{ background: cand.grad, color: cand.accent }}
-            >
-              <IconComponent className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+          {/* FRONT */}
+          <div
+            className="absolute inset-0 [backface-visibility:hidden] flex items-center justify-between h-full px-3.5 sm:px-5 rounded-2xl border bg-surface shadow-sm transition-all duration-300 group-hover:shadow-md"
+            style={{ borderColor: `${cand.accent}40` }}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span
+                className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
+                style={{
+                  background: `linear-gradient(135deg, ${cand.c1}, ${cand.c2})`,
+                  color: cand.accent,
+                }}
+              >
+                <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
+              </span>
+              <span className="font-poppins font-bold text-xs sm:text-sm text-foreground truncate">
+                {t(cand.title)}
+              </span>
             </div>
-            <h3 className="font-display font-bold text-xs sm:text-sm uppercase text-zinc-950 tracking-tight text-left leading-tight">
-              {t(cand.title)}
-            </h3>
+
             <span
-              className="ml-auto w-1.5 h-1.5 rounded-full shrink-0 opacity-50"
-              style={{ background: cand.grad }}
-            />
+              className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border transition-colors"
+              style={{
+                borderColor: `${cand.accent}40`,
+                color: cand.accent,
+                backgroundColor: `${cand.c1}40`,
+              }}
+            >
+              <span>{t("Hover / Tap")}</span>
+            </span>
           </div>
 
-          {/* BACK — pastel-gradient panel with description */}
+          {/* BACK */}
           <div
-            className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] flex items-center gap-3 h-full px-3.5 sm:px-4 rounded-xl border"
+            className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] flex items-center gap-3 h-full px-4 rounded-2xl border shadow-md"
             style={{
               background: `linear-gradient(135deg, ${cand.c1}, ${cand.c2})`,
-              borderColor: `${cand.accent}30`,
+              borderColor: cand.accent,
             }}
           >
             <IconComponent className="w-4 h-4 shrink-0" style={{ color: cand.accent }} />
             <p
-              className="font-semibold text-[11px] sm:text-xs text-left leading-snug line-clamp-2"
+              className="font-inter font-bold text-xs text-left leading-snug line-clamp-2"
               style={{ color: cand.accent }}
             >
               {t(cand.desc)}
@@ -204,21 +216,22 @@ export default function WhoCanApplySection() {
       id="who-can-apply"
       className="relative w-full max-w-7xl xl:max-w-[1400px] mx-auto py-8 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 select-none scroll-mt-24 text-center overflow-hidden"
     >
+      {/* Background Forest Green Ambient Glow */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-80 h-80 bg-[var(--secondary)]/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Heading */}
       <Heading
-        badge={t("Who Can Apply")}
-        title={t("ELIGIBLE")}
-        highlightText={t("CANDIDATES")}
-        className="mb-14"
+        badge={t("ELIGIBILITY CRITERIA")}
+        title={t("WHO CAN")}
+        highlightText={t("APPLY?")}
+        description={t("Open to all digital creators publishing content that reflects the culture, spirit, and growth of Chhattisgarh.")}
+        className="mb-10 sm:mb-14"
       />
 
-      {/* Two compact lists side by side on lg+, single stacked list below */}
-      <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-10 gap-2.5 sm:gap-3">
-        <div className="flex flex-col gap-2.5 sm:gap-3">
-          {leftList.map((cand) => renderRow(cand, leftRefs))}
-        </div>
-        <div className="flex flex-col gap-2.5 sm:gap-3">
-          {rightList.map((cand) => renderRow(cand, rightRefs))}
-        </div>
+      {/* 2 Equal Columns Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 max-w-6xl mx-auto">
+        <div className="flex flex-col gap-4">{leftItems.map((cand) => renderRow(cand, leftRefs))}</div>
+        <div className="flex flex-col gap-4">{rightItems.map((cand) => renderRow(cand, rightRefs))}</div>
       </div>
     </section>
   );
