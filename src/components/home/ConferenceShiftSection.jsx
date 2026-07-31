@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Users } from "lucide-react";
 import { FaYoutube, FaInstagram, FaFacebookF } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
+import Heading from "@/components/common/Heading";
 
 export default function ConferenceShiftSection() {
   const { t } = useLanguage();
@@ -96,6 +97,27 @@ export default function ConferenceShiftSection() {
     return () => cancelAnimationFrame(requestRef.current);
   }, [viewportWidth]);
 
+  // ================= Left Hero Image Auto-Shuffle (slide left/right) =================
+  const heroImages = [
+    "/assets/images/about-1.jpg",
+    "/assets/images/about-2.webp",
+    "/assets/images/about-3.jpg",
+    "/assets/images/about-4.webp",
+    "/assets/images/about-5.jpg",
+    "/assets/images/about-6.webp"
+  ];
+
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [direction, setDirection] = useState(1); // 1 = moving forward (next slides in from right), -1 = backward
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDirection(1);
+      setHeroIndex((prev) => (prev + 1) % heroImages.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
   return (
     <section
       id="about-event"
@@ -103,17 +125,51 @@ export default function ConferenceShiftSection() {
     >
       {/* ================= LEFT IMAGE / RIGHT CONTENT ================= */}
       <div className="w-full max-w-7xl px-6 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
-        {/* Left: Image */}
+        {/* Left: Auto-shuffling Image */}
         <div className="relative w-full order-1">
           <div className="relative w-full aspect-[4/4] rounded-2xl md:rounded-3xl overflow-hidden border border-border shadow-sm bg-surface">
-            <img
-              src="/assets/images/about-event.jpg"
-              alt={t("Chhattisgarh State Creator & Influencer Awards")}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+            {heroImages.map((src, idx) => {
+              const isActive = idx === heroIndex;
+              const isPrev =
+                idx === (heroIndex - 1 + heroImages.length) % heroImages.length;
+              const isNext = idx === (heroIndex + 1) % heroImages.length;
+
+              let translate = "translate-x-full"; // default: parked off-screen right
+              if (isActive) translate = "translate-x-0";
+              else if (direction === 1 && isPrev) translate = "-translate-x-full";
+              else if (direction === -1 && isNext) translate = "translate-x-full";
+              else translate = "translate-x-full";
+
+              return (
+                <img
+                  key={src + idx}
+                  src={src}
+                  alt={t("Chhattisgarh State Creator & Influencer Awards")}
+                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-in-out ${translate}`}
+                  style={{ zIndex: isActive ? 10 : 1 }}
+                  loading="lazy"
+                />
+              );
+            })}
+
             {/* soft gradient accent overlay at bottom for polish */}
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent pointer-events-none z-20" />
+
+            {/* Slide indicator dots */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+              {heroImages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setDirection(idx > heroIndex ? 1 : -1);
+                    setHeroIndex(idx);
+                  }}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${idx === heroIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"
+                    }`}
+                  aria-label={`Show image ${idx + 1}`}
+                />
+              ))}
+            </div>
           </div>
           {/* Accent underline strip beneath image for brand consistency */}
           <div className="h-[4px] w-24 bg-gradient-to-r from-primary to-accent rounded-full mt-4 mx-auto md:mx-0"></div>
@@ -121,18 +177,13 @@ export default function ConferenceShiftSection() {
 
         {/* Right: Heading + Text + Platforms */}
         <div className="flex flex-col items-start text-left order-2">
-          <span className="font-sans font-bold text-xs xl:text-sm uppercase tracking-widest text-primary">
-            {t("Official State Platform")}
-          </span>
-
-          <h2 className="font-display font-bold uppercase text-foreground leading-tight text-3xl sm:text-4xl md:text-4xl lg:text-5xl mt-2">
-            {t("The Next Big ")}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-              {t("Story Starts Here.")}
-            </span>
-          </h2>
-
-          <div className="h-[4px] w-32 bg-gradient-to-r from-primary to-accent rounded-full mt-4"></div>
+          <Heading
+            badge={t("Official State Platform")}
+            title={t("The Next Big")}
+            highlightText={t("Story Starts Here.")}
+            align="left"
+            className="px-0 mx-0"
+          />
 
           <p className="font-sans text-text-secondary text-sm sm:text-sm md:text-base  leading-relaxed mt-6">
             {t(

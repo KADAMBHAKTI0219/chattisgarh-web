@@ -16,13 +16,22 @@ import {
   FaUsers
 } from "react-icons/fa";
 
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 export default function AwardCategoriesSection() {
+  const router = useRouter();
   const { t } = useLanguage();
   const { openModal } = useParticipateModal();
   const [activeTier, setActiveTier] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const tabsRef = useRef(null);
   const categoriesGridRef = useRef(null);
+
+  // Click handler when a user clicks "View Categories →" or a Tier card
+  const handleSelectTier = (slug) => {
+    router.push(`/categories/${slug}`);
+  };
 
   // 4 Main Tier Groups matching reference UI screenshot
   const tiers = [
@@ -233,13 +242,7 @@ export default function AwardCategoriesSection() {
     }
   ];
 
-  // Click handler when a user clicks "View Categories →" on a Tier card
-  const handleSelectTier = (slug) => {
-    setActiveTier(slug);
-    if (categoriesGridRef.current) {
-      categoriesGridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
+
 
   const scrollTabs = (direction) => {
     if (tabsRef.current) {
@@ -283,11 +286,10 @@ export default function AwardCategoriesSection() {
             <div
               key={tier.slug}
               onClick={() => handleSelectTier(tier.slug)}
-              className={`relative min-h-[300px] sm:min-h-[320px] rounded-3xl overflow-hidden group cursor-pointer border transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 ${
-                isSelected
-                  ? "border-[var(--primary)] ring-4 ring-[var(--primary)]/20 shadow-xl scale-[1.01]"
-                  : "border-zinc-200/80 hover:border-zinc-400 shadow-md hover:shadow-xl hover:-translate-y-1"
-              }`}
+              className={`relative min-h-[300px] sm:min-h-[320px] rounded-3xl overflow-hidden group cursor-pointer border transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 ${isSelected
+                ? "border-[var(--primary)] ring-4 ring-[var(--primary)]/20 shadow-xl scale-[1.01]"
+                : "border-zinc-200/80 hover:border-zinc-400 shadow-md hover:shadow-xl hover:-translate-y-1"
+                }`}
             >
               {/* Card Background Cover Image */}
               <img
@@ -352,138 +354,7 @@ export default function AwardCategoriesSection() {
         })}
       </div>
 
-      {/* ==========================================================
-          2. SUB-CATEGORIES SECTION (Scroll Target & Filters)
-         ========================================================== */}
-      <div ref={categoriesGridRef} className="pt-4 scroll-mt-24">
-        {/* Tier Selection Filter Tabs & Search Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 w-full mb-10 bg-white/60 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-zinc-200/80 shadow-sm">
-          {/* Scrollable Tabs */}
-          <div className="flex items-center gap-2 w-full md:w-auto min-w-0">
-            <button
-              onClick={() => scrollTabs("left")}
-              className="flex md:hidden items-center justify-center w-8 h-8 rounded-full border border-zinc-300 bg-white text-zinc-700 shadow-sm shrink-0"
-              aria-label="Scroll tabs left"
-            >
-              <FaChevronLeft className="w-3 h-3" />
-            </button>
 
-            <div
-              ref={tabsRef}
-              className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth px-1 py-1"
-            >
-              <button
-                onClick={() => setActiveTier("all")}
-                className={`shrink-0 px-4 py-2 rounded-full font-inter font-bold text-xs sm:text-sm transition-all cursor-pointer border ${
-                  activeTier === "all"
-                    ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md"
-                    : "bg-white text-zinc-700 border-zinc-200 hover:border-zinc-400"
-                }`}
-              >
-                All Categories
-              </button>
-
-              {tiers.map((tGroup) => (
-                <button
-                  key={tGroup.slug}
-                  onClick={() => setActiveTier(tGroup.slug)}
-                  className={`shrink-0 px-4 py-2 rounded-full font-inter font-bold text-xs sm:text-sm transition-all cursor-pointer border ${
-                    activeTier === tGroup.slug
-                      ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md"
-                      : "bg-white text-zinc-700 border-zinc-200 hover:border-zinc-400"
-                  }`}
-                >
-                  {t(tGroup.title)}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => scrollTabs("right")}
-              className="flex md:hidden items-center justify-center w-8 h-8 rounded-full border border-zinc-300 bg-white text-zinc-700 shadow-sm shrink-0"
-              aria-label="Scroll tabs right"
-            >
-              <FaChevronRight className="w-3 h-3" />
-            </button>
-          </div>
-
-          {/* Search Input Bar */}
-          <div className="relative w-full md:max-w-xs flex items-center border border-zinc-300 focus-within:border-[var(--primary)] bg-white rounded-full shadow-sm">
-            <span className="pl-3.5 text-zinc-400">🔍</span>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search Categories..."
-              className="w-full py-2 px-2 text-zinc-850 font-inter font-semibold text-xs sm:text-sm focus:outline-none placeholder-zinc-400 bg-transparent rounded-full"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="pr-3.5 text-zinc-400 hover:text-zinc-700 cursor-pointer font-bold"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Sub-Categories Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {filteredCategories.map((cat) => {
-            const currentTier = tiers.find((tGroup) => tGroup.slug === cat.tier);
-
-            return (
-              <div
-                key={cat.id}
-                onClick={openModal}
-                className="relative aspect-[3/4] sm:aspect-[4/5] rounded-2xl overflow-hidden group border border-zinc-200/80 hover:border-[var(--primary)] hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 select-none cursor-pointer flex flex-col justify-end p-4 sm:p-5 text-left"
-              >
-                {/* Image */}
-                <img
-                  src={cat.image}
-                  alt={t(cat.title)}
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100 z-0 bg-zinc-800"
-                  loading="lazy"
-                />
-
-                {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent group-hover:from-black/98 group-hover:via-black/75 group-hover:to-black/30 transition-all duration-500 z-10" />
-
-                {/* Tier Badge */}
-                {currentTier && (
-                  <span
-                    className="absolute top-3 left-3 z-20 text-[9px] font-inter font-bold uppercase px-2.5 py-1 rounded-full text-white backdrop-blur-md border border-white/20 shadow-sm"
-                    style={{ backgroundColor: currentTier.color }}
-                  >
-                    {t(currentTier.title)}
-                  </span>
-                )}
-
-                {/* Title & Expandable Description on Hover / Mobile Touch */}
-                <div className="relative z-20 flex flex-col justify-end w-full">
-                  <h4 className="font-poppins font-bold text-sm sm:text-base md:text-lg uppercase text-white tracking-tight leading-snug group-hover:text-amber-200 transition-colors duration-300">
-                    {t(cat.title)}
-                  </h4>
-
-                  {/* Description - Expands smoothly on hover / tap */}
-                  <div className="overflow-hidden">
-                    <p className="font-inter text-zinc-200 text-xs leading-relaxed transform translate-y-4 opacity-0 max-h-0 group-hover:translate-y-0 group-hover:opacity-100 group-hover:max-h-32 group-hover:mt-2 transition-all duration-500 ease-out">
-                      {t(cat.description)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {filteredCategories.length === 0 && (
-          <div className="text-zinc-500 font-inter font-bold text-base py-16 bg-white/40 border border-zinc-200 rounded-2xl">
-            No categories found matching your search.
-          </div>
-        )}
-      </div>
     </section>
   );
 }

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 
+import Heading from "@/components/common/Heading";
+
 export default function TermsSection() {
   const { t } = useLanguage();
 
@@ -66,13 +68,14 @@ export default function TermsSection() {
     >
 
       {/* Header and Download Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-150 pb-6">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-3xl md:text-5xl xl:text-6xl font-display font-bold uppercase tracking-tight text-zinc-950">
-            {t("GUIDELINES &")}{" "}<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B95] to-[#FF6B95]">{t("TRUST")}</span>
-          </h2>
-          <div className="h-[4px] bg-gradient-to-r from-[#F798B4] to-[#EE5D8C] rounded-full w-24"></div>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-6">
+        <Heading
+          badge={t("Official Rules & Compliance")}
+          title={t("GUIDELINES &")}
+          highlightText={t("TRUST")}
+          align="left"
+          className="px-0 mx-0"
+        />
 
         {/* Downloadable Official Guidelines Button */}
         <a

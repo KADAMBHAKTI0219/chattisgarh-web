@@ -6,7 +6,6 @@ import ArchitectsTrustSection from "@/components/about/ArchitectsTrustSection";
 import CulturalQuoteSection from "@/components/about/CulturalQuoteSection";
 import BeyondTrophySection from "@/components/about/BeyondTrophySection";
 import FutureCreatorsSection from "@/components/about/FutureCreatorsSection";
-import CrowdSection from "@/components/home/CrowdSection";
 
 export default function AboutPage() {
   return (
@@ -35,9 +34,6 @@ export default function AboutPage() {
 
       {/* 8. A Future Built by Creators (CTA with social links) */}
       <FutureCreatorsSection />
-
-      {/* 9. Walking Crowd Animation at bottom */}
-      <CrowdSection />
 
     </div>
   );

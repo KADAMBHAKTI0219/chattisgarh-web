@@ -26,41 +26,41 @@ export default function FutureCreatorsSection() {
       handle: "@CGWebAwards",
       url: "https://x.com",
       icon: "🐦",
-      bg: "bg-[#4585F6]/10"
+      bg: "bg-info/10"
     },
     {
       title: "Instagram Page",
       handle: "@cgwebawards",
       url: "https://instagram.com",
       icon: "📸",
-      bg: "bg-[#F3819F]/10"
+      bg: "bg-primary/10"
     },
     {
       title: "YouTube Channel",
       handle: "Chhattisgarh Web Awards",
       url: "https://youtube.com",
       icon: "📺",
-      bg: "bg-[#F87C22]/10"
+      bg: "bg-accent/10"
     }
   ];
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className={`w-full max-w-7xl mx-auto flex flex-col gap-10 py-12 px-4 md:px-8 relative z-10 select-none transition-all duration-700 ease-out transform ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-      }`}
+      className={`w-full max-w-7xl mx-auto flex flex-col gap-10 py-12 px-4 md:px-8 relative z-10 select-none transition-all duration-700 ease-out transform ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+        }`}
     >
-      
+
       {/* Central block */}
-      <div className="border-4 border-black bg-white p-8 sm:p-12 rounded-[32px] shadow-[8px_8px_0px_rgba(0,0,0,1)] text-center flex flex-col items-center gap-4 relative overflow-hidden">
-        <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
+      <div className="border border-border bg-surface p-8 sm:p-12 rounded-[32px] shadow-sm text-center flex flex-col items-center gap-4 relative overflow-hidden">
+        <span className="font-sans font-bold text-xs uppercase tracking-widest text-primary">
           Join the Future
-        </span>        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold uppercase text-zinc-950 tracking-tight leading-none">
-          A FUTURE <span className="text-[#FFA025]">BUILT BY CREATORS</span>
+        </span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold uppercase text-foreground tracking-tight leading-tight">
+          A FUTURE <span className="text-primary">BUILT BY CREATORS</span>
         </h2>
-        <p className="text-zinc-600 font-semibold text-sm sm:text-base leading-relaxed max-w-2xl mt-2">
-          Be a part of Chhattisgarh's ultimate digital convergence. Whether you are an aspiring vlogger, an tech innovator, or a digital marketing leader, the stage is yours.
+        <p className="text-text-secondary font-semibold text-sm sm:text-base leading-relaxed max-w-2xl mt-2">
+          Be a part of Chhattisgarh's ultimate digital convergence. Whether you are an aspiring vlogger, a tech innovator, or a digital marketing leader, the stage is yours.
         </p>
 
         {/* Social channels flex-row */}
@@ -71,15 +71,15 @@ export default function FutureCreatorsSection() {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={`border-3 border-black rounded-2xl p-5 ${link.bg} shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all duration-200 text-center flex flex-col items-center justify-center gap-2 group cursor-pointer`}
+              className={`border border-border rounded-2xl p-5 ${link.bg} shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-center flex flex-col items-center justify-center gap-2 group cursor-pointer`}
             >
               <span className="text-2xl group-hover:scale-125 transition-transform duration-300">
                 {link.icon}
               </span>
-              <h4 className="font-display font-bold text-sm uppercase text-zinc-950">
+              <h4 className="font-heading font-bold text-sm uppercase text-foreground">
                 {link.title}
               </h4>
-              <span className="font-sans font-bold text-xs text-zinc-500 hover:text-zinc-900 transition-colors">
+              <span className="font-sans font-bold text-xs text-text-muted hover:text-foreground transition-colors">
                 {link.handle}
               </span>
             </a>

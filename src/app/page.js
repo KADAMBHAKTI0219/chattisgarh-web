@@ -11,7 +11,6 @@ import HowToApplySection from "@/components/home/HowToApplySection";
 import FAQSection from "@/components/home/FAQSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TermsSection from "@/components/home/TermsSection";
-import CrowdSection from "@/components/home/CrowdSection";
 
 export default function Home() {
   useEffect(() => {
@@ -35,7 +34,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-0 pt-0 pb-0 flex flex-col gap-0 relative overflow-x-hidden">
-      
+
       {/* 1. Hero Section (includes titles, statistics, cards shuffle) */}
       <div className="reveal-on-scroll">
         <HeroSection />
@@ -86,8 +85,6 @@ export default function Home() {
         <TermsSection />
       </div>
 
-      {/* 11. Walking Crowd Silhouette Animation */}
-      <CrowdSection />
 
     </div>
   );

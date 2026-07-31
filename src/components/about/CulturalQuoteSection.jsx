@@ -22,13 +22,12 @@ export default function CulturalQuoteSection() {
   }, []);
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className={`w-full max-w-7xl mx-auto py-12 px-4 md:px-8 relative z-10 select-none transition-all duration-700 ease-out transform ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-      }`}
+      className={`w-full max-w-7xl mx-auto py-12 px-4 md:px-8 relative z-10 select-none transition-all duration-700 ease-out transform ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+        }`}
     >
-      <div className="relative w-full aspect-[2.5/1] sm:aspect-[2.8/1] md:aspect-[3/1] rounded-[32px] overflow-hidden border-4 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:scale-[1.005] transition-transform duration-300 bg-[#070b19]">
+      <div className="relative w-full aspect-[2.5/1] sm:aspect-[2.8/1] md:aspect-[3/1] rounded-[32px] overflow-hidden border border-border shadow-sm hover:scale-[1.005] transition-transform duration-300 bg-foreground">
         <Image
           src="/assets/images/chhattisgarh-quote-banner.png"
           alt="अपनी आवाज, अपना छत्तीसगढ़, नया भारत"

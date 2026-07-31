@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@/utils/cn";
 
 /**
- * Reusable Heading Component for section titles, page titles, and subheadings.
+ * Reusable Animated Heading Component for section titles, page titles, and subheadings.
  * Uses clsx & tailwind-merge (via cn) for class merging.
  *
  * @param {Object} props
@@ -16,6 +16,7 @@ import { cn } from "@/utils/cn";
  * @param {"center"|"left"|"right"} [props.align="center"] - Text alignment
  * @param {boolean} [props.showLine=true] - Whether to render a decorative accent line
  * @param {"default"|"dark"|"light"|"primary"} [props.variant="default"] - Theme variant
+ * @param {boolean} [props.animate=true] - Whether to apply smooth scroll reveal animation
  * @param {string} [props.className=""] - Outer container wrapper classes
  * @param {string} [props.titleClassName=""] - Custom classes for the title element
  * @param {string} [props.badgeClassName=""] - Custom classes for the badge element
@@ -30,12 +31,39 @@ export default function Heading({
   align = "center",
   showLine = true,
   variant = "default",
+  animate = true,
   className = "",
   titleClassName = "",
   badgeClassName = "",
   descriptionClassName = "",
   children,
 }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!animate) {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [animate]);
+
   const Tag = typeof level === "number" ? `h${Math.min(Math.max(level, 1), 6)}` : level;
   const headingTitle = title || children;
 
@@ -56,25 +84,25 @@ export default function Heading({
 
   const themeColors = {
     default: {
-      badge: "text-primary bg-primary/10 border-primary/20",
-      title: "text-foreground",
+      badge: "text-[var(--primary)] bg-[var(--primary)]/10 border-[var(--primary)]/20",
+      title: "text-zinc-900",
       highlight: "bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent",
-      description: "text-text-secondary",
+      description: "text-zinc-600",
       line: "bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]",
     },
     dark: {
-      badge: "text-[var(--accent)] bg-[var(--accent)]/10 border-[var(--accent)]/20",
+      badge: "text-amber-300 bg-amber-300/10 border-amber-300/20",
       title: "text-white",
-      highlight: "bg-gradient-to-r from-amber-300 via-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent",
+      highlight: "bg-gradient-to-r from-amber-300 via-[var(--primary)] to-amber-400 bg-clip-text text-transparent",
       description: "text-zinc-300",
-      line: "bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]",
+      line: "bg-gradient-to-r from-[var(--primary)] to-amber-400",
     },
     light: {
-      badge: "text-primary bg-primary/10 border-primary/20",
+      badge: "text-[var(--primary)] bg-[var(--primary)]/10 border-[var(--primary)]/20",
       title: "text-zinc-900",
-      highlight: "text-primary",
+      highlight: "text-[var(--primary)]",
       description: "text-zinc-600",
-      line: "bg-primary",
+      line: "bg-[var(--primary)]",
     },
     primary: {
       badge: "text-white bg-white/20 border-white/30",
@@ -86,8 +114,16 @@ export default function Heading({
   }[variant] || themeColors.default;
 
   return (
-    <div className={cn("flex flex-col gap-2.5 max-w-3xl xl:max-w-5xl px-4", alignmentClasses, className)}>
-      {/* Optional Badge / Eyebrow (Inter font) */}
+    <div
+      ref={containerRef}
+      className={cn(
+        "flex flex-col gap-2.5 max-w-3xl xl:max-w-5xl px-4 transition-all duration-700 ease-out transform",
+        animate && !isVisible ? "opacity-0 translate-y-8" : "opacity-100 translate-y-0",
+        alignmentClasses,
+        className
+      )}
+    >
+      {/* Optional Badge / Eyebrow */}
       {badge && (
         <span
           className={cn(
@@ -100,7 +136,7 @@ export default function Heading({
         </span>
       )}
 
-      {/* Main Title (Poppins font) */}
+      {/* Main Title */}
       {headingTitle && (
         <Tag className={cn("font-poppins", sizeClasses, themeColors.title, titleClassName)}>
           {headingTitle}
@@ -120,7 +156,7 @@ export default function Heading({
         />
       )}
 
-      {/* Optional Sub-description (Inter font) */}
+      {/* Optional Sub-description */}
       {description && (
         <p
           className={cn(
@@ -136,5 +172,5 @@ export default function Heading({
   );
 }
 
-// Export named Headings alias as requested
+// Export named Headings alias
 export { Heading as Headings };

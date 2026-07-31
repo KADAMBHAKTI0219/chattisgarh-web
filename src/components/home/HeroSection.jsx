@@ -1,42 +1,118 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { ParticipateButton } from "@/components/common/Button";
+
+// Add as many banner images as you like — the carousel adapts automatically.
+// Desktop and mobile arrays should have the same number of slides (index i
+// on desktop pairs with index i on mobile) since they share one indicator/timer.
+const DESKTOP_SLIDES = [
+  "/assets/images/herosection.png",
+  // "/assets/images/herosection-2.png",
+  // "/assets/images/herosection-3.png",
+];
+
+const MOBILE_SLIDES = [
+  "/assets/images/mob-hero.png",
+  // "/assets/images/mob-hero-2.png",
+  // "/assets/images/mob-hero-3.png",
+];
+
+const AUTOPLAY_MS = 4500;
 
 export default function HeroSection() {
   const { openModal } = useParticipateModal();
   const { t } = useLanguage();
 
+  const [current, setCurrent] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const total = DESKTOP_SLIDES.length;
+  const timerRef = useRef(null);
+
+  const goTo = (idx) => setCurrent(((idx % total) + total) % total);
+
+  // Autoplay — pauses while the user is hovering the banner (desktop) and
+  // restarts cleanly whenever `current` changes so the interval never drifts.
+  useEffect(() => {
+    if (total <= 1 || isHovered) return;
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % total);
+    }, AUTOPLAY_MS);
+    return () => clearInterval(timerRef.current);
+  }, [current, isHovered, total]);
+
   return (
     <section
       id="hero-section"
-      className="flex flex-col items-center justify-center text-center w-full overflow-visible"
+      className="relative flex flex-col items-center justify-center text-center w-full max-w-full overflow-hidden"
     >
 
-      {/* 1. Banner Container */}
-      <div className="relative w-full flex items-center justify-center overflow-hidden bg-[#FAF7F0]">
+      {/* 1. Banner Carousel Container */}
+      <div
+        className="relative w-full max-w-full flex items-center justify-center overflow-hidden bg-[#FAF7F0]"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
 
-        {/* Hero Background Image - Desktop (full image, no cropping) */}
-        <img
-          src="/assets/images/herosection.png"
-          alt="Hero Background Banner"
-          className="hidden lg:block relative w-full h-auto object-contain select-none z-0"
-        />
+        {/* Hero Background Images — Desktop (swipes automatically) */}
+        <div className="hidden lg:block relative w-full overflow-hidden">
+          <div
+            className="flex transition-transform duration-1000 ease-in-out"
+            style={{ transform: `translateX(-${current * 100}%)` }}
+          >
+            {DESKTOP_SLIDES.map((src, i) => (
+              <img
+                key={src + i}
+                src={src}
+                alt="Hero Background Banner"
+                className="w-full h-auto object-contain select-none shrink-0 z-0"
+                draggable={false}
+              />
+            ))}
+          </div>
+        </div>
 
-        {/* Hero Background Image - Mobile (full image, no cropping) */}
-        <img
-          src="/assets/images/mob-hero.png"
-          alt="Hero Background Banner"
-          className="block lg:hidden relative w-full h-auto object-contain select-none z-0"
-        />
+        {/* Hero Background Images — Mobile (swipes automatically) */}
+        <div className="block lg:hidden relative w-full overflow-hidden">
+          <div
+            className="flex transition-transform duration-1000 ease-in-out"
+            style={{ transform: `translateX(-${current * 100}%)` }}
+          >
+            {MOBILE_SLIDES.map((src, i) => (
+              <img
+                key={src + i}
+                src={src}
+                alt="Hero Background Banner"
+                className="w-full h-auto object-contain select-none shrink-0 z-0"
+                draggable={false}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Slide indicators — only shown when there's more than one slide */}
+        {total > 1 && (
+          <div className="absolute bottom-3 sm:bottom-4 inset-x-0 z-20 flex justify-center gap-2">
+            {DESKTOP_SLIDES.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${i === current ? "w-6 bg-[#EE5D8C]" : "w-1.5 bg-black/20 hover:bg-black/35"
+                  }`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Apply Now Button — overlaid at the bottom of the banner image */}
         <div className="absolute inset-x-0 bottom-[45%] sm:bottom-[45%] md:bottom-[45%] lg:bottom-[15%] xl:bottom-[15%] z-20 flex justify-center px-2">
           <ParticipateButton
             onClick={openModal}
             size="lg"
-            className="text-xs sm:text-base md:text-lg px-6 py-2.5 sm:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)]"
+            className="text-xs sm:text-base md:text-lg px-4 py-2.5 sm:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)]"
           >
             {t("Participate Now")}
           </ParticipateButton>

@@ -114,12 +114,15 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter);
+  overflow-x: hidden;
+  max-width: 100%;
   transition:
     background-color 0.35s ease,
     color 0.35s ease;

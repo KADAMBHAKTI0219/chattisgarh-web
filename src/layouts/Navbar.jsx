@@ -75,17 +75,25 @@ export default function Navbar() {
       }`}>
         <div className="mx-auto w-full max-w-[1440px] flex items-center justify-between">
           
-          {/* Left Side: Logo */}
-          <div className="flex items-center shrink-0">
-            <Link href="/" className="flex items-center group py-0.5">
+          {/* Left Side: Logo & Branding Text */}
+          <div className="flex items-center shrink-0 max-w-[65%] sm:max-w-none">
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 group py-0.5">
               <Image
                 src="/assets/images/chattisgarh-logo.webp"
                 alt="Chhattisgarh State Creator & Influencer Awards"
                 width={240}
                 height={70}
                 priority
-                className="h-11 sm:h-13 md:h-15 lg:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                className="h-9 sm:h-11 md:h-13 lg:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02] shrink-0"
               />
+              <div className="flex flex-col text-left justify-center border-l border-zinc-300/80 pl-2 sm:pl-3">
+                <span className="font-poppins font-extrabold text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg text-zinc-900 leading-tight uppercase tracking-tight group-hover:text-[var(--primary)] transition-colors">
+                  Chhattisgarh Creator & Influencer Awards
+                </span>
+                <span className="font-poppins font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm text-[var(--primary)] leading-tight tracking-wide">
+                  छत्तीसगढ़ सबले बढ़िया
+                </span>
+              </div>
             </Link>
           </div>
 
@@ -100,7 +108,7 @@ export default function Navbar() {
                 {t("About Us")}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#EE5D8C] transition-all duration-300 group-hover:w-full" />
               </Link>
-              <Link href="/#categories" className="hover:text-[#EE5D8C] transition-colors duration-200 relative group py-1">
+              <Link href="/categories" className="hover:text-[#EE5D8C] transition-colors duration-200 relative group py-1">
                 {t("Categories")}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#EE5D8C] transition-all duration-300 group-hover:w-full" />
               </Link>
@@ -116,13 +124,8 @@ export default function Navbar() {
             </ParticipateButton>
           </div>
 
-          {/* Mobile & Tablet Controls (CTA + Hamburger) */}
-          <div className="flex lg:hidden items-center gap-2.5 sm:gap-3">
-            {/* Participate Now button for mobile */}
-            <ParticipateButton onClick={openModal} size="sm">
-              {t("Participate Now")}
-            </ParticipateButton>
-
+          {/* Mobile & Tablet Controls (Hamburger Menu Toggle) */}
+          <div className="flex lg:hidden items-center">
             {/* Menu Toggle Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -158,14 +161,24 @@ export default function Navbar() {
             {/* Sidebar drawer */}
             <div className="fixed right-0 top-0 bottom-0 h-dvh w-[85vw] max-w-[340px] bg-[#FAF7F0] z-50 flex flex-col lg:hidden shadow-2xl transition-transform duration-300 animate-in slide-in-from-right">
               {/* Drawer Header */}
-              <div className="flex items-center justify-between p-4 sm:p-5 border-b border-zinc-200 bg-white/50">
-                <Image
-                  src="/assets/images/chattisgarh-logo.webp"
-                  alt="Chhattisgarh Logo"
-                  width={160}
-                  height={50}
-                  className="h-10 w-auto object-contain"
-                />
+              <div className="flex items-center justify-between p-3.5 sm:p-4 border-b border-zinc-200 bg-white/50 gap-2">
+                <div className="flex items-center gap-2 max-w-[80%]">
+                  <Image
+                    src="/assets/images/chattisgarh-logo.webp"
+                    alt="Chhattisgarh Logo"
+                    width={160}
+                    height={50}
+                    className="h-8 w-auto object-contain shrink-0"
+                  />
+                  <div className="flex flex-col text-left border-l border-zinc-300 pl-2">
+                    <span className="font-poppins font-extrabold text-[9px] text-zinc-900 leading-tight uppercase tracking-tight">
+                      Chhattisgarh Creator & Influencer Awards
+                    </span>
+                    <span className="font-poppins font-bold text-[8px] text-[var(--primary)] leading-tight">
+                      छत्तीसगढ़ सबले बढ़िया
+                    </span>
+                  </div>
+                </div>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm active:scale-95 cursor-pointer"
@@ -196,7 +209,7 @@ export default function Navbar() {
                   <span className="text-zinc-400 text-sm">→</span>
                 </Link>
                 <Link
-                  href="/#categories"
+                  href="/categories"
                   onClick={() => setIsOpen(false)}
                   className="py-2.5 border-b border-zinc-200/60 hover:text-[#EE5D8C] transition-colors flex items-center justify-between"
                 >
@@ -211,6 +224,21 @@ export default function Navbar() {
                   <span>{t("Contact")}</span>
                   <span className="text-zinc-400 text-sm">→</span>
                 </Link>
+
+                {/* Participate Now CTA Button inside Mobile Drawer */}
+                <div className="pt-2">
+                  <ParticipateButton
+                    onClick={() => {
+                      setIsOpen(false);
+                      openModal();
+                    }}
+                    fullWidth
+                    size="lg"
+                    className="w-full justify-center text-sm font-bold shadow-md"
+                  >
+                    {t("Participate Now")}
+                  </ParticipateButton>
+                </div>
               </div>
 
               {/* Drawer Footer */}
@@ -227,17 +255,6 @@ export default function Navbar() {
                     <option value="cg">छत्तीसगढ़ी</option>
                   </select>
                 </div>
-
-                <ParticipateButton
-                  onClick={() => {
-                    setIsOpen(false);
-                    openModal();
-                  }}
-                  fullWidth
-                  size="md"
-                >
-                  {t("Participate Now")}
-                </ParticipateButton>
               </div>
             </div>
           </>
