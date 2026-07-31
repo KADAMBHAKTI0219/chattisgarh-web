@@ -14,6 +14,8 @@ const DESKTOP_SLIDES = [
 
 const MOBILE_SLIDES = [
   "/assets/images/mob-hero.png",
+  "/assets/images/mob-hero-2.png",
+  "/assets/images/mob-hero-3.png",
 ];
 
 const AUTOPLAY_MS = 3500;
