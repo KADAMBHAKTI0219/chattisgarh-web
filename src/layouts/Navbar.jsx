@@ -105,7 +105,7 @@ export default function Navbar() {
                 width={260}
                 height={75}
                 priority
-                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-8 sm:h-11 scale-95" : "h-9.5 sm:h-12 scale-100"
+                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-20  scale-95" : "h-20  scale-100"
                   } group-hover:scale-[1.02]`}
               />
 
@@ -115,7 +115,7 @@ export default function Navbar() {
                   {t("Chhattisgarh Creator & Influencer Awards")}
                 </span>
                 <span className="font-poppins font-bold text-[10px] min-[370px]:text-[11px] sm:text-xs md:text-[13px] text-[#2E5C31] group-hover:text-[#1b3827] leading-tight tracking-wide mt-0.5 transition-colors duration-300">
-                  {t("छत्तीसगढ़ सबसे बढ़िया")}
+                  {t("छत्तीसगढ़िया सबसे बढ़िया")}
                 </span>
               </div>
             </Link>
@@ -217,7 +217,7 @@ export default function Navbar() {
                     Chhattisgarh Awards
                   </span>
                   <span className="font-poppins font-bold text-[10px] text-[#2E5C31] leading-tight mt-0.5">
-                    छत्तीसगढ़ सबसे बढ़िया
+                    छत्तीसगढ़िया सबसे बढ़िया
                   </span>
                 </div>
               </div>

@@ -66,7 +66,7 @@ export default function ConferenceShiftSection() {
   return (
     <section
       id="about-event"
-      className="relative w-full bg-[#F8F4EA] text-[#1c2c23] py-8 md:py-12 lg:py-14 px-4 sm:px-6 md:px-10 lg:px-16 overflow-hidden select-none"
+      className="relative w-full bg-[#F8F4EA] text-[#1c2c23] py-8 md:py-12 lg:py-14 px-4 sm:px-6 md:px-10 lg:px-16 overflow-hidden touch-pan-y"
     >
       {/* Background Decorative Layer */}
       <div className="absolute inset-0 pointer-events-none -z-10">
@@ -101,8 +101,8 @@ export default function ConferenceShiftSection() {
       {/* Main 1400px Container with 100px Column Gap */}
       <div className="mx-auto w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-[90px] xl:gap-[100px] items-center">
 
-        {/* ================= LEFT SIDE: PREMIUM INTERACTIVE GALLERY STACK ================= */}
-        <div className="lg:col-span-6 flex flex-col items-center justify-center relative w-full min-h-[480px] sm:min-h-[580px] md:min-h-[640px]">
+        {/* ================= LEFT SIDE: PREMIUM INTERACTIVE GALLERY STACK (Order 2 on Mobile, Order 1 on Desktop) ================= */}
+        <div className="lg:col-span-6 order-2 lg:order-1 flex flex-col items-center justify-center relative w-full min-h-[480px] sm:min-h-[580px] md:min-h-[640px]">
 
           {/* Blurred Mandala Backdrop */}
           <div className="absolute w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] rounded-full border border-[#D4A534]/20 bg-[radial-gradient(circle,rgba(212,165,52,0.15)_0%,transparent_70%)] blur-xl pointer-events-none -z-10" />
@@ -112,7 +112,9 @@ export default function ConferenceShiftSection() {
             ref={cardContainerRef}
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
-            className="relative w-full max-w-[420px] sm:max-w-[480px] h-[440px] sm:h-[520px] flex items-center justify-center"
+            onTouchStart={() => setIsAutoPlaying(false)}
+            onTouchEnd={() => setIsAutoPlaying(true)}
+            className="relative w-full max-w-[420px] sm:max-w-[480px] h-[440px] sm:h-[520px] flex items-center justify-center touch-pan-y"
           >
             {GALLERY_CARDS.map((card, idx) => {
               const total = GALLERY_CARDS.length;
@@ -207,8 +209,8 @@ export default function ConferenceShiftSection() {
           </div>
         </div>
 
-        {/* ================= RIGHT SIDE: LUXURY EDITORIAL STORYTELLING ================= */}
-        <div className="lg:col-span-6 flex flex-col items-start text-left relative z-10">
+        {/* ================= RIGHT SIDE: LUXURY EDITORIAL STORYTELLING (Order 1 on Mobile, Order 2 on Desktop) ================= */}
+        <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-start text-left relative z-10">
 
           {/* Reusable Heading Component with Badge, Title, and Highlight */}
           <Heading

@@ -104,11 +104,11 @@ export default function HeroSection() {
 
         {/* Apply Now Button — ONLY rendered on the FIRST slide (current === 0) */}
         {current === 0 && (
-          <div className="absolute inset-x-0 bottom-[45%] sm:bottom-[45%] md:bottom-[45%] lg:bottom-[15%] xl:bottom-[15%] z-20 flex justify-center px-2">
+          <div className="absolute bottom-[42%] sm:bottom-[44%] md:bottom-[45%] lg:bottom-[14%] xl:bottom-[15%] left-5 lg:left-16 xl:left-20 inset-x-0 z-20 flex justify-center px-4">
             <ParticipateButton
               onClick={openModal}
               size="lg"
-              className="text-xs sm:text-base md:text-lg px-4 py-2.5 sm:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)]"
+              className="text-xs sm:text-base md:text-lg px-5 py-2.5 sm:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)] cursor-pointer hover:scale-105 transition-all"
             >
               {t("Participate Now")}
             </ParticipateButton>
