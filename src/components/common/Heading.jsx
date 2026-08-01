@@ -190,7 +190,7 @@ export default function Heading({
       {/* ================= TOP TRIBAL DECORATION ================= */}
 
 
-      <div className="flex items-center justify-center gap-3 mb-3">
+      {/* <div className="flex items-center justify-center gap-3 mb-3">
 
 
         <span
@@ -240,7 +240,7 @@ export default function Heading({
         />
 
 
-      </div>
+      </div> */}
 
 
 
@@ -349,7 +349,7 @@ export default function Heading({
       {/* ================= BOTTOM TRIBAL DIVIDER ================= */}
 
 
-      {showLine && (
+      {/* {showLine && (
         <div className="flex items-center justify-center gap-3 mb-3">
 
 
@@ -402,7 +402,7 @@ export default function Heading({
 
         </div>
 
-      )}
+      )} */}
 
 
 
