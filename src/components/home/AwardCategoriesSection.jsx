@@ -115,7 +115,7 @@ export default function AwardCategoriesSection() {
       description: "Celebrating creators showcasing regional heritage, folk music, and local cultural traditions.",
       hashtag: "#ChhattisgarhiyaSanskriti",
       cashPrizeMin: 50000,
-      cashPrizeMax: 500000
+      cashPrizeMax: 50000
     },
     {
       id: 2,

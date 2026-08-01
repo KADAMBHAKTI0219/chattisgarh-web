@@ -19,9 +19,14 @@ if (typeof window !== "undefined") {
 export default function WhoCanApplySection() {
   const { t } = useLanguage();
   const { openModal } = useParticipateModal();
+  const [mounted, setMounted] = useState(false);
   const [revealed, setRevealed] = useState(() => new Set());
   const [showEligibilityModal, setShowEligibilityModal] = useState(false);
   const [activeCandidate, setActiveCandidate] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const sectionRef = useRef(null);
   const leftRefs = useRef([]);

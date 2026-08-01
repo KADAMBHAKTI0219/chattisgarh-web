@@ -1,12 +1,18 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { otpService, participantService, categoryService } from "@/services/api";
 
 export default function ParticipateModal() {
-  const { isOpen, closeModal } = useParticipateModal();
+  const { isOpen, selectedCategory, closeModal } = useParticipateModal();
+  const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState(1); // 1: Details, 2: OTP, 3: Success
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Dynamic Categories from API
   const [apiCategories, setApiCategories] = useState([]);
@@ -22,7 +28,7 @@ export default function ParticipateModal() {
     age: "",
     district: "Raipur",
     platform: "Instagram",
-    category: "Best Women Creator of the Year",
+    category: selectedCategory || "Chhattisgarhiya Sanskriti Ambassador",
     submissionLink: "",
     instagram: "",
     youtube: "",
@@ -46,17 +52,18 @@ export default function ParticipateModal() {
       const res = await categoryService.getCategories({ isActive: true });
       if (res.success && res.categories && res.categories.length > 0) {
         setApiCategories(res.categories);
-        if (res.categories[0]?.title) {
-          setFormData((prev) => ({ ...prev, category: res.categories[0].title }));
-        }
       }
     }
     loadCategories();
   }, []);
 
-  // Reset modal state on close
+  // Update selected category when modal opens or selectedCategory changes
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      if (selectedCategory) {
+        setFormData((prev) => ({ ...prev, category: selectedCategory }));
+      }
+    } else {
       setStep(1);
       setFormData({
         name: "",
@@ -65,7 +72,7 @@ export default function ParticipateModal() {
         age: "",
         district: "Raipur",
         platform: "Instagram",
-        category: apiCategories[0]?.title || "Best Women Creator of the Year",
+        category: selectedCategory || apiCategories[0]?.title || "Chhattisgarhiya Sanskriti Ambassador",
         submissionLink: "",
         instagram: "",
         youtube: "",
@@ -80,7 +87,7 @@ export default function ParticipateModal() {
       setIsSubmitting(false);
       setRegisteredData(null);
     }
-  }, [isOpen, apiCategories]);
+  }, [isOpen, selectedCategory, apiCategories]);
 
   // Countdown timer for OTP
   useEffect(() => {
@@ -95,7 +102,7 @@ export default function ParticipateModal() {
     return () => clearInterval(interval);
   }, [step, timer]);
 
-  if (!isOpen) return null;
+  if (!mounted || !isOpen) return null;
 
   // Handle Text inputs
   const handleChange = (e) => {
@@ -298,16 +305,16 @@ export default function ParticipateModal() {
     ? apiCategories.map((cat) => cat.title) 
     : fallbackCategories;
 
-  return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 overflow-y-auto select-none">
-      {/* Backdrop overlay */}
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden select-none animate-in fade-in duration-300">
+      {/* Backdrop overlay covering 100% of viewport including navbar */}
       <div 
         onClick={closeModal}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300 z-0"
       />
 
       {/* Modal Card Container */}
-      <div className="relative w-full max-w-md md:max-w-5xl lg:max-w-7xl bg-white border-4 border-black rounded-[36px] p-6 sm:p-8 lg:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 transition-all duration-300 overflow-y-auto max-h-[92vh]">
+      <div className="relative w-full max-w-md md:max-w-5xl lg:max-w-7xl bg-white border-4 border-black rounded-[36px] p-6 sm:p-8 lg:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 transition-all duration-300 overflow-y-auto max-h-[88vh] sm:max-h-[90vh]">
         
         {/* Close Button */}
         <button 
@@ -771,6 +778,7 @@ export default function ParticipateModal() {
         )}
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

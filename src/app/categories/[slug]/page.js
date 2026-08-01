@@ -7,6 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { categoryService } from "@/services/api";
 import Heading from "@/components/common/Heading";
+import CategoryDetailModal from "@/components/common/CategoryDetailModal";
 import {
     FaLandmark,
     FaLaptopCode,
@@ -84,7 +85,7 @@ const STATIC_CATEGORIES = [
         taskBrief: "Create an engaging video highlighting traditional art, dance, or folk festivals of the state.",
         hashtag: "#ChhattisgarhiyaSanskriti",
         cashPrizeMin: 50000,
-        cashPrizeMax: 500000
+        cashPrizeMax: 50000
     },
     {
         id: 102,
@@ -175,6 +176,7 @@ export default function CategorySlugPage({ params }) {
     const { openModal } = useParticipateModal();
     const [searchQuery, setSearchQuery] = useState("");
     const [apiCategories, setApiCategories] = useState([]);
+    const [selectedDetailCategory, setSelectedDetailCategory] = useState(null);
     const tabsRef = useRef(null);
 
     // Fetch Categories from Backend API on mount
@@ -286,11 +288,10 @@ export default function CategorySlugPage({ params }) {
                                     <button
                                         key={key}
                                         onClick={() => handleTabClick(tierInfo.slug)}
-                                        className={`shrink-0 px-5 py-2.5 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${
-                                            isActive
+                                        className={`shrink-0 px-5 py-2.5 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${isActive
                                                 ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
                                                 : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
-                                        }`}
+                                            }`}
                                     >
                                         {t(tierInfo.title)}
                                     </button>
@@ -334,14 +335,14 @@ export default function CategorySlugPage({ params }) {
 
             {/* 4. Category Cards Grid */}
             <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredCategories.map((cat) => {
                         const tierData = TIERS[cat.tier] || TIERS.culture;
 
                         return (
                             <div
                                 key={cat.id}
-                                onClick={openModal}
+                                onClick={() => setSelectedDetailCategory(cat)}
                                 className="relative aspect-[3/4] sm:aspect-[4/5] rounded-3xl overflow-hidden group border border-zinc-200/90 hover:border-[var(--primary)] hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-500 select-none cursor-pointer flex flex-col justify-end p-5 text-left"
                             >
                                 {/* Background Image */}
@@ -355,29 +356,15 @@ export default function CategorySlugPage({ params }) {
                                 {/* Dark Gradient Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent group-hover:from-black/98 group-hover:via-black/75 group-hover:to-black/30 transition-all duration-500 z-10" />
 
-                                {/* Tier Badge at top-left */}
-                                <div className="absolute top-4 left-4 z-20 flex flex-col gap-1 items-start">
+                                {/* Tier Badge (Only single badge, responsive & compact font) */}
+                                <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 z-20 max-w-[85%]">
                                     <span
-                                        className="text-[9px] font-inter font-bold uppercase px-3 py-1 rounded-full text-white backdrop-blur-md border border-white/20 shadow-md"
+                                        className="inline-block text-[9.5px] sm:text-[10.5px] font-inter font-bold uppercase px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-white backdrop-blur-md border border-white/20 shadow-md tracking-wider truncate max-w-full"
                                         style={{ backgroundColor: tierData.color }}
                                     >
                                         {t(tierData.title)}
                                     </span>
-                                    {cat.hashtag && (
-                                        <span className="text-[9px] font-inter font-bold px-2.5 py-0.5 rounded-full text-amber-200 bg-black/60 backdrop-blur-md border border-amber-300/30 flex items-center gap-1">
-                                            <FaHashtag className="w-2 h-2 text-amber-300" />
-                                            <span>{cat.hashtag}</span>
-                                        </span>
-                                    )}
                                 </div>
-
-                                {/* Prize Badge at top-right if available */}
-                                {cat.cashPrizeMax > 0 && (
-                                    <span className="absolute top-4 right-4 z-20 text-[9px] font-inter font-bold px-2.5 py-1 rounded-full bg-emerald-600/90 text-white backdrop-blur-md border border-emerald-400/40 shadow-md flex items-center gap-1">
-                                        <FaRupeeSign className="w-2.5 h-2.5" />
-                                        <span>Up to ₹{(cat.cashPrizeMax / 1000).toFixed(0)}k</span>
-                                    </span>
-                                )}
 
                                 {/* Content Overlay */}
                                 <div className="relative z-20 flex flex-col justify-end w-full">
@@ -408,6 +395,16 @@ export default function CategorySlugPage({ params }) {
                     </div>
                 )}
             </div>
+
+            {/* Category Detail Popup Modal */}
+            <CategoryDetailModal
+                category={selectedDetailCategory}
+                isOpen={!!selectedDetailCategory}
+                onClose={() => setSelectedDetailCategory(null)}
+                onNominate={(catTitle) => {
+                    openModal(catTitle);
+                }}
+            />
 
         </div>
     );
