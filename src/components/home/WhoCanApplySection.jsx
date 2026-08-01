@@ -36,70 +36,81 @@ export default function WhoCanApplySection() {
 
   const candidates = [
     {
+      number: "01.",
       icon: FaUserAlt,
       c1: "#F5E0D8", c2: "#E8C8BC", accent: "#C15B3D",
-      title: "Individual Creators",
-      desc: "Solo content makers publishing native audio, video, or graphics."
+      title: "INDIVIDUAL CREATORS",
+      desc: "Independent creators sharing original stories through videos, photos, blogs, podcasts, or digital art that inspire, educate, or entertain audiences."
     },
     {
+      number: "02.",
       icon: FaYoutube,
       c1: "#E2ECD8", c2: "#C5D8B5", accent: "#2E5C31",
-      title: "YouTube Storytellers",
-      desc: "Channels generating long-form vlogs, reviews, or educational tutorials."
+      title: "YOUTUBE STORYTELLERS",
+      desc: "Creators producing engaging long-form videos, documentaries, educational content, travel films, reviews, and meaningful visual storytelling."
     },
     {
+      number: "03.",
       icon: FaInstagram,
       c1: "#FDF2D6", c2: "#F6E2AB", accent: "#D39B2C",
-      title: "Instagram Influencers",
-      desc: "Active handles producing reels, cultural fashion, and micro-vlogs."
+      title: "INSTAGRAM CREATORS",
+      desc: "Digital creators using Reels, carousels, and visual content to celebrate culture, lifestyle, fashion, travel, food, and everyday inspiration."
     },
     {
+      number: "04.",
       icon: FaGlobe,
       c1: "#F5E0D8", c2: "#E8C8BC", accent: "#C15B3D",
-      title: "Bloggers & Web Leaders",
-      desc: "Website developers, tech writers, and independent newsletter writers."
+      title: "BLOGGERS & DIGITAL PUBLISHERS",
+      desc: "Writers, bloggers, website publishers, newsletter creators, and independent media voices shaping conversations through original digital content."
     },
     {
+      number: "05.",
       icon: FaPenFancy,
       c1: "#E2ECD8", c2: "#C5D8B5", accent: "#2E5C31",
-      title: "Creative Writers",
-      desc: "Poets, short story writers, and digital scriptwriters writing in local languages."
+      title: "CREATIVE WRITERS",
+      desc: "Storytellers, poets, scriptwriters, copywriters, and authors creating impactful narratives in English, Hindi, Chhattisgarhi, and regional languages."
     },
     {
+      number: "06.",
       icon: FaAward,
       c1: "#FDF2D6", c2: "#F6E2AB", accent: "#D39B2C",
-      title: "Artists & Craftsmen",
-      desc: "Promoters of state heritage, traditional painting, metal, or wood crafts."
+      title: "ARTISTS & ARTISANS",
+      desc: "Creators preserving Chhattisgarh’s artistic heritage through tribal art, handicrafts, sculptures, paintings, textiles, folk traditions, and indigenous craftsmanship."
     },
     {
+      number: "07.",
       icon: FaCamera,
       c1: "#F5E0D8", c2: "#E8C8BC", accent: "#C15B3D",
-      title: "Visual Designers",
-      desc: "Digital painters, photographers, UI designers, and animators."
+      title: "VISUAL CREATORS",
+      desc: "Photographers, filmmakers, graphic designers, illustrators, animators, UI/UX designers, and digital artists shaping visual experiences."
     },
     {
+      number: "08.",
       icon: FaMicrophone,
       c1: "#E2ECD8", c2: "#C5D8B5", accent: "#2E5C31",
-      title: "Podcasters & Educators",
-      desc: "Voice artists, podcast hosts, and digital educators creating civic content."
+      title: "PODCASTERS & VOICE CREATORS",
+      desc: "Podcast hosts, interviewers, commentators, educators, and audio storytellers creating engaging conversations that inform and inspire."
     },
     {
+      number: "09.",
       icon: FaGamepad,
       c1: "#FDF2D6", c2: "#F6E2AB", accent: "#D39B2C",
-      title: "Gamers & Esports",
-      desc: "Streamers and gaming creators highlighting digital sports culture."
+      title: "GAMING & ESPORTS CREATORS",
+      desc: "Gaming streamers, esports athletes, gaming educators, reviewers, and content creators building communities through interactive entertainment."
     },
     {
+      number: "10.",
       icon: FaTshirt,
       c1: "#F5E0D8", c2: "#E8C8BC", accent: "#C15B3D",
-      title: "Lifestyle & Food",
-      desc: "Culinary creators, traditional food vloggers, and lifestyle curators."
+      title: "FASHION & LIFESTYLE CREATORS",
+      desc: "Fashion stylists, textile designers, beauty creators, handloom promoters, and lifestyle influencers celebrating creativity with a local identity."
     },
     {
+      number: "11.",
       icon: FaHandsHelping,
       c1: "#E2ECD8", c2: "#C5D8B5", accent: "#2E5C31",
-      title: "Social Impact Leaders",
-      desc: "Community workers and creators advocating for social change."
+      title: "SOCIAL IMPACT CREATORS",
+      desc: "Creators driving positive change through awareness, sustainability, education, public welfare, environmental initiatives, and community development."
     }
   ].map((cand, i) => ({ ...cand, idx: i }));
 
@@ -249,8 +260,8 @@ export default function WhoCanApplySection() {
 
               {activeCandidate && (
                 <div className="p-4 rounded-2xl bg-[#21593D]/10 border border-[#21593D]/25 flex items-center gap-3">
-                  <span className="font-poppins font-bold text-xs sm:text-sm text-[#21593D]">
-                    Selected Category: <span className="text-[#C45A32]">{t(activeCandidate.title)}</span> — {t(activeCandidate.desc)}
+                  <span className="font-inter font-semibold text-xs sm:text-sm text-[#21593D] leading-relaxed">
+                    Selected Category: <strong className="text-[#C45A32] font-extrabold">{activeCandidate.number} {t(activeCandidate.title)}</strong> — {t(activeCandidate.desc)}
                   </span>
                 </div>
               )}
