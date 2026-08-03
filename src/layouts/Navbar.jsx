@@ -117,11 +117,11 @@ export default function Navbar() {
               />
 
               {/* Title & Tagline Branding Block */}
-              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-2 sm:pl-3.5 min-w-0 max-w-[175px] xs:max-w-[220px] sm:max-w-none">
-                <span className="font-montserrat font-bold text-[9.5px] xs:text-[10.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-[1.15] uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
-                  {t("Chhattisgarh Creator & Influencer Awards")}
+              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-2 sm:pl-3.5 min-w-0 max-w-[210px] xs:max-w-[260px] sm:max-w-none">
+                <span className="font-montserrat font-bold text-[9px] xs:text-[10.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-[1.15] uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
+                  {t("Chhattisgarh State Creator & Influencer Awards")}
                 </span>
-                <span className="font-montserrat font-bold text-[8.5px] xs:text-[9.5px] sm:text-xs md:text-[12.5px] leading-tight tracking-wide mt-0.5 inline-flex items-center gap-0.5 sm:gap-1 flex-nowrap shrink-0">
+                <span className="font-montserrat font-bold text-[8px] xs:text-[9.5px] sm:text-xs md:text-[12.5px] leading-tight tracking-wide mt-0.5 inline-flex items-center gap-0.5 sm:gap-1 flex-nowrap shrink-0">
                   <span className="text-[#D96B27] whitespace-nowrap">अपन माटी</span>
                   <span className="text-[#D96B27] text-[7px] sm:text-[8px]">•</span>
                   <span className="text-[#1E56A0] whitespace-nowrap">अपन मान</span>
@@ -225,7 +225,7 @@ export default function Navbar() {
                 />
                 <div className="flex flex-col text-left border-l-2 border-[#C15B3D]/30 pl-2.5">
                   <span className="font-montserrat font-bold text-[10.5px] text-[#C15B3D] leading-tight uppercase tracking-tight">
-                    Chhattisgarh Awards
+                    Chhattisgarh State Awards
                   </span>
                   <span className="font-montserrat font-bold text-[9px] min-[370px]:text-[10px] leading-tight mt-0.5 inline-flex items-center gap-0.5 flex-wrap">
                     <span className="text-[#D96B27]">अपन माटी</span>
