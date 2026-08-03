@@ -12,17 +12,22 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Monitor scroll offset to trigger sticky glassmorphism styling
+  // Monitor scroll offset efficiently with requestAnimationFrame
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrolled = window.scrollY > 20;
+          setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -31,8 +36,11 @@ export default function Navbar() {
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = "";
     }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   const NAV_LINKS = [
@@ -80,9 +88,9 @@ export default function Navbar() {
 
       {/* Main Premium Navigation Bar */}
       <nav
-        className={`w-full sticky top-0 z-50 transition-all duration-300 border-b border-[#E8DFCF]/70 ${isScrolled
-          ? "h-[75px] bg-[#FFFDFC]/98 backdrop-blur-[24px] shadow-[0_10px_35px_rgba(0,0,0,0.08)]"
-          : "h-[90px] bg-[#FFFDFC]/90 backdrop-blur-[18px] shadow-[0_4px_25px_rgba(0,0,0,0.04)]"
+        className={`w-full sticky top-0 z-50 transform-gpu transition-all duration-300 border-b border-[#E8DFCF]/70 ${isScrolled
+          ? "h-[75px] bg-[#FFFDFC]/98 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.06)]"
+          : "h-[90px] bg-[#FFFDFC]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
           }`}
       >
         {/* Bastar Tribal Pattern Top Border Highlight Line */}
@@ -110,11 +118,15 @@ export default function Navbar() {
 
               {/* Title & Tagline Branding Block */}
               <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-2.5 sm:pl-3.5 max-w-[190px] min-[370px]:max-w-[220px] min-[410px]:max-w-[260px] sm:max-w-none">
-                <span className="font-poppins font-bold text-[10.5px] min-[370px]:text-[11.5px] min-[410px]:text-[12.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-tight uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
+                <span className="font-montserrat font-bold text-[10.5px] min-[370px]:text-[11.5px] min-[410px]:text-[12.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-tight uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
                   {t("Chhattisgarh Creator & Influencer Awards")}
                 </span>
-                <span className="font-poppins font-bold text-[10px] min-[370px]:text-[11px] sm:text-xs md:text-[13px] text-[#2E5C31] group-hover:text-[#1b3827] leading-tight tracking-wide mt-0.5 transition-colors duration-300">
-                  {t("हमर छत्तीसगढ़")}
+                <span className="font-montserrat font-bold text-[10px] min-[370px]:text-[10.5px] sm:text-xs md:text-[12.5px] leading-tight tracking-wide mt-0.5 inline-flex items-center gap-1 flex-wrap">
+                  <span className="text-[#D96B27]">अपन माटी</span>
+                  <span className="text-[#D96B27] text-[8px]">•</span>
+                  <span className="text-[#1E56A0]">अपन मान</span>
+                  <span className="text-[#2E5C31] text-[8px]">•</span>
+                  <span className="text-[#2E5C31]">अपन भविष्य</span>
                 </span>
               </div>
             </Link>
@@ -212,11 +224,15 @@ export default function Navbar() {
                   className="h-9 w-auto object-contain shrink-0"
                 />
                 <div className="flex flex-col text-left border-l-2 border-[#C15B3D]/30 pl-2.5">
-                  <span className="font-poppins font-bold text-[10.5px] text-[#C15B3D] leading-tight uppercase tracking-tight">
+                  <span className="font-montserrat font-bold text-[10.5px] text-[#C15B3D] leading-tight uppercase tracking-tight">
                     Chhattisgarh Awards
                   </span>
-                  <span className="font-poppins font-bold text-[10px] text-[#2E5C31] leading-tight mt-0.5">
-                    हमर छत्तीसगढ़
+                  <span className="font-montserrat font-bold text-[9px] min-[370px]:text-[10px] leading-tight mt-0.5 inline-flex items-center gap-0.5 flex-wrap">
+                    <span className="text-[#D96B27]">अपन माटी</span>
+                    <span className="text-[#D96B27] text-[7px]">•</span>
+                    <span className="text-[#1E56A0]">अपन मान</span>
+                    <span className="text-[#2E5C31] text-[7px]">•</span>
+                    <span className="text-[#2E5C31]">अपन भविष्य</span>
                   </span>
                 </div>
               </div>
