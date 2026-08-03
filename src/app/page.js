@@ -60,19 +60,19 @@ export default function Home() {
         <AwardCategoriesSection />
       </div>
 
-      {/* 6. Eligibility Section (Who Can Apply?) */}
+      {/* 10. Terms & Evaluation Guidelines Section */}
       <div className="reveal-on-scroll">
-        <WhoCanApplySection />
+        <TermsSection />
       </div>
+
+      {/* 6. Eligibility Section (Who Can Apply?) */}
+      {/* <div className="reveal-on-scroll">
+        <WhoCanApplySection />
+      </div> */}
 
       {/* 7. Timeline Section (How To Apply Step-by-Step) */}
       <div className="reveal-on-scroll">
         <HowToApplySection />
-      </div>
-
-      {/* 8. FAQ Section Accordions */}
-      <div className="reveal-on-scroll">
-        <FAQSection />
       </div>
 
       {/* 9. Testimonials Section (Verified Creators Horizontal Marquee) */}
@@ -80,9 +80,10 @@ export default function Home() {
         <TestimonialsSection />
       </div>
 
-      {/* 10. Terms & Evaluation Guidelines Section */}
+
+      {/* 8. FAQ Section Accordions */}
       <div className="reveal-on-scroll">
-        <TermsSection />
+        <FAQSection />
       </div>
 
 

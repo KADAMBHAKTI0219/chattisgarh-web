@@ -331,11 +331,9 @@ export default function CategorySlugPage({ params }) {
                     </div>
 
                 </div>
-            </div>
-
-            {/* 4. Category Cards Grid */}
+            </div>            {/* 4. Category Cards Grid */}
             <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto">
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-4">
                     {filteredCategories.map((cat) => {
                         const tierData = TIERS[cat.tier] || TIERS.culture;
 
@@ -343,23 +341,23 @@ export default function CategorySlugPage({ params }) {
                             <div
                                 key={cat.id}
                                 onClick={() => setSelectedDetailCategory(cat)}
-                                className="relative aspect-[3/4] sm:aspect-[4/5] rounded-3xl overflow-hidden group border border-zinc-200/90 hover:border-[var(--primary)] hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-500 select-none cursor-pointer flex flex-col justify-end p-5 text-left"
+                                className="relative aspect-square xs:aspect-[4/3.5] sm:aspect-[4/3.2] min-h-[170px] xs:min-h-[180px] sm:min-h-[190px] rounded-2xl overflow-hidden group border border-zinc-200/90 hover:border-[var(--primary)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-2.5 xs:p-3 sm:p-4 text-left"
                             >
                                 {/* Background Image */}
                                 <img
                                     src={cat.image}
                                     alt={t(cat.title)}
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100 z-0 bg-zinc-900"
+                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100 z-0 bg-zinc-900"
                                     loading="lazy"
                                 />
 
                                 {/* Dark Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent group-hover:from-black/98 group-hover:via-black/75 group-hover:to-black/30 transition-all duration-500 z-10" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
 
-                                {/* Tier Badge (Only single badge, responsive & compact font) */}
-                                <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 z-20 max-w-[85%]">
+                                {/* Tier Badge */}
+                                <div className="absolute top-2 left-2 xs:top-2.5 xs:left-2.5 z-20 max-w-[90%]">
                                     <span
-                                        className="inline-block text-[9.5px] sm:text-[10.5px] font-inter font-bold uppercase px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-white backdrop-blur-md border border-white/20 shadow-md tracking-wider truncate max-w-full"
+                                        className="inline-block text-[8px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
                                         style={{ backgroundColor: tierData.color }}
                                     >
                                         {t(tierData.title)}
@@ -368,21 +366,9 @@ export default function CategorySlugPage({ params }) {
 
                                 {/* Content Overlay */}
                                 <div className="relative z-20 flex flex-col justify-end w-full">
-                                    <h3 className="font-poppins font-bold text-base sm:text-lg md:text-xl uppercase !text-white tracking-tight leading-snug group-hover:!text-amber-200 transition-colors duration-300">
+                                    <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
                                         {t(cat.title)}
                                     </h3>
-
-                                    {/* Description */}
-                                    <div className="overflow-hidden">
-                                        <p className="font-inter text-zinc-200 text-xs sm:text-sm leading-relaxed transform translate-y-4 opacity-0 max-h-0 group-hover:translate-y-0 group-hover:opacity-100 group-hover:max-h-36 group-hover:mt-2.5 transition-all duration-500 ease-out">
-                                            {t(cat.description)}
-                                        </p>
-                                        {cat.taskBrief && (
-                                            <p className="font-inter text-amber-200/90 text-[11px] leading-relaxed mt-1 hidden group-hover:block font-medium">
-                                                <strong>Brief:</strong> {t(cat.taskBrief)}
-                                            </p>
-                                        )}
-                                    </div>
                                 </div>
                             </div>
                         );

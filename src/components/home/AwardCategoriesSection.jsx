@@ -1,45 +1,345 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import Heading from "@/components/common/Heading";
+import CategoryDetailModal from "@/components/common/CategoryDetailModal";
 import { categoryService } from "@/services/api";
-import {
-  FaLandmark,
-  FaLaptopCode,
-  FaHandsHelping,
-  FaPalette,
-  FaArrowRight,
-  FaUsers,
-  FaHashtag,
-  FaTrophy
-} from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 
-import { useRouter } from "next/navigation";
+// Map backend tier enum string to frontend slug
+const mapTierSlug = (tierStr) => {
+  if (!tierStr) return "culture";
+  if (tierStr === "A_CULTURE_IDENTITY") return "culture";
+  if (tierStr === "B_NATION_STATE_BUILDING") return "tech";
+  if (tierStr === "C_CRAFT_PLATFORM") return "arts";
+  const lower = String(tierStr).toLowerCase();
+  if (lower.includes("culture") || lower.includes("heritage")) return "culture";
+  if (lower.includes("tech") || lower.includes("nation")) return "tech";
+  if (lower.includes("impact") || lower.includes("welfare")) return "impact";
+  if (lower.includes("craft") || lower.includes("art")) return "arts";
+  return "culture";
+};
+
+// 25 Official Award Categories
+const STATIC_CATEGORIES = [
+  // Culture & Tourism (6)
+  {
+    id: 1,
+    tier: "culture",
+    tierLabel: "Culture & Tourism",
+    title: "Chhattisgarhiya Sanskriti Ambassador",
+    image: "/assets/images/raipur_landmark.jpg",
+    description: "Celebrating creators showcasing regional heritage, folk music, and local traditions.",
+    taskBrief: "Create a video highlighting traditional art, dance, or folk festivals of Chhattisgarh.",
+    color: "#C15B3D",
+    cashPrizeMin: 50000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 2,
+    tier: "culture",
+    tierLabel: "Culture & Tourism",
+    title: "Tribal Heritage Creator",
+    image: "/assets/images/chattisgarh_fall.jpg",
+    description: "Showcasing indigenous Bastar arts, tribal life, and folk customs.",
+    taskBrief: "Share stories celebrating tribal culture, festivals, and indigenous heritage.",
+    color: "#C15B3D",
+    cashPrizeMin: 50000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 3,
+    tier: "culture",
+    tierLabel: "Culture & Tourism",
+    title: "Best Food & Culinary Creator",
+    image: "/assets/images/food-award.webp",
+    description: "Discovering classic Chhattisgarhi recipes, local ingredients, and street food.",
+    taskBrief: "Present authentic Chhattisgarhi dishes and local food culture.",
+    color: "#C15B3D",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 4,
+    tier: "culture",
+    tierLabel: "Culture & Tourism",
+    title: "Best Travel & Destination Creator",
+    image: "/assets/images/travellor award.jpg",
+    description: "Guiding travelers to hidden waterfalls, forests, and cultural landmarks.",
+    taskBrief: "Highlight unexplored travel spots and eco-tourism in Chhattisgarh.",
+    color: "#C15B3D",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 5,
+    tier: "culture",
+    tierLabel: "Culture & Tourism",
+    title: "Folk Music & Performing Arts",
+    image: "/assets/images/raipur_landmark.jpg",
+    description: "Panthi, Karma, Raut Nacha and traditional musical storytelling.",
+    taskBrief: "Perform or document traditional Chhattisgarhi folk dance and music.",
+    color: "#C15B3D",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 6,
+    tier: "culture",
+    tierLabel: "Culture & Tourism",
+    title: "Heritage Photography & Vlog",
+    image: "/assets/images/about-5.jpg",
+    description: "Visual documentation of ancient temples, forts, and monuments.",
+    taskBrief: "Capture stunning photography or cinematic vlogs of historical sites.",
+    color: "#C15B3D",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+
+  // Tech & Media (7)
+  {
+    id: 7,
+    tier: "tech",
+    tierLabel: "Tech & Media",
+    title: "Tech & Civic Innovation Pioneer",
+    image: "/assets/images/emerging awards.jpg",
+    description: "Honoring creators bringing awareness to AI, smart governance, and innovation.",
+    taskBrief: "Demonstrate how digital initiatives improve public services and civic life.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 300000
+  },
+  {
+    id: 8,
+    tier: "tech",
+    tierLabel: "Tech & Media",
+    title: "Best YouTube Creator of the Year",
+    image: "/assets/images/creator-award.jpg",
+    description: "Celebrating high-quality storytelling, cinematography, and long-form video excellence.",
+    taskBrief: "Submit your best YouTube long-form content highlighting innovation or story.",
+    color: "#2E5C31",
+    cashPrizeMin: 50000,
+    cashPrizeMax: 200000
+  },
+  {
+    id: 9,
+    tier: "tech",
+    tierLabel: "Tech & Media",
+    title: "Best Instagram Reel Creator",
+    image: "/assets/images/instagramaward.avif",
+    description: "Recognizing high-impact vertical reels, daily trends, and short-form clips.",
+    taskBrief: "Submit creative Instagram reel content reaching wide digital audiences.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 10,
+    tier: "tech",
+    tierLabel: "Tech & Media",
+    title: "Digital Educator & Knowledge Creator",
+    image: "/assets/images/event_presentation.jpg",
+    description: "EdTech, competitive exam guidance, and skill development content.",
+    taskBrief: "Share educational videos helping students and youth gain skills.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 11,
+    tier: "tech",
+    tierLabel: "Tech & Media",
+    title: "Gaming & Esports Innovator",
+    image: "/assets/images/emerging awards.jpg",
+    description: "Esports live streaming, game design, and digital gaming entertainment.",
+    taskBrief: "Highlight gaming tournaments, streams, or game development in state.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 12,
+    tier: "tech",
+    tierLabel: "Tech & Media",
+    title: "Podcast & Voice Storyteller",
+    image: "/assets/images/creator-award.jpg",
+    description: "Audio podcasts, voice-over commentary, and audio storytelling.",
+    taskBrief: "Submit an audio podcast episode discussing state culture or technology.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 13,
+    tier: "tech",
+    tierLabel: "Tech & Media",
+    title: "Infotainment & News Journalist",
+    image: "/assets/images/instagramaward.avif",
+    description: "Fact-checked civic news, regional reporting, and social analysis.",
+    taskBrief: "Produce informative news or journalism pieces addressing key local issues.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+
+  // Social Impact & Welfare (6)
+  {
+    id: 14,
+    tier: "impact",
+    tierLabel: "Social Impact & Welfare",
+    title: "Swachh State & Eco Advocate",
+    image: "/assets/images/about-1.jpg",
+    description: "Campaigning for public cleanliness, local recycling, and waste management.",
+    taskBrief: "Document community environmental campaigns or cleanliness initiatives.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 15,
+    tier: "impact",
+    tierLabel: "Social Impact & Welfare",
+    title: "Women Empowerment Icon",
+    image: "/assets/images/about-5.jpg",
+    description: "Supporting women entrepreneurs, self-help groups, and social equity.",
+    taskBrief: "Share stories of women leaders and community change-makers.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 16,
+    tier: "impact",
+    tierLabel: "Social Impact & Welfare",
+    title: "Youth Upliftment & Career Mentor",
+    image: "/assets/images/event_presentation.jpg",
+    description: "Guiding youth towards employment, sports, and leadership development.",
+    taskBrief: "Create content mentoring youth for career and leadership growth.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 17,
+    tier: "impact",
+    tierLabel: "Social Impact & Welfare",
+    title: "Health, Wellness & Fitness Creator",
+    image: "/assets/images/about-1.jpg",
+    description: "Promoting physical fitness, mental wellness, and yoga awareness.",
+    taskBrief: "Promote healthy lifestyle, mental wellness, or fitness routines.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 18,
+    tier: "impact",
+    tierLabel: "Social Impact & Welfare",
+    title: "Agriculture & Krishi Innovator",
+    image: "/assets/images/chattisgarh_fall.jpg",
+    description: "Organic farming techniques, smart agriculture, and krishi technology.",
+    taskBrief: "Highlight innovative farming methods or agricultural success stories.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 19,
+    tier: "impact",
+    tierLabel: "Social Impact & Welfare",
+    title: "Animal Welfare & Nature Protector",
+    image: "/assets/images/raipur_landmark.jpg",
+    description: "Wildlife conservation, stray animal care, and forest protection.",
+    taskBrief: "Share initiatives protecting wildlife or caring for stray animals.",
+    color: "#2E5C31",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+
+  // Arts & Heritage (6)
+  {
+    id: 20,
+    tier: "arts",
+    tierLabel: "Arts & Heritage",
+    title: "Digital Craftsman & Micro-Creator",
+    image: "/assets/images/category-1.jpg",
+    description: "Spotlighting emerging nano creators, digital artists, and handicraft storytellers.",
+    taskBrief: "Share a story celebrating local artisan skills, handlooms, or crafts.",
+    color: "#D39B2C",
+    cashPrizeMin: 10000,
+    cashPrizeMax: 100000
+  },
+  {
+    id: 21,
+    tier: "arts",
+    tierLabel: "Arts & Heritage",
+    title: "Dhokra & Bell Metal Craft Promoter",
+    image: "/assets/images/category-1.jpg",
+    description: "Showcasing the ancient non-ferrous metal casting craft and tribal artisans.",
+    taskBrief: "Promote traditional Dhokra art making and artisan craftsmanship.",
+    color: "#D39B2C",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 22,
+    tier: "arts",
+    tierLabel: "Arts & Heritage",
+    title: "Kosa Silk & Handloom Ambassador",
+    image: "/assets/images/category-1.jpg",
+    description: "Chhattisgarhi Kosa silk weavers, handlooms, and indigenous fashion.",
+    taskBrief: "Highlight traditional Kosa silk weaving and artisan heritage.",
+    color: "#D39B2C",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 23,
+    tier: "arts",
+    tierLabel: "Arts & Heritage",
+    title: "Terracotta & Clay Art Champion",
+    image: "/assets/images/category-1.jpg",
+    description: "Traditional pottery, terracotta art, and indigenous clay mural work.",
+    taskBrief: "Showcase clay pottery artisans and traditional terracotta art forms.",
+    color: "#D39B2C",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 24,
+    tier: "arts",
+    tierLabel: "Arts & Heritage",
+    title: "Tattoo & Godna Art Storyteller",
+    image: "/assets/images/about-5.jpg",
+    description: "Preserving traditional Godna tribal body art, motifs, and history.",
+    taskBrief: "Document historical Godna art traditions and indigenous stories.",
+    color: "#D39B2C",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  },
+  {
+    id: 25,
+    tier: "arts",
+    tierLabel: "Arts & Heritage",
+    title: "Indigenous Performing Artist",
+    image: "/assets/images/raipur_landmark.jpg",
+    description: "Promoting Pandavani, Raut Nacha, and traditional folk theatre.",
+    taskBrief: "Perform or document traditional Chhattisgarhi stage art and theatre.",
+    color: "#D39B2C",
+    cashPrizeMin: 25000,
+    cashPrizeMax: 50000
+  }
+];
 
 export default function AwardCategoriesSection() {
-  const router = useRouter();
   const { t } = useLanguage();
   const { openModal } = useParticipateModal();
   const [activeTier, setActiveTier] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [apiCategories, setApiCategories] = useState([]);
-  const tabsRef = useRef(null);
-
-  // Map backend tier enum string to frontend slug
-  const mapTierSlug = (tierStr) => {
-    if (!tierStr) return "culture";
-    if (tierStr === "A_CULTURE_IDENTITY") return "culture";
-    if (tierStr === "B_NATION_STATE_BUILDING") return "tech";
-    if (tierStr === "C_CRAFT_PLATFORM") return "arts";
-    const lower = String(tierStr).toLowerCase();
-    if (lower.includes("culture") || lower.includes("heritage")) return "culture";
-    if (lower.includes("tech") || lower.includes("nation")) return "tech";
-    if (lower.includes("impact") || lower.includes("welfare")) return "impact";
-    if (lower.includes("craft") || lower.includes("art")) return "arts";
-    return "culture";
-  };
+  const [selectedDetailCategory, setSelectedDetailCategory] = useState(null);
 
   // Fetch Categories from Backend API on mount
   useEffect(() => {
@@ -52,116 +352,45 @@ export default function AwardCategoriesSection() {
     loadApiCategories();
   }, []);
 
-  // Click handler when a user clicks "View Categories →" or a Tier card
-  const handleSelectTier = (slug) => {
-    router.push(`/categories/${slug}`);
-  };
-
-  // 4 Main Tier Groups
-  const tiers = [
-    {
-      slug: "culture",
-      tierEnum: "A_CULTURE_IDENTITY",
-      title: "Culture & Tourism",
-      description:
-        "Showcasing the beauty of Chhattisgarh's heritage, traditions, festivals, art, cuisine and breathtaking destinations.",
-      icon: FaLandmark,
-      color: "#C15B3D", // Primary Terracotta
-      bgImage: "/assets/images/raipur_landmark.jpg",
-      defaultCount: "06 Categories"
-    },
-    {
-      slug: "tech",
-      tierEnum: "B_NATION_STATE_BUILDING",
-      title: "Tech & Media",
-      description:
-        "Honouring digital creators, storytellers, influencers and innovators using technology to inform, entertain and inspire.",
-      icon: FaLaptopCode,
-      color: "#2E5C31", // Secondary Forest Green
-      bgImage: "/assets/images/event_presentation.jpg",
-      defaultCount: "07 Categories"
-    },
-    {
-      slug: "impact",
-      tierEnum: "B_NATION_STATE_BUILDING",
-      title: "Social Impact & Welfare",
-      description:
-        "Recognising creators driving positive social change, awareness, education, environment and community development.",
-      icon: FaHandsHelping,
-      color: "#2E5C31", // Secondary Forest Green
-      bgImage: "/assets/images/about-5.jpg",
-      defaultCount: "05 Categories"
-    },
-    {
-      slug: "arts",
-      tierEnum: "C_CRAFT_PLATFORM",
-      title: "Arts & Heritage",
-      description:
-        "Celebrating artists, artisans and creators preserving Chhattisgarh's rich artistic legacy and indigenous crafts.",
-      icon: FaPalette,
-      color: "#D39B2C", // Amber Gold Accent
-      bgImage: "/assets/images/category-1.jpg",
-      defaultCount: "06 Categories"
-    }
-  ];
-
-  // Default fallback static categories
-  const fallbackCategories = [
-    {
-      id: 1,
-      tier: "culture",
-      title: "Chhattisgarhiya Sanskriti Ambassador",
-      image: "/assets/images/raipur_landmark.jpg",
-      description: "Celebrating creators showcasing regional heritage, folk music, and local cultural traditions.",
-      hashtag: "#ChhattisgarhiyaSanskriti",
-      cashPrizeMin: 50000,
-      cashPrizeMax: 50000
-    },
-    {
-      id: 2,
-      tier: "tech",
-      title: "Tech & Civic Innovation Pioneer",
-      image: "/assets/images/emerging awards.jpg",
-      description: "Honoring creators bringing awareness to AI, smart governance, and infrastructure development.",
-      hashtag: "#GovTechBuilder",
-      cashPrizeMin: 25000,
-      cashPrizeMax: 300000
-    },
-    {
-      id: 3,
-      tier: "arts",
-      title: "Digital Craftsman & Micro-Creator",
-      image: "/assets/images/category-1.jpg",
-      description: "Spotlighting emerging nano creators, digital artists, and handicraft storytellers.",
-      hashtag: "#MicroCraftCreator",
-      cashPrizeMin: 10000,
-      cashPrizeMax: 100000
-    }
-  ];
-
-  // Format backend API categories or use fallback
-  const categories = apiCategories.length > 0
-    ? apiCategories.map((cat, idx) => ({
-        id: cat._id || idx,
+  // Merge API categories if present with static categories
+  const allCategoriesList = apiCategories.length > 0
+    ? [
+      ...apiCategories.map((cat, idx) => ({
+        id: cat._id || `api-${idx}`,
         tier: mapTierSlug(cat.tier),
         title: cat.title,
         image: cat.image || "/assets/images/raipur_landmark.jpg",
         description: cat.shortDescription || cat.taskBrief || "",
-        hashtag: cat.hashtag || "",
-        cashPrizeMin: cat.cashPrizeMin || 0,
-        cashPrizeMax: cat.cashPrizeMax || 0,
-        prizeTier: cat.prizeTier || ""
-      }))
-    : fallbackCategories;
+        taskBrief: cat.taskBrief || "",
+        cashPrizeMin: cat.cashPrizeMin || 25000,
+        cashPrizeMax: cat.cashPrizeMax || 100000,
+        color: cat.tier?.includes("CULTURE") ? "#C15B3D" : cat.tier?.includes("NATION") ? "#2E5C31" : "#D39B2C"
+      })),
+      ...STATIC_CATEGORIES
+    ]
+    : STATIC_CATEGORIES;
 
-  // Compute live counts per tier
-  const getTierCount = (tierSlug, tierEnum, defaultCount) => {
-    if (apiCategories.length === 0) return defaultCount;
-    const matchCount = apiCategories.filter(
-      (c) => mapTierSlug(c.tier) === tierSlug || c.tier === tierEnum
-    ).length;
-    return matchCount > 0 ? `${matchCount < 10 ? '0' + matchCount : matchCount} Categories` : defaultCount;
-  };
+  // Deduplicate by title
+  const uniqueCategories = Array.from(
+    new Map(allCategoriesList.map((item) => [item.title.toLowerCase(), item])).values()
+  );
+
+  // Filter categories by active tier tab and search query
+  const filteredCategories = uniqueCategories.filter((cat) => {
+    if (activeTier !== "all" && cat.tier !== activeTier) return false;
+    if (!searchQuery) return true;
+    const title = t(cat.title).toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return title.includes(query);
+  });
+
+  const TIER_TABS = [
+    { slug: "all", label: "All Categories", count: uniqueCategories.length },
+    { slug: "culture", label: "Culture & Tourism", count: uniqueCategories.filter(c => c.tier === "culture").length },
+    { slug: "tech", label: "Tech & Media", count: uniqueCategories.filter(c => c.tier === "tech").length },
+    { slug: "impact", label: "Social Impact & Welfare", count: uniqueCategories.filter(c => c.tier === "impact").length },
+    { slug: "arts", label: "Arts & Heritage", count: uniqueCategories.filter(c => c.tier === "arts").length },
+  ];
 
   return (
     <section
@@ -170,91 +399,108 @@ export default function AwardCategoriesSection() {
     >
       {/* Centered Heading */}
       <Heading
-        badge={t("CATEGORIES")}
-        title={t("STATE CREATOR")}
+        badge={t("AWARD CATEGORIES")}
+        title={t("25 STATE CREATOR")}
         highlightText={t("CATEGORIES")}
-        description={t("Explore categories across our primary tiers. Click any tier to view its specific award categories.")}
-        className="mb-12 md:mb-14"
+        description={t("Explore all 25 official award categories. Click any category box to view details and apply directly.")}
+        className="mb-8 md:mb-10"
       />
 
-      {/* TIER CARDS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-16 text-left">
-        {tiers.map((tier) => {
-          const IconComp = tier.icon;
-          const isSelected = activeTier === tier.slug;
-          const categoryCount = getTierCount(tier.slug, tier.tierEnum, tier.defaultCount);
-
-          return (
-            <div
-              key={tier.slug}
-              onClick={() => handleSelectTier(tier.slug)}
-              className={`relative min-h-[300px] sm:min-h-[320px] rounded-3xl overflow-hidden group cursor-pointer border transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 ${
-                isSelected
-                  ? "border-[var(--primary)] ring-4 ring-[var(--primary)]/20 shadow-xl scale-[1.01]"
-                  : "border-zinc-200/80 hover:border-zinc-400 shadow-md hover:shadow-xl hover:-translate-y-1"
-              }`}
+      {/* Interactive Tier Filter Tabs & Search Bar */}
+      <div className="w-full mb-8 flex flex-col md:flex-row items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-3.5 sm:p-4 rounded-3xl border border-zinc-200/90 shadow-sm">
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth w-full md:w-auto px-1 py-1">
+          {TIER_TABS.map((tab) => (
+            <button
+              key={tab.slug}
+              onClick={() => setActiveTier(tab.slug)}
+              className={`shrink-0 px-4 py-2 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${activeTier === tab.slug
+                  ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
+                  : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
+                }`}
             >
-              {/* Card Background Cover Image */}
-              <img
-                src={tier.bgImage}
-                alt={t(tier.title)}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 z-0 bg-zinc-900"
-                loading="lazy"
-              />
+              {t(tab.label)} ({tab.count})
+            </button>
+          ))}
+        </div>
 
-              {/* Dark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40 group-hover:from-black/98 group-hover:via-black/75 group-hover:to-black/30 transition-colors duration-500 z-10" />
-
-              {/* Top Row: Icon Badge */}
-              <div className="relative z-20 flex items-center justify-between">
-                <div
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white shadow-lg backdrop-blur-md border border-white/20 transition-transform duration-300 group-hover:scale-110"
-                  style={{ backgroundColor: tier.color }}
-                >
-                  <IconComp className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-
-                {isSelected && (
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-[var(--primary)] text-white shadow-md uppercase tracking-wider">
-                    Active Tier
-                  </span>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="relative z-20 flex flex-col gap-3 mt-8">
-                <h3 className="font-poppins font-bold text-2xl sm:text-3xl lg:text-4xl !text-white tracking-tight leading-snug group-hover:!text-amber-200 transition-colors duration-300">
-                  {t(tier.title)}
-                </h3>
-
-                <p className="font-inter text-zinc-200 text-xs sm:text-sm md:text-base leading-relaxed line-clamp-3 group-hover:line-clamp-none group-hover:text-white transition-all duration-300">
-                  {t(tier.description)}
-                </p>
-
-                {/* Footer Action */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/15 mt-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSelectTier(tier.slug);
-                    }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/30 bg-black/40 hover:bg-white hover:text-zinc-950 text-white font-inter font-bold text-xs sm:text-sm tracking-wide backdrop-blur-md transition-all duration-300 group-hover:border-amber-300"
-                  >
-                    <span>View Categories</span>
-                    <FaArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                  </button>
-
-                  <span className="inline-flex items-center gap-1.5 text-zinc-300 font-inter font-bold text-xs sm:text-sm">
-                    <FaUsers className="w-3.5 h-3.5 text-amber-300" />
-                    <span>{categoryCount}</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {/* Search Bar */}
+        <div className="relative w-full md:max-w-xs flex items-center border border-zinc-300 focus-within:border-[var(--primary)] bg-white rounded-full shadow-sm">
+          <span className="pl-3.5 text-[var(--primary)]">
+            <FaSearch className="w-3.5 h-3.5" />
+          </span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search Categories..."
+            className="w-full py-2 px-3 text-zinc-850 font-inter font-semibold text-xs sm:text-sm focus:outline-none placeholder-zinc-400 bg-transparent rounded-full"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="pr-3.5 text-zinc-400 hover:text-zinc-700 cursor-pointer font-bold"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
+      {/* 25 CATEGORIES GRID — 6 COLUMNS PER ROW ON DESKTOP & 2 COLUMNS RESPONSIVE ON MOBILE */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-4">
+        {filteredCategories.map((cat) => (
+          <div
+            key={cat.id}
+            onClick={() => setSelectedDetailCategory(cat)}
+            className="relative aspect-square xs:aspect-[4/3.5] sm:aspect-[4/3.2] min-h-[170px] xs:min-h-[180px] sm:min-h-[190px] rounded-2xl overflow-hidden group border border-zinc-200/90 hover:border-[var(--primary)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-2.5 xs:p-3 sm:p-4 text-left"
+          >
+            {/* Background Image */}
+            <img
+              src={cat.image}
+              alt={t(cat.title)}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100 z-0 bg-zinc-900"
+              loading="lazy"
+            />
+
+            {/* Dark Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
+
+            {/* Tier Badge */}
+            <div className="absolute top-2 left-2 xs:top-2.5 xs:left-2.5 z-20 max-w-[90%]">
+              <span
+                className="inline-block text-[8px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
+                style={{ backgroundColor: cat.color || "#C15B3D" }}
+              >
+                {cat.tier === "culture" ? "Culture" : cat.tier === "tech" ? "Tech & Media" : cat.tier === "impact" ? "Social Impact" : "Arts"}
+              </span>
+            </div>
+
+            {/* Title & Overlay */}
+            <div className="relative z-20 flex flex-col justify-end w-full">
+              <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
+                {t(cat.title)}
+              </h3>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {filteredCategories.length === 0 && (
+        <div className="text-zinc-500 font-inter font-bold text-base py-16 bg-white/60 border border-zinc-200 rounded-3xl text-center">
+          No categories match your search.
+        </div>
+      )}
+
+      {/* Category Detail Popup Modal */}
+      <CategoryDetailModal
+        category={selectedDetailCategory}
+        isOpen={!!selectedDetailCategory}
+        onClose={() => setSelectedDetailCategory(null)}
+        onNominate={(catTitle) => {
+          openModal(catTitle);
+        }}
+      />
     </section>
   );
 }

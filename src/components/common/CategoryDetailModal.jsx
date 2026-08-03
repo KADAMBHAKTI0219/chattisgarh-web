@@ -9,7 +9,8 @@ import {
   FaCheckCircle,
   FaLightbulb,
   FaArrowRight,
-  FaAward
+  FaAward,
+  FaCoins
 } from "react-icons/fa";
 
 export default function CategoryDetailModal({ category, isOpen, onClose, onNominate }) {
@@ -20,6 +21,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
     setMounted(true);
   }, []);
 
+  // Handle body scroll lock
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -31,30 +33,57 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
     };
   }, [isOpen]);
 
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!mounted || !isOpen || !category) return null;
 
-  const maxPrize = category.cashPrizeMax || 50000;
-  const formattedPrize = maxPrize >= 1000 ? `${(maxPrize / 1000).toFixed(0)}k` : maxPrize;
+  // Format currency
+  const formatRupees = (amount) => {
+    if (!amount) return "50k";
+    if (amount >= 100000) {
+      const lakhs = (amount / 100000).toFixed(amount % 100000 === 0 ? 0 : 1);
+      return `₹${lakhs} Lakh`;
+    }
+    if (amount >= 1000) {
+      return `₹${(amount / 1000).toFixed(0)}k`;
+    }
+    return `₹${amount}`;
+  };
+
+  const prizeText = category.cashPrizeMax
+    ? category.cashPrizeMin === category.cashPrizeMax
+      ? formatRupees(category.cashPrizeMax)
+      : `Up to ${formatRupees(category.cashPrizeMax)}`
+    : "State Trophy & Award";
 
   const modalContent = (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden select-none animate-in fade-in duration-300">
       {/* Backdrop covering 100% of viewport including navbar */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300 z-0"
+        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300 z-0 cursor-pointer"
       />
 
       {/* Modal Content Window */}
       <div className="relative w-full max-w-2xl bg-white border border-zinc-200 rounded-[32px] shadow-2xl z-10 flex flex-col overflow-hidden max-h-[85vh] sm:max-h-[88vh] my-auto">
         
-        {/* Top Cover Image & Gradient */}
-        <div className="relative h-44 sm:h-52 w-full overflow-hidden bg-zinc-900 shrink-0">
+        {/* Top Cover Image & Banner */}
+        <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-zinc-900 shrink-0">
           <img
             src={category.image || "/assets/images/raipur_landmark.jpg"}
             alt={category.title}
             className="w-full h-full object-cover opacity-90 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
 
           {/* Close Button */}
           <button
@@ -65,25 +94,33 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
             <FaTimes className="w-4 h-4" />
           </button>
 
-          {/* Badge on Image */}
+          {/* Badges on Banner Top */}
           <div className="absolute top-4 left-4 right-16 flex flex-wrap items-center gap-2 z-20">
-            <span className="text-[11px] font-inter font-bold uppercase px-3 py-1 rounded-full text-white bg-[var(--primary)] backdrop-blur-md shadow-sm tracking-wider">
-              {t(category.tier || "Award Category")}
+            <span
+              className="text-[10px] sm:text-[11px] font-inter font-bold uppercase px-3 py-1 rounded-full text-white backdrop-blur-md shadow-md tracking-wider border border-white/20"
+              style={{ backgroundColor: category.color || "var(--primary)" }}
+            >
+              {t(category.tierLabel || category.tier || "Award Category")}
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-inter font-bold px-3 py-1 rounded-full text-amber-200 bg-black/60 backdrop-blur-md border border-amber-400/30 shadow-md">
+              <FaCoins className="w-3 h-3 text-amber-400" />
+              <span>{prizeText}</span>
             </span>
           </div>
 
           {/* Category Title in Banner */}
           <div className="absolute bottom-4 left-5 right-5 z-20">
-            <h2 className="font-poppins font-extrabold text-xl sm:text-2xl lg:text-3xl text-white uppercase tracking-tight leading-tight">
+            <h2 className="font-poppins font-extrabold text-lg sm:text-2xl lg:text-3xl text-white uppercase tracking-tight leading-tight drop-shadow-md">
               {t(category.title)}
             </h2>
           </div>
         </div>
 
         {/* Inner Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-7 flex flex-col gap-6 text-zinc-800 text-left font-inter">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-7 flex flex-col gap-5 sm:gap-6 text-zinc-800 text-left font-inter">
 
-          {/* Overview / Description */}
+          {/* Category Overview */}
           <div className="flex flex-col gap-2 bg-zinc-50 border border-zinc-200/90 rounded-2xl p-4 sm:p-5">
             <div className="flex items-center gap-2 text-[var(--primary)] font-poppins font-bold text-xs uppercase tracking-wider">
               <FaAward className="w-4 h-4" />
@@ -98,7 +135,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
           <div className="flex flex-col gap-2.5 bg-amber-500/10 border border-amber-400/30 rounded-2xl p-4 sm:p-5">
             <div className="flex items-center gap-2 text-amber-800 font-poppins font-bold text-xs uppercase tracking-wider">
               <FaLightbulb className="w-4 h-4 text-amber-600" />
-              <span>Submission Task Brief</span>
+              <span>Submission Guidelines & Task Brief</span>
             </div>
             <p className="text-xs sm:text-sm text-zinc-800 font-semibold leading-relaxed">
               {category.taskBrief || "Create and submit an original video, vlog, reel, or story highlighting local traditions, innovation, or community initiatives of Chhattisgarh."}
@@ -108,11 +145,11 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
           {/* Evaluation Criteria Grid */}
           <div className="flex flex-col gap-3">
             <h4 className="font-poppins font-bold text-sm sm:text-base text-zinc-950 uppercase tracking-tight">
-              Evaluation Criteria & Guidelines
+              Jury Evaluation Criteria
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-zinc-200 shadow-xs">
+              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-zinc-200 shadow-xs">
                 <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
                   <span className="font-bold text-xs text-zinc-900">Originality & Storytelling</span>
@@ -120,7 +157,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-zinc-200 shadow-xs">
+              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-zinc-200 shadow-xs">
                 <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
                   <span className="font-bold text-xs text-zinc-900">Cultural & Regional Impact</span>
@@ -128,7 +165,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-zinc-200 shadow-xs">
+              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-zinc-200 shadow-xs">
                 <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
                   <span className="font-bold text-xs text-zinc-900">Production Quality</span>
@@ -136,25 +173,25 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-zinc-200 shadow-xs">
+              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-zinc-200 shadow-xs">
                 <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
-                  <span className="font-bold text-xs text-zinc-900">Audience Engagement</span>
-                  <span className="text-[11px] text-zinc-500 font-medium">Relevance & public appreciation</span>
+                  <span className="font-bold text-xs text-zinc-900">Audience Appreciation</span>
+                  <span className="text-[11px] text-zinc-500 font-medium">Relevance & public engagement</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Reward Perks */}
+          {/* Winner Reward Perks */}
           <div className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#2E5C31]/10 via-[#2E5C31]/5 to-transparent border border-[#2E5C31]/20">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#2E5C31] text-amber-300 flex items-center justify-center shrink-0 shadow-md">
                 <FaTrophy className="w-5 h-5" />
               </div>
               <div className="flex flex-col">
-                <span className="font-poppins font-bold text-xs sm:text-sm text-[#2E5C31]">Winner Rewards</span>
-                <span className="text-[11px] sm:text-xs text-zinc-600 font-medium">Official State Award & Trophy</span>
+                <span className="font-poppins font-bold text-xs sm:text-sm text-[#2E5C31]">Winner Rewards & Recognition</span>
+                <span className="text-[11px] sm:text-xs text-zinc-600 font-medium">Official State Award, Trophy & Cash Prize ({prizeText})</span>
               </div>
             </div>
           </div>

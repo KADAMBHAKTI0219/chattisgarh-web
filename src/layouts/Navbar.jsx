@@ -36,7 +36,6 @@ export default function Navbar() {
   }, [isOpen]);
 
   const NAV_LINKS = [
-    { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Categories", href: "/categories" },
     { name: "Contact", href: "/contact" },
@@ -100,7 +99,7 @@ export default function Navbar() {
 
               {/* Chhattisgarh State Emblem Logo */}
               <Image
-                src="/assets/images/chattisgarh-logo.webp"
+                src="/assets/images/logoChattisgarh.png"
                 alt="Government of Chhattisgarh Logo"
                 width={260}
                 height={75}
@@ -115,7 +114,7 @@ export default function Navbar() {
                   {t("Chhattisgarh Creator & Influencer Awards")}
                 </span>
                 <span className="font-poppins font-bold text-[10px] min-[370px]:text-[11px] sm:text-xs md:text-[13px] text-[#2E5C31] group-hover:text-[#1b3827] leading-tight tracking-wide mt-0.5 transition-colors duration-300">
-                  {t("छत्तीसगढ़िया सबसे बढ़िया")}
+                  {t("हमर छत्तीसगढ़")}
                 </span>
               </div>
             </Link>
@@ -206,7 +205,7 @@ export default function Navbar() {
             <div className="flex items-center justify-between p-4 border-b border-[#E8DFCF] bg-[#FFFDFC]/90">
               <div className="flex items-center gap-3">
                 <Image
-                  src="/assets/images/chattisgarh-logo.webp"
+                  src="/assets/images/logoChattisgarh.png"
                   alt="Government of Chhattisgarh Logo"
                   width={180}
                   height={50}
@@ -217,7 +216,7 @@ export default function Navbar() {
                     Chhattisgarh Awards
                   </span>
                   <span className="font-poppins font-bold text-[10px] text-[#2E5C31] leading-tight mt-0.5">
-                    छत्तीसगढ़िया सबसे बढ़िया
+                    हमर छत्तीसगढ़
                   </span>
                 </div>
               </div>

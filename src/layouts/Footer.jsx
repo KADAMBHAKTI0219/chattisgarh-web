@@ -1,12 +1,14 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { PhoneCall, Mail, Clock, ArrowUp } from "lucide-react";
+import { PhoneCall, Mail, Clock, ArrowUp, QrCode } from "lucide-react";
 import { FaYoutube, FaInstagram, FaFacebookF, FaTwitter, FaLinkedinIn } from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
   const { t } = useLanguage();
+  const SITE_URL = "https://chattisgarh-web.vercel.app/";
 
   const handleScrollTop = () => {
     window.scrollTo({
@@ -214,27 +216,24 @@ export default function Footer() {
             </div>
 
             {/* QR Code Section */}
-            <div className="flex flex-col gap-2 mt-2">
-              <div className="bg-white p-2 rounded-2xl w-20 h-20 xl:w-24 xl:h-24 flex items-center justify-center shrink-0 border border-zinc-200 select-none shadow-sm">
-                <svg className="w-16 h-16 xl:w-20 xl:h-20 text-[var(--secondary)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="5" y="5" width="30" height="30" stroke="currentColor" strokeWidth="6" />
-                  <rect x="13" y="13" width="14" height="14" fill="currentColor" />
-                  <rect x="65" y="5" width="30" height="30" stroke="currentColor" strokeWidth="6" />
-                  <rect x="73" y="13" width="14" height="14" fill="currentColor" />
-                  <rect x="5" y="65" width="30" height="30" stroke="currentColor" strokeWidth="6" />
-                  <rect x="13" y="73" width="14" height="14" fill="currentColor" />
-                  <rect x="45" y="5" width="8" height="20" fill="currentColor" />
-                  <rect x="57" y="15" width="4" height="12" fill="currentColor" />
-                  <rect x="45" y="35" width="15" height="8" fill="currentColor" />
-                  <rect x="80" y="45" width="15" height="10" fill="currentColor" />
-                  <rect x="68" y="50" width="8" height="6" fill="currentColor" />
-                  <rect x="45" y="65" width="8" height="15" fill="currentColor" />
-                  <rect x="57" y="75" width="15" height="8" fill="currentColor" />
-                  <rect x="75" y="65" width="10" height="8" fill="currentColor" />
-                  <rect x="80" y="80" width="15" height="15" fill="currentColor" />
-                  <circle cx="50" cy="50" r="4" fill="currentColor" />
-                </svg>
-              </div>
+            <div className="flex flex-col gap-2 mt-2 items-start">
+              <a
+                href={SITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Scan or Click to open website"
+                className="group relative bg-white p-2 rounded-2xl w-24 h-24 xl:w-28 xl:h-28 flex items-center justify-center shrink-0 border border-zinc-200 shadow-sm hover:border-[var(--primary)] hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer"
+              >
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(SITE_URL)}&color=2E5C31&margin=2`}
+                  alt="Website QR Code"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+              </a>
+              <span className="text-[10px] xl:text-[11px] font-inter font-bold text-zinc-600 tracking-tight flex items-center gap-1">
+                <QrCode className="w-3 h-3 text-[var(--secondary)]" />
+                <span>{t("Scan QR to Visit Website")}</span>
+              </span>
             </div>
           </div>
 

@@ -1,119 +1,49 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { ParticipateButton } from "@/components/common/Button";
 
-// Desktop and mobile slides arrays
-const DESKTOP_SLIDES = [
-  "/assets/images/herosection.png",
-  "/assets/images/herosection-2.png",
-  "/assets/images/herosection-3.png",
-];
-
-const MOBILE_SLIDES = [
-  "/assets/images/mob-hero.png",
-  "/assets/images/mob-hero-2.png",
-  "/assets/images/mob-hero-3.png",
-];
-
-const AUTOPLAY_MS = 3500;
+const DESKTOP_HERO_IMAGE = "/assets/images/herosection.png";
+const MOBILE_HERO_IMAGE = "/assets/images/mob-hero.png";
 
 export default function HeroSection() {
   const { openModal } = useParticipateModal();
   const { t } = useLanguage();
-
-  const [current, setCurrent] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const total = DESKTOP_SLIDES.length;
-  const timerRef = useRef(null);
-
-  const goTo = (idx) => setCurrent(((idx % total) + total) % total);
-
-  // Autoplay timer
-  useEffect(() => {
-    if (total <= 1 || isHovered) return;
-    timerRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % total);
-    }, AUTOPLAY_MS);
-    return () => clearInterval(timerRef.current);
-  }, [current, isHovered, total]);
 
   return (
     <section
       id="hero-section"
       className="relative flex flex-col items-center justify-center text-center w-full max-w-full overflow-hidden select-none"
     >
-      {/* 1. Banner Carousel Container */}
-      <div
-        className="relative w-full max-w-full flex items-center justify-center overflow-hidden bg-[#FAF7F0]"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* Hero Background Images — Desktop */}
-        <div className="hidden lg:block relative w-full max-w-full overflow-hidden">
-          <div
-            className="flex w-full transition-transform duration-1000 ease-in-out"
-            style={{ transform: `translateX(-${current * 100}%)` }}
+      {/* Hero Banner Container */}
+      <div className="relative w-full max-w-full flex items-center justify-center overflow-hidden bg-[#FAF7F0]">
+        {/* Hero Background Image — Desktop */}
+        <img
+          src={DESKTOP_HERO_IMAGE}
+          alt="Hero Background Banner"
+          className="hidden lg:block w-full h-auto max-w-full object-cover select-none shrink-0 z-0 border-0 outline-none"
+          draggable={false}
+        />
+
+        {/* Hero Background Image — Mobile */}
+        <img
+          src={MOBILE_HERO_IMAGE}
+          alt="Hero Background Banner"
+          className="block lg:hidden w-full h-auto max-w-full object-cover select-none shrink-0 z-0 border-0 outline-none"
+          draggable={false}
+        />
+
+        {/* Participate Now Button */}
+        <div className="absolute bottom-[42%] sm:bottom-[44%] md:bottom-[45%] lg:bottom-[14%] xl:bottom-[15%] left-5 lg:left-16 xl:left-20 inset-x-0 z-20 flex justify-center px-4">
+          <ParticipateButton
+            onClick={openModal}
+            size="lg"
+            className="text-xs sm:text-base md:text-lg px-5 py-2.5 sm:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)] cursor-pointer hover:scale-105 transition-all"
           >
-            {DESKTOP_SLIDES.map((src, i) => (
-              <img
-                key={src + i}
-                src={src}
-                alt="Hero Background Banner"
-                className="w-full h-auto max-w-full object-cover select-none shrink-0 z-0 block border-0 outline-none"
-                draggable={false}
-              />
-            ))}
-          </div>
+            {t("Participate Now")}
+          </ParticipateButton>
         </div>
-
-        {/* Hero Background Images — Mobile */}
-        <div className="block lg:hidden relative w-full max-w-full overflow-hidden">
-          <div
-            className="flex w-full transition-transform duration-1000 ease-in-out"
-            style={{ transform: `translateX(-${(current % MOBILE_SLIDES.length) * 100}%)` }}
-          >
-            {MOBILE_SLIDES.map((src, i) => (
-              <img
-                key={src + i}
-                src={src}
-                alt="Hero Background Banner"
-                className="w-full h-auto max-w-full object-cover select-none shrink-0 z-0 block border-0 outline-none"
-                draggable={false}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Slide indicators — only shown when there's more than one slide */}
-        {total > 1 && (
-          <div className="absolute bottom-3 sm:bottom-4 inset-x-0 z-20 flex justify-center gap-2">
-            {DESKTOP_SLIDES.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                aria-label={`Go to slide ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${i === current ? "w-6 bg-[#EE5D8C]" : "w-1.5 bg-black/20 hover:bg-black/35"
-                  }`}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Apply Now Button — ONLY rendered on the FIRST slide (current === 0) */}
-        {current === 0 && (
-          <div className="absolute bottom-[42%] sm:bottom-[44%] md:bottom-[45%] lg:bottom-[14%] xl:bottom-[15%] left-5 lg:left-16 xl:left-20 inset-x-0 z-20 flex justify-center px-4">
-            <ParticipateButton
-              onClick={openModal}
-              size="lg"
-              className="text-xs sm:text-base md:text-lg px-5 py-2.5 sm:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)] cursor-pointer hover:scale-105 transition-all"
-            >
-              {t("Participate Now")}
-            </ParticipateButton>
-          </div>
-        )}
       </div>
     </section>
   );

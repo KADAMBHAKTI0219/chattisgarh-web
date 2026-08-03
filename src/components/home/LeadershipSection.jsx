@@ -14,11 +14,11 @@ const videos = [
     badge: "Prime Minister"
   },
   {
-    id: "Cf2kdQ-lxGU",
+    id: "Yi6hwvQip7c",
     title: "Swachhata Se Swasthya: PM Modi & Ankit Baiyanpuria Lead Way to a Cleaner and Healthier Bharat",
-    channel: "Narendra Modi",
-    initials: "NM",
-    badge: "Clean Bharat Movement"
+    channel: "Shri Vishnu Deo Sai",
+    initials: "VDS",
+    badge: "Chief Minister"
   }
 ];
 
