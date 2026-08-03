@@ -116,6 +116,8 @@ export default function TestimonialsSection() {
           display: flex;
           width: max-content;
           animation: marquee-testimonials 30s linear infinite;
+          will-change: transform;
+          transform: translateZ(0);
         }
         .animate-marquee-testimonials:hover {
           animation-play-state: paused;

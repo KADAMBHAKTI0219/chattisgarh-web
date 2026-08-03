@@ -172,11 +172,13 @@
    Base Typography & Styles
 ========================================================== */
 
+/* Base Typography & Styles */
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
@@ -188,7 +190,7 @@ body {
   overflow: visible;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
-  touch-action: manipulation;
+  touch-action: pan-y;
   transition:
     background-color 0.35s ease,
     color 0.35s ease;
@@ -218,6 +220,30 @@ body::-webkit-scrollbar,
 .scrollbar-none {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
+}
+
+/* Scroll-reveal Fade & Slide In Animations — Desktop Only to prevent mobile scroll hitching */
+@media (min-width: 769px) {
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: opacity, transform;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-on-scroll.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
 }
 
 /* Default font families for headings & body */

@@ -112,8 +112,6 @@ export default function ConferenceShiftSection() {
             ref={cardContainerRef}
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
-            onTouchStart={() => setIsAutoPlaying(false)}
-            onTouchEnd={() => setIsAutoPlaying(true)}
             className="relative w-full max-w-[420px] sm:max-w-[480px] h-[440px] sm:h-[520px] flex items-center justify-center touch-pan-y"
           >
             {GALLERY_CARDS.map((card, idx) => {
