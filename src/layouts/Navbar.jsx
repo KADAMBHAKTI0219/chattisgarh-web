@@ -112,21 +112,21 @@ export default function Navbar() {
                 width={260}
                 height={75}
                 priority
-                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-20  scale-95" : "h-20  scale-100"
+                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-10 xs:h-12 sm:h-16 lg:h-20 scale-95" : "h-11 xs:h-14 sm:h-16 lg:h-20 scale-100"
                   } group-hover:scale-[1.02]`}
               />
 
               {/* Title & Tagline Branding Block */}
-              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-2.5 sm:pl-3.5 max-w-[190px] min-[370px]:max-w-[220px] min-[410px]:max-w-[260px] sm:max-w-none">
-                <span className="font-montserrat font-bold text-[10.5px] min-[370px]:text-[11.5px] min-[410px]:text-[12.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-tight uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
+              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-2 sm:pl-3.5 min-w-0 max-w-[175px] xs:max-w-[220px] sm:max-w-none">
+                <span className="font-montserrat font-bold text-[9.5px] xs:text-[10.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-[1.15] uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
                   {t("Chhattisgarh Creator & Influencer Awards")}
                 </span>
-                <span className="font-montserrat font-bold text-[10px] min-[370px]:text-[10.5px] sm:text-xs md:text-[12.5px] leading-tight tracking-wide mt-0.5 inline-flex items-center gap-1 flex-wrap">
-                  <span className="text-[#D96B27]">अपन माटी</span>
-                  <span className="text-[#D96B27] text-[8px]">•</span>
-                  <span className="text-[#1E56A0]">अपन मान</span>
-                  <span className="text-[#2E5C31] text-[8px]">•</span>
-                  <span className="text-[#2E5C31]">अपन भविष्य</span>
+                <span className="font-montserrat font-bold text-[8.5px] xs:text-[9.5px] sm:text-xs md:text-[12.5px] leading-tight tracking-wide mt-0.5 inline-flex items-center gap-0.5 sm:gap-1 flex-nowrap shrink-0">
+                  <span className="text-[#D96B27] whitespace-nowrap">अपन माटी</span>
+                  <span className="text-[#D96B27] text-[7px] sm:text-[8px]">•</span>
+                  <span className="text-[#1E56A0] whitespace-nowrap">अपन मान</span>
+                  <span className="text-[#2E5C31] text-[7px] sm:text-[8px]">•</span>
+                  <span className="text-[#2E5C31] whitespace-nowrap">अपन भविष्य</span>
                 </span>
               </div>
             </Link>

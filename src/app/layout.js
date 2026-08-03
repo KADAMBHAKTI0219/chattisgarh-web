@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
         <LanguageProvider>
           <ParticipateModalProvider>
             {/* Parallax Content Wrapper */}
-            <div className="relative lg:z-20 bg-[#FAF7F0] bg-tribal-watermark min-h-screen lg:shadow-[0_15px_30px_rgba(0,0,0,0.15)] pb-1">
+            <div className="relative lg:z-20 bg-[#FAF7F0] bg-tribal-watermark min-h-screen lg:shadow-[0_15px_30px_rgba(0,0,0,0.15)] pb-1 w-full max-w-[100vw] overflow-x-hidden">
               {/* Subtle giant Chhattisgarh Map logo watermark (Direction B) */}
               <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none select-none opacity-[0.012] -z-10">
                 <Image
