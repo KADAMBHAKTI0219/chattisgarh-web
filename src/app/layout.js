@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="stylesheet" href="/assets/fonts/inter.css" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#FAF7F0] text-zinc-900 font-sans overflow-x-hidden w-full max-w-full">
+      <body className="min-h-full flex flex-col bg-[#FAF7F0] text-zinc-900 font-sans w-full max-w-full">
         
         {/* WCAG Skip to Content Link */}
         <a 
@@ -32,8 +32,8 @@ export default function RootLayout({ children }) {
 
         <LanguageProvider>
           <ParticipateModalProvider>
-            {/* Parallax Content Wrapper: sits on top of sticky footer with higher z-index and shadow */}
-            <div className="relative lg:z-20 bg-[#FAF7F0] bg-tribal-watermark min-h-screen lg:shadow-[0_15px_30px_rgba(0,0,0,0.15)] pb-1 overflow-x-clip">
+            {/* Parallax Content Wrapper */}
+            <div className="relative lg:z-20 bg-[#FAF7F0] bg-tribal-watermark min-h-screen lg:shadow-[0_15px_30px_rgba(0,0,0,0.15)] pb-1">
               {/* Subtle giant Chhattisgarh Map logo watermark (Direction B) */}
               <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none select-none opacity-[0.012] -z-10">
                 <Image

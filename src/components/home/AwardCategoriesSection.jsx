@@ -415,8 +415,8 @@ export default function AwardCategoriesSection() {
               key={tab.slug}
               onClick={() => setActiveTier(tab.slug)}
               className={`shrink-0 px-4 py-2 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${activeTier === tab.slug
-                  ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
-                  : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
+                ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
+                : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
                 }`}
             >
               {t(tab.label)} ({tab.count})
@@ -447,13 +447,13 @@ export default function AwardCategoriesSection() {
         </div>
       </div>
 
-      {/* 25 CATEGORIES GRID — 6 COLUMNS PER ROW ON DESKTOP & 2 COLUMNS RESPONSIVE ON MOBILE */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-4">
+      {/* 25 CATEGORIES GRID — EVEN SPACING & PROPER GAPS */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
         {filteredCategories.map((cat) => (
           <div
             key={cat.id}
             onClick={() => setSelectedDetailCategory(cat)}
-            className="relative aspect-square xs:aspect-[4/3.5] sm:aspect-[4/3.2] min-h-[170px] xs:min-h-[180px] sm:min-h-[190px] rounded-2xl overflow-hidden group border border-zinc-200/90 hover:border-[var(--primary)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-2.5 xs:p-3 sm:p-4 text-left"
+            className="relative aspect-square rounded-2xl overflow-hidden group border border-zinc-200/80 hover:border-[var(--primary)] shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-3 sm:p-4 text-left"
           >
             {/* Background Image */}
             <img
@@ -467,9 +467,9 @@ export default function AwardCategoriesSection() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
 
             {/* Tier Badge */}
-            <div className="absolute top-2 left-2 xs:top-2.5 xs:left-2.5 z-20 max-w-[90%]">
+            <div className="absolute top-2.5 left-2.5 z-20 max-w-[90%]">
               <span
-                className="inline-block text-[8px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
+                className="inline-block text-[8.5px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2.5 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
                 style={{ backgroundColor: cat.color || "#C15B3D" }}
               >
                 {cat.tier === "culture" ? "Culture" : cat.tier === "tech" ? "Tech & Media" : cat.tier === "impact" ? "Social Impact" : "Arts"}

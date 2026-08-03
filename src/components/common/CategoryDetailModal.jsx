@@ -75,7 +75,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
 
       {/* Modal Content Window */}
       <div className="relative w-full max-w-2xl bg-white border border-zinc-200 rounded-[32px] shadow-2xl z-10 flex flex-col overflow-hidden max-h-[85vh] sm:max-h-[88vh] my-auto">
-        
+
         {/* Top Cover Image & Banner */}
         <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-zinc-900 shrink-0">
           <img
@@ -118,7 +118,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
         </div>
 
         {/* Inner Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-7 flex flex-col gap-5 sm:gap-6 text-zinc-800 text-left font-inter">
+        <div className="flex-1 overflow-y-auto no-scrollbar p-5 sm:p-7 flex flex-col gap-5 sm:gap-6 text-zinc-800 text-left font-inter">
 
           {/* Category Overview */}
           <div className="flex flex-col gap-2 bg-zinc-50 border border-zinc-200/90 rounded-2xl p-4 sm:p-5">
@@ -216,7 +216,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
             }}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
           >
-            <span>Nominate / Apply Now</span>
+            <span>Participate Now</span>
             <FaArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

@@ -314,7 +314,7 @@ export default function ParticipateModal() {
       />
 
       {/* Modal Card Container */}
-      <div className="relative w-full max-w-md md:max-w-5xl lg:max-w-7xl bg-white border-4 border-black rounded-[36px] p-6 sm:p-8 lg:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 transition-all duration-300 overflow-y-auto max-h-[88vh] sm:max-h-[90vh]">
+      <div className="relative w-full max-w-md md:max-w-5xl lg:max-w-7xl bg-white border-4 border-black rounded-[36px] p-6 sm:p-8 lg:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 transition-all duration-300 overflow-y-auto no-scrollbar max-h-[88vh] sm:max-h-[90vh]">
         
         {/* Close Button */}
         <button 

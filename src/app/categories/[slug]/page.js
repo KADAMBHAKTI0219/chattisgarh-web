@@ -333,7 +333,7 @@ export default function CategorySlugPage({ params }) {
                 </div>
             </div>            {/* 4. Category Cards Grid */}
             <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4 md:gap-5 xl:gap-6">
                     {filteredCategories.map((cat) => {
                         const tierData = TIERS[cat.tier] || TIERS.culture;
 
@@ -341,7 +341,7 @@ export default function CategorySlugPage({ params }) {
                             <div
                                 key={cat.id}
                                 onClick={() => setSelectedDetailCategory(cat)}
-                                className="relative aspect-square xs:aspect-[4/3.5] sm:aspect-[4/3.2] min-h-[170px] xs:min-h-[180px] sm:min-h-[190px] rounded-2xl overflow-hidden group border border-zinc-200/90 hover:border-[var(--primary)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-2.5 xs:p-3 sm:p-4 text-left"
+                                className="relative aspect-square xs:aspect-[4/3.4] sm:aspect-[4/3] min-h-[165px] xs:min-h-[175px] sm:min-h-[185px] rounded-2xl overflow-hidden group border border-zinc-200/80 hover:border-[var(--primary)] shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-3 sm:p-4 text-left"
                             >
                                 {/* Background Image */}
                                 <img
