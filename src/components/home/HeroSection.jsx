@@ -41,7 +41,7 @@ export default function HeroSection() {
         />
 
         {/* Participate Now Button Overlay */}
-        <div className="absolute bottom-1/2 xs:bottom-1/2 sm:bottom-1/2 md:bottom-1/2 lg:bottom-[18%] xl:bottom-[20%] -left-2 xl:-left-4 inset-x-0 z-20 flex items-center justify-center px-4 pointer-events-none">
+        <div className="absolute bottom-1/2 xs:bottom-1/2 sm:bottom-1/2 md:bottom-1/2 lg:bottom-[18%] xl:bottom-[20%] left-1 xl:-left-4 inset-x-0 z-20 flex items-center justify-center px-4 pointer-events-none">
           <div className="pointer-events-auto">
             <ParticipateButton
               onClick={openModal}
