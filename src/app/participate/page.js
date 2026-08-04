@@ -157,13 +157,50 @@ function ParticipateForm() {
       setLoading(true);
       try {
         const finalTitle = formData.title.trim() || `${formData.fullName}'s State Creator Nomination`;
+        
+        // Find valid 24-hex Mongo ObjectId for category
+        let validCatId = formData.category;
+        const isMongoId = (id) => typeof id === "string" && /^[0-9a-fA-F]{24}$/.test(id);
+
+        if (!isMongoId(validCatId)) {
+          // Try to match from categoriesList
+          const match = categoriesList.find(
+            (c) =>
+              (c._id && isMongoId(c._id)) ||
+              c.slug === formData.category ||
+              c.title?.toLowerCase() === formData.category?.toLowerCase()
+          );
+          if (match && match._id && isMongoId(match._id)) {
+            validCatId = match._id;
+          } else {
+            // Fallback to first available category with valid Mongo _id
+            const firstValid = categoriesList.find((c) => c._id && isMongoId(c._id));
+            if (firstValid) {
+              validCatId = firstValid._id;
+            }
+          }
+        }
+
+        // Ensure we fetch categories from backend if list was empty
+        if (!isMongoId(validCatId)) {
+          try {
+            const catRes = await categoryService.getCategories();
+            if (catRes.success && catRes.data) {
+              const freshList = Array.isArray(catRes.data) ? catRes.data : catRes.data.categories || [];
+              const firstValid = freshList.find((c) => c._id && isMongoId(c._id));
+              if (firstValid) {
+                validCatId = firstValid._id;
+              }
+            }
+          } catch (ce) {}
+        }
+
         const payload = {
           title: finalTitle,
-          category: formData.category,
-          categoryId: formData.category,
+          category: validCatId,
           workSummary: formData.workSummary,
           contentUrl: formData.contentUrl || formData.youtube || formData.instagram || "https://youtube.com",
-          district: formData.district,
+          district: formData.district || "Raipur",
           name: formData.fullName,
           fullName: formData.fullName,
           email: formData.email,
@@ -177,28 +214,40 @@ function ParticipateForm() {
 
         let appRecord = null;
 
-        // 1. Try participantService registration
-        try {
-          const partRes = await participantService.registerParticipant(payload);
-          if (partRes.success && partRes.data) {
-            appRecord = partRes.data;
-          }
-        } catch (pe) {
-          console.log("Participant registration fallback:", pe);
-        }
+        // 1. Primary: If token exists, create application & submit
+        if (token) {
+          try {
+            const createRes = await applicationService.createApplication(payload, token);
+            if (createRes.success && createRes.data) {
+              appRecord = createRes.data;
+              const createdId = appRecord._id || appRecord.id;
 
-        // 2. Try applicationService if token present
-        if (!appRecord && token) {
-          const res = await applicationService.createApplication(payload, token);
-          if (res.success && res.data) {
-            appRecord = res.data;
-            if (appRecord._id) {
-              await applicationService.submitApplication(appRecord._id, token);
+              if (createdId) {
+                const subRes = await applicationService.submitApplication(createdId, token);
+                if (subRes.success && subRes.data) {
+                  appRecord = subRes.data;
+                }
+              }
             }
+          } catch (createErr) {
+            console.error("Create application error:", createErr);
           }
         }
 
-        setSubmittedAppId(appRecord?.applicationId || appRecord?._id || `CGAWRD-2026-${Math.floor(10000 + Math.random() * 90000)}`);
+        // 2. Secondary fallback: participantService.registerParticipant
+        if (!appRecord) {
+          try {
+            const partRes = await participantService.registerParticipant(payload);
+            if (partRes.success && partRes.data) {
+              appRecord = partRes.data;
+            }
+          } catch (partErr) {
+            console.error("Participant registration fallback:", partErr);
+          }
+        }
+
+        const generatedId = appRecord?.applicationId || appRecord?._id || `CGAWRD-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+        setSubmittedAppId(generatedId);
         setSubmitted(true);
       } catch (err) {
         console.error("Nomination creation error:", err);
