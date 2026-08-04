@@ -1,10 +1,57 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Heading from "@/components/common/Heading";
 import { useLanguage } from "@/context/LanguageContext";
 import { galleryService } from "@/services/gallery";
-import { FaCamera, FaVideo, FaTimes, FaExpand, FaFilter } from "react-icons/fa";
+import { FaCamera, FaVideo, FaTimes, FaExpand } from "react-icons/fa";
+
+function GalleryCard({ item, cardHeight, onClick }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      className={`break-inside-avoid relative ${cardHeight} rounded-2xl sm:rounded-3xl overflow-hidden bg-zinc-900 border border-zinc-200/80 shadow-xs hover:shadow-2xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1.5 group mb-4 sm:mb-6`}
+    >
+      {/* Loading Skeleton Shimmer */}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 animate-pulse z-0" />
+      )}
+
+      <Image
+        src={item.image}
+        alt={item.title}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        quality={75}
+        onLoad={() => setIsLoaded(true)}
+        className={`object-cover transition-all duration-700 group-hover:scale-110 ${
+          isLoaded ? "opacity-90 group-hover:opacity-100 scale-100" : "opacity-0 scale-105"
+        }`}
+        loading="lazy"
+      />
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent z-10" />
+
+      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
+        <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-amber-300 font-poppins font-bold text-[9.5px] sm:text-[10px] uppercase tracking-wider">
+          {item.tag}
+        </span>
+      </div>
+
+      <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 z-20 flex items-end justify-between gap-2.5">
+        <h3 className="font-poppins font-bold text-xs sm:text-sm text-white tracking-tight leading-snug line-clamp-2">
+          {item.title}
+        </h3>
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xs shrink-0 group-hover:bg-[#C45A32] transition-colors">
+          <FaExpand className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function GalleryPage() {
   const { t } = useLanguage();
@@ -174,34 +221,12 @@ export default function GalleryPage() {
             const cardHeight = heightClasses[idx % heightClasses.length];
 
             return (
-              <div
+              <GalleryCard
                 key={item.id}
+                item={item}
+                cardHeight={cardHeight}
                 onClick={() => setSelectedMedia(item)}
-                className={`break-inside-avoid relative ${cardHeight} rounded-2xl sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-200/80 shadow-xs hover:shadow-2xl cursor-pointer transition-all duration-300 transform hover:-translate-y-1.5 group mb-4 sm:mb-6`}
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent z-10" />
-
-                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
-                  <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-amber-300 font-poppins font-bold text-[9.5px] sm:text-[10px] uppercase tracking-wider">
-                    {item.tag}
-                  </span>
-                </div>
-
-                <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 z-20 flex items-end justify-between gap-2.5">
-                  <h3 className="font-poppins font-bold text-xs sm:text-sm text-white tracking-tight leading-snug line-clamp-2">
-                    {item.title}
-                  </h3>
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xs shrink-0 group-hover:bg-[#C45A32] transition-colors">
-                    <FaExpand className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  </div>
-                </div>
-              </div>
+              />
             );
           })}
         </div>
@@ -226,10 +251,12 @@ export default function GalleryPage() {
             </button>
 
             <div className="relative h-[50vh] sm:h-[65vh] max-h-[550px] w-full bg-black flex items-center justify-center">
-              <img
+              <Image
                 src={selectedMedia.image}
                 alt={selectedMedia.title}
-                className="w-full h-full object-contain"
+                fill
+                quality={85}
+                className="object-contain"
               />
             </div>
 
@@ -250,4 +277,3 @@ export default function GalleryPage() {
     </div>
   );
 }
-
