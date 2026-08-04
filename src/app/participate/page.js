@@ -7,6 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { categoryService } from "@/services/category";
 import { applicationService } from "@/services/application";
+import { participantService } from "@/services/participant";
 import Heading from "@/components/common/Heading";
 import {
   FaUser,
@@ -159,24 +160,46 @@ function ParticipateForm() {
         const payload = {
           title: finalTitle,
           category: formData.category,
+          categoryId: formData.category,
           workSummary: formData.workSummary,
           contentUrl: formData.contentUrl || formData.youtube || formData.instagram || "https://youtube.com",
           district: formData.district,
+          name: formData.fullName,
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          youtube: formData.youtube,
+          instagram: formData.instagram,
+          facebook: formData.facebook,
+          linkedin: formData.linkedin,
+          sampleLinks: formData.sampleLinks ? [formData.sampleLinks] : (formData.youtube ? [formData.youtube] : []),
         };
 
-        const res = await applicationService.createApplication(payload, token);
-        if (res.success && res.data) {
-          const appRecord = res.data;
-          setSubmittedAppId(appRecord.applicationId || appRecord._id || "CGAWRD-2026-SUBMITTED");
+        let appRecord = null;
 
-          if (appRecord._id && token) {
-            await applicationService.submitApplication(appRecord._id, token);
+        // 1. Try participantService registration
+        try {
+          const partRes = await participantService.registerParticipant(payload);
+          if (partRes.success && partRes.data) {
+            appRecord = partRes.data;
           }
-          setSubmitted(true);
-        } else {
-          setSubmittedAppId(`CGAWRD-2026-${Math.floor(10000 + Math.random() * 90000)}`);
-          setSubmitted(true);
+        } catch (pe) {
+          console.log("Participant registration fallback:", pe);
         }
+
+        // 2. Try applicationService if token present
+        if (!appRecord && token) {
+          const res = await applicationService.createApplication(payload, token);
+          if (res.success && res.data) {
+            appRecord = res.data;
+            if (appRecord._id) {
+              await applicationService.submitApplication(appRecord._id, token);
+            }
+          }
+        }
+
+        setSubmittedAppId(appRecord?.applicationId || appRecord?._id || `CGAWRD-2026-${Math.floor(10000 + Math.random() * 90000)}`);
+        setSubmitted(true);
       } catch (err) {
         console.error("Nomination creation error:", err);
         setSubmittedAppId(`CGAWRD-2026-${Math.floor(10000 + Math.random() * 90000)}`);
@@ -228,17 +251,13 @@ function ParticipateForm() {
     { id: "cat-25", title: "Indigenous Performing Artist", desc: "Promoting Pandavani, Raut Nacha, and traditional folk theatre" },
   ];
 
-  const mergedCategories = categoriesList.length > 0
-    ? [
-        ...categoriesList.map(c => ({ id: c._id || c.slug, title: c.title, desc: c.shortDescription || c.taskBrief })),
-        ...ALL_25_OFFICIAL_CATEGORIES
-      ]
+  const displayCategories = categoriesList.length > 0
+    ? categoriesList.map((c) => ({
+        id: c._id || c.id || c.slug,
+        title: c.title || c.name,
+        desc: c.shortDescription || c.description || c.taskBrief || "Official State Award Category",
+      }))
     : ALL_25_OFFICIAL_CATEGORIES;
-
-  // Deduplicate by title
-  const displayCategories = Array.from(
-    new Map(mergedCategories.map((cat) => [cat.title.toLowerCase(), cat])).values()
-  );
 
   return (
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 sm:px-6 md:px-10 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
