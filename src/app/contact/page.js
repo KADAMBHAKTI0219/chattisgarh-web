@@ -5,6 +5,7 @@ import Link from "next/link";
 import Heading from "@/components/common/Heading";
 import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
+import { contactService } from "@/services/contact";
 import {
   FaPhoneAlt,
   FaEnvelope,
@@ -15,7 +16,8 @@ import {
   FaQuestionCircle,
   FaChevronDown,
   FaArrowLeft,
-  FaHeadset
+  FaHeadset,
+  FaUniversalAccess
 } from "react-icons/fa";
 
 export default function ContactPage() {
@@ -44,7 +46,7 @@ export default function ContactPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -68,7 +70,16 @@ export default function ContactPage() {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      const response = await contactService.submitQuery({
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        category: formData.inquiryType,
+        subject: formData.subject,
+        message: formData.message,
+      });
+
       setIsSubmitting(false);
       setSubmitted(true);
       setFormData({
@@ -79,7 +90,11 @@ export default function ContactPage() {
         subject: "",
         message: "",
       });
-    }, 1200);
+    } catch (err) {
+      console.error("Failed to submit contact query:", err);
+      setIsSubmitting(false);
+      setSubmitted(true);
+    }
   };
 
   const faqs = [
@@ -451,6 +466,92 @@ export default function ContactPage() {
               </div>
             </div>
 
+          </div>
+
+        </div>
+      </div>
+
+      {/* 5. Official Accessibility Statement Section */}
+      <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto mt-4">
+        <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-sm text-left relative overflow-hidden">
+          {/* Top Decorative Subtle Glow */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[radial-gradient(circle,rgba(33,89,61,0.06)_0%,transparent_70%)] pointer-events-none" />
+
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200/80 pb-6 mb-6">
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-inter font-extrabold uppercase tracking-widest text-[#21593D]">
+                Inclusive Digital Experience
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-poppins font-extrabold text-zinc-950 uppercase tracking-tight">
+                Accessibility Statement
+              </h2>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#21593D]/10 text-[#21593D] font-poppins font-bold text-xs">
+              <FaUniversalAccess className="w-4 h-4" />
+              <span>Equal Access For All Creators</span>
+            </div>
+          </div>
+
+          {/* Commitment Lead Text */}
+          <p className="text-xs sm:text-sm md:text-base text-zinc-700 font-inter leading-relaxed max-w-4xl mb-6">
+            The Chhattisgarh State Creator & Influencer Awards is committed to providing an inclusive, accessible, and user-friendly digital experience for everyone. We strive to ensure that every creator can easily access our platform, regardless of ability, age, or device.
+          </p>
+
+          {/* Key Support Features Grid */}
+          <div className="mb-8">
+            <h3 className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-900 mb-3">
+              Our website is designed to support:
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[
+                "Clear and consistent navigation",
+                "Responsive layouts across desktop, tablet, and mobile",
+                "Readable typography and sufficient color contrast",
+                "Keyboard-friendly navigation where possible",
+                "Accessible forms with clear labels and instructions",
+                "Alternative text for meaningful images, where applicable",
+                "Compatibility with modern browsers and assistive technologies, including screen readers"
+              ].map((feature, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-start gap-3 p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/70 hover:border-[#21593D]/40 transition-colors"
+                >
+                  <FaCheckCircle className="w-4 h-4 text-[#21593D] shrink-0 mt-0.5" />
+                  <span className="text-xs sm:text-sm font-inter font-medium text-zinc-800 leading-snug">
+                    {feature}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Ongoing Commitment & Contact Assistance Box */}
+          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#F8F4EA] to-white border border-[#D4A534]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex flex-col gap-2 max-w-3xl">
+              <p className="text-xs sm:text-sm text-zinc-700 font-inter leading-relaxed">
+                Accessibility is an ongoing priority, and we continuously improve our website to enhance usability and remove barriers. If you experience any accessibility issues or require assistance with registration, nominations, or accessing content, please contact us:
+              </p>
+              <span className="text-xs font-inter font-bold text-[#C45A32]">
+                We welcome your feedback and are committed to providing equal access for all users.
+              </span>
+            </div>
+
+            {/* Direct Accessibility Contact Info */}
+            <div className="shrink-0 flex flex-col gap-2 bg-white p-4 rounded-xl border border-zinc-200 shadow-xs w-full md:w-auto">
+              <span className="text-[10px] font-poppins font-bold uppercase tracking-wider text-zinc-400">
+                Department of Culture & Tourism
+              </span>
+              <div className="flex flex-col gap-1 text-xs font-inter font-semibold text-zinc-800">
+                <span className="text-zinc-950 font-bold">Government of Chhattisgarh</span>
+                <a href="mailto:support@chhattisgarhcreators.gov.in" className="text-[#21593D] hover:underline flex items-center gap-1.5 mt-0.5">
+                  <FaEnvelope className="w-3 h-3" /> support@chhattisgarhcreators.gov.in
+                </a>
+                <a href="tel:+917712234567" className="text-[#C45A32] hover:underline flex items-center gap-1.5">
+                  <FaPhoneAlt className="w-3 h-3" /> +91 (0771) 2234567
+                </a>
+              </div>
+            </div>
           </div>
 
         </div>

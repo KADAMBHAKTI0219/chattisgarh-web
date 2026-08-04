@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const ParticipateModalContext = createContext({
   isOpen: false,
@@ -12,16 +14,19 @@ const ParticipateModalContext = createContext({
 export function ParticipateModalProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   const openModal = (categoryName = null) => {
-    if (typeof categoryName === "string") {
-      setSelectedCategory(categoryName);
-    } else {
-      setSelectedCategory(null);
+    if (!isAuthenticated) {
+      router.push("/register");
+      return;
     }
-    setIsOpen(true);
-    if (typeof document !== "undefined") {
-      document.body.style.overflow = "hidden";
+
+    if (typeof categoryName === "string") {
+      router.push(`/participate?category=${encodeURIComponent(categoryName)}`);
+    } else {
+      router.push("/participate");
     }
   };
 

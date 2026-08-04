@@ -14,36 +14,36 @@ export default function HowToApplySection() {
   const steps = [
     {
       stepNum: "01",
-      badge: "Digital Registration",
-      title: "Submit Nomination",
-      desc: "Fill out the official digital registration form with your channel links, profile analytics, category selection, and impact summary.",
+      badge: "DIGITAL REGISTRATION",
+      title: "Submit Your Nomination",
+      desc: "Complete the online application by sharing your creator profile, content links, preferred award category, and a brief summary of your creative work. It only takes a few minutes to begin your journey.",
       icon: FaEdit,
       color: "#C45A32", // Terracotta
       bgGlow: "rgba(196, 90, 50, 0.12)",
     },
     {
       stepNum: "02",
-      badge: "Verification & Audit",
+      badge: "VERIFICATION & REVIEW",
       title: "Screening & Verification",
-      desc: "Our official screening committee validates submission data, audience engagement metrics, content authenticity, and ethical guidelines.",
+      desc: "Our expert review committee carefully verifies your submission, content authenticity, creator profile, and community compliance to ensure a fair and transparent selection process.",
       icon: FaUserCheck,
       color: "#21593D", // Forest Green
       bgGlow: "rgba(33, 89, 61, 0.12)",
     },
     {
       stepNum: "03",
-      badge: "Citizen Engagement",
+      badge: "COMMUNITY CHOICE",
       title: "Public Voting",
-      desc: "Shortlisted nominees in public choice categories open for citizen voting online with a 30% weightage in final evaluation.",
+      desc: "For selected categories, shortlisted creators will be featured for public voting. Community support contributes to the final evaluation alongside the jury’s assessment.",
       icon: FaPoll,
       color: "#D4A534", // Warm Gold
       bgGlow: "rgba(212, 165, 52, 0.15)",
     },
     {
       stepNum: "04",
-      badge: "Raipur Sept 2026",
-      title: "Grand Ceremony",
-      desc: "Final winners are honored live with official state citations, trophies, and government recognition at the grand gala event in Raipur.",
+      badge: "AWARD CEREMONY",
+      title: "Grand Recognition",
+      desc: "The winners will be officially honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony, receiving government recognition, prestigious trophies, and certificates in front of creators, dignitaries, and industry leaders.",
       icon: FaTrophy,
       color: "#C45A32", // Terracotta
       bgGlow: "rgba(196, 90, 50, 0.12)",
@@ -75,7 +75,7 @@ export default function HowToApplySection() {
           badge={t("Process Timeline")}
           title={t("HOW TO")}
           highlightText={t("NOMINATE")}
-          description={t("Simple, transparent, four-step journey to official state recognition.")}
+          description={t("From Submission to State Recognition — Just Four Simple Steps. A transparent and creator-friendly journey designed to recognize the voices shaping the digital identity of Chhattisgarh.")}
           className="mb-14 lg:mb-18"
         />
 
@@ -149,16 +149,16 @@ export default function HowToApplySection() {
 
                     {/* Colored Icon Container */}
                     <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner"
+                      className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner"
                       style={{ backgroundColor: `${step.color}15`, color: step.color }}
                     >
-                      <IconComponent className="w-7 h-7" />
+                      <IconComponent className="w-6 h-6" />
                     </div>
 
                     {/* Step Title & Description */}
-                    <div className="flex flex-col gap-2 min-w-0">
+                    <div className="flex flex-col gap-1.5 min-w-0">
                       <h3
-                        className="font-poppins font-bold text-lg sm:text-xl uppercase tracking-tight leading-snug transition-colors"
+                        className="font-poppins font-bold text-sm sm:text-base md:text-lg uppercase tracking-tight leading-snug transition-colors"
                         style={{ color: isCurrent ? step.color : "#1c2c23" }}
                       >
                         {t(step.title)}

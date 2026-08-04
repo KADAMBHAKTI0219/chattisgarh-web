@@ -1,10 +1,8 @@
 import "./globals.css";
-import Image from "next/image";
-import Navbar from "@/layouts/Navbar";
-import Footer from "@/layouts/Footer";
+import { AuthProvider } from "@/context/AuthContext";
 import { ParticipateModalProvider } from "@/context/ParticipateModalContext";
 import { LanguageProvider } from "@/context/LanguageContext";
-import ParticipateModal from "@/components/shared/ParticipateModal";
+import LayoutWrapper from "@/layouts/LayoutWrapper";
 
 export const metadata = {
   title: "State Creator & Influencer Awards 2026",
@@ -30,33 +28,13 @@ export default function RootLayout({ children }) {
           Skip to content
         </a>
 
-        <LanguageProvider>
-          <ParticipateModalProvider>
-            {/* Parallax Content Wrapper */}
-            <div className="relative lg:z-20 bg-[#FAF7F0] bg-tribal-watermark min-h-screen lg:shadow-[0_15px_30px_rgba(0,0,0,0.15)] pb-1 w-full max-w-[100vw] overflow-x-hidden">
-              {/* Subtle giant Chhattisgarh Map logo watermark (Direction B) */}
-              <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none select-none opacity-[0.012] -z-10">
-                <Image
-                  src="/assets/images/logoChattisgarh.png"
-                  alt="State Watermark Map"
-                  fill
-                  priority
-                  className="object-contain"
-                />
-              </div>
-              <Navbar />
-              <main id="main-content" className="flex-1">
-                {children}
-              </main>
-            </div>
-
-            {/* Parallax sticky reveal footer */}
-            <Footer />
-
-            {/* Global Participate modal */}
-            <ParticipateModal />
-          </ParticipateModalProvider>
-        </LanguageProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <ParticipateModalProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </ParticipateModalProvider>
+          </LanguageProvider>
+        </AuthProvider>
 
       </body>
     </html>

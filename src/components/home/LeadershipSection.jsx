@@ -21,7 +21,6 @@ const videos = [
     badge: "Chief Minister"
   }
 ];
-
 function VideoCard({ video }) {
   const [playing, setPlaying] = useState(false);
   const { t } = useLanguage();

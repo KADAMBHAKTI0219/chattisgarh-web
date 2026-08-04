@@ -3,6 +3,7 @@ import NarrativeSection from "@/components/about/NarrativeSection";
 import VisionMissionSection from "@/components/about/VisionMissionSection";
 import CulturalQuoteSection from "@/components/about/CulturalQuoteSection";
 import ArchitectsTrustSection from "@/components/about/ArchitectsTrustSection";
+import ChhattisgarhDistrictSection from "@/components/about/ChhattisgarhDistrictSection";
 
 export const metadata = {
   title: "About Us | Chhattisgarh Creator & Influencer Awards",
@@ -32,7 +33,8 @@ export default function AboutPage() {
       {/* 5. Architects of Trust / Why Creators Matter (Light Beige Background) */}
       <ArchitectsTrustSection />
 
-
+      {/* 6. Discover Chhattisgarh & District Heritage Section */}
+      <ChhattisgarhDistrictSection />
 
     </div>
   );

@@ -1,0 +1,19 @@
+// Central Barrel Export for all 17 Government Web Frontend API Services
+export { default as fetchApi } from "./client";
+export { default as authService } from "./auth";
+export { default as userService } from "./user";
+export { default as creatorService } from "./creator";
+export { default as categoryService } from "./category";
+export { default as applicationService } from "./application";
+export { default as juryService } from "./jury";
+export { default as votingService } from "./voting";
+export { default as notificationService } from "./notification";
+export { default as newsService } from "./news";
+export { default as galleryService } from "./gallery";
+export { default as cmsService } from "./cms";
+export { default as certificateService } from "./certificate";
+export { default as dashboardService } from "./dashboard";
+export { default as reportService } from "./report";
+export { default as contactService } from "./contact";
+export { default as otpService } from "./otp";
+export { default as participantService } from "./participant";

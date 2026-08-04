@@ -25,39 +25,45 @@ export default function FAQSection() {
 
   const faqs = [
     {
-      question: "Who can apply for the awards?",
-      answer: "Any content creator, influencer, blogger, or digital brand who is at least 18 years old and creates original content on eligible social platforms.",
-      color: "#F87C22", // Warm Chhattisgarh Orange
+      question: "WHO CAN APPLY FOR THE AWARDS?",
+      answer: "Any creator who produces original digital content related to Chhattisgarh may apply. Whether you’re a YouTuber, influencer, filmmaker, photographer, blogger, artist, educator, gamer, podcaster, or storyteller—if your content inspires, informs, or showcases the spirit of Chhattisgarh, you’re eligible to participate.",
+      color: "#F87C22",
       icon: FaUserCheck
     },
     {
-      question: "Is there any registration or entry fee?",
-      answer: "No, submitting nominations for the State Creator & Influencer Awards is 100% free of cost.",
-      color: "#00A3A3", // Teal Cyan
+      question: "CAN MINOR CREATORS APPLY?",
+      answer: "Yes. Creators below 18 years of age are welcome to participate. However, their registration, consent, and all further processes must be completed under the supervision and approval of a parent or legal guardian.",
+      color: "#00A3A3",
+      icon: FaUserCheck
+    },
+    {
+      question: "IS THERE ANY REGISTRATION OR ENTRY FEE?",
+      answer: "No. Registration for the Chhattisgarh State Creator & Influencer Awards is completely free. There are no application or participation charges at any stage.",
+      color: "#701B84",
       icon: FaTicketAlt
     },
     {
-      question: "Can I apply for multiple categories?",
-      answer: "Yes, creators can submit nominations in up to a maximum of 3 distinct award categories.",
-      color: "#701B84", // Deep Royal Purple
+      question: "CAN I APPLY FOR MULTIPLE CATEGORIES?",
+      answer: "Yes. You may submit your nomination in up to three award categories, provided your content meets the eligibility criteria for each category.",
+      color: "#4585F6",
       icon: FaLayerGroup
     },
     {
-      question: "What is the evaluation and selection process?",
-      answer: "Submissions undergo verification by our screening committee. The final winners are selected by an expert jury panel based on content originality, audience engagement, state impact, and hyper-local value.",
-      color: "#4585F6", // Electric Royal Blue
+      question: "HOW ARE THE WINNERS SELECTED?",
+      answer: "Every nomination goes through a fair and transparent evaluation process based on content quality, originality, creativity, impact, audience engagement, and relevance to Chhattisgarh. Selected categories may also include public voting as part of the final evaluation.",
+      color: "#D97706",
       icon: FaSearch
     },
     {
-      question: "What prizes and benefits do winners receive?",
-      answer: "Winners receive a prestigious official state trophy, a citation certificate signed by government dignitaries, media features, and exclusive networking access.",
-      color: "#D97706", // Amber Gold
+      question: "WHAT DO WINNERS RECEIVE?",
+      answer: "Winners receive official government recognition, an award trophy, a certificate of excellence, and the opportunity to be celebrated among Chhattisgarh’s leading digital creators.",
+      color: "#10B981",
       icon: FaTrophy
     },
     {
-      question: "When and where is the awards ceremony?",
-      answer: "The grand physical awards ceremony will take place in Raipur in September 2026. Official invites will be sent to all finalists.",
-      color: "#10B981", // Emerald Green
+      question: "WHEN AND WHERE WILL THE AWARD CEREMONY TAKE PLACE?",
+      answer: "The winners will be honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony in Raipur. The official date, venue, and event schedule will be announced on the website and official communication channels.",
+      color: "#C45A32",
       icon: FaCalendarAlt
     }
   ];
@@ -122,13 +128,13 @@ export default function FAQSection() {
                   </span>
                 </span>
 
-                <h3 className="flex-1 font-display font-bold text-sm sm:text-base md:text-lg text-zinc-950 tracking-tight leading-snug uppercase">
+                <h3 className="flex-1 font-display font-bold text-xs sm:text-sm md:text-base text-zinc-950 tracking-tight leading-snug uppercase">
                   {t(faq.question)}
                 </h3>
 
                 {/* Plus / Minus toggle */}
                 <span
-                  className={`shrink-0 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl border transition-all duration-300 ${isOpen ? "rotate-180 border-transparent shadow-xs" : "border-zinc-200 bg-zinc-50 text-zinc-700 group-hover:border-zinc-300"
+                  className={`shrink-0 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-xl border transition-all duration-300 ${isOpen ? "rotate-180 border-transparent shadow-xs" : "border-zinc-200 bg-zinc-50 text-zinc-700 group-hover:border-zinc-300"
                     }`}
                   style={{ backgroundColor: isOpen ? faq.color : undefined, color: isOpen ? "white" : undefined }}
                 >
@@ -143,10 +149,10 @@ export default function FAQSection() {
               >
                 <div className="overflow-hidden">
                   <div
-                    className={`pl-5 pr-4 pb-5 pt-3 sm:pl-7 sm:pr-6 sm:pb-6 ml-[3.1rem] sm:ml-[3.5rem] border-t-2 border-black/10 transition-all duration-300 ${isOpen ? "translate-y-0" : "-translate-y-2"
+                    className={`pl-5 pr-4 pb-4 pt-2 sm:pl-7 sm:pr-6 sm:pb-5 ml-[3.1rem] sm:ml-[3.5rem] border-t border-zinc-200 transition-all duration-300 ${isOpen ? "translate-y-0" : "-translate-y-2"
                       }`}
                   >
-                    <p className="text-zinc-600 font-semibold text-xs sm:text-sm md:text-base leading-relaxed pt-3">
+                    <p className="text-zinc-600 font-normal text-xs sm:text-sm leading-relaxed pt-2">
                       {t(faq.answer)}
                     </p>
                   </div>

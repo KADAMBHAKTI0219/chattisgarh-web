@@ -72,12 +72,12 @@ export default function Heading({
 
 
   const sizeClasses = {
-    1: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight",
-    2: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold uppercase tracking-tight leading-tight",
-    3: "text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight",
-    4: "text-lg sm:text-xl md:text-2xl font-semibold",
-    5: "text-base sm:text-lg font-semibold",
-    6: "text-sm sm:text-base font-medium",
+    1: "text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight",
+    2: "text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-tight leading-tight",
+    3: "text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-tight",
+    4: "text-base sm:text-lg md:text-xl font-semibold",
+    5: "text-sm sm:text-base font-semibold",
+    6: "text-xs sm:text-sm font-medium",
   }[
     typeof level === "number"
       ? level
@@ -326,7 +326,7 @@ export default function Heading({
 
           className={cn(
 
-            "font-inter text-sm sm:text-base md:text-lg leading-relaxed mt-2",
+            "font-inter text-xs sm:text-sm md:text-base leading-relaxed mt-1.5",
 
             themeColors.description,
 

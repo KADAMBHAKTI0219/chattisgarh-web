@@ -220,61 +220,69 @@ export default function ConferenceShiftSection() {
           />
 
           {/* Readable Story Content Blocks with Color Highlighted Text matching image */}
-          <div className="mt-8 flex flex-col gap-6 text-[16px] sm:text-[18px] font-inter text-[#3d4a42] leading-[1.85]">
+          <div className="mt-6 flex flex-col gap-4 text-sm sm:text-base font-inter text-[#3d4a42] leading-relaxed">
 
             {/* Paragraph 1 */}
-            <p className="animate-fade-up">
-              {t("Behind every creator is a story. Behind every story is a place worth discovering.")}
+            <p className="animate-fade-up font-semibold text-base sm:text-lg text-[#1c2c23]">
+              {t("Every creator has the power to shape how the world sees Chhattisgarh.")}
             </p>
 
-            {/* Paragraph 2 - Bold text converted to vibrant Terracotta color highlight */}
+            {/* Paragraph 2 */}
             <p className="animate-fade-up">
-              {t("The")}{" "}
-              <span className="font-extrabold text-[#C45A32] bg-[#C45A32]/10 px-2 py-0.5 rounded-md border border-[#C45A32]/25 inline-block">
-                {t("Chhattisgarh State Creator & Influencer Awards")}
-              </span>{" "}
               {t(
-                "celebrates the creators who are shaping the state’s digital identity through authentic and impactful content. From breathtaking landscapes and tribal heritage to local cuisine, art, music, festivals, innovation, and everyday life—every piece of content that reflects the true spirit of Chhattisgarh deserves to be seen and celebrated."
+                "The Chhattisgarh State Creator & Influencer Awards is a prestigious Government initiative that celebrates creators whose content reflects the state’s culture, heritage, creativity, tourism, innovation, and everyday life. Every authentic story shared today becomes a part of Chhattisgarh’s digital legacy."
               )}
             </p>
 
-            {/* Paragraph 3 - Bold creator roles converted to Forest Green color highlight */}
+            {/* Subheading 1 - Formerly Dark Text, now colorful vibrant highlight banner with compact font size */}
+            <div className="animate-fade-up p-3 sm:p-3.5 rounded-xl bg-gradient-to-r from-[#C45A32]/10 via-[#D4A534]/15 to-transparent border-l-4 border-[#C45A32]">
+              <h4 className="font-poppins font-bold text-sm sm:text-base text-[#C45A32] tracking-tight">
+                {t("No matter your platform, your creativity belongs here.")}
+              </h4>
+            </div>
+
+            {/* Paragraph 3 */}
             <p className="animate-fade-up">
-              {t("Whether you’re a")}{" "}
-              <span className="font-extrabold text-[#21593D] bg-[#21593D]/10 px-2 py-0.5 rounded-md border border-[#21593D]/25">
-                {t("YouTuber, Instagram creator, filmmaker, photographer, blogger, educator, artist, gamer, podcaster, or storyteller")}
-              </span>
-              {t(", your creativity has the power to inspire people across India and around the world.")}
+              {t(
+                "Whether you’re a YouTuber, Instagram creator, filmmaker, photographer, blogger, educator, artist, gamer, podcaster, or storyteller, your work has the power to inspire audiences and showcase the true spirit of Chhattisgarh to India and the world."
+              )}
             </p>
 
-            {/* Paragraph 4 - Call to Action phrase converted to Warm Gold color highlight */}
-            <p className="animate-fade-up font-semibold text-[#1c2c23]">
-              <span className="font-extrabold text-[#C45A32] bg-gradient-to-r from-[#C45A32] via-[#D4A534] to-[#21593D] bg-clip-text text-transparent">
-                {t("This is your chance to receive official recognition, amplify your voice, and proudly represent Chhattisgarh on the global digital stage.")}
-              </span>
+            {/* Subheading 2 - Formerly Dark Text, now colorful vibrant gradient highlight banner with compact font size */}
+            <div className="animate-fade-up p-3 sm:p-3.5 rounded-xl bg-gradient-to-r from-[#21593D]/10 via-[#D4A534]/15 to-transparent border-l-4 border-[#21593D]">
+              <h4 className="font-poppins font-bold text-sm sm:text-base bg-gradient-to-r from-[#21593D] via-[#C45A32] to-[#D4A534] bg-clip-text text-transparent tracking-tight">
+                {t("Get recognized. Get celebrated. Represent Chhattisgarh with pride.")}
+              </h4>
+            </div>
+
+            {/* Paragraph 4 */}
+            <p className="animate-fade-up">
+              {t(
+                "Receive official recognition, amplify your creative journey, and become part of a community that’s building the future of Chhattisgarh’s digital identity."
+              )}
             </p>
 
           </div>
 
           {/* Premium Glass Quote Card with Golden Quotation Icon */}
-          <div className="mt-10 w-full relative bg-white/80 backdrop-blur-xl border-2 border-[#21593D]/25 rounded-[24px] p-6 sm:p-8 shadow-[0_12px_40px_rgba(33,89,61,0.08)] group hover:border-[#D4A534] hover:shadow-[0_16px_50px_rgba(212,165,52,0.2)] transition-all duration-500 overflow-hidden">
+          <div className="mt-8 w-full relative bg-white/80 backdrop-blur-xl border-2 border-[#21593D]/25 rounded-[20px] p-5 sm:p-6 shadow-[0_12px_40px_rgba(33,89,61,0.08)] group hover:border-[#D4A534] hover:shadow-[0_16px_50px_rgba(212,165,52,0.2)] transition-all duration-500 overflow-hidden">
             {/* Top-Right Decorative Soft Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(212,165,52,0.18)_0%,transparent_70%)] pointer-events-none group-hover:scale-125 transition-transform duration-500" />
 
-            <div className="flex items-start gap-4 sm:gap-5 relative z-10">
+            <div className="flex items-start gap-4 relative z-10">
               {/* Golden Quotation Icon */}
-              <div className="w-12 h-12 rounded-2xl bg-[#D4A534]/15 border border-[#D4A534]/40 flex items-center justify-center text-[#D4A534] font-serif text-3xl font-bold shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+              <div className="w-10 h-10 rounded-xl bg-[#D4A534]/15 border border-[#D4A534]/40 flex items-center justify-center text-[#D4A534] font-serif text-2xl font-bold shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
                 “
               </div>
 
               {/* Quote Content with Colorized Text */}
-              <div className="flex flex-col gap-1.5">
-                <p className="font-poppins font-extrabold text-base sm:text-lg lg:text-xl leading-snug italic text-[#21593D]">
+              <div className="flex flex-col gap-1">
+                <p className="font-poppins font-bold text-sm sm:text-base leading-snug italic text-[#21593D]">
                   <span className="bg-gradient-to-r from-[#21593D] via-[#C45A32] to-[#21593D] bg-clip-text text-transparent">
                     {t("“Because when your content inspires the nation, Chhattisgarh shines with you.”")}
                   </span>
                 </p>
-                <span className="font-poppins font-bold text-xs uppercase tracking-widest text-[#C45A32] mt-1">
+                <span className="font-poppins font-bold text-[11px] uppercase tracking-widest text-[#C45A32] mt-0.5">
                   — {t("Government of Chhattisgarh")}
                 </span>
               </div>

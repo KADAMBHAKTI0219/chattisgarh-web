@@ -1,0 +1,138 @@
+"use client";
+
+import { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { authService } from "@/services/auth";
+import { userService } from "@/services/user";
+
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  // Initialize Auth state from localStorage on mount
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const storedToken = localStorage.getItem("accessToken");
+        const storedUser = localStorage.getItem("user");
+
+        if (storedToken) {
+          setToken(storedToken);
+          if (storedUser) {
+            try {
+              setUser(JSON.parse(storedUser));
+            } catch (e) {
+              console.error("Failed to parse stored user json:", e);
+            }
+          }
+          // Fetch latest profile from backend to ensure state validity
+          const res = await userService.getProfile(storedToken);
+          if (res.success && res.data) {
+            const freshUser = res.data;
+            setUser(freshUser);
+            localStorage.setItem("user", JSON.stringify(freshUser));
+          } else if (res.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("user");
+            setToken(null);
+            setUser(null);
+          }
+        }
+      } catch (err) {
+        console.error("Error initializing auth:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
+
+  // Login handler
+  const login = async (email, password) => {
+    const res = await authService.login(email, password);
+    if (res.success && res.data) {
+      const { accessToken, user: loggedUser } = res.data;
+      setToken(accessToken);
+      setUser(loggedUser);
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("user", JSON.stringify(loggedUser));
+
+      // Redirect based on user role
+      if (["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(loggedUser?.role)) {
+        router.push("/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
+    }
+    return res;
+  };
+
+  // Register handler
+  const register = async (userData) => {
+    return await authService.register(userData);
+  };
+
+  // Logout handler
+  const logout = async () => {
+    if (token) {
+      await authService.logout(token);
+    }
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+    router.push("/login");
+  };
+
+  // Update user state locally & sync with storage
+  const updateUser = (updatedUser) => {
+    setUser((prev) => {
+      const newObj = { ...prev, ...updatedUser };
+      localStorage.setItem("user", JSON.stringify(newObj));
+      return newObj;
+    });
+  };
+
+  // Refresh profile from server
+  const refreshUser = async () => {
+    if (!token) return;
+    const res = await userService.getProfile(token);
+    if (res.success && res.data) {
+      setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+    }
+  };
+
+  const roleUpper = String(user?.role || "").toUpperCase();
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        isAuthenticated: !!token && !!user,
+        isSuperAdmin: roleUpper === "SUPER_ADMIN",
+        isAdmin: ["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(roleUpper),
+        isJury: roleUpper === "JURY",
+        isCreator: roleUpper === "CREATOR",
+        login,
+        register,
+        logout,
+        updateUser,
+        refreshUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => useContext(AuthContext);
+export default AuthContext;

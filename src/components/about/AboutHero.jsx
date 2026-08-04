@@ -21,53 +21,67 @@ export default function AboutHero() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
         
         {/* Left Column: Content & Stats */}
-        <div className="lg:col-span-7 flex flex-col items-start text-left gap-6">
+        <div className="lg:col-span-7 flex flex-col items-start text-left gap-5">
           {/* Government Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[var(--primary)]/30 bg-[var(--primary)]/5 text-[var(--primary)]">
             <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
-            <span className="text-xs font-poppins font-bold uppercase tracking-widest">
-              {t("Official Government Initiative")}
+            <span className="text-[11px] sm:text-xs font-poppins font-bold uppercase tracking-widest">
+              {t("OFFICIAL GOVERNMENT INITIATIVE")}
             </span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-poppins font-extrabold text-[var(--heading)] tracking-tight leading-[1.12]">
-            {t("Participate To Put")} <br className="hidden sm:block" />
-            <span className="text-[var(--primary)]">Chhattisgarh</span> {t("On The Global Map")}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-poppins font-extrabold text-[var(--heading)] tracking-tight leading-[1.15]">
+            {t("Participate To Put")}{" "}
+            <span className="text-[var(--primary)]">Chhattisgarh</span>{" "}
+            {t("On The Global Map")}
           </h1>
 
           {/* Supporting Paragraph */}
-          <p className="text-base sm:text-lg text-[var(--text-secondary)] font-inter leading-relaxed max-w-xl">
+          <p className="text-xs sm:text-sm md:text-base text-[var(--text-secondary)] font-inter leading-relaxed max-w-xl">
             {t(
-              "The Chhattisgarh Creator & Influencer Awards is an official initiative by the Government of Chhattisgarh to discover, honour, and elevate digital storytellers who represent the culture, heritage, tourism, and growth of the state."
+              "The Chhattisgarh State Creator & Influencer Awards is a flagship initiative by the Government of Chhattisgarh to celebrate creators who transform the state’s culture, heritage, tourism, innovation, and everyday stories into inspiring digital experiences for India and the world. Every piece of content that celebrates Chhattisgarh contributes to preserving its heritage while introducing its unique culture, traditions, and values to a wider audience."
             )}
           </p>
 
+          {/* Alternative Headlines Tags / Badges */}
+          <div className="flex flex-wrap gap-2 pt-1 max-w-xl">
+            <span className="text-[10px] sm:text-xs font-inter font-semibold px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-700 border border-zinc-200">
+              ✨ {t("Where Local Stories Earn Global Recognition")}
+            </span>
+            <span className="text-[10px] sm:text-xs font-inter font-semibold px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-700 border border-zinc-200">
+              🌟 {t("Every reel is a remarkable reality")}
+            </span>
+            <span className="text-[10px] sm:text-xs font-inter font-semibold px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-700 border border-zinc-200">
+              🔥 {t("When You Create, Chhattisgarh Shines")}
+            </span>
+          </div>
+
           {/* Action CTAs */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={openModal}
-              className="px-7 py-3.5 rounded-full bg-[var(--primary)] hover:bg-[#a84926] text-white font-poppins font-bold text-sm tracking-wide shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+              className="px-6 py-3 rounded-full bg-[var(--primary)] hover:bg-[#a84926] text-white font-poppins font-bold text-xs sm:text-sm tracking-wide shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
             >
               {t("Participate Now")} →
             </button>
 
             <Link
               href="/categories"
-              className="px-7 py-3.5 rounded-full bg-white border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--primary)] font-poppins font-bold text-sm tracking-wide shadow-sm hover:shadow-md transition-all duration-300"
+              className="px-6 py-3 rounded-full bg-white border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--primary)] font-poppins font-bold text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md transition-all duration-300"
             >
               {t("Explore Categories")}
             </Link>
           </div>
 
           {/* Statistics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 mt-4 border-t border-[var(--border)] w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 pt-6 mt-2 border-t border-[var(--border)] w-full">
             {stats.map((stat, idx) => (
               <div key={idx} className="flex flex-col text-left">
-                <span className="text-2xl sm:text-3xl font-poppins font-extrabold text-[var(--heading)]">
+                <span className="text-xl sm:text-2xl font-poppins font-extrabold text-[var(--heading)]">
                   {stat.value}
                 </span>
-                <span className="text-xs font-inter font-medium text-[var(--text-secondary)] mt-0.5">
+                <span className="text-[11px] sm:text-xs font-inter font-medium text-[var(--text-secondary)] mt-0.5">
                   {stat.label}
                 </span>
               </div>

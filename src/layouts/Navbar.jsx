@@ -46,7 +46,11 @@ export default function Navbar() {
   const NAV_LINKS = [
     { name: "About", href: "/about" },
     { name: "Categories", href: "/categories" },
+    { name: "Winners", href: "/winners" },
+    { name: "Gallery", href: "/gallery" },
+    { name: "News", href: "/news" },
     { name: "Contact", href: "/contact" },
+    { name: "Dashboard", href: "/dashboard" },
   ];
 
   return (
@@ -121,12 +125,8 @@ export default function Navbar() {
                 <span className="font-montserrat font-bold text-[9px] xs:text-[10.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-[1.15] uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
                   {t("Chhattisgarh State Creator & Influencer Awards")}
                 </span>
-                <span className="font-montserrat font-bold text-[8px] xs:text-[9.5px] sm:text-xs md:text-[12.5px] leading-tight tracking-wide mt-0.5 inline-flex items-center gap-0.5 sm:gap-1 flex-nowrap shrink-0">
-                  <span className="text-[#D96B27] whitespace-nowrap">अपन माटी</span>
-                  <span className="text-[#D96B27] text-[7px] sm:text-[8px]">•</span>
-                  <span className="text-[#1E56A0] whitespace-nowrap">अपन मान</span>
-                  <span className="text-[#2E5C31] text-[7px] sm:text-[8px]">•</span>
-                  <span className="text-[#2E5C31] whitespace-nowrap">अपन भविष्य</span>
+                <span className="font-montserrat font-bold text-[9px] xs:text-[10.5px] sm:text-xs md:text-[13px] leading-tight tracking-wide mt-0.5 text-[#D96B27] whitespace-nowrap">
+                  हर एक स्क्रीन पर छाएगा छत्तीसगढ़
                 </span>
               </div>
             </Link>
@@ -134,39 +134,18 @@ export default function Navbar() {
 
 
 
-          {/* Center Navigation Links */}
-          <div className="hidden lg:flex items-center gap-1 xl:gap-2 2xl:gap-3">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="relative group px-3.5 xl:px-4 py-2 rounded-full transition-all duration-300 font-poppins font-semibold text-[15px] xl:text-[18px] text-[#2E5C31] hover:text-[#C15B3D] tracking-normal hover:tracking-wider hover:bg-[#C15B3D]/5 flex items-center justify-center"
-              >
-                <span>{t(link.name)}</span>
-
-                {/* Terracotta Underline Grows from Center */}
-                <span className="absolute bottom-1 left-3.5 right-3.5 h-[2.5px] bg-[#C15B3D] rounded-full scale-x-0 origin-center transition-transform duration-300 ease-out group-hover:scale-x-100" />
-
-                {/* Animated Small Tribal Diamond Motif Underneath on Hover */}
-                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 text-[#C15B3D] text-[9px] opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 group-hover:rotate-45 transition-all duration-300 pointer-events-none">
-                  ◆
-                </span>
-              </Link>
-            ))}
-          </div>
-
-
-          {/* Right Side: Primary CTA Button */}
-          <div className="hidden lg:flex items-center shrink-0">
+          {/* Right Side: Primary CTA Button & Menu Icon Button */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Participate Now Button (Left of Menu Icon) */}
             <button
               onClick={openModal}
-              className="relative group overflow-hidden rounded-full p-[1.5px] shadow-[0_4px_16px_rgba(193,91,61,0.3)] hover:shadow-[0_0_24px_rgba(193,91,61,0.55)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer"
+              className="relative group overflow-hidden rounded-full p-[1.5px] shadow-[0_4px_16px_rgba(193,91,61,0.3)] hover:shadow-[0_0_24px_rgba(193,91,61,0.55)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer shrink-0"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-[#C15B3D] via-[#D39B2C] to-[#C15B3D] bg-[length:200%_auto] group-hover:bg-right transition-all duration-500 rounded-full" />
-              <span className="relative flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-gradient-to-r from-[#C15B3D] to-[#D39B2C] text-white font-poppins font-bold text-sm xl:text-base tracking-wide">
+              <span className="relative flex items-center gap-1.5 xs:gap-2 px-3 py-1.5 xs:px-4 xs:py-2 sm:px-6 sm:py-2.5 rounded-full bg-gradient-to-r from-[#C15B3D] to-[#D39B2C] text-white font-poppins font-bold text-[10.5px] xs:text-xs sm:text-sm xl:text-base tracking-wide whitespace-nowrap">
                 <span>{t("Participate Now")}</span>
                 <svg
-                  className="w-4.5 h-4.5 stroke-white fill-none transition-transform duration-300 group-hover:translate-x-1"
+                  className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 stroke-white fill-none transition-transform duration-300 group-hover:translate-x-1"
                   viewBox="0 0 24 24"
                   strokeWidth="2.5"
                   strokeLinecap="round"
@@ -177,16 +156,15 @@ export default function Navbar() {
                 </svg>
               </span>
             </button>
-          </div>
 
-          {/* Mobile & Tablet Hamburger Controls */}
-          <div className="flex lg:hidden items-center">
+            {/* Menu Icon Button (Right of Participate Now) */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E8DFCF] bg-[#FFFDFC] text-zinc-800 shadow-sm active:scale-95 transition-all cursor-pointer hover:border-[#C15B3D] hover:text-[#C15B3D]"
+              className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border-2 border-[#C15B3D]/30 bg-[#FFFDFC] text-[#2E5C31] shadow-md hover:shadow-lg hover:border-[#C15B3D] hover:bg-[#C15B3D] hover:text-white active:scale-95 transition-all duration-300 cursor-pointer group shrink-0"
               aria-label="Toggle Navigation Menu"
+              title="Open Menu"
             >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-5 w-5 sm:h-6 sm:w-6 stroke-current transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24">
                 {isOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -201,44 +179,40 @@ export default function Navbar() {
         <div className="absolute bottom-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#2E5C31]/25 to-transparent pointer-events-none" />
       </nav>
 
-      {/* Mobile Drawer Navigation */}
+      {/* Side Drawer Navigation Panel (Opens from Right Side) */}
       {isOpen && (
         <>
           {/* Backdrop Overlay */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden transition-opacity duration-300"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] transition-opacity duration-300 animate-in fade-in"
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Sidebar Drawer */}
-          <div className="fixed right-0 top-0 bottom-0 h-dvh w-[88vw] max-w-[360px] bg-[#FFFDFC] z-50 flex flex-col lg:hidden shadow-2xl transition-transform duration-300 border-l border-[#E8DFCF]">
+          {/* Right-side Sliding Navbar Drawer */}
+          <div className="fixed right-0 top-0 bottom-0 h-dvh w-[88vw] max-w-[400px] bg-[#FFFDFC] z-[101] flex flex-col shadow-2xl transition-transform duration-300 border-l-2 border-[#C15B3D]/30 animate-in slide-in-from-right">
 
             {/* Drawer Header */}
-            <div className="flex items-center justify-between p-4 border-b border-[#E8DFCF] bg-[#FFFDFC]/90">
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[#E8DFCF] bg-[#FFFDFC]/95">
               <div className="flex items-center gap-3">
                 <Image
                   src="/assets/images/logoChattisgarh.png"
                   alt="Government of Chhattisgarh Logo"
                   width={180}
                   height={50}
-                  className="h-9 w-auto object-contain shrink-0"
+                  className="h-9 sm:h-10 w-auto object-contain shrink-0"
                 />
                 <div className="flex flex-col text-left border-l-2 border-[#C15B3D]/30 pl-2.5">
-                  <span className="font-montserrat font-bold text-[10.5px] text-[#C15B3D] leading-tight uppercase tracking-tight">
+                  <span className="font-montserrat font-bold text-[10.5px] sm:text-xs text-[#C15B3D] leading-tight uppercase tracking-tight">
                     Chhattisgarh State Awards
                   </span>
-                  <span className="font-montserrat font-bold text-[9px] min-[370px]:text-[10px] leading-tight mt-0.5 inline-flex items-center gap-0.5 flex-wrap">
-                    <span className="text-[#D96B27]">अपन माटी</span>
-                    <span className="text-[#D96B27] text-[7px]">•</span>
-                    <span className="text-[#1E56A0]">अपन मान</span>
-                    <span className="text-[#2E5C31] text-[7px]">•</span>
-                    <span className="text-[#2E5C31]">अपन भविष्य</span>
+                  <span className="font-montserrat font-bold text-[9.5px] sm:text-[11px] leading-tight mt-0.5 text-[#D96B27] whitespace-nowrap">
+                    हर एक स्क्रीन पर छाएगा छत्तीसगढ़
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="h-9 w-9 flex items-center justify-center rounded-xl border border-[#E8DFCF] bg-white text-zinc-700 shadow-sm active:scale-95 cursor-pointer hover:border-[#C15B3D] hover:text-[#C15B3D]"
+                className="h-10 w-10 flex items-center justify-center rounded-full border border-[#E8DFCF] bg-white text-zinc-700 shadow-sm active:scale-95 cursor-pointer hover:border-[#C15B3D] hover:bg-[#C15B3D] hover:text-white transition-colors"
                 aria-label="Close Menu"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,6 +223,9 @@ export default function Navbar() {
 
             {/* Drawer Links List */}
             <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-2 font-poppins font-semibold text-lg text-zinc-900">
+              <span className="text-xs font-inter font-bold uppercase tracking-widest text-[#C15B3D] mb-1">
+                Navigation Menu
+              </span>
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.name}
@@ -263,7 +240,7 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              {/* Participate Now Mobile CTA Button */}
+              {/* Participate Now Mobile/Drawer CTA Button */}
               <div className="pt-6">
                 <button
                   onClick={() => {

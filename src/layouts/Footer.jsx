@@ -83,28 +83,38 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#who-can-apply" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Eligibility")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/#categories" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                <Link href="/categories" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
                   {t("Categories")}
                 </Link>
               </li>
               <li>
-                <Link href="/#timeline" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Timeline")}
+                <Link href="/about" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("About Chhattisgarh")}
                 </Link>
               </li>
               <li>
-                <Link href="/#faq" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("FAQ")}
+                <Link href="/winners" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("Winners")}
                 </Link>
               </li>
               <li>
-                <Link href="/#contact" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Contact")}
+                <Link href="/gallery" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("Gallery")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/news" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("News & Updates")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/media-press" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("Media & Press")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("Creator Dashboard")}
                 </Link>
               </li>
             </ul>
@@ -118,32 +128,37 @@ export default function Footer() {
             </h4>
             <ul className="flex flex-col gap-2.5 text-zinc-800 font-semibold text-sm xl:text-base">
               <li>
-                <Link href="/#terms" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                <Link href="/gigw-utilities#privacy" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
                   {t("Privacy Policy")}
                 </Link>
               </li>
               <li>
-                <Link href="/#terms" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                <Link href="/gigw-utilities#accessibility" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
                   {t("Accessibility Statement")}
                 </Link>
               </li>
               <li>
-                <Link href="/#terms" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                <Link href="/gigw-utilities#hyperlink" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
                   {t("Hyperlinking Policy")}
                 </Link>
               </li>
               <li>
-                <Link href="/#terms" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                <Link href="/gigw-utilities#copyright" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
                   {t("Copyright Policy")}
                 </Link>
               </li>
               <li>
-                <Link href="/#terms" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("RTI & Grievances")}
+                <Link href="/gigw-utilities#rti" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("Right to Information (RTI)")}
                 </Link>
               </li>
               <li>
-                <Link href="/#terms" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                <Link href="/gigw-utilities#grievance" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("Grievance Redressal")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/gigw-utilities#sitemap" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
                   {t("Sitemap")}
                 </Link>
               </li>
