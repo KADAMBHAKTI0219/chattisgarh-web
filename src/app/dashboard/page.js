@@ -8,6 +8,7 @@ import { dashboardService } from "@/services/dashboard";
 import { applicationService } from "@/services/application";
 import { userService } from "@/services/user";
 import { participantService } from "@/services/participant";
+import JuryEvaluationDesk from "@/components/dashboard/JuryEvaluationDesk";
 import {
   FaAward,
   FaFileAlt,
@@ -20,7 +21,7 @@ import {
 } from "react-icons/fa";
 
 export default function DashboardOverviewPage() {
-  const { user, token, isAdmin } = useAuth();
+  const { user, token, isAdmin, isJury } = useAuth();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [applicationsList, setApplicationsList] = useState([]);
@@ -127,6 +128,10 @@ export default function DashboardOverviewPage() {
 
   const userName = user?.name || "Creator";
   const userDistrict = user?.district || "Chhattisgarh";
+
+  if (isJury) {
+    return <JuryEvaluationDesk token={token} />;
+  }
 
   return (
     <div className="flex flex-col gap-8 text-left animate-page-enter">

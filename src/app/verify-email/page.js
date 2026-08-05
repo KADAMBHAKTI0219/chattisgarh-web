@@ -46,9 +46,9 @@ function VerifyEmailForm() {
     setLoading(false);
 
     if (response.success) {
-      setSuccessMsg("Email verified successfully! Redirecting to creator dashboard...");
+      setSuccessMsg("Email verified successfully! Redirecting to home page...");
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/");
       }, 1500);
     } else {
       setErrorMsg(response.message || "Invalid or expired OTP code.");
@@ -89,7 +89,7 @@ function VerifyEmailForm() {
           <button
             onClick={() => {
               setSuccessMsg("OTP Verified! Redirecting...");
-              setTimeout(() => router.push("/dashboard"), 1000);
+              setTimeout(() => router.push("/"), 1000);
             }}
             className="text-[10px] font-extrabold uppercase underline ml-2 hover:text-red-900 cursor-pointer"
           >

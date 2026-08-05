@@ -63,12 +63,8 @@ export function AuthProvider({ children }) {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("user", JSON.stringify(loggedUser));
 
-      // Redirect based on user role
-      if (["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(loggedUser?.role)) {
-        router.push("/dashboard");
-      } else {
-        router.push("/dashboard");
-      }
+      // Redirect to home page
+      router.push("/");
     }
     return res;
   };

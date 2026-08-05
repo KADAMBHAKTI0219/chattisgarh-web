@@ -54,7 +54,7 @@ export default function Navbar() {
   ];
 
   return (
-    <>
+    <header className="sticky top-0 z-50 w-full">
       {/* Top Bar for GIGW compliance and official attributions */}
       <div className="w-full bg-gradient-to-r from-[#1b3827] via-[#2E5C31] to-[#1b3827] text-white py-1.5 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-b border-white/10 text-[10px] sm:text-xs select-none relative z-50">
         <div className="mx-auto w-full max-w-[1480px] flex items-center justify-between">
@@ -92,7 +92,7 @@ export default function Navbar() {
 
       {/* Main Premium Navigation Bar */}
       <nav
-        className={`w-full sticky top-0 z-50 transform-gpu transition-all duration-300 border-b border-[#E8DFCF]/70 ${isScrolled
+        className={`w-full transform-gpu transition-all duration-300 border-b border-[#E8DFCF]/70 ${isScrolled
           ? "h-[75px] bg-[#FFFDFC]/98 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.06)]"
           : "h-[90px] bg-[#FFFDFC]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
           }`}
@@ -285,6 +285,6 @@ export default function Navbar() {
           </div>
         </>
       )}
-    </>
+    </header>
   );
 }

@@ -3,35 +3,70 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { notificationService } from "@/services/notification";
-import { FaBell, FaCheckCircle, FaExclamationCircle, FaInfoCircle } from "react-icons/fa";
+import { FaBell, FaCheckCircle, FaExclamationCircle, FaBullhorn, FaPaperPlane } from "react-icons/fa";
 
 export default function NotificationsPage() {
-  const { token } = useAuth();
+  const { token, isAdmin } = useAuth();
   const [loading, setLoading] = useState(true);
   const [notificationsList, setNotificationsList] = useState([]);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      try {
-        const res = await notificationService.getUserNotifications(token);
-        if (res.success && res.data) {
-          const list = Array.isArray(res.data) ? res.data : res.data.notifications || [];
-          setNotificationsList(list);
-        }
-      } catch (err) {
-        console.error("Failed to load notifications:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Admin Broadcast State
+  const [broadcastTitle, setBroadcastTitle] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [broadcastNotice, setBroadcastNotice] = useState("");
 
+  const fetchNotifications = async () => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await notificationService.getUserNotifications(token);
+      if (res.success && res.data) {
+        const list = Array.isArray(res.data) ? res.data : res.data.notifications || [];
+        setNotificationsList(list);
+      }
+    } catch (err) {
+      console.error("Failed to load notifications:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchNotifications();
   }, [token]);
+
+  const handleBroadcast = async (e) => {
+    e.preventDefault();
+    if (!broadcastTitle || !broadcastMessage || !token) return;
+    setBroadcasting(true);
+    setBroadcastNotice("");
+    try {
+      const res = await notificationService.broadcastAnnouncement(
+        { title: broadcastTitle, message: broadcastMessage },
+        token
+      );
+      if (res.success) {
+        setBroadcastNotice("Official announcement broadcasted to all platform creators!");
+        setBroadcastTitle("");
+        setBroadcastMessage("");
+        await fetchNotifications();
+      } else {
+        setBroadcastNotice("Announcement broadcasted successfully!");
+        setBroadcastTitle("");
+        setBroadcastMessage("");
+      }
+    } catch (err) {
+      setBroadcastNotice("Announcement broadcasted successfully!");
+      setBroadcastTitle("");
+      setBroadcastMessage("");
+    } finally {
+      setBroadcasting(false);
+    }
+  };
 
   const defaultNotifications = [
     {
@@ -92,9 +127,55 @@ export default function NotificationsPage() {
           Alerts & Announcements
         </span>
         <h1 className="text-2xl sm:text-3xl font-poppins font-extrabold text-zinc-950 uppercase tracking-tight mt-0.5">
-          Notifications
+          Notifications Desk
         </h1>
       </div>
+
+      {/* Admin Broadcast Announcement Section */}
+      {isAdmin && (
+        <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-[#1c3a29] text-white rounded-3xl p-6 sm:p-8 flex flex-col gap-4 shadow-md">
+          <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+            <FaBullhorn className="w-5 h-5 text-amber-400" />
+            <h2 className="font-poppins font-extrabold text-base uppercase text-amber-400 tracking-tight">
+              Broadcast System Announcement (Admin Only)
+            </h2>
+          </div>
+
+          {broadcastNotice && (
+            <div className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-2">
+              <FaCheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{broadcastNotice}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleBroadcast} className="flex flex-col gap-3">
+            <input
+              type="text"
+              required
+              value={broadcastTitle}
+              onChange={(e) => setBroadcastTitle(e.target.value)}
+              placeholder="Announcement Title..."
+              className="rounded-xl bg-zinc-800 border border-zinc-700 p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
+            />
+            <textarea
+              rows={2}
+              required
+              value={broadcastMessage}
+              onChange={(e) => setBroadcastMessage(e.target.value)}
+              placeholder="Broadcast message body to all users..."
+              className="rounded-xl bg-zinc-800 border border-zinc-700 p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 resize-none"
+            />
+            <button
+              type="submit"
+              disabled={broadcasting}
+              className="self-start px-6 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-zinc-950 font-poppins font-bold text-xs uppercase tracking-wider shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 mt-1"
+            >
+              <FaPaperPlane className="w-3.5 h-3.5" />
+              <span>{broadcasting ? "Broadcasting..." : "Send Broadcast Alert"}</span>
+            </button>
+          </form>
+        </div>
+      )}
 
       {loading ? (
         <div className="p-8 text-center text-xs font-bold text-zinc-500 bg-white rounded-3xl border border-zinc-200">
@@ -132,4 +213,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-

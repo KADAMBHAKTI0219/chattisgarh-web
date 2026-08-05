@@ -33,7 +33,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background font-sans text-zinc-950 px-0 pt-0 pb-0 flex flex-col gap-0 relative overflow-x-hidden animate-page-enter">
+    <div className="min-h-screen bg-background font-sans text-zinc-950 px-0 pt-0 pb-0 flex flex-col gap-0 [overflow-x:clip] animate-page-enter">
 
       {/* 1. Hero Section (includes titles, statistics, cards shuffle) */}
       <div className="reveal-on-scroll">

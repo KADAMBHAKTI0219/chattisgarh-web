@@ -40,9 +40,9 @@ export default function LoginPage() {
     setLoading(false);
 
     if (response.success) {
-      setSuccessMsg("Login successful! Redirecting to creator dashboard...");
+      setSuccessMsg("Login successful! Redirecting to home page...");
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/");
       }, 1000);
     } else {
       setErrorMsg(response.message || "Invalid credentials. Please check your email and password.");
@@ -100,7 +100,7 @@ export default function LoginPage() {
             <button
               onClick={() => {
                 localStorage.setItem("accessToken", "demo-token-2026");
-                router.push("/dashboard");
+                router.push("/");
               }}
               className="text-[10px] font-extrabold uppercase underline ml-2 hover:text-red-900 cursor-pointer"
             >
@@ -183,7 +183,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full py-3 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer mt-2 disabled:opacity-50"
           >
-            {loading ? "Signing In..." : "Sign In to Dashboard"}
+            {loading ? "Signing In..." : "Sign In to Portal"}
           </button>
         </form>
 

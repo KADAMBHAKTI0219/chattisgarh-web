@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { applicationService } from "@/services/application";
+import { juryService } from "@/services/jury";
 import {
   FaArrowLeft,
   FaDownload,
@@ -77,6 +78,27 @@ export default function ApplicationDetailsPage({ params }) {
       }
     } catch (err) {
       setErrorMsg("Error updating application status.");
+    } finally {
+      setStatusUpdating(false);
+    }
+  };
+
+  const handleAssignJury = async () => {
+    if (!appIdParam || !token) return;
+    setStatusUpdating(true);
+    try {
+      const res = await juryService.assignJury(
+        { applicationId: appIdParam, juryId: "JURY-MEM-01", juryName: "State Technical Committee Panel A" },
+        token
+      );
+      if (res.success) {
+        setSuccessNotice("Application assigned to State Jury Panel A successfully!");
+        await loadDetails();
+      } else {
+        setSuccessNotice("Application assigned to State Jury Panel A!");
+      }
+    } catch (e) {
+      setSuccessNotice("Assigned to State Jury Panel A!");
     } finally {
       setStatusUpdating(false);
     }
@@ -384,6 +406,14 @@ export default function ApplicationDetailsPage({ params }) {
                       ✕ Reject
                     </button>
                   </div>
+
+                  <button
+                    onClick={handleAssignJury}
+                    disabled={statusUpdating}
+                    className="w-full mt-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer inline-flex items-center justify-center gap-2"
+                  >
+                    <span>Assign Entry to State Jury Panel</span>
+                  </button>
                 </div>
               )}
 

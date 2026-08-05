@@ -91,7 +91,7 @@ function ParticipateForm() {
               setFormData((prev) => ({
                 ...prev,
                 category: matched._id || matched.slug,
-                title: prev.title || `${matched.title} Nomination Entry`,
+                title: prev.title || `${matched.title} Participation Entry`,
               }));
               return;
             }
@@ -156,7 +156,7 @@ function ParticipateForm() {
       // Submit nomination to backend API
       setLoading(true);
       try {
-        const finalTitle = formData.title.trim() || `${formData.fullName}'s State Creator Nomination`;
+        const finalTitle = formData.title.trim() || `${formData.fullName}'s State Creator Participation`;
         
         // Find valid 24-hex Mongo ObjectId for category
         let validCatId = formData.category;
@@ -250,7 +250,7 @@ function ParticipateForm() {
         setSubmittedAppId(generatedId);
         setSubmitted(true);
       } catch (err) {
-        console.error("Nomination creation error:", err);
+        console.error("Participation submission error:", err);
         setSubmittedAppId(`CGAWRD-2026-${Math.floor(10000 + Math.random() * 90000)}`);
         setSubmitted(true);
       } finally {
@@ -321,14 +321,14 @@ function ParticipateForm() {
           <span>Return to Home</span>
         </Link>
         <span className="text-xs font-inter font-bold text-zinc-500 uppercase tracking-widest">
-          Official State Nomination Portal
+          Official State Participation Portal
         </span>
       </div>
 
       {/* Hero Heading */}
       <div className="w-full max-w-4xl mx-auto text-center flex flex-col items-center">
         <Heading
-          badge={t("OFFICIAL NOMINATION FORM")}
+          badge={t("OFFICIAL PARTICIPATION FORM")}
           title={t("PARTICIPATE IN THE")}
           highlightText={t("STATE AWARDS")}
           description={t("Complete the online application to submit your creator profile, channel analytics, category selection, and work portfolio.")}
@@ -348,18 +348,18 @@ function ParticipateForm() {
               Registration Successful
             </span>
             <h2 className="text-2xl sm:text-3xl font-poppins font-extrabold text-zinc-950 uppercase tracking-tight">
-              Nomination Logged Successfully!
+              Participation Registered Successfully!
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600 font-inter max-w-lg leading-relaxed">
-              Your nomination for the Chhattisgarh State Creator & Influencer Awards has been registered. Your official Registration ID is: <strong className="text-[var(--primary)] font-extrabold">CGAWD-2026-89412</strong>. A confirmation email has been sent to your registered address.
+              Your participation application for the Chhattisgarh State Creator & Influencer Awards has been registered. Your official Registration ID is: <strong className="text-[var(--primary)] font-extrabold">{submittedAppId || "CGAWD-2026-89412"}</strong>. A confirmation email has been sent to your registered address.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <Link
-                href="/dashboard"
+                href="/"
                 className="px-6 py-3 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md transition-all"
               >
-                Go to Creator Dashboard →
+                Return to Home Page →
               </Link>
               <button
                 onClick={() => {
@@ -671,7 +671,7 @@ function ParticipateForm() {
                 disabled={loading}
                 className="px-8 py-3 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2 cursor-pointer disabled:opacity-50"
               >
-                <span>{loading ? "Submitting..." : currentStep === 4 ? "Submit Nomination" : "Next Step"}</span>
+                <span>{loading ? "Submitting..." : currentStep === 4 ? "Submit Participation" : "Next Step"}</span>
                 <FaArrowRight className="w-3 h-3" />
               </button>
             </div>
@@ -684,7 +684,7 @@ function ParticipateForm() {
 
 export default function ParticipatePage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center text-xs font-bold text-zinc-500">Loading Nomination Form...</div>}>
+    <Suspense fallback={<div className="p-12 text-center text-xs font-bold text-zinc-500">Loading Participation Form...</div>}>
       <ParticipateForm />
     </Suspense>
   );
