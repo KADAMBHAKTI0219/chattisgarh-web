@@ -177,10 +177,32 @@ html {
   scroll-behavior: smooth;
   overflow-x: clip;
   max-width: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: manipulation;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
+}
+
+/* Prevent Mobile & Tablet Browser Auto-Zooming on Form Input Focus */
+@media screen and (max-width: 1200px) {
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  input[type="search"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
 }
 
 body {

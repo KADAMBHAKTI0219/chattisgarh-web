@@ -9,6 +9,13 @@ export const metadata = {
   description: "Official web portal for the State Creator & Influencer Awards 2026",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html
@@ -16,6 +23,7 @@ export default function RootLayout({ children }) {
       className="h-full antialiased"
     >
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <link rel="stylesheet" href="/assets/fonts/inter.css" />
       </head>
       <body className="min-h-full flex flex-col bg-[#FAF7F0] text-zinc-900 font-sans w-full max-w-full">

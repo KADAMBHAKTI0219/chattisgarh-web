@@ -96,7 +96,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Registration Card Container */}
-      <div className="w-full max-w-lg bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col gap-6 text-left relative">
+      <div className="w-full max-w-lg max-w-[calc(100vw-32px)] bg-white border border-zinc-200/90 rounded-3xl p-5 sm:p-8 shadow-sm flex flex-col gap-6 text-left relative overflow-hidden">
         
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-3 border-b border-zinc-150 pb-5">
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="e.g. Ramesh Kumar Sahu"
                 required
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
@@ -176,7 +176,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="name@example.com"
                 required
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function RegisterPage() {
                 placeholder="10-digit mobile"
                 maxLength={10}
                 required
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
@@ -210,7 +210,7 @@ export default function RegisterPage() {
                 name="district"
                 value={formData.district}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
                 {["Raipur", "Bastar", "Durg", "Bilaspur", "Surguja", "Rajnandgaon", "Korba", "Raigarh", "Kanker", "Kondagaon"].map((d) => (
                   <option key={d} value={d}>{d}</option>
@@ -229,7 +229,7 @@ export default function RegisterPage() {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
                 <option value="CREATOR">Digital Creator / Nominee (CREATOR)</option>
               </select>
@@ -249,7 +249,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Min 6 characters"
                 required
-                className="w-full pl-11 pr-10 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-10 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
@@ -267,7 +267,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Repeat password"
                 required
-                className="w-full pl-11 pr-10 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-10 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>

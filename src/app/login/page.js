@@ -69,7 +69,7 @@ export default function LoginPage() {
       </div>
 
       {/* Login Card Container */}
-      <div className="w-full max-w-md bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col gap-6 text-left relative">
+      <div className="w-full max-w-md max-w-[calc(100vw-32px)] bg-white border border-zinc-200/90 rounded-3xl p-5 sm:p-8 shadow-sm flex flex-col gap-6 text-left relative overflow-hidden">
         
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center gap-3 border-b border-zinc-150 pb-5">
@@ -131,7 +131,7 @@ export default function LoginPage() {
                 onChange={handleChange}
                 placeholder="name@example.com"
                 required
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function LoginPage() {
                 onChange={handleChange}
                 placeholder="Enter your account password"
                 required
-                className="w-full pl-11 pr-11 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-11 pr-11 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
               <button
                 type="button"
