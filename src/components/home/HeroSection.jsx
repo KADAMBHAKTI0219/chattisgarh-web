@@ -41,7 +41,7 @@ export default function HeroSection() {
         />
 
         {/* Overlay Participate CTA Button at the bottom of hero image */}
-        <div className="absolute bottom-[43%] lg:bottom-[14%] xl:bottom-[16%] z-10 flex items-center justify-center">
+        <div className="absolute bottom-[45%] lg:bottom-[14%] xl:bottom-[16%] z-10 flex items-center justify-center">
           <ParticipateButton
             onClick={openModal}
             size="lg"
