@@ -41,13 +41,13 @@ export default function HeroSection() {
         />
 
         {/* Overlay Participate CTA Button at the bottom of hero image */}
-        <div className="absolute bottom-[45%] lg:bottom-[14%] xl:bottom-[16%] z-10 flex items-center justify-center">
+        <div className="absolute bottom-[40%] lg:bottom-[14%] xl:bottom-[16%] z-10 flex items-center justify-center">
           <ParticipateButton
             onClick={openModal}
             size="lg"
-            className="px-1 sm:px-6 md:px-8 py-2 sm:py-3.5 text-xs sm:text-base md:text-lg font-bold shadow-[0_8px_30px_rgba(193,91,61,0.5)] hover:shadow-[0_12px_40px_rgba(193,91,61,0.7)] hover:scale-105 transition-all duration-300"
+            className="px-2 sm:px-6 md:px-8 py-2 sm:py-3.5 text-xs sm:text-base md:text-lg font-bold shadow-[0_8px_30px_rgba(193,91,61,0.5)] hover:shadow-[0_12px_40px_rgba(193,91,61,0.7)] hover:scale-105 transition-all duration-300"
           >
-            {t("Participate Now")} →
+            {t("Participate Now")}
           </ParticipateButton>
         </div>
       </div>
