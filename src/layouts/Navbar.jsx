@@ -139,7 +139,7 @@ export default function Navbar() {
             {/* Participate Now Button (Left of Menu Icon) */}
             <button
               onClick={openModal}
-              className="relative group overflow-hidden rounded-full p-[1.5px] shadow-[0_4px_16px_rgba(193,91,61,0.3)] hover:shadow-[0_0_24px_rgba(193,91,61,0.55)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer shrink-0 hidden md:block"
+              className="relative group overflow-hidden rounded-full p-[1.5px] shadow-[0_4px_16px_rgba(193,91,61,0.3)] hover:shadow-[0_0_24px_rgba(193,91,61,0.55)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer shrink-0 hidden lg:block"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-[#C15B3D] via-[#D39B2C] to-[#C15B3D] bg-[length:200%_auto] group-hover:bg-right transition-all duration-500 rounded-full" />
               <span className="relative flex items-center gap-1.5 xs:gap-2 px-3 py-1.5 xs:px-4 xs:py-2 sm:px-6 sm:py-2.5 rounded-full bg-gradient-to-r from-[#C15B3D] to-[#D39B2C] text-white font-poppins font-bold text-[10.5px] xs:text-xs sm:text-sm xl:text-base tracking-wide whitespace-nowrap">
