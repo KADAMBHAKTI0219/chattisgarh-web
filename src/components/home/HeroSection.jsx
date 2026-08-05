@@ -40,19 +40,9 @@ export default function HeroSection() {
           draggable={false}
         />
 
-        {/* Participate Now Button Overlay */}
-        {/* <div className="absolute bottom-6 sm:bottom-8 md:bottom-10 lg:bottom-[12%] xl:bottom-[14%] inset-x-0 z-20 flex items-center justify-center px-4 pointer-events-none">
-          <div className="pointer-events-auto">
-            <ParticipateButton
-              onClick={openModal}
-              size="lg"
-              className="text-xs sm:text-base md:text-lg px-4 py-2.5 sm:px-6 md:px-8 sm:py-3.5 shadow-[0_8px_22px_rgba(238,93,140,0.5)] cursor-pointer hover:scale-105 transition-all"
-            >
-              {t("Participate Now")}
-            </ParticipateButton>
-          </div>
-        </div> */}
       </div>
+
+
     </section>
   );
 }

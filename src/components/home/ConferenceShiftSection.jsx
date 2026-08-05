@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
+import { useParticipateModal } from "@/context/ParticipateModalContext";
 import Heading from "@/components/common/Heading";
+import { ParticipateButton } from "@/components/common/Button";
 
 const GALLERY_CARDS = [
   {
@@ -50,6 +52,7 @@ const GALLERY_CARDS = [
 
 export default function ConferenceShiftSection() {
   const { t } = useLanguage();
+  const { openModal } = useParticipateModal();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const cardContainerRef = useRef(null);
@@ -145,8 +148,8 @@ export default function ConferenceShiftSection() {
                     opacity,
                   }}
                   className={`absolute w-full h-[400px] sm:h-[460px] rounded-[32px] overflow-hidden border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer group select-none ${isActive
-                      ? "border-[#D4A534] shadow-[0_25px_65px_rgba(33,89,61,0.22)] ring-1 ring-[#D4A534]/50"
-                      : "border-white/40 shadow-lg hover:border-[#C45A32]/60 hover:scale-[1.02]"
+                    ? "border-[#D4A534] shadow-[0_25px_65px_rgba(33,89,61,0.22)] ring-1 ring-[#D4A534]/50"
+                    : "border-white/40 shadow-lg hover:border-[#C45A32]/60 hover:scale-[1.02]"
                     }`}
                 >
                   {/* High Quality Card Image */}
@@ -199,8 +202,8 @@ export default function ConferenceShiftSection() {
                 onClick={() => setActiveIndex(idx)}
                 aria-label={`Show ${card.title}`}
                 className={`h-2 rounded-full transition-all duration-500 cursor-pointer ${idx === activeIndex
-                    ? "w-8 bg-[#C45A32] shadow-[0_0_12px_rgba(196,90,50,0.6)]"
-                    : "w-2 bg-[#21593D]/25 hover:bg-[#21593D]/50"
+                  ? "w-8 bg-[#C45A32] shadow-[0_0_12px_rgba(196,90,50,0.6)]"
+                  : "w-2 bg-[#21593D]/25 hover:bg-[#21593D]/50"
                   }`}
               />
             ))}
@@ -264,6 +267,17 @@ export default function ConferenceShiftSection() {
 
           </div>
 
+          {/* Participate CTA Button */}
+          <div className="mt-8 flex items-center justify-center gap-4 animate-fade-up">
+            <ParticipateButton
+              onClick={openModal}
+              size="lg"
+              className="px-8 py-3.5 text-base sm:text-lg font-extrabold shadow-[0_10px_28px_rgba(193,91,61,0.4)] hover:shadow-[0_14px_36px_rgba(193,91,61,0.6)] hover:scale-[1.02] transition-all duration-300"
+            >
+              {t("Participate Now")} →
+            </ParticipateButton>
+          </div>
+
           {/* Premium Glass Quote Card with Golden Quotation Icon */}
           <div className="mt-8 w-full relative bg-white/80 backdrop-blur-xl border-2 border-[#21593D]/25 rounded-[20px] p-5 sm:p-6 shadow-[0_12px_40px_rgba(33,89,61,0.08)] group hover:border-[#D4A534] hover:shadow-[0_16px_50px_rgba(212,165,52,0.2)] transition-all duration-500 overflow-hidden">
             {/* Top-Right Decorative Soft Glow */}
@@ -289,7 +303,10 @@ export default function ConferenceShiftSection() {
             </div>
           </div>
 
+
+
         </div>
+
 
       </div>
     </section>
