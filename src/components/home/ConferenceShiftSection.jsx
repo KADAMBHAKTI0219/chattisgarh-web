@@ -3,9 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
-import { useParticipateModal } from "@/context/ParticipateModalContext";
 import Heading from "@/components/common/Heading";
-import { ParticipateButton } from "@/components/common/Button";
 
 const GALLERY_CARDS = [
   {
@@ -52,7 +50,6 @@ const GALLERY_CARDS = [
 
 export default function ConferenceShiftSection() {
   const { t } = useLanguage();
-  const { openModal } = useParticipateModal();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const cardContainerRef = useRef(null);
@@ -265,17 +262,6 @@ export default function ConferenceShiftSection() {
               )}
             </p>
 
-          </div>
-
-          {/* Participate CTA Button */}
-          <div className="mt-8 flex items-center justify-center gap-4 animate-fade-up">
-            <ParticipateButton
-              onClick={openModal}
-              size="lg"
-              className="px-8 py-3.5 text-base sm:text-lg font-extrabold shadow-[0_10px_28px_rgba(193,91,61,0.4)] hover:shadow-[0_14px_36px_rgba(193,91,61,0.6)] hover:scale-[1.02] transition-all duration-300"
-            >
-              {t("Participate Now")} →
-            </ParticipateButton>
           </div>
 
           {/* Premium Glass Quote Card with Golden Quotation Icon */}
