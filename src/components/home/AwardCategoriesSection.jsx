@@ -464,7 +464,7 @@ export default function AwardCategoriesSection() {
             />
 
             {/* Dark Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/55 to-black/35 group-hover:from-black/55 group-hover:via-black/65 transition-all duration-300 z-10" />
 
             {/* Tier Badge */}
             <div className="absolute top-2.5 left-2.5 z-20 max-w-[90%]">
