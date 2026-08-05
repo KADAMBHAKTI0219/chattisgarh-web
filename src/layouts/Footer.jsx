@@ -113,8 +113,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Creator Dashboard")}
+                <Link href="/participate" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                  {t("Participate Now")}
                 </Link>
               </li>
             </ul>

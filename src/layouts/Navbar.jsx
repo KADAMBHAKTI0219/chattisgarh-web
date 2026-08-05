@@ -50,7 +50,6 @@ export default function Navbar() {
     { name: "Gallery", href: "/gallery" },
     { name: "News", href: "/news" },
     { name: "Contact", href: "/contact" },
-    { name: "Dashboard", href: "/dashboard" },
   ];
 
   return (

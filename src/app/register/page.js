@@ -232,8 +232,6 @@ export default function RegisterPage() {
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
                 <option value="CREATOR">Digital Creator / Nominee (CREATOR)</option>
-                <option value="MODERATOR">Department Moderator (MODERATOR)</option>
-                <option value="JURY">Evaluation Jury Member (JURY)</option>
               </select>
             </div>
           </div>
