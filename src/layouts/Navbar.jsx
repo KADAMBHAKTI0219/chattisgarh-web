@@ -96,18 +96,18 @@ export default function Navbar() {
       {/* Main Premium Navigation Bar */}
       <nav
         className={`w-full transform-gpu transition-all duration-300 border-b border-[#E8DFCF]/70 ${isScrolled
-          ? "h-[75px] bg-[#FFFDFC]/98 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.06)]"
-          : "h-[90px] bg-[#FFFDFC]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
+          ? "h-[65px] sm:h-[75px] bg-[#FFFDFC]/98 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.06)]"
+          : "h-[75px] sm:h-[90px] bg-[#FFFDFC]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
           }`}
       >
         {/* Bastar Tribal Pattern Top Border Highlight Line */}
         <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#C15B3D]/40 to-transparent opacity-80 pointer-events-none" />
 
-        <div className="mx-auto h-full w-full max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex items-center justify-between relative">
+        <div className="mx-auto h-full w-full max-w-[1480px] px-2.5 sm:px-6 md:px-8 lg:px-12 xl:px-16 flex items-center justify-between relative gap-1.5 sm:gap-4">
 
           {/* Left Side: Government Emblem Logo & Event Title */}
-          <div className="flex items-center shrink-0 min-w-0">
-            <Link href="/" className="flex items-center gap-2 sm:gap-3.5 group relative py-1 min-w-0">
+          <div className="flex items-center shrink-0 min-w-0 flex-1 sm:flex-initial">
+            <Link href="/" className="flex items-center gap-1.5 sm:gap-3.5 group relative py-1 min-w-0">
 
               {/* Subtle Warm Radial Glow Behind Logo */}
               <div className="absolute -inset-3 bg-[radial-gradient(circle_at_center,rgba(193,91,61,0.18)_0%,transparent_70%)] blur-lg pointer-events-none -z-10 opacity-75 group-hover:opacity-100 transition-opacity" />
@@ -119,26 +119,24 @@ export default function Navbar() {
                 width={260}
                 height={75}
                 priority
-                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-16 xs:h-20 sm:h-20 lg:h-20 scale-95" : "h-16 xs:h-16 sm:h-20 lg:h-20 scale-100"
+                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-10 xs:h-12 sm:h-16 lg:h-20 scale-95" : "h-11 xs:h-13 sm:h-16 lg:h-20 scale-100"
                   } group-hover:scale-[1.02]`}
               />
 
               {/* Title & Tagline Branding Block */}
-              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-2 sm:pl-3.5 min-w-0 max-w-[210px] xs:max-w-[260px] sm:max-w-none">
-                <span className="font-montserrat font-bold text-[9px] xs:text-[10.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-[1.15] uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
+              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-1.5 xs:pl-2.5 sm:pl-3.5 min-w-0 max-w-[130px] min-[380px]:max-w-[170px] xs:max-w-[210px] sm:max-w-none">
+                <span className="font-montserrat font-bold text-[8px] min-[360px]:text-[9px] xs:text-[10.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-[1.15] uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
                   {t("Chhattisgarh State Creator & Influencer Awards")}
                 </span>
-                <span className="font-montserrat font-bold text-[9px] xs:text-[10.5px] sm:text-xs md:text-[13px] leading-tight tracking-wide mt-0.5 text-[#D96B27] whitespace-nowrap">
+                <span className="font-montserrat font-bold text-[7.5px] min-[360px]:text-[8.5px] xs:text-[10px] sm:text-xs md:text-[13px] leading-tight tracking-wide mt-0.5 text-[#D96B27] truncate sm:whitespace-nowrap">
                   हर एक स्क्रीन पर छाएगा छत्तीसगढ़
                 </span>
               </div>
             </Link>
           </div>
 
-
-
-          {/* Right Side: Primary CTA Button & Menu Icon Button */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Right Side: Primary CTA Button & Profile & Menu Buttons */}
+          <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 shrink-0">
             {/* Participate Now Button (Left of Menu Icon) */}
             <button
               onClick={openModal}
@@ -165,17 +163,17 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border-2 border-[#2E5C31]/40 bg-emerald-50 text-[#2E5C31] shadow-md hover:border-[#C15B3D] hover:bg-[#C15B3D] hover:text-white active:scale-95 transition-all duration-300 cursor-pointer shrink-0 relative"
+                  className="flex h-9 w-9 xs:h-10 xs:w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border-2 border-[#2E5C31]/40 bg-emerald-50 text-[#2E5C31] shadow-md hover:border-[#C15B3D] hover:bg-[#C15B3D] hover:text-white active:scale-95 transition-all duration-300 cursor-pointer shrink-0 relative"
                   title={`${user?.name || "User Profile"} - Account Menu`}
                 >
                   {user?.avatar ? (
                     <img src={user.avatar} alt="Profile" className="w-full h-full rounded-full object-cover" />
                   ) : (
-                    <span className="font-poppins font-bold text-xs">
+                    <span className="font-poppins font-bold text-[11px] xs:text-xs">
                       {(user?.name || "U").substring(0, 2).toUpperCase()}
                     </span>
                   )}
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 xs:w-3.5 xs:h-3.5 bg-emerald-500 rounded-full border-2 border-white" />
                 </button>
 
                 {/* Profile Dropdown Menu */}
