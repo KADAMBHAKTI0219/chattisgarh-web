@@ -61,6 +61,7 @@ export default function DashboardLayout({ children }) {
     { name: "Categories", href: "/dashboard?tab=categories", tabKey: "categories", icon: FaThList },
     { name: "Public Votes", href: "/dashboard?tab=votes", tabKey: "votes", icon: FaVoteYea },
     { name: "Participants", href: "/dashboard?tab=participants", tabKey: "participants", icon: FaUsers },
+    { name: "Users", href: "/dashboard?tab=users", tabKey: "users", icon: FaUserCircle },
     { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: "3" },
     { name: "Reports", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
     { name: "Settings", href: "/dashboard/settings", tabKey: "settings", icon: FaCog },

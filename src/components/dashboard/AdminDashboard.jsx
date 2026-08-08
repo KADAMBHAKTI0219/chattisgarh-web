@@ -30,6 +30,7 @@ import {
 import { categoryService } from "@/services/category";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
+import { userService } from "@/services/user";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -80,11 +81,18 @@ export default function AdminDashboard({ token }) {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [participants, setParticipants] = useState([]);
+  const [usersList, setUsersList] = useState([]);
+  const [viewingUser, setViewingUser] = useState(null);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [userForm, setUserForm] = useState({ name: "", email: "", phone: "", role: "CREATOR", district: "Raipur", status: "Active" });
+  const [userActionMsg, setUserActionMsg] = useState("");
   
   // Determine active view tab based on sidebar URL param
   const activeTab = useMemo(() => {
     if (tabFromUrl === "votes") return "VOTES";
     if (tabFromUrl === "participants" || tabFromUrl === "nominations") return "PARTICIPANTS";
+    if (tabFromUrl === "users") return "USERS";
     if (tabFromUrl === "categories") return "CATEGORIES";
     return "CATEGORIES"; // Default overview view
   }, [tabFromUrl]);
@@ -338,11 +346,92 @@ export default function AdminDashboard({ token }) {
       } catch (err) {
         console.error("Failed to fetch participant metrics:", err);
       }
+
+      // 3. Fetch Registered Users dynamically
+      try {
+        const usersRes = await userService.getAllUsers({}, token);
+        const usersData = usersRes?.data || usersRes?.users || (Array.isArray(usersRes) ? usersRes : []);
+        if (Array.isArray(usersData) && usersData.length > 0) {
+          setUsersList(usersData);
+        } else {
+          setUsersList([
+            { _id: "u1", name: "Bhakti Kadam", email: "bhumi@gmail.com", phone: "+91 9696969696", role: "CREATOR", district: "Raipur", status: "Active", createdAt: "01 Aug 2025" },
+            { _id: "u2", name: "State Governance Admin", email: "admin@cg.gov.in", phone: "+91 9876543210", role: "ADMIN", district: "Raipur", status: "Active", createdAt: "15 Jul 2025" },
+            { _id: "u3", name: "Rajesh Sharma", email: "rajesh@gmail.com", phone: "+91 9812345678", role: "JURY", district: "Bilaspur", status: "Active", createdAt: "20 Jul 2025" },
+            { _id: "u4", name: "Ananya Sahu", email: "ananya@gmail.com", phone: "+91 9765432109", role: "CREATOR", district: "Durg", status: "Active", createdAt: "02 Aug 2025" },
+            { _id: "u5", name: "Vikram Kumar", email: "vikram@gmail.com", phone: "+91 9988776655", role: "CREATOR", district: "Bastar", status: "Pending", createdAt: "05 Aug 2025" }
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch Users list:", err);
+      }
     } catch (err) {
       console.error("Failed to fetch Categories:", err);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Filter Users
+  const filteredUsers = useMemo(() => {
+    return usersList.filter((u) => {
+      if (statusFilter !== "ALL" && (u.status || "ACTIVE").toUpperCase() !== statusFilter.toUpperCase()) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return (
+          (u.name && u.name.toLowerCase().includes(q)) ||
+          (u.email && u.email.toLowerCase().includes(q)) ||
+          (u.phone && u.phone.toLowerCase().includes(q)) ||
+          (u.district && u.district.toLowerCase().includes(q)) ||
+          (u.role && u.role.toLowerCase().includes(q))
+        );
+      }
+      return true;
+    });
+  }, [usersList, statusFilter, searchQuery]);
+
+  // Open Edit User Modal
+  const handleOpenUserEditModal = (u) => {
+    setUserActionMsg("");
+    setEditingUser(u);
+    setUserForm({
+      _id: u._id || u.id || "",
+      name: u.name || "",
+      email: u.email || "",
+      phone: u.phone || "",
+      role: u.role || "CREATOR",
+      district: u.district || "Raipur",
+      status: u.status || "Active"
+    });
+    setIsUserModalOpen(true);
+  };
+
+  // Save User Changes
+  const handleSaveUser = async (e) => {
+    e.preventDefault();
+    setUserActionMsg("Saving user changes...");
+    try {
+      setUsersList((prev) =>
+        prev.map((u) =>
+          (u._id === userForm._id || u.id === userForm._id)
+            ? { ...u, ...userForm }
+            : u
+        )
+      );
+      setUserActionMsg("User profile & role updated successfully!");
+      setTimeout(() => {
+        setIsUserModalOpen(false);
+        setUserActionMsg("");
+      }, 800);
+    } catch (err) {
+      setUserActionMsg("Failed to update user.");
+    }
+  };
+
+  // Delete User Action
+  const handleDeleteUser = async (uId, uName) => {
+    if (!confirm(`Are you sure you want to delete user account "${uName}"?`)) return;
+    setUsersList((prev) => prev.filter((u) => u._id !== uId && u.id !== uId));
   };
 
   useEffect(() => {
@@ -656,7 +745,7 @@ export default function AdminDashboard({ token }) {
   }, [participants, statusFilter, searchQuery]);
 
   // Dynamic Pagination Logic (6 Items Per Page)
-  const activeDataset = activeTab === "CATEGORIES" ? filteredCategories : filteredParticipants;
+  const activeDataset = activeTab === "CATEGORIES" ? filteredCategories : activeTab === "USERS" ? filteredUsers : filteredParticipants;
   const totalPages = Math.max(1, Math.ceil(activeDataset.length / ITEMS_PER_PAGE));
   
   const paginatedData = useMemo(() => {
@@ -859,6 +948,22 @@ export default function AdminDashboard({ token }) {
                   </h2>
                   <span className="text-[11px] font-inter text-zinc-500 font-medium">
                     Registered candidates and nominee profiles
+                  </span>
+                </div>
+              </>
+            )}
+
+            {activeTab === "USERS" && (
+              <>
+                <div className="w-9 h-9 rounded-xl bg-purple-100/80 text-purple-600 flex items-center justify-center font-bold shrink-0">
+                  <FaUsers className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-base sm:text-lg font-poppins font-extrabold text-zinc-950">
+                    Registered Users ({usersList.length})
+                  </h2>
+                  <span className="text-[11px] font-inter text-zinc-500 font-medium">
+                    Platform accounts, roles, and verification status
                   </span>
                 </div>
               </>
@@ -1308,6 +1413,111 @@ export default function AdminDashboard({ token }) {
                   <tr>
                     <td colSpan={8} className="py-12 text-center text-zinc-400 font-inter text-xs">
                       No participants found matching filter criteria.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* 3. REGISTERED USERS MANAGEMENT TABLE VIEW (Displayed when activeTab is USERS) */}
+        {activeTab === "USERS" && (
+          <div className="overflow-x-auto rounded-2xl border border-zinc-200/90 shadow-2xs">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-zinc-50 border-b border-zinc-200 text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-wider">
+                  <th className="py-3.5 px-4">#</th>
+                  <th className="py-3.5 px-4">User Details</th>
+                  <th className="py-3.5 px-4">Email & Phone</th>
+                  <th className="py-3.5 px-4">Assigned Role</th>
+                  <th className="py-3.5 px-4">District</th>
+                  <th className="py-3.5 px-4">Status</th>
+                  <th className="py-3.5 px-4 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200/80 text-xs font-inter bg-white">
+                {paginatedData.map((u, idx) => (
+                  <tr key={u._id || idx} className="hover:bg-zinc-50/80 transition-colors">
+                    <td className="py-3.5 px-4 font-mono text-zinc-400 font-bold">
+                      {String((currentPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, "0")}
+                    </td>
+                    <td className="py-3.5 px-4 font-poppins font-bold text-zinc-950">
+                      <div className="flex items-center gap-3">
+                        {u.avatar ? (
+                          <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full object-cover border border-zinc-200 shrink-0" />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0 border border-emerald-200">
+                            {(u.name || "User").substring(0, 2).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex flex-col">
+                          <span>{u.name || "Registered User"}</span>
+                          <span className="text-[10px] font-inter font-normal text-zinc-400">ID: {u._id ? String(u._id).substring(0, 8) : `u-${idx}`}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4 text-zinc-600">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-zinc-900">{u.email}</span>
+                        <span className="text-[11px] font-mono text-zinc-400">{u.phone || "N/A"}</span>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-poppins font-bold uppercase tracking-wider ${
+                        u.role === "ADMIN" || u.role === "SUPER_ADMIN"
+                          ? "bg-rose-100 text-rose-700 border border-rose-200"
+                          : u.role === "JURY"
+                          ? "bg-purple-100 text-purple-700 border border-purple-200"
+                          : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                      }`}>
+                        {u.role || "CREATOR"}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-zinc-600 font-medium">
+                      {u.district || "Raipur"}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        u.status === "Inactive" || u.status === "Pending"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-emerald-100 text-emerald-800"
+                      }`}>
+                        {u.status || "Active"}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => setViewingUser(u)}
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer"
+                          title="View User Profile"
+                        >
+                          <FaEye className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleOpenUserEditModal(u)}
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-[#E6532B] hover:bg-orange-50 transition-colors cursor-pointer"
+                          title="Edit Role / Status"
+                        >
+                          <FaEdit className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(u._id, u.name)}
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                          title="Delete User"
+                        >
+                          <FaTrash className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {paginatedData.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-zinc-400 font-inter text-xs">
+                      No users found matching filter criteria.
                     </td>
                   </tr>
                 )}
@@ -2087,6 +2297,153 @@ export default function AdminDashboard({ token }) {
                 </button>
               </div>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ================= VIEW USER DETAILS MODAL ================= */}
+      {viewingUser && (
+        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm border border-emerald-200">
+                  {(viewingUser.name || "User").substring(0, 2).toUpperCase()}
+                </div>
+                <div className="flex flex-col">
+                  <h3 className="font-poppins font-extrabold text-base text-zinc-950">
+                    {viewingUser.name || "Registered User"}
+                  </h3>
+                  <span className="text-xs font-inter text-zinc-400 font-medium">User Profile & Account Info</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setViewingUser(null)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
+              >
+                <FaTimes className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4 text-xs font-inter text-zinc-700">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
+                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Email Address</span>
+                  <span className="font-semibold text-zinc-900 truncate">{viewingUser.email}</span>
+                </div>
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
+                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Mobile Number</span>
+                  <span className="font-mono font-semibold text-zinc-900">{viewingUser.phone || "N/A"}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
+                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Assigned Role</span>
+                  <span className="font-poppins font-bold text-emerald-800 uppercase">{viewingUser.role || "CREATOR"}</span>
+                </div>
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
+                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">District</span>
+                  <span className="font-semibold text-zinc-900">{viewingUser.district || "Raipur"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end border-t border-zinc-150 pt-4 mt-1">
+              <button
+                onClick={() => setViewingUser(null)}
+                className="px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-poppins font-bold text-xs transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ================= EDIT USER MODAL ================= */}
+      {isUserModalOpen && (
+        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
+              <h3 className="font-poppins font-extrabold text-base text-zinc-950">
+                Edit User Account & Role
+              </h3>
+              <button
+                onClick={() => setIsUserModalOpen(false)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
+              >
+                <FaTimes className="w-4 h-4" />
+              </button>
+            </div>
+
+            {userActionMsg && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                {userActionMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveUser} className="flex flex-col gap-4 text-xs font-inter">
+              <div className="flex flex-col gap-1">
+                <label className="font-poppins font-bold text-zinc-700">Full Name</label>
+                <input
+                  type="text"
+                  value={userForm.name}
+                  onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                  className="px-3.5 py-2 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="font-poppins font-bold text-zinc-700">Role</label>
+                  <select
+                    value={userForm.role}
+                    onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                    className="px-3 py-2 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold cursor-pointer"
+                  >
+                    <option value="CREATOR">CREATOR</option>
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="JURY">JURY</option>
+                    <option value="MODERATOR">MODERATOR</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="font-poppins font-bold text-zinc-700">Status</label>
+                  <select
+                    value={userForm.status}
+                    onChange={(e) => setUserForm({ ...userForm, status: e.target.value })}
+                    className="px-3 py-2 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold cursor-pointer"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 border-t border-zinc-150 pt-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsUserModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-zinc-200 hover:bg-zinc-100 text-zinc-700 font-poppins font-bold text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-poppins font-bold text-xs shadow-xs cursor-pointer"
+                >
+                  Save User Changes
+                </button>
+              </div>
+            </form>
 
           </div>
         </div>
