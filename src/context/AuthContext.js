@@ -63,8 +63,13 @@ export function AuthProvider({ children }) {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("user", JSON.stringify(loggedUser));
 
-      // Redirect to home page
-      router.push("/");
+      // Redirect Admin / Super Admin / Moderator / Jury / Creator to /dashboard
+      const roleUpper = String(loggedUser?.role || "").toUpperCase();
+      if (["SUPER_ADMIN", "ADMIN", "MODERATOR", "JURY"].includes(roleUpper)) {
+        router.push("/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
     }
     return res;
   };
@@ -105,7 +110,10 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const roleUpper = String(user?.role || "").toUpperCase();
+  const roleUpper = String(user?.role || "").trim().toUpperCase();
+  const isAdmin = !!user && !!user.role && ["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(roleUpper);
+  const isJury = !!user && roleUpper === "JURY";
+  const isSuperAdmin = !!user && roleUpper === "SUPER_ADMIN";
 
   return (
     <AuthContext.Provider
@@ -114,10 +122,10 @@ export function AuthProvider({ children }) {
         token,
         loading,
         isAuthenticated: !!token && !!user,
-        isSuperAdmin: roleUpper === "SUPER_ADMIN",
-        isAdmin: ["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(roleUpper),
-        isJury: roleUpper === "JURY",
-        isCreator: roleUpper === "CREATOR",
+        isSuperAdmin,
+        isAdmin,
+        isJury,
+        isCreator: !isAdmin && !isJury,
         login,
         register,
         logout,

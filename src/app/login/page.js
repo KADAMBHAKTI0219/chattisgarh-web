@@ -40,10 +40,18 @@ export default function LoginPage() {
     setLoading(false);
 
     if (response.success) {
-      setSuccessMsg("Login successful! Redirecting to home page...");
+      const loggedUser = response.data?.user || response.data?.data?.user;
+      const roleUpper = String(loggedUser?.role || "").toUpperCase();
+      const isAdminRole = ["SUPER_ADMIN", "ADMIN", "MODERATOR", "JURY"].includes(roleUpper);
+
+      setSuccessMsg(
+        isAdminRole
+          ? "Admin Login Successful! Redirecting to Admin Dashboard..."
+          : "Login Successful! Redirecting to Dashboard..."
+      );
       setTimeout(() => {
-        router.push("/");
-      }, 1000);
+        router.push("/dashboard");
+      }, 800);
     } else {
       setErrorMsg(response.message || "Invalid credentials. Please check your email and password.");
     }
@@ -93,19 +101,12 @@ export default function LoginPage() {
           </div>
         </div>
 
+
+
         {/* Feedback Alerts */}
         {errorMsg && (
           <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-center justify-between">
             <span>{errorMsg}</span>
-            <button
-              onClick={() => {
-                localStorage.setItem("accessToken", "demo-token-2026");
-                router.push("/");
-              }}
-              className="text-[10px] font-extrabold uppercase underline ml-2 hover:text-red-900 cursor-pointer"
-            >
-              Demo Login →
-            </button>
           </div>
         )}
 

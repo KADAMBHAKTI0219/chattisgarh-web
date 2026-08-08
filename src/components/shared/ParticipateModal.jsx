@@ -2,13 +2,19 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
-import { otpService, participantService, categoryService } from "@/services/api";
+import { recaptchaService, participantService, categoryService } from "@/services/api";
+
+const RECAPTCHA_SITE_KEY =
+  process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ||
+  process.env.VITE_RECAPTCHA_SITE_KEY ||
+  "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
 
 export default function ParticipateModal() {
   const { isOpen, selectedCategory, closeModal } = useParticipateModal();
   const [mounted, setMounted] = useState(false);
-  const [step, setStep] = useState(1); // 1: Details, 2: OTP, 3: Success
+  const [step, setStep] = useState(1); // 1: Registration Form, 2: Success
 
   useEffect(() => {
     setMounted(true);
@@ -19,6 +25,13 @@ export default function ParticipateModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState("");
   const [registeredData, setRegisteredData] = useState(null);
+
+  // reCAPTCHA State
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [captchaLoading, setCaptchaLoading] = useState(false);
+  const [captchaError, setCaptchaError] = useState("");
+  const captchaRef = useRef(null);
 
   // Form Fields
   const [formData, setFormData] = useState({
@@ -37,14 +50,8 @@ export default function ParticipateModal() {
     acceptEvaluation: true,
   });
 
-  // Errors
+  // Validation Errors
   const [errors, setErrors] = useState({});
-
-  // OTP State
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(60);
-  const [devOtpHint, setDevOtpHint] = useState("");
-  const otpInputsRef = useRef([]);
 
   // Fetch active categories from Backend API on mount
   useEffect(() => {
@@ -57,7 +64,7 @@ export default function ParticipateModal() {
     loadCategories();
   }, []);
 
-  // Update selected category when modal opens or selectedCategory changes
+  // Update selected category or reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
       if (selectedCategory) {
@@ -80,27 +87,17 @@ export default function ParticipateModal() {
         acceptTerms: true,
         acceptEvaluation: true,
       });
-      setOtp(["", "", "", "", "", ""]);
       setErrors({});
       setApiError("");
-      setDevOtpHint("");
+      setCaptchaToken(null);
+      setCaptchaVerified(false);
+      setCaptchaLoading(false);
+      setCaptchaError("");
       setIsSubmitting(false);
       setRegisteredData(null);
+      captchaRef.current?.reset();
     }
   }, [isOpen, selectedCategory, apiCategories]);
-
-  // Countdown timer for OTP
-  useEffect(() => {
-    let interval = null;
-    if (step === 2 && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (timer === 0) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [step, timer]);
 
   if (!mounted || !isOpen) return null;
 
@@ -117,19 +114,41 @@ export default function ParticipateModal() {
     if (apiError) setApiError("");
   };
 
-  // Validate Details Form & Trigger OTP API
-  const handleSendOtp = async (e) => {
+  // reCAPTCHA Completion Callback
+  const handleCaptchaChange = (token) => {
+    setCaptchaToken(token);
+    setCaptchaVerified(!!token);
+    setCaptchaError("");
+  };
+
+  // reCAPTCHA Expiration Callback
+  const handleCaptchaExpired = () => {
+    setCaptchaToken(null);
+    setCaptchaVerified(false);
+    setCaptchaError("Please complete the CAPTCHA.");
+  };
+
+  // reCAPTCHA Error Callback
+  const handleCaptchaError = () => {
+    setCaptchaToken(null);
+    setCaptchaVerified(false);
+    setCaptchaError("Captcha verification failed. Please try again.");
+    captchaRef.current?.reset();
+  };
+
+  // Form Submission with Backend CAPTCHA Verification
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
     if (!formData.name.trim()) newErrors.name = "Full Name is required";
-    
+
     if (!formData.email.trim()) {
       newErrors.email = "Email address is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
-    
+
     if (!formData.phone.trim()) {
       newErrors.phone = "Mobile number is required";
     } else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
@@ -167,114 +186,73 @@ export default function ParticipateModal() {
       return;
     }
 
-    setIsSubmitting(true);
-    setApiError("");
-
-    // Trigger Backend API for sending OTP
-    const res = await otpService.sendOtp(formData.phone);
-    setIsSubmitting(false);
-
-    if (res.success) {
-      if (res.devOtp) {
-        setDevOtpHint(`Dev Mode OTP: ${res.devOtp}`);
-      }
-      setStep(2);
-      setTimer(60);
-    } else {
-      // Advance to OTP step with dev fallback if backend is unreachable
-      console.warn("Backend OTP API fallback:", res.message);
-      setDevOtpHint("Demo mode OTP: 123456");
-      setStep(2);
-      setTimer(60);
-    }
-  };
-
-  // Handle OTP digit entry
-  const handleOtpChange = (value, idx) => {
-    if (isNaN(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[idx] = value.substring(value.length - 1);
-    setOtp(newOtp);
-
-    if (value && idx < 5) {
-      otpInputsRef.current[idx + 1]?.focus();
-    }
-  };
-
-  // Handle backspace focus shifting
-  const handleOtpKeyDown = (e, idx) => {
-    if (e.key === "Backspace" && !otp[idx] && idx > 0) {
-      otpInputsRef.current[idx - 1]?.focus();
-    }
-  };
-
-  // Resend OTP
-  const handleResendOtp = async () => {
-    setOtp(["", "", "", "", "", ""]);
-    setTimer(60);
-    setApiError("");
-    setIsSubmitting(true);
-
-    const res = await otpService.sendOtp(formData.phone);
-    setIsSubmitting(false);
-
-    if (res.success && res.devOtp) {
-      setDevOtpHint(`Dev Mode OTP: ${res.devOtp}`);
-    }
-    setTimeout(() => otpInputsRef.current[0]?.focus(), 100);
-  };
-
-  // Submit OTP Verification & Create Participant via API
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    const otpCode = otp.join("");
-    
-    if (otpCode.length < 6) {
-      setErrors({ otp: "Please enter the full 6-digit verification code" });
+    // 1. CAPTCHA Validation Check
+    if (!captchaToken || !captchaVerified) {
+      setCaptchaError("Please complete the CAPTCHA.");
       return;
     }
 
+    setCaptchaLoading(true);
     setIsSubmitting(true);
     setApiError("");
-    setErrors({});
+    setCaptchaError("");
 
-    // 1. Verify OTP with Backend API
-    const otpRes = await otpService.ariaVerifyOtp(formData.phone, otpCode);
+    try {
+      // 2. Verify Token with Backend API
+      const verifyRes = await recaptchaService.verifyToken(captchaToken);
 
-    // 2. Submit Participant Nomination to Backend API
-    const participantPayload = {
-      fullName: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      age: Number(formData.age),
-      district: formData.district,
-      platform: formData.platform,
-      category: formData.category,
-      submissionLink: formData.submissionLink,
-      instagram: formData.instagram,
-      youtube: formData.youtube,
-      isInternational: formData.isNri,
-      privacyAccepted: formData.acceptTerms,
-      consentAccepted: formData.acceptEvaluation,
-    };
+      if (!verifyRes.success) {
+        setCaptchaError("Captcha verification failed. Please try again.");
+        setCaptchaToken(null);
+        setCaptchaVerified(false);
+        captchaRef.current?.reset();
+        setIsSubmitting(false);
+        setCaptchaLoading(false);
+        return;
+      }
 
-    const res = await participantService.createParticipant(participantPayload);
-    setIsSubmitting(false);
+      // 3. Create Participant Nomination via Backend API
+      const participantPayload = {
+        fullName: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        age: Number(formData.age),
+        district: formData.district,
+        platform: formData.platform,
+        category: formData.category,
+        submissionLink: formData.submissionLink,
+        instagram: formData.instagram,
+        youtube: formData.youtube,
+        isInternational: formData.isNri,
+        privacyAccepted: formData.acceptTerms,
+        consentAccepted: formData.acceptEvaluation,
+      };
 
-    if (res.success || !otpRes.success) {
-      setRegisteredData(res.participant || null);
-      setStep(3);
-    } else {
-      setApiError(res.message || "Submission failed. Please check your details.");
+      const res = await participantService.createParticipant(participantPayload);
+
+      if (res.success) {
+        setRegisteredData(res.participant || null);
+        setStep(2);
+      } else {
+        setApiError(res.message || "Submission failed. Please check your details.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      setCaptchaError("Captcha verification failed. Please try again.");
+      setCaptchaToken(null);
+      setCaptchaVerified(false);
+      captchaRef.current?.reset();
+    } finally {
+      setIsSubmitting(false);
+      setCaptchaLoading(false);
     }
   };
 
   const cgDistricts = [
-    "Raipur", "Bilaspur", "Durg", "Bastar", "Korba", "Rajnandgaon", 
-    "Jagdalpur", "Dhamtari", "Mahasamund", "Kanker", "Kondagaon", 
-    "Dantewada", "Sukma", "Bijapur", "Narayanpur", "Kabirdham", 
-    "Bemetara", "Balod", "Baloda Bazar", "Gariaband", "Jashpur", 
+    "Raipur", "Bilaspur", "Durg", "Bastar", "Korba", "Rajnandgaon",
+    "Jagdalpur", "Dhamtari", "Mahasamund", "Kanker", "Kondagaon",
+    "Dantewada", "Sukma", "Bijapur", "Narayanpur", "Kabirdham",
+    "Bemetara", "Balod", "Baloda Bazar", "Gariaband", "Jashpur",
     "Surguja", "Balrampur", "Surajpur", "Koriya", "Pendra-Marwahi",
     "Manendragarh", "Sakti", "Sarangarh", "Khairagarh", "Mohla-Manpur",
     "Janjgir-Champa", "Mungeli", "Raigarh"
@@ -301,23 +279,23 @@ export default function ParticipateModal() {
     "People's Choice Award"
   ];
 
-  const categoryOptions = apiCategories.length > 0 
-    ? apiCategories.map((cat) => cat.title) 
+  const categoryOptions = apiCategories.length > 0
+    ? apiCategories.map((cat) => cat.title)
     : fallbackCategories;
 
   return createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden select-none animate-in fade-in duration-300">
-      {/* Backdrop overlay covering 100% of viewport including navbar */}
-      <div 
+      {/* Backdrop overlay */}
+      <div
         onClick={closeModal}
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300 z-0"
       />
 
       {/* Modal Card Container */}
       <div className="relative w-full max-w-md md:max-w-5xl lg:max-w-7xl bg-white border-4 border-black rounded-[36px] p-6 sm:p-8 lg:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 transition-all duration-300 overflow-y-auto no-scrollbar max-h-[88vh] sm:max-h-[90vh]">
-        
+
         {/* Close Button */}
-        <button 
+        <button
           onClick={closeModal}
           className="absolute right-4 top-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-black bg-white flex items-center justify-center text-zinc-950 font-bold hover:bg-[#F3819F] shadow-[2.5px_2.5px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1.5px_1.5px_0px_rgba(0,0,0,1)] transition-all cursor-pointer z-50"
           aria-label="Close modal"
@@ -327,9 +305,9 @@ export default function ParticipateModal() {
           </svg>
         </button>
 
-        {/* STEP 1: Details Registration Form */}
+        {/* STEP 1: Registration Form with reCAPTCHA */}
         {step === 1 && (
-          <form onSubmit={handleSendOtp} className="flex flex-col gap-6 text-left">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6 text-left">
             <div>
               <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
                 Official Nomination Form
@@ -347,7 +325,7 @@ export default function ParticipateModal() {
 
             {/* 3-Column Responsive Grid Form */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
-              
+
               {/* Full Name */}
               <div className="flex flex-col gap-1">
                 <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
@@ -577,9 +555,9 @@ export default function ParticipateModal() {
 
             </div>
 
-            {/* Bottom Row */}
+            {/* Bottom Section: Terms Checkboxes & Google reCAPTCHA Submission */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mt-4 border-t border-zinc-100 pt-4">
-              
+
               <div className="flex flex-col gap-2.5">
                 <label className="flex items-center gap-3 cursor-pointer select-none">
                   <input
@@ -627,111 +605,52 @@ export default function ParticipateModal() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full lg:w-[320px] rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <span>SENDING OTP...</span>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4 fill-current rotate-45 transform translate-y-[-1px] translate-x-[-1px]" viewBox="0 0 24 24">
-                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                    </svg>
-                    <span>SEND VERIFICATION OTP</span>
-                  </>
-                )}
-              </button>
-
-            </div>
-
-          </form>
-        )}
-
-        {/* STEP 2: OTP Verification Screen */}
-        {step === 2 && (
-          <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6 text-left max-w-md mx-auto py-4">
-            <div>
-              <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
-                Verification Code
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold uppercase text-zinc-950 mt-1 leading-tight">
-                Enter OTP
-              </h2>
-              <p className="text-zinc-500 font-semibold text-xs sm:text-sm mt-2">
-                We sent a 6-digit confirmation code to <span className="text-zinc-950 font-bold">+91 {formData.phone}</span>.
-              </p>
-              {devOtpHint && (
-                <div className="mt-2 text-xs font-bold text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
-                  {devOtpHint}
-                </div>
-              )}
-              {apiError && (
-                <div className="mt-2 text-xs font-bold text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
-                  {apiError}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-2 sm:gap-3 justify-center">
-                {otp.map((digit, idx) => (
-                  <input
-                    key={idx}
-                    type="text"
-                    maxLength={1}
-                    value={digit}
-                    ref={(el) => (otpInputsRef.current[idx] = el)}
-                    onChange={(e) => handleOtpChange(e.target.value, idx)}
-                    onKeyDown={(e) => handleOtpKeyDown(e, idx)}
-                    className="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-xl border-3 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all"
+              {/* reCAPTCHA Widget and Submission Action */}
+              <div className="flex flex-col items-center lg:items-end gap-3 w-full lg:w-auto shrink-0">
+                <div className="flex flex-col items-center">
+                  <ReCAPTCHA
+                    ref={captchaRef}
+                    sitekey={RECAPTCHA_SITE_KEY}
+                    onChange={handleCaptchaChange}
+                    onExpired={handleCaptchaExpired}
+                    onErrored={handleCaptchaError}
                   />
-                ))}
-              </div>
-              {errors.otp && <span className="text-red-500 text-xs font-bold text-center pl-1">{errors.otp}</span>}
+                  {captchaError && (
+                    <span className="text-red-500 text-xs font-bold mt-1 text-center">
+                      {captchaError}
+                    </span>
+                  )}
+                </div>
 
-              <div className="text-center mt-2 select-none">
-                {timer > 0 ? (
-                  <span className="text-zinc-500 text-xs sm:text-sm font-semibold">
-                    Resend code in <strong className="text-zinc-900 font-bold">{timer}s</strong>
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    className="text-[#FFA025] hover:text-[#d3821a] text-xs sm:text-sm font-bold underline cursor-pointer"
-                  >
-                    Resend OTP Code
-                  </button>
-                )}
+                <button
+                  type="submit"
+                  disabled={!captchaVerified || captchaLoading || isSubmitting}
+                  className="w-full lg:w-[304px] rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center flex items-center justify-center gap-2 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {captchaLoading ? (
+                    <span>Verifying...</span>
+                  ) : isSubmitting ? (
+                    <span>SUBMITTING...</span>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 fill-current rotate-45 transform translate-y-[-1px] translate-x-[-1px]" viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                      </svg>
+                      <span>SUBMIT NOMINATION</span>
+                    </>
+                  )}
+                </button>
               </div>
+
             </div>
 
-            <div className="flex flex-col gap-3 mt-2">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-xl bg-[#6EC192] hover:bg-[#52a674] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(110,193,146,0.3)] transition-all cursor-pointer select-none text-center disabled:opacity-50"
-              >
-                {isSubmitting ? "VERIFYING..." : "Confirm & Register"}
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="w-full rounded-xl border-2 border-zinc-300 bg-white py-3 text-xs sm:text-sm font-bold text-zinc-700 hover:bg-zinc-50 transition-all cursor-pointer select-none text-center"
-              >
-                Back to Details
-              </button>
-            </div>
           </form>
         )}
 
-        {/* STEP 3: Success Screen */}
-        {step === 3 && (
+        {/* STEP 2: Nomination Registered Success Screen */}
+        {step === 2 && (
           <div className="flex flex-col items-center justify-center text-center gap-6 py-4 max-w-md mx-auto">
-            
+
             <div className="w-20 h-20 rounded-full border-3 border-black bg-[#6EC192] flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)] animate-bounce select-none">
               <svg className="w-10 h-10 text-zinc-950 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />

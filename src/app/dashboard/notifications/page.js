@@ -133,42 +133,59 @@ export default function NotificationsPage() {
 
       {/* Admin Broadcast Announcement Section */}
       {isAdmin && (
-        <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-[#1c3a29] text-white rounded-3xl p-6 sm:p-8 flex flex-col gap-4 shadow-md">
-          <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
-            <FaBullhorn className="w-5 h-5 text-amber-400" />
-            <h2 className="font-poppins font-extrabold text-base uppercase text-amber-400 tracking-tight">
-              Broadcast System Announcement (Admin Only)
-            </h2>
+        <div className="bg-white border border-emerald-200/80 rounded-3xl p-6 sm:p-8 flex flex-col gap-4 shadow-2xs">
+          <div className="flex items-center gap-3 border-b border-zinc-150 pb-4">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100/90 text-amber-700 flex items-center justify-center font-bold text-lg shrink-0 border border-amber-200">
+              <FaBullhorn className="w-5 h-5 text-amber-600" />
+            </div>
+            <div className="flex flex-col text-left">
+              <h2 className="font-poppins font-extrabold text-base uppercase text-zinc-950 tracking-tight">
+                Broadcast System Announcement
+              </h2>
+              <span className="text-xs font-inter text-zinc-500">Official admin channel to broadcast alerts to all platform creators</span>
+            </div>
           </div>
 
           {broadcastNotice && (
-            <div className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-2">
-              <FaCheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+              <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{broadcastNotice}</span>
             </div>
           )}
 
-          <form onSubmit={handleBroadcast} className="flex flex-col gap-3">
-            <input
-              type="text"
-              required
-              value={broadcastTitle}
-              onChange={(e) => setBroadcastTitle(e.target.value)}
-              placeholder="Announcement Title..."
-              className="rounded-xl bg-zinc-800 border border-zinc-700 p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
-            />
-            <textarea
-              rows={2}
-              required
-              value={broadcastMessage}
-              onChange={(e) => setBroadcastMessage(e.target.value)}
-              placeholder="Broadcast message body to all users..."
-              className="rounded-xl bg-zinc-800 border border-zinc-700 p-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 resize-none"
-            />
+          <form onSubmit={handleBroadcast} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-inter font-bold text-zinc-700 uppercase tracking-wider">
+                Announcement Title
+              </label>
+              <input
+                type="text"
+                required
+                value={broadcastTitle}
+                onChange={(e) => setBroadcastTitle(e.target.value)}
+                placeholder="e.g. Public Voting Phase Live Now!"
+                className="rounded-xl bg-zinc-50/80 border border-zinc-300 p-3 text-xs font-semibold text-zinc-900 placeholder-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-inter font-bold text-zinc-700 uppercase tracking-wider">
+                Message Body
+              </label>
+              <textarea
+                rows={3}
+                required
+                value={broadcastMessage}
+                onChange={(e) => setBroadcastMessage(e.target.value)}
+                placeholder="Enter official announcement message body to broadcast to all creators..."
+                className="rounded-xl bg-zinc-50/80 border border-zinc-300 p-3 text-xs font-semibold text-zinc-900 placeholder-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none"
+              />
+            </div>
+
             <button
               type="submit"
               disabled={broadcasting}
-              className="self-start px-6 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-zinc-950 font-poppins font-bold text-xs uppercase tracking-wider shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 mt-1"
+              className="self-start px-6 py-2.5 rounded-full bg-[#C45A32] hover:bg-[#A94824] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 mt-1"
             >
               <FaPaperPlane className="w-3.5 h-3.5" />
               <span>{broadcasting ? "Broadcasting..." : "Send Broadcast Alert"}</span>

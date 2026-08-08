@@ -15,5 +15,6 @@ export { default as certificateService } from "./certificate";
 export { default as dashboardService } from "./dashboard";
 export { default as reportService } from "./report";
 export { default as contactService } from "./contact";
-export { default as otpService } from "./otp";
+export { default as recaptchaService } from "./recaptcha";
 export { default as participantService } from "./participant";
+

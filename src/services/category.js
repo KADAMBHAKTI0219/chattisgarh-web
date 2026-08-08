@@ -11,6 +11,7 @@ export const categoryService = {
     return await fetchApi(`/categories/${encodeURIComponent(slug)}`, { method: "GET" });
   },
 
+
   // 3. Create New Award Category (Admin)
   async createCategory(data, token) {
     return await fetchApi("/categories", { method: "POST", body: data, token });

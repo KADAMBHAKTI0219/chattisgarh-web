@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { userService } from "@/services/user";
 import { creatorService } from "@/services/creator";
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaYoutube, FaInstagram, FaFacebook, FaAward, FaEdit, FaSave, FaCheckCircle } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaYoutube, FaInstagram, FaFacebook, FaAward, FaEdit, FaSave, FaCheckCircle, FaCamera, FaTrashAlt } from "react-icons/fa";
 
 export default function CreatorProfilePage() {
-  const { user, token, refreshUser } = useAuth();
+  const { user, token, refreshUser, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -20,6 +21,7 @@ export default function CreatorProfilePage() {
     district: user?.district || "Raipur",
     state: user?.state || "Chhattisgarh",
     bio: user?.bio || "",
+    avatar: user?.avatar || "",
     youtube: "",
     instagram: "",
     facebook: "",
@@ -41,6 +43,7 @@ export default function CreatorProfilePage() {
         district: user.district || "Raipur",
         state: user.state || "Chhattisgarh",
         bio: user.bio || "",
+        avatar: user.avatar || "",
         youtube: getSocialUrl("youtube"),
         instagram: getSocialUrl("instagram"),
         facebook: getSocialUrl("facebook"),
@@ -54,24 +57,48 @@ export default function CreatorProfilePage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle Profile Picture Image Upload
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg("Image size should be less than 5 MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      const base64Url = uploadEvent.target?.result;
+      if (base64Url) {
+        setFormData((prev) => ({ ...prev, avatar: base64Url }));
+        setSuccessMsg("Profile picture preview loaded! Click 'Save Profile' to save.");
+        setTimeout(() => setSuccessMsg(""), 3000);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = async () => {
-    if (!token) return;
     setLoading(true);
     setSuccessMsg("");
     setErrorMsg("");
 
     try {
-      // 1. Update basic profile info
-      const profileRes = await userService.updateProfile(
-        {
-          name: formData.name,
-          phone: formData.phone,
-          district: formData.district,
-          state: formData.state,
-          bio: formData.bio,
-        },
-        token
-      );
+      // 1. Update basic profile info + Avatar
+      if (token) {
+        await userService.updateProfile(
+          {
+            name: formData.name,
+            phone: formData.phone,
+            district: formData.district,
+            state: formData.state,
+            bio: formData.bio,
+            avatar: formData.avatar,
+          },
+          token
+        );
+      }
 
       // 2. Update Social Links
       const socialLinksArray = [
@@ -81,15 +108,23 @@ export default function CreatorProfilePage() {
         { platform: "linkedin", url: formData.linkedin },
       ].filter((item) => item.url && item.url.trim() !== "");
 
-      await creatorService.updateSocialLinks(socialLinksArray, token);
-
-      if (profileRes.success) {
-        setSuccessMsg("Profile and digital handles updated successfully!");
-        setIsEditing(false);
-        await refreshUser();
-      } else {
-        setErrorMsg(profileRes.message || "Failed to update profile");
+      if (token) {
+        await creatorService.updateSocialLinks(socialLinksArray, token);
       }
+
+      // 3. Update AuthContext locally so top navbar and sidebar update instantly!
+      updateUser({
+        name: formData.name,
+        phone: formData.phone,
+        district: formData.district,
+        state: formData.state,
+        bio: formData.bio,
+        avatar: formData.avatar,
+      });
+
+      setSuccessMsg("Profile picture & personal details updated successfully!");
+      setIsEditing(false);
+      if (token) await refreshUser();
     } catch (err) {
       setErrorMsg("An error occurred while saving profile.");
     } finally {
@@ -146,16 +181,55 @@ export default function CreatorProfilePage() {
         
         {/* Left Column: Avatar Card & Badges */}
         <div className="lg:col-span-4 bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center gap-5 shadow-xs">
-          <div className="relative">
-            <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#C45A32] via-[#D4A534] to-[#21593D] p-1 shadow-md">
-              <div className="w-full h-full rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-3xl font-poppins">
-                {formData.name ? formData.name.substring(0, 2).toUpperCase() : "CG"}
-              </div>
+          
+          {/* Avatar Container with Upload Camera Overlay */}
+          <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+            <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#C45A32] via-[#D4A534] to-[#21593D] p-1 shadow-md relative overflow-hidden">
+              {formData.avatar ? (
+                <img
+                  src={formData.avatar}
+                  alt={formData.name || "Profile"}
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-3xl font-poppins">
+                  {formData.name ? formData.name.substring(0, 2).toUpperCase() : "CG"}
+                </div>
+              )}
             </div>
-            <span className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shadow-sm" title="Verified Creator">
+
+            {/* Hidden File Input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/png, image/jpeg, image/webp, image/jpg"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+
+            {/* Camera Upload Badge Overlay */}
+            <div
+              className="absolute inset-0 rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all backdrop-blur-[2px]"
+              title="Upload Profile Picture"
+            >
+              <FaCamera className="w-6 h-6 text-white mb-0.5" />
+              <span className="text-[9px] font-poppins font-bold uppercase tracking-wider">Change Photo</span>
+            </div>
+
+            {/* Verified Badge */}
+            <span className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shadow-sm border-2 border-white" title="Verified Creator">
               ✓
             </span>
           </div>
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="text-xs font-poppins font-bold text-[#C45A32] hover:underline inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <FaCamera className="w-3.5 h-3.5" />
+            <span>Upload Profile Picture</span>
+          </button>
 
           <div className="flex flex-col gap-1">
             <h2 className="font-poppins font-extrabold text-xl text-zinc-950">{formData.name || "Creator Profile"}</h2>

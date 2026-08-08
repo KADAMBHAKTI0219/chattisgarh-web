@@ -21,11 +21,6 @@ export const authService = {
     return await fetchApi("/auth/logout", { method: "POST", token });
   },
 
-  // 5. Verify Email using OTP
-  async verifyEmail(email, otp) {
-    return await fetchApi("/auth/verify-email", { method: "POST", body: { email, otp } });
-  },
-
   // 6. Forgot Password (Request Reset Link)
   async forgotPassword(email) {
     return await fetchApi("/auth/forgot-password", { method: "POST", body: { email } });
