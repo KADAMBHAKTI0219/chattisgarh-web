@@ -390,41 +390,65 @@ export default function AdminDashboard({ token }) {
     });
   }, [usersList, statusFilter, searchQuery]);
 
-  // Open Edit User Modal
-  const handleOpenUserEditModal = (u) => {
+  // Open Create / Edit User Modal
+  const handleOpenUserModal = (u = null) => {
     setUserActionMsg("");
-    setEditingUser(u);
-    setUserForm({
-      _id: u._id || u.id || "",
-      name: u.name || "",
-      email: u.email || "",
-      phone: u.phone || "",
-      role: u.role || "CREATOR",
-      district: u.district || "Raipur",
-      status: u.status || "Active"
-    });
+    if (u) {
+      setEditingUser(u);
+      setUserForm({
+        _id: u._id || u.id || "",
+        name: u.name || "",
+        email: u.email || "",
+        phone: u.phone || "",
+        role: u.role || "CREATOR",
+        district: u.district || "Raipur",
+        status: u.status || "Active"
+      });
+    } else {
+      setEditingUser(null);
+      setUserForm({
+        _id: "",
+        name: "",
+        email: "",
+        phone: "",
+        role: "CREATOR",
+        district: "Raipur",
+        status: "Active"
+      });
+    }
     setIsUserModalOpen(true);
   };
 
-  // Save User Changes
+  // Save User Changes (Create or Edit)
   const handleSaveUser = async (e) => {
     e.preventDefault();
-    setUserActionMsg("Saving user changes...");
+    setUserActionMsg("Saving user details...");
     try {
-      setUsersList((prev) =>
-        prev.map((u) =>
-          (u._id === userForm._id || u.id === userForm._id)
-            ? { ...u, ...userForm }
-            : u
-        )
-      );
-      setUserActionMsg("User profile & role updated successfully!");
+      if (editingUser) {
+        setUsersList((prev) =>
+          prev.map((u) =>
+            (u._id === userForm._id || u.id === userForm._id)
+              ? { ...u, ...userForm }
+              : u
+          )
+        );
+        setUserActionMsg("User account updated successfully!");
+      } else {
+        const newUser = {
+          ...userForm,
+          _id: `u-${Date.now()}`,
+          createdAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+        };
+        setUsersList((prev) => [newUser, ...prev]);
+        setUserActionMsg("New user created successfully!");
+      }
+
       setTimeout(() => {
         setIsUserModalOpen(false);
         setUserActionMsg("");
       }, 800);
     } catch (err) {
-      setUserActionMsg("Failed to update user.");
+      setUserActionMsg("Failed to save user.");
     }
   };
 
@@ -982,6 +1006,16 @@ export default function AdminDashboard({ token }) {
               </button>
             )}
 
+            {activeTab === "USERS" && (
+              <button
+                onClick={() => handleOpenUserModal(null)}
+                className="px-4 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-poppins font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+              >
+                <FaPlus className="w-3 h-3" />
+                <span>Add User</span>
+              </button>
+            )}
+
             <button
               onClick={exportToCSV}
               className="px-4 py-2.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 text-zinc-700 font-poppins font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
@@ -1496,7 +1530,7 @@ export default function AdminDashboard({ token }) {
                           <FaEye className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          onClick={() => handleOpenUserEditModal(u)}
+                          onClick={() => handleOpenUserModal(u)}
                           className="p-1.5 rounded-lg text-zinc-500 hover:text-[#E6532B] hover:bg-orange-50 transition-colors cursor-pointer"
                           title="Edit Role / Status"
                         >
