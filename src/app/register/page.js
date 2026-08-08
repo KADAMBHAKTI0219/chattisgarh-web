@@ -186,10 +186,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="flex flex-col text-left sm:text-right">
-            <span className="font-poppins font-extrabold text-xs text-[var(--secondary)] drop-shadow-xs">
-              गढ़बो नवा छत्तीसगढ़
-            </span>
-            <span className="font-poppins font-bold text-[11px] text-[var(--primary)] mt-0.5">
+            <span className="font-poppins font-extrabold text-xs text-[var(--primary)]">
               हर एक स्क्रीन पर छाएगा छत्तीसगढ़
             </span>
           </div>
