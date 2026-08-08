@@ -363,9 +363,9 @@ export default function RegisterPage() {
               <span className="text-[10px] text-zinc-400 font-medium">Type 6 characters code</span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
               {/* Visual Captcha Display Box */}
-              <div className="relative flex items-center justify-between px-3.5 py-1.5 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-950 text-white rounded-xl border border-zinc-300 shadow-inner select-none overflow-hidden shrink-0">
+              <div className="relative flex items-center justify-between px-3.5 py-2 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-950 text-white rounded-xl border border-zinc-300 shadow-inner select-none overflow-hidden w-full sm:w-auto shrink-0">
                 <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:6px_6px]" />
                 
                 <div className="flex items-center gap-1.5 relative z-10 font-mono font-black text-lg tracking-widest italic select-none">
@@ -386,10 +386,10 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={refreshCaptcha}
-                  className="ml-2.5 p-1 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer shrink-0 z-10"
+                  className="ml-2.5 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer shrink-0 z-10"
                   title="Generate New Captcha Code"
                 >
-                  <FaRedo className="w-3 h-3" />
+                  <FaRedo className="w-3.5 h-3.5" />
                 </button>
               </div>
 
@@ -401,10 +401,10 @@ export default function RegisterPage() {
                   setCaptchaInput(e.target.value.toUpperCase());
                   setErrorMsg("");
                 }}
-                placeholder="TYPE 6-CHARACTER CODE"
+                placeholder="Type 6-character code"
                 maxLength={6}
                 required
-                className="flex-1 w-full px-3.5 py-2 rounded-xl border border-zinc-300 bg-white text-xs font-mono font-bold tracking-widest text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] uppercase"
+                className="flex-1 w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 bg-white text-xs font-mono font-bold tracking-widest text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] uppercase"
               />
             </div>
           </div>
