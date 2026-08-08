@@ -5,12 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
+import { FaUser, FaThLarge, FaUserCircle, FaSignOutAlt, FaTrophy } from "react-icons/fa";
 
 export default function Navbar() {
   const { openModal } = useParticipateModal();
   const { language, changeLanguage, t } = useLanguage();
+  const { user, isAuthenticated, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
   // Monitor scroll offset efficiently with requestAnimationFrame
   useEffect(() => {
@@ -155,6 +159,115 @@ export default function Navbar() {
                 </svg>
               </span>
             </button>
+
+            {/* User Profile Icon with Dropdown Menu */}
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border-2 border-[#2E5C31]/40 bg-emerald-50 text-[#2E5C31] shadow-md hover:border-[#C15B3D] hover:bg-[#C15B3D] hover:text-white active:scale-95 transition-all duration-300 cursor-pointer shrink-0 relative"
+                  title={`${user?.name || "User Profile"} - Account Menu`}
+                >
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    <span className="font-poppins font-bold text-xs">
+                      {(user?.name || "U").substring(0, 2).toUpperCase()}
+                    </span>
+                  )}
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white" />
+                </button>
+
+                {/* Profile Dropdown Menu */}
+                {isProfileDropdownOpen && (
+                  <>
+                    {/* Backdrop overlay to close dropdown */}
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                    />
+
+                    <div className="absolute right-0 mt-3 w-64 bg-white border border-zinc-200/90 rounded-2xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-150">
+                      
+                      {/* Profile Header */}
+                      <div className="p-4 bg-gradient-to-br from-emerald-50 via-zinc-50 to-orange-50/50 border-b border-zinc-150 flex items-center gap-3">
+                        {user?.avatar ? (
+                          <img src={user.avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-emerald-300 shrink-0" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-[#2E5C31] text-amber-300 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-600">
+                            {(user?.name || "U").substring(0, 2).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex flex-col min-w-0">
+                          <h4 className="font-poppins font-extrabold text-xs text-zinc-950 truncate">
+                            {user?.name || "Registered Creator"}
+                          </h4>
+                          <span className="text-[10px] font-inter text-zinc-500 truncate">{user?.email || "creator@cg.gov.in"}</span>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-poppins font-bold text-[9px] uppercase tracking-wider w-fit mt-1">
+                            {user?.role || "CREATOR"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Links List */}
+                      <div className="p-2 flex flex-col gap-1 text-xs font-poppins font-semibold">
+                        <Link
+                          href="/dashboard"
+                          onClick={() => setIsProfileDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-zinc-800 hover:bg-orange-50 hover:text-[#E6532B] transition-colors"
+                        >
+                          <FaThLarge className="w-3.5 h-3.5 text-zinc-400" />
+                          <span>Dashboard</span>
+                        </Link>
+
+                        <Link
+                          href="/dashboard/profile"
+                          onClick={() => setIsProfileDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-zinc-800 hover:bg-orange-50 hover:text-[#E6532B] transition-colors"
+                        >
+                          <FaUserCircle className="w-3.5 h-3.5 text-zinc-400" />
+                          <span>My Profile</span>
+                        </Link>
+
+                        <button
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            openModal();
+                          }}
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-zinc-800 hover:bg-emerald-50 hover:text-[#2E5C31] transition-colors cursor-pointer w-full text-left"
+                        >
+                          <FaTrophy className="w-3.5 h-3.5 text-amber-500" />
+                          <span>Participate Now</span>
+                        </button>
+                      </div>
+
+                      {/* Logout Section */}
+                      <div className="p-2 border-t border-zinc-150 bg-zinc-50">
+                        <button
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            logout();
+                          }}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 font-poppins font-bold text-xs transition-colors cursor-pointer w-full text-left"
+                        >
+                          <FaSignOutAlt className="w-3.5 h-3.5" />
+                          <span>Logout</span>
+                        </button>
+                      </div>
+
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border-2 border-[#C15B3D]/30 bg-[#FFFDFC] text-[#C15B3D] shadow-md hover:border-[#C15B3D] hover:bg-[#C15B3D] hover:text-white active:scale-95 transition-all duration-300 cursor-pointer shrink-0"
+                title="Login / Register Account"
+              >
+                <FaUser className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+              </Link>
+            )}
 
             {/* Menu Icon Button (Right of Participate Now) */}
             <button

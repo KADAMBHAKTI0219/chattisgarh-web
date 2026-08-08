@@ -47,10 +47,10 @@ export default function LoginPage() {
       setSuccessMsg(
         isAdminRole
           ? "Admin Login Successful! Redirecting to Admin Dashboard..."
-          : "Login Successful! Redirecting to Dashboard..."
+          : "Login Successful! Redirecting to Website..."
       );
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push(isAdminRole ? "/dashboard" : "/");
       }, 800);
     } else {
       setErrorMsg(response.message || "Invalid credentials. Please check your email and password.");

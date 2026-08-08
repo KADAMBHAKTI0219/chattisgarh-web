@@ -324,7 +324,7 @@ export default function AdminDashboard({ token }) {
             applicationId: p.applicationId || p.applicationNo || `CG-2026-${1000 + idx}`,
             name: p.name || p.fullName || p.creator?.name || "Nominee Candidate",
             title: p.title || p.projectTitle || "Nomination Submission",
-            category: typeof p.category === "object" ? p.category?.title || p.category?.name : (p.category || "Cultural Heritage"),
+            category: p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "Chhattisgarhiya Sanskriti Ambassador")),
             district: p.district || "Raipur",
             publicVotes: p.publicVotes || p.votesCount || p.votes || (8000 - idx * 600),
             status: p.status || "APPROVED",

@@ -55,7 +55,9 @@ export default function MyApplicationsPage() {
                 _id: p._id || p.id,
                 applicationId: p.applicationId || p._id || `PART-${p.id}`,
                 title: p.title || `${p.name || p.fullName || "Applicant"}'s Nomination`,
-                category: { title: p.category || p.categoryName || "State Award Category" },
+                category: { 
+                  title: p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "State Award Category"))
+                },
                 district: p.district || "Raipur",
                 status: p.status || "SUBMITTED",
                 creator: { name: p.name || p.fullName || "Applicant", email: p.email, phone: p.phone },

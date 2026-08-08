@@ -98,27 +98,27 @@ export default function RegisterPage() {
       return;
     }
 
-    // Sahi Captcha Entered: Captcha refresh nahi hoga, registration process start hogi
     setLoading(true);
     setErrorMsg("");
     setSuccessMsg("");
 
-    const response = await authService.register({
+    const payload = {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
       district: formData.district,
       role: formData.role,
       password: formData.password,
-      captchaCode: cleanInput,
-      captchaText: cleanInput,
+      captchaId: "OFFLINE_CAPTCHA_ID",
+      captchaText: captchaCode,
       captchaToken: "OFFLINE_CAPTCHA_PASS_2026",
-    });
+    };
 
+    const response = await authService.register(payload);
     setLoading(false);
 
     if (response.success || response.status === 201) {
-      setSuccessMsg("Registration successful! Redirecting to Dashboard...");
+      setSuccessMsg("Registration successful! Redirecting to Website...");
 
       // Save tokens/user session with CREATOR role for instant user dashboard access
       const resultData = response.data || response;
@@ -136,81 +136,89 @@ export default function RegisterPage() {
       localStorage.setItem("user", JSON.stringify(userObj));
 
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        window.location.href = "/";
       }, 600);
     } else {
       setErrorMsg(response.message || "Registration failed. Please check your details.");
-      // Sahi Captcha enter kiya hai toh Captcha refresh nahi hoga
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-4 py-8 md:py-12 flex flex-col items-center justify-center relative overflow-hidden animate-page-enter">
+    <div className="min-h-screen bg-[#FAF7F0] bg-tribal-watermark font-sans text-zinc-950 px-4 sm:px-6 md:px-8 py-6 md:py-8 flex flex-col items-center justify-center relative overflow-hidden animate-page-enter">
       
       {/* Background Watermark */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-[0.02] -z-10">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] pointer-events-none opacity-[0.015] -z-10">
         <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill className="object-contain" />
       </div>
 
-      {/* Return Home Link */}
-      <div className="w-full max-w-lg flex items-center justify-between mb-6">
-        <Link href="/" className="inline-flex items-center gap-2 text-xs font-poppins font-bold text-zinc-600 hover:text-[var(--primary)] transition-colors group">
+      {/* Top Header Navigation */}
+      <div className="w-full max-w-6xl flex items-center justify-between mb-4 z-10">
+        <Link href="/" className="inline-flex items-center gap-2 text-xs sm:text-sm font-poppins font-bold text-zinc-600 hover:text-[var(--primary)] transition-colors group">
           <FaArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
-          <span>Return to Portal</span>
+          <span>Return to Main Portal</span>
         </Link>
-        <span className="text-[10px] font-inter font-bold text-zinc-500 uppercase tracking-widest">
-          Official State Registration
+        <span className="text-[10px] sm:text-xs font-inter font-bold text-zinc-500 uppercase tracking-widest">
+          Official State Registration Portal
         </span>
       </div>
 
-      {/* Registration Card Container */}
-      <div className="w-full max-w-lg max-w-[calc(100vw-32px)] bg-white border border-zinc-200/90 rounded-3xl p-5 sm:p-8 shadow-sm flex flex-col gap-6 text-left relative overflow-hidden">
+      {/* 3-Column Wide Horizontal Card (No Page Scroll - Fits 1 Screen) */}
+      <div className="w-full max-w-6xl bg-white border border-zinc-200/90 rounded-3xl p-5 sm:p-7 shadow-xl flex flex-col gap-4 text-left relative z-10">
         
-        {/* Header */}
-        <div className="flex flex-col items-center text-center gap-3 border-b border-zinc-150 pb-5">
-          <Image
-            src="/assets/images/logoChattisgarh.png"
-            alt="Government of Chhattisgarh Logo"
-            width={200}
-            height={60}
-            className="h-12 w-auto object-contain"
-          />
-          <div className="flex flex-col items-center">
-            <span className="px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-poppins font-bold text-[10px] uppercase tracking-wider">
-              Create Creator Account
+        {/* Header Banner */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-150 pb-4">
+          <div className="flex items-center gap-3.5">
+            <Image
+              src="/assets/images/logoChattisgarh.png"
+              alt="Government of Chhattisgarh Logo"
+              width={180}
+              height={55}
+              className="h-11 sm:h-12 w-auto object-contain shrink-0"
+            />
+            <div className="flex flex-col text-left border-l-2 border-[#C15B3D]/30 pl-3">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-poppins font-bold text-[9.5px] uppercase tracking-wider w-fit">
+                State Creator Awards 2026
+              </span>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-poppins font-extrabold text-zinc-950 uppercase tracking-tight mt-0.5">
+                State Creator Registration
+              </h1>
+            </div>
+          </div>
+
+          <div className="flex flex-col text-left sm:text-right">
+            <span className="font-poppins font-extrabold text-xs text-[var(--secondary)] drop-shadow-xs">
+              गढ़बो नवा छत्तीसगढ़
             </span>
-            <h1 className="text-xl sm:text-2xl font-poppins font-extrabold text-zinc-950 uppercase tracking-tight mt-1">
-              State Creator Registration
-            </h1>
-            <p className="text-xs text-zinc-500 font-inter mt-0.5">
-              Register to participate in the Chhattisgarh Creator Awards 2026
-            </p>
+            <span className="font-poppins font-bold text-[11px] text-[var(--primary)] mt-0.5">
+              हर एक स्क्रीन पर छाएगा छत्तीसगढ़
+            </span>
           </div>
         </div>
 
         {/* Feedback Messages */}
         {errorMsg && (
-          <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-center justify-between">
+          <div className="p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-center justify-between">
             <span>{errorMsg}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+          <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
             <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{successMsg}</span>
           </div>
         )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* 3-Column Compact Form Grid */}
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
           
-          <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+          {/* Row 1: Column 1 - Full Legal Name */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               Full Legal Name <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
               <input
                 type="text"
                 name="name"
@@ -218,17 +226,18 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="e.g. Ramesh Kumar Sahu"
                 required
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+          {/* Row 1: Column 2 - Email Address */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               Email Address <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <FaEnvelope className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
               <input
                 type="email"
                 name="email"
@@ -236,17 +245,18 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="name@example.com"
                 required
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+          {/* Row 1: Column 3 - Mobile Number */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               Mobile Number <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <FaPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
               <input
                 type="tel"
                 name="phone"
@@ -255,22 +265,23 @@ export default function RegisterPage() {
                 placeholder="10-digit mobile"
                 maxLength={10}
                 required
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+          {/* Row 2: Column 1 - District Location */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               District Location
             </label>
             <div className="relative">
-              <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <FaMapMarkerAlt className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
               <select
                 name="district"
                 value={formData.district}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
                 {["Raipur", "Bastar", "Durg", "Bilaspur", "Surguja", "Rajnandgaon", "Korba", "Raigarh", "Kanker", "Kondagaon"].map((d) => (
                   <option key={d} value={d}>{d}</option>
@@ -279,29 +290,31 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+          {/* Row 2: Column 2 - Account Role */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               Account Role / Type <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
                 <option value="CREATOR">Digital Creator / Nominee (CREATOR)</option>
               </select>
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+          {/* Row 2: Column 3 - Password */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -309,24 +322,25 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Min 6 characters"
                 required
-                className="w-full pl-11 pr-10 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 cursor-pointer"
               >
-                {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                {showPassword ? <FaEyeSlash className="w-3.5 h-3.5" /> : <FaEye className="w-3.5 h-3.5" />}
               </button>
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+          {/* Row 3: Column 1 - Confirm Password */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               Confirm Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
               <input
                 type={showPassword ? "text" : "password"}
                 name="confirmPassword"
@@ -334,49 +348,32 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Repeat password"
                 required
-                className="w-full pl-11 pr-10 py-3 rounded-xl border border-zinc-300 bg-zinc-50/50 text-base sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
             </div>
           </div>
 
-          {/* Terms Checkbox */}
-          <div className="sm:col-span-2 pt-1">
-            <label className="flex items-start gap-2.5 text-xs text-zinc-600 font-medium cursor-pointer">
-              <input
-                type="checkbox"
-                name="agreeTerms"
-                checked={formData.agreeTerms}
-                onChange={handleChange}
-                className="mt-0.5 w-4 h-4 rounded text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer shrink-0"
-              />
-              <span>I declare all information is true and agree to the State Creator Awards guidelines.</span>
-            </label>
-          </div>
-
-          {/* Interactive Security Captcha Box */}
-          <div className="sm:col-span-2 flex flex-col gap-2.5 p-4 bg-zinc-50 border border-zinc-200 rounded-2xl my-1">
+          {/* Row 3: Columns 2 & 3 - Interactive Security Captcha Box (Span 2 Columns) */}
+          <div className="md:col-span-2 flex flex-col justify-center gap-1.5 p-3 bg-zinc-50 border border-zinc-200 rounded-2xl">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
+              <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
                 <FaShieldAlt className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Security Captcha Verification <span className="text-red-500">*</span></span>
               </label>
-              <span className="text-[10px] text-zinc-400 font-medium">Type the 6 characters shown</span>
+              <span className="text-[10px] text-zinc-400 font-medium">Type 6 characters code</span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3">
-              
+            <div className="flex items-center gap-3">
               {/* Visual Captcha Display Box */}
-              <div className="relative flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-950 text-white rounded-xl border border-zinc-300 shadow-inner select-none overflow-hidden min-w-[190px]">
-                {/* Background noise texture */}
+              <div className="relative flex items-center justify-between px-3.5 py-1.5 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-950 text-white rounded-xl border border-zinc-300 shadow-inner select-none overflow-hidden shrink-0">
                 <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:6px_6px]" />
                 
-                {/* Styled Rotated Captcha Characters */}
-                <div className="flex items-center gap-2 relative z-10 font-mono font-black text-xl tracking-widest italic select-none">
+                <div className="flex items-center gap-1.5 relative z-10 font-mono font-black text-lg tracking-widest italic select-none">
                   {captchaCode.split("").map((char, index) => (
                     <span
                       key={index}
                       style={{
-                        transform: `rotate(${((index % 2 === 0 ? 1 : -1) * (8 + (index * 3)))}deg) translateY(${(index % 2 === 0 ? -1 : 1)}px)`,
+                        transform: `rotate(${((index % 2 === 0 ? 1 : -1) * (6 + (index * 2)))}deg)`,
                         color: ["#F87171", "#60A5FA", "#34D399", "#FBBF24", "#C084FC"][index % 5]
                       }}
                       className="inline-block drop-shadow-md select-none"
@@ -386,50 +383,62 @@ export default function RegisterPage() {
                   ))}
                 </div>
 
-                {/* Refresh Captcha Code */}
                 <button
                   type="button"
                   onClick={refreshCaptcha}
-                  className="ml-3 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer shrink-0 z-10"
+                  className="ml-2.5 p-1 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer shrink-0 z-10"
                   title="Generate New Captcha Code"
                 >
-                  <FaRedo className="w-3.5 h-3.5" />
+                  <FaRedo className="w-3 h-3" />
                 </button>
               </div>
 
-              {/* Captcha Text Input */}
-              <div className="relative flex-1 w-full">
-                <input
-                  type="text"
-                  value={captchaInput}
-                  onChange={(e) => {
-                    setCaptchaInput(e.target.value.toUpperCase());
-                    setErrorMsg("");
-                  }}
-                  placeholder="Type 6-character code"
-                  maxLength={6}
-                  required
-                  className="w-full px-4 py-2.5 rounded-xl border border-zinc-300 bg-white text-sm font-mono font-bold tracking-widest text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] uppercase"
-                />
-              </div>
-
+              {/* Captcha Input */}
+              <input
+                type="text"
+                value={captchaInput}
+                onChange={(e) => {
+                  setCaptchaInput(e.target.value.toUpperCase());
+                  setErrorMsg("");
+                }}
+                placeholder="TYPE 6-CHARACTER CODE"
+                maxLength={6}
+                required
+                className="flex-1 w-full px-3.5 py-2 rounded-xl border border-zinc-300 bg-white text-xs font-mono font-bold tracking-widest text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] uppercase"
+              />
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="sm:col-span-2 pt-1">
+          {/* Row 4: Full Width Actions & Guidelines */}
+          <div className="md:col-span-3 border-t border-zinc-150 pt-3 mt-1 flex flex-col sm:flex-row items-center justify-between gap-3">
+            
+            {/* Terms Checkbox */}
+            <label className="flex items-center gap-2 text-xs text-zinc-600 font-medium cursor-pointer">
+              <input
+                type="checkbox"
+                name="agreeTerms"
+                checked={formData.agreeTerms}
+                onChange={handleChange}
+                className="w-4 h-4 rounded text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer shrink-0"
+              />
+              <span>I declare all information is true and agree to State Creator Awards guidelines.</span>
+            </label>
+
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading || captchaInput.length < 6}
-              className="w-full py-3 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-8 py-3 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] hover:from-[var(--primary-hover)] hover:to-[var(--secondary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
             >
-              {loading ? "Creating Account..." : "Register Account"}
+              {loading ? "Creating Creator Account..." : "Register Creator Account →"}
             </button>
+
           </div>
 
         </form>
 
-        <div className="border-t border-zinc-150 pt-4 text-center">
+        {/* Footer Login Link */}
+        <div className="border-t border-zinc-150 pt-3 text-center">
           <p className="text-xs text-zinc-600 font-inter">
             Already have an account?{" "}
             <Link href="/login" className="font-poppins font-bold text-[#C15B3D] hover:underline">

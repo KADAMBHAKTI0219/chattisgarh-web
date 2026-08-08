@@ -37,6 +37,19 @@ export default function DashboardOverviewPage() {
   const [applicationsList, setApplicationsList] = useState([]);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
 
+  const resolveCategoryName = (item) => {
+    if (!item) return "Tribal Heritage Creator";
+    const titleCandidate = item.categoryTitle || item.categoryDetails?.title || item.categoryDetails?.slug || item.categoryName || item.categorySlug;
+    if (titleCandidate) return titleCandidate;
+    if (typeof item.category === "object" && item.category) {
+      return item.category.title || item.category.name || item.category.slug || "Tribal Heritage Creator";
+    }
+    if (typeof item.category === "string" && item.category && !/^[0-9a-fA-F]{24}$/.test(item.category.trim())) {
+      return item.category;
+    }
+    return item.categoryDetails?.slug || item.categoryTitle || "Tribal Heritage Creator";
+  };
+
   useEffect(() => {
     const loadDashboard = async () => {
       if (!token) {
@@ -235,7 +248,7 @@ export default function DashboardOverviewPage() {
                       {/* Category Badge */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <span className="px-2.5 py-0.5 rounded-md bg-amber-100/70 text-amber-800 font-poppins font-semibold text-[11px]">
-                          {sub.category}
+                          {resolveCategoryName(sub)}
                         </span>
                       </td>
 
@@ -405,7 +418,7 @@ export default function DashboardOverviewPage() {
 
               <div className="absolute bottom-3 left-4 right-4 z-10 flex flex-col gap-1 text-white">
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-white font-poppins font-bold text-[10px] uppercase w-fit">
-                  {selectedSubmission.category || "Tribal Heritage Creator"}
+                  {resolveCategoryName(selectedSubmission)}
                 </span>
                 <h3 className="font-poppins font-bold text-base text-white drop-shadow-xs line-clamp-1">
                   {selectedSubmission.title}

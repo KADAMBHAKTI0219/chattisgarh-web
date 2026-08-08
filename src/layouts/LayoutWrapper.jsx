@@ -20,32 +20,25 @@ export default function LayoutWrapper({ children }) {
   }
 
   return (
-    <>
-      {/* Parallax Content Wrapper */}
-      <div className="relative lg:z-20 bg-[#FAF7F0] bg-tribal-watermark min-h-screen lg:shadow-[0_15px_30px_rgba(0,0,0,0.15)] pb-1 w-full max-w-[100vw] [overflow-x:clip]">
-        {/* Subtle giant Chhattisgarh Map logo watermark */}
-        <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none select-none opacity-[0.012] -z-10">
-          <Image
-            src="/assets/images/logoChattisgarh.png"
-            alt="State Watermark Map"
-            fill
-            priority
-            loading="eager"
-            sizes="800px"
-            className="object-contain"
-          />
-        </div>
-        <Navbar />
-        <main id="main-content" className="flex-1">
-          {children}
-        </main>
+    <div className="min-h-screen bg-[#FAF7F0] bg-tribal-watermark flex flex-col w-full max-w-[100vw] [overflow-x:clip] relative">
+      {/* Subtle giant Chhattisgarh Map logo watermark */}
+      <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none select-none opacity-[0.012] -z-10">
+        <Image
+          src="/assets/images/logoChattisgarh.png"
+          alt="State Watermark Map"
+          fill
+          priority
+          loading="eager"
+          sizes="800px"
+          className="object-contain"
+        />
       </div>
-
-      {/* Parallax sticky reveal footer */}
+      <Navbar />
+      <main id="main-content" className="flex-1 w-full">
+        {children}
+      </main>
       <Footer />
-
-      {/* Global Participate modal */}
       <ParticipateModal />
-    </>
+    </div>
   );
 }

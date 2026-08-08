@@ -68,7 +68,7 @@ export function AuthProvider({ children }) {
       if (["SUPER_ADMIN", "ADMIN", "MODERATOR", "JURY"].includes(roleUpper)) {
         router.push("/dashboard");
       } else {
-        router.push("/dashboard");
+        router.push("/");
       }
     }
     return res;

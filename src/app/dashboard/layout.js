@@ -26,7 +26,8 @@ import {
   FaCommentDots,
   FaCalendarAlt,
   FaBookOpen,
-  FaQuestionCircle
+  FaQuestionCircle,
+  FaGlobe
 } from "react-icons/fa";
 
 export default function DashboardLayout({ children }) {
@@ -65,6 +66,7 @@ export default function DashboardLayout({ children }) {
     { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: "3" },
     { name: "Reports", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
     { name: "Settings", href: "/dashboard/settings", tabKey: "settings", icon: FaCog },
+    { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
   ];
 
   const creatorMenuLinks = [
@@ -77,6 +79,7 @@ export default function DashboardLayout({ children }) {
     { name: "Events & Updates", href: "/dashboard/events", tabKey: "events", icon: FaCalendarAlt },
     { name: "Resources", href: "/dashboard/resources", tabKey: "resources", icon: FaBookOpen },
     { name: "Help & Support", href: "/contact", tabKey: "help", icon: FaQuestionCircle },
+    { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
   ];
 
   const mainMenuLinks = isAdmin ? adminMenuLinks : creatorMenuLinks;
@@ -205,6 +208,9 @@ export default function DashboardLayout({ children }) {
               <span className="font-poppins font-bold text-xs text-white">
                 आग बढ़ै छत्तीसगढ़
               </span>
+              <span className="font-poppins font-bold text-[11px] text-amber-300 mt-0.5">
+                हर एक स्क्रीन पर छाएगा छत्तीसगढ़
+              </span>
             </div>
             <div className="absolute inset-0 bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:8px_8px] opacity-15 pointer-events-none" />
           </div>
@@ -228,7 +234,16 @@ export default function DashboardLayout({ children }) {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <Link
+              href="/"
+              className="px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#E6532B] font-poppins font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+              title="Return to Main Portal Website"
+            >
+              <FaGlobe className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Move to Website</span>
+            </Link>
+
             <button className="p-2.5 rounded-2xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-600 relative cursor-pointer shadow-2xs">
               <FaBell className="w-4.5 h-4.5" />
               <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-2 right-2 ring-2 ring-white" />

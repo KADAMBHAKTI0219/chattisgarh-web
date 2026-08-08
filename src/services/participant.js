@@ -1,8 +1,12 @@
 import fetchApi from "./client";
 
 export const participantService = {
-  // 1. Register Participant (Public Nomination Form)
+  // 1. Register / Create Participant (Public Nomination Form)
   async registerParticipant(participantData) {
+    return await fetchApi("/participants/register", { method: "POST", body: participantData });
+  },
+
+  async createParticipant(participantData) {
     return await fetchApi("/participants/register", { method: "POST", body: participantData });
   },
 

@@ -32,7 +32,7 @@ export default function Footer() {
   return (
     <footer
       id="contact"
-      className="w-full bg-background border-t border-zinc-200/80 text-zinc-950 relative z-30 scroll-mt-24 text-left overflow-hidden"
+      className="w-full bg-[#FAF7F0] border-t border-zinc-200/80 text-zinc-950 relative z-10 scroll-mt-24 text-left overflow-hidden mt-auto"
     >
       {/* Top Accent Strip with Forest Green & Terracotta Brand Colors */}
       <div className="h-1.5 w-full bg-gradient-to-r from-[var(--secondary)] via-[var(--primary)] to-[var(--accent)]" />
