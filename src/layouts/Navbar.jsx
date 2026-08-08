@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
-import { FaUser, FaThLarge, FaUserCircle, FaSignOutAlt, FaTrophy } from "react-icons/fa";
+import { FaUser, FaThLarge, FaUserCircle, FaSignOutAlt, FaTrophy, FaTachometerAlt, FaChevronRight } from "react-icons/fa";
 
 export default function Navbar() {
   const { openModal } = useParticipateModal();
@@ -209,49 +209,62 @@ export default function Navbar() {
                         </div>
                       </div>
 
-                      {/* Links List */}
+                      {/* Links List with Rich Icon Badges */}
                       <div className="p-2 flex flex-col gap-1 text-xs font-poppins font-semibold">
                         <Link
                           href="/dashboard"
                           onClick={() => setIsProfileDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-zinc-800 hover:bg-orange-50 hover:text-[#E6532B] transition-colors"
+                          className="flex items-center justify-between px-3 py-2.5 rounded-xl text-zinc-800 hover:bg-orange-50/80 hover:text-[#C15B3D] transition-all group"
                         >
-                          <FaThLarge className="w-3.5 h-3.5 text-zinc-400" />
-                          <span>Dashboard</span>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-orange-100/90 text-[#C15B3D] flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                              <FaTachometerAlt className="w-4 h-4 text-[#C15B3D]" />
+                            </div>
+                            <div className="flex flex-col text-left">
+                              <span className="font-poppins font-bold text-xs">Dashboard</span>
+                              <span className="text-[10px] font-inter text-zinc-400 font-normal">Overview & Analytics</span>
+                            </div>
+                          </div>
+                          <FaChevronRight className="w-3 h-3 text-zinc-300 group-hover:text-[#C15B3D] group-hover:translate-x-0.5 transition-all" />
                         </Link>
 
                         <Link
                           href="/dashboard/profile"
                           onClick={() => setIsProfileDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-zinc-800 hover:bg-orange-50 hover:text-[#E6532B] transition-colors"
+                          className="flex items-center justify-between px-3 py-2.5 rounded-xl text-zinc-800 hover:bg-emerald-50/80 hover:text-[#21593D] transition-all group"
                         >
-                          <FaUserCircle className="w-3.5 h-3.5 text-zinc-400" />
-                          <span>My Profile</span>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-emerald-100/90 text-[#21593D] flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                              <FaUserCircle className="w-4 h-4 text-[#21593D]" />
+                            </div>
+                            <div className="flex flex-col text-left">
+                              <span className="font-poppins font-bold text-xs">My Profile</span>
+                              <span className="text-[10px] font-inter text-zinc-400 font-normal">Account & Details</span>
+                            </div>
+                          </div>
+                          <FaChevronRight className="w-3 h-3 text-zinc-300 group-hover:text-[#21593D] group-hover:translate-x-0.5 transition-all" />
                         </Link>
-
-                        <button
-                          onClick={() => {
-                            setIsProfileDropdownOpen(false);
-                            openModal();
-                          }}
-                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-zinc-800 hover:bg-emerald-50 hover:text-[#2E5C31] transition-colors cursor-pointer w-full text-left"
-                        >
-                          <FaTrophy className="w-3.5 h-3.5 text-amber-500" />
-                          <span>Participate Now</span>
-                        </button>
                       </div>
 
                       {/* Logout Section */}
-                      <div className="p-2 border-t border-zinc-150 bg-zinc-50">
+                      <div className="p-2 border-t border-zinc-150 bg-zinc-50/80">
                         <button
                           onClick={() => {
                             setIsProfileDropdownOpen(false);
                             logout();
                           }}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 font-poppins font-bold text-xs transition-colors cursor-pointer w-full text-left"
+                          className="flex items-center justify-between px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 font-poppins font-bold text-xs transition-all cursor-pointer w-full text-left group"
                         >
-                          <FaSignOutAlt className="w-3.5 h-3.5" />
-                          <span>Logout</span>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-rose-100/90 text-rose-600 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                              <FaSignOutAlt className="w-4 h-4 text-rose-600" />
+                            </div>
+                            <div className="flex flex-col text-left">
+                              <span className="font-poppins font-bold text-xs">Logout</span>
+                              <span className="text-[10px] font-inter text-zinc-400 font-normal">Sign out of portal</span>
+                            </div>
+                          </div>
+                          <FaChevronRight className="w-3 h-3 text-zinc-300 group-hover:text-rose-600 group-hover:translate-x-0.5 transition-all" />
                         </button>
                       </div>
 

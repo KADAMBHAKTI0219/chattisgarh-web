@@ -81,17 +81,34 @@ function ParticipateForm() {
           setCategoriesList(list);
 
           if (categoryParam) {
+            const decodedCat = decodeURIComponent(categoryParam).trim();
             const matched = list.find(
               (c) =>
-                c._id === categoryParam ||
-                c.slug === categoryParam ||
-                c.title?.toLowerCase() === categoryParam.toLowerCase()
+                c._id === decodedCat ||
+                c.slug === decodedCat ||
+                c.title?.toLowerCase() === decodedCat.toLowerCase() ||
+                c.title?.toLowerCase().includes(decodedCat.toLowerCase())
             );
             if (matched) {
               setFormData((prev) => ({
                 ...prev,
                 category: matched._id || matched.slug,
                 title: prev.title || `${matched.title} Participation Entry`,
+              }));
+              return;
+            }
+
+            const matchedLocal = ALL_25_OFFICIAL_CATEGORIES.find(
+              (c) =>
+                c.id === decodedCat ||
+                c.title.toLowerCase() === decodedCat.toLowerCase() ||
+                c.title.toLowerCase().includes(decodedCat.toLowerCase())
+            );
+            if (matchedLocal) {
+              setFormData((prev) => ({
+                ...prev,
+                category: matchedLocal.id,
+                title: prev.title || `${matchedLocal.title} Participation Entry`,
               }));
               return;
             }
@@ -312,7 +329,7 @@ function ParticipateForm() {
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 sm:px-6 md:px-10 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
 
       {/* Top Header Navigation */}
-      <div className="w-full max-w-5xl mx-auto flex items-center justify-between">
+      <div className="w-full max-w-6xl mx-auto flex items-center justify-between">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-zinc-600 hover:text-[var(--primary)] font-inter font-bold text-xs sm:text-sm transition-colors group"
@@ -326,7 +343,7 @@ function ParticipateForm() {
       </div>
 
       {/* Hero Heading */}
-      <div className="w-full max-w-4xl mx-auto text-center flex flex-col items-center">
+      <div className="w-full max-w-5xl mx-auto text-center flex flex-col items-center">
         <Heading
           badge={t("OFFICIAL PARTICIPATION FORM")}
           title={t("PARTICIPATE IN THE")}
@@ -336,7 +353,7 @@ function ParticipateForm() {
       </div>
 
       {/* Main Multi-Step Wizard Container */}
-      <div className="w-full max-w-4xl mx-auto bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-sm text-left relative">
+      <div className="w-full max-w-6xl mx-auto bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-sm text-left relative">
 
         {submitted ? (
           /* Success Screen */
@@ -574,22 +591,39 @@ function ParticipateForm() {
                   <span className="text-red-500 text-xs font-bold">{errors.category}</span>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                   {displayCategories.map((cat) => {
                     const catId = cat._id || cat.id || cat.slug;
-                    const isSelected = formData.category === catId;
+                    const catTitle = cat.title || cat.name;
+                    const isSelected =
+                      formData.category === catId ||
+                      formData.category === catTitle ||
+                      (categoryParam && (
+                        categoryParam === catId ||
+                        decodeURIComponent(categoryParam).toLowerCase() === catTitle.toLowerCase()
+                      ));
 
                     return (
                       <div
                         key={catId}
-                        onClick={() => setFormData((prev) => ({ ...prev, category: catId }))}
-                        className={`p-4 rounded-2xl border cursor-pointer transition-all ${isSelected
-                            ? "bg-amber-500/10 border-[var(--primary)] ring-2 ring-[var(--primary)]/30"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            category: catId,
+                            title: `${catTitle} Participation Entry`,
+                          }))
+                        }
+                        className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between gap-3 ${isSelected
+                            ? "bg-amber-500/10 border-[var(--primary)] ring-2 ring-[var(--primary)]/30 shadow-xs"
                             : "bg-zinc-50 border-zinc-200 hover:bg-zinc-100"
                           }`}
                       >
-                        <h4 className="font-poppins font-bold text-sm text-zinc-950 uppercase">{cat.title}</h4>
-                        <p className="font-inter text-xs text-zinc-600 mt-1 leading-relaxed">{cat.desc || cat.shortDescription || cat.taskBrief}</p>
+                        <h4 className="font-poppins font-bold text-xs sm:text-sm text-zinc-950 uppercase tracking-tight">{catTitle}</h4>
+                        {isSelected && (
+                          <span className="w-5 h-5 rounded-full bg-[var(--primary)] text-white flex items-center justify-center shrink-0">
+                            <FaCheckCircle className="w-3.5 h-3.5" />
+                          </span>
+                        )}
                       </div>
                     );
                   })}

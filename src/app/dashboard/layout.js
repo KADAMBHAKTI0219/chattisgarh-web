@@ -76,9 +76,6 @@ export default function DashboardLayout({ children }) {
     { name: "My Submissions", href: "/dashboard/applications", tabKey: "applications", icon: FaFileAlt },
     { name: "Messages", href: "/dashboard/messages", tabKey: "messages", icon: FaCommentDots, badge: "3" },
     { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: "5" },
-    { name: "Events & Updates", href: "/dashboard/events", tabKey: "events", icon: FaCalendarAlt },
-    { name: "Resources", href: "/dashboard/resources", tabKey: "resources", icon: FaBookOpen },
-    { name: "Help & Support", href: "/contact", tabKey: "help", icon: FaQuestionCircle },
     { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
   ];
 
@@ -201,14 +198,8 @@ export default function DashboardLayout({ children }) {
         {/* Sidebar Bottom Banner Card matching Image 2 */}
         <div className="p-4 border-t border-zinc-150 shrink-0">
           <div className="relative rounded-2xl p-4 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 text-white overflow-hidden shadow-md">
-            <div className="relative z-10 flex flex-col gap-1 text-center">
-              <span className="font-poppins font-extrabold text-sm text-emerald-300 drop-shadow-xs">
-                गढ़बो नवा छत्तीसगढ़
-              </span>
-              <span className="font-poppins font-bold text-xs text-white">
-                आग बढ़ै छत्तीसगढ़
-              </span>
-              <span className="font-poppins font-bold text-[11px] text-amber-300 mt-0.5">
+            <div className="relative z-10 flex flex-col text-center">
+              <span className="font-poppins font-extrabold text-xs sm:text-sm text-amber-300 drop-shadow-xs leading-relaxed">
                 हर एक स्क्रीन पर छाएगा छत्तीसगढ़
               </span>
             </div>
