@@ -87,7 +87,7 @@ export default function AdminDashboard({ token }) {
   const [editingUser, setEditingUser] = useState(null);
   const [userForm, setUserForm] = useState({ name: "", email: "", phone: "", role: "CREATOR", district: "Raipur", status: "Active" });
   const [userActionMsg, setUserActionMsg] = useState("");
-  
+
   // Determine active view tab based on sidebar URL param
   const activeTab = useMemo(() => {
     if (tabFromUrl === "votes") return "VOTES";
@@ -111,7 +111,7 @@ export default function AdminDashboard({ token }) {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [viewingCategory, setViewingCategory] = useState(null); // Category View Modal
-  
+
   const initialFormState = {
     title: "",
     slug: "",
@@ -142,7 +142,7 @@ export default function AdminDashboard({ token }) {
       // 1. Fetch Categories from GET /categories?includeInactive=true
       const catRes = await categoryService.getCategories({ includeInactive: "true" });
       const catList = catRes?.data || catRes?.categories || (Array.isArray(catRes) ? catRes : []);
-      
+
       let processedCategories = [];
       if (Array.isArray(catList) && catList.length > 0) {
         processedCategories = catList.map((c, idx) => ({
@@ -633,17 +633,17 @@ export default function AdminDashboard({ token }) {
         // PUT /categories/:id
         const catId = editingCategory._id || editingCategory.id;
         const res = await categoryService.updateCategory(catId, payload, token);
-        
+
         if (res.success || res.status === 200 || !token) {
           setCategories((prev) =>
             prev.map((c) =>
               (c._id === catId || c.id === catId)
                 ? {
-                    ...c,
-                    ...payload,
-                    image: payload.image || c.image || DEFAULT_CATEGORY_IMAGES[0],
-                    isActive: payload.isActive
-                  }
+                  ...c,
+                  ...payload,
+                  image: payload.image || c.image || DEFAULT_CATEGORY_IMAGES[0],
+                  isActive: payload.isActive
+                }
                 : c
             )
           );
@@ -659,7 +659,7 @@ export default function AdminDashboard({ token }) {
         // POST /categories
         const res = await categoryService.createCategory(payload, token);
         const createdObj = res.data || res.category || {};
-        
+
         const newCat = {
           _id: createdObj._id || createdObj.id || `cat-${Date.now()}`,
           id: createdObj._id || createdObj.id || `cat-${Date.now()}`,
@@ -771,7 +771,7 @@ export default function AdminDashboard({ token }) {
   // Dynamic Pagination Logic (6 Items Per Page)
   const activeDataset = activeTab === "CATEGORIES" ? filteredCategories : activeTab === "USERS" ? filteredUsers : filteredParticipants;
   const totalPages = Math.max(1, Math.ceil(activeDataset.length / ITEMS_PER_PAGE));
-  
+
   const paginatedData = useMemo(() => {
     const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
     return activeDataset.slice(startIdx, startIdx + ITEMS_PER_PAGE);
@@ -825,18 +825,18 @@ export default function AdminDashboard({ token }) {
   };
 
   return (
-    <div className="flex flex-col gap-7 text-left animate-fade-in w-full">
-      
+    <div className="flex flex-col gap-7 text-left animate-fade-in w-full font-montserrat">
+
       {/* 1. Welcome Admin Banner */}
       <div className="bg-gradient-to-r from-[#1c3a29] via-[#21593D] to-[#C45A32] text-white rounded-3xl p-6 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md relative overflow-hidden">
         <div className="flex flex-col gap-1 z-10">
-          <span className="px-3 py-0.5 rounded-full bg-white/20 text-white font-poppins font-bold text-[10px] uppercase tracking-widest self-start backdrop-blur-md">
+          <span className="px-3 py-0.5 rounded-full bg-white/20 text-white font-montserrat font-bold text-[10px] uppercase tracking-widest self-start backdrop-blur-md">
             🛡️ State Governance Portal
           </span>
-          <h1 className="text-xl sm:text-2xl font-poppins font-extrabold text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-montserrat font-extrabold text-white tracking-tight">
             Welcome back, Admin! 👋
           </h1>
-          <p className="text-xs text-emerald-100 font-inter">
+          <p className="text-xs text-emerald-100 font-montserrat">
             System overview, dynamic category management, participant reviews, and public votes control center.
           </p>
         </div>
@@ -845,17 +845,17 @@ export default function AdminDashboard({ token }) {
       {/* 2. Top 4 Summary Cards Row (Displayed ONLY on main Overview / Dashboard tab) */}
       {showStats && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          
+
           {/* Card 1: TOTAL CATEGORIES */}
           <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-xs transition-all">
             <div className="flex flex-col">
-              <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-widest">
+              <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-widest">
                 TOTAL CATEGORIES
               </span>
-              <span className="text-3xl font-poppins font-extrabold text-zinc-900 mt-1">
+              <span className="text-3xl font-montserrat font-extrabold text-zinc-900 mt-1">
                 {loading ? "..." : categories.length}
               </span>
-              <span className="text-[11px] font-inter font-medium text-zinc-500 mt-1">
+              <span className="text-[11px] font-montserrat font-medium text-zinc-500 mt-1">
                 Active voting domains
               </span>
             </div>
@@ -867,13 +867,13 @@ export default function AdminDashboard({ token }) {
           {/* Card 2: TOTAL PUBLIC VOTES */}
           <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-xs transition-all">
             <div className="flex flex-col">
-              <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-widest">
+              <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-widest">
                 TOTAL PUBLIC VOTES
               </span>
-              <span className="text-3xl font-poppins font-extrabold text-zinc-900 mt-1">
+              <span className="text-3xl font-montserrat font-extrabold text-zinc-900 mt-1">
                 {loading ? "..." : totalPublicVotes.toLocaleString("en-IN")}
               </span>
-              <span className="text-[11px] font-inter font-medium text-zinc-500 mt-1">
+              <span className="text-[11px] font-montserrat font-medium text-zinc-500 mt-1">
                 Across all categories
               </span>
             </div>
@@ -885,13 +885,13 @@ export default function AdminDashboard({ token }) {
           {/* Card 3: TOTAL PARTICIPANTS */}
           <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-xs transition-all">
             <div className="flex flex-col">
-              <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-widest">
+              <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-widest">
                 TOTAL PARTICIPANTS
               </span>
-              <span className="text-3xl font-poppins font-extrabold text-zinc-900 mt-1">
+              <span className="text-3xl font-montserrat font-extrabold text-zinc-900 mt-1">
                 {loading ? "..." : totalParticipantsCount}
               </span>
-              <span className="text-[11px] font-inter font-medium text-zinc-500 mt-1">
+              <span className="text-[11px] font-montserrat font-medium text-zinc-500 mt-1">
                 Nominations registered
               </span>
             </div>
@@ -903,13 +903,13 @@ export default function AdminDashboard({ token }) {
           {/* Card 4: LEADING CANDIDATE */}
           <div className="bg-white border border-amber-200/60 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-xs transition-all bg-gradient-to-r from-amber-50/20 to-orange-50/20">
             <div className="flex flex-col min-w-0 pr-2">
-              <span className="text-[10px] font-poppins font-bold text-amber-600 uppercase tracking-widest flex items-center gap-1">
+              <span className="text-[10px] font-montserrat font-bold text-amber-600 uppercase tracking-widest flex items-center gap-1">
                 <FaTrophy className="w-3 h-3 text-amber-500" /> LEADING CANDIDATE
               </span>
-              <span className="text-base font-poppins font-extrabold text-zinc-950 mt-1 truncate">
+              <span className="text-base font-montserrat font-extrabold text-zinc-950 mt-1 truncate">
                 {loading ? "..." : leadingCandidate.name}
               </span>
-              <span className="text-[11px] font-inter font-semibold text-zinc-500 mt-0.5">
+              <span className="text-[11px] font-montserrat font-semibold text-zinc-500 mt-0.5">
                 {leadingCandidate.votes.toLocaleString("en-IN")} Votes
               </span>
             </div>
@@ -923,10 +923,10 @@ export default function AdminDashboard({ token }) {
 
       {/* 2. Main Workspace Container */}
       <div className="bg-white border border-zinc-200/80 rounded-2xl p-6 sm:p-7 flex flex-col gap-6 shadow-2xs">
-        
+
         {/* Section Title & Primary Action Buttons */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-150 pb-5">
-          
+
           {/* Section Heading Title */}
           <div className="flex items-center gap-3">
             {activeTab === "CATEGORIES" && (
@@ -935,10 +935,10 @@ export default function AdminDashboard({ token }) {
                   <FaThList className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-base sm:text-lg font-poppins font-extrabold text-zinc-950">
+                  <h2 className="text-base sm:text-lg font-montserrat font-extrabold text-zinc-950">
                     Award Categories ({categories.length})
                   </h2>
-                  <span className="text-[11px] font-inter text-zinc-500 font-medium">
+                  <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
                     Dynamic category management and configuration
                   </span>
                 </div>
@@ -951,10 +951,10 @@ export default function AdminDashboard({ token }) {
                   <FaChartBar className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-base sm:text-lg font-poppins font-extrabold text-zinc-950">
+                  <h2 className="text-base sm:text-lg font-montserrat font-extrabold text-zinc-950">
                     Public Voting Analytics
                   </h2>
-                  <span className="text-[11px] font-inter text-zinc-500 font-medium">
+                  <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
                     Real-time public votes overview across all categories
                   </span>
                 </div>
@@ -967,10 +967,10 @@ export default function AdminDashboard({ token }) {
                   <FaUsers className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-base sm:text-lg font-poppins font-extrabold text-zinc-950">
+                  <h2 className="text-base sm:text-lg font-montserrat font-extrabold text-zinc-950">
                     Participants ({participants.length})
                   </h2>
-                  <span className="text-[11px] font-inter text-zinc-500 font-medium">
+                  <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
                     Registered candidates and nominee profiles
                   </span>
                 </div>
@@ -983,10 +983,10 @@ export default function AdminDashboard({ token }) {
                   <FaUsers className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-base sm:text-lg font-poppins font-extrabold text-zinc-950">
+                  <h2 className="text-base sm:text-lg font-montserrat font-extrabold text-zinc-950">
                     Registered Users ({usersList.length})
                   </h2>
-                  <span className="text-[11px] font-inter text-zinc-500 font-medium">
+                  <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
                     Platform accounts, roles, and verification status
                   </span>
                 </div>
@@ -999,7 +999,7 @@ export default function AdminDashboard({ token }) {
             {activeTab === "CATEGORIES" && (
               <button
                 onClick={() => handleOpenCategoryModal()}
-                className="px-4 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-poppins font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
               >
                 <FaPlus className="w-3 h-3" />
                 <span>Add Category</span>
@@ -1009,7 +1009,7 @@ export default function AdminDashboard({ token }) {
             {activeTab === "USERS" && (
               <button
                 onClick={() => handleOpenUserModal(null)}
-                className="px-4 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-poppins font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
               >
                 <FaPlus className="w-3 h-3" />
                 <span>Add User</span>
@@ -1018,7 +1018,7 @@ export default function AdminDashboard({ token }) {
 
             <button
               onClick={exportToCSV}
-              className="px-4 py-2.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 text-zinc-700 font-poppins font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 text-zinc-700 font-montserrat font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
             >
               <FaDownload className="w-3 h-3 text-zinc-500" />
               <span>Export CSV</span>
@@ -1027,7 +1027,7 @@ export default function AdminDashboard({ token }) {
             <button
               onClick={loadData}
               disabled={loading}
-              className="px-4 py-2.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 text-zinc-700 font-poppins font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 text-zinc-700 font-montserrat font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
             >
               <FaSync className={`w-3 h-3 text-zinc-500 ${loading ? "animate-spin text-[#E6532B]" : ""}`} />
               <span>Refresh</span>
@@ -1044,7 +1044,7 @@ export default function AdminDashboard({ token }) {
               placeholder={activeTab === "CATEGORIES" ? "Search category title, description, hashtag..." : "Search participant, ID..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-xs font-inter border border-zinc-200 rounded-xl bg-zinc-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E6532B]/20 transition-all"
+              className="w-full pl-9 pr-4 py-2.5 text-xs font-montserrat border border-zinc-200 rounded-xl bg-zinc-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E6532B]/20 transition-all"
             />
             {searchQuery && (
               <button
@@ -1062,11 +1062,10 @@ export default function AdminDashboard({ token }) {
               <div className="flex items-center bg-zinc-100 p-1 rounded-xl border border-zinc-200">
                 <button
                   onClick={() => setCategoryViewMode("CARDS")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-poppins font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                    categoryViewMode === "CARDS"
-                      ? "bg-white text-[#E6532B] shadow-2xs"
-                      : "text-zinc-600 hover:text-zinc-900"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-all cursor-pointer ${categoryViewMode === "CARDS"
+                    ? "bg-white text-[#E6532B] shadow-2xs"
+                    : "text-zinc-600 hover:text-zinc-900"
+                    }`}
                   title="Card View"
                 >
                   <FaThLarge className="w-3.5 h-3.5" />
@@ -1074,11 +1073,10 @@ export default function AdminDashboard({ token }) {
                 </button>
                 <button
                   onClick={() => setCategoryViewMode("TABLE")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-poppins font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                    categoryViewMode === "TABLE"
-                      ? "bg-white text-[#E6532B] shadow-2xs"
-                      : "text-zinc-600 hover:text-zinc-900"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold flex items-center gap-1.5 transition-all cursor-pointer ${categoryViewMode === "TABLE"
+                    ? "bg-white text-[#E6532B] shadow-2xs"
+                    : "text-zinc-600 hover:text-zinc-900"
+                    }`}
                   title="Table View"
                 >
                   <FaThList className="w-3.5 h-3.5" />
@@ -1091,7 +1089,7 @@ export default function AdminDashboard({ token }) {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="py-2.5 pl-8 pr-8 text-xs font-inter font-semibold border border-zinc-200 rounded-xl bg-zinc-50 text-zinc-700 focus:bg-white focus:outline-none cursor-pointer appearance-none"
+                className="py-2.5 pl-8 pr-8 text-xs font-montserrat font-semibold border border-zinc-200 rounded-xl bg-zinc-50 text-zinc-700 focus:bg-white focus:outline-none cursor-pointer appearance-none"
               >
                 <option value="ALL">All Status</option>
                 <option value="ACTIVE">Active / Approved</option>
@@ -1112,116 +1110,117 @@ export default function AdminDashboard({ token }) {
               return (
                 <div
                   key={cat._id || cat.id}
-                  className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group"
+                  className="bg-white border border-zinc-200/90 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-zinc-300 transition-all duration-300 flex flex-col justify-between group"
                 >
                   {/* Category Image Header Container */}
-                  <div className="relative h-44 w-full bg-zinc-100 overflow-hidden">
+                  <div className="relative h-48 w-full bg-zinc-950 overflow-hidden">
                     <img
                       src={cat.image || DEFAULT_CATEGORY_IMAGES[0]}
                       alt={cat.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out opacity-90"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = DEFAULT_CATEGORY_IMAGES[0];
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/45 to-black/20" />
+
                     {/* Top Badges */}
-                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 z-10">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-poppins font-extrabold uppercase tracking-wider border backdrop-blur-md ${tierInfo.color}`}>
+                    <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2 z-10">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-montserrat font-black uppercase tracking-wider border backdrop-blur-md shadow-xs ${tierInfo.color}`}>
                         {tierInfo.label}
                       </span>
                       <div className="flex items-center gap-1.5">
                         {cat.isFeatured && (
-                          <span className="px-2 py-1 rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center gap-1 shadow-xs" title="Featured Category">
-                            <FaStar className="w-2.5 h-2.5" /> Featured
+                          <span className="px-2.5 py-1 rounded-full bg-amber-500/90 backdrop-blur-md text-white text-[10px] font-montserrat font-bold flex items-center gap-1 shadow-xs" title="Featured Category">
+                            <FaStar className="w-2.5 h-2.5 text-amber-100" /> Featured
                           </span>
                         )}
                         <span
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-poppins font-extrabold shadow-xs ${
-                            cat.isActive
-                              ? "bg-emerald-500 text-white"
-                              : "bg-amber-500 text-white"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-[10px] font-montserrat font-extrabold shadow-xs backdrop-blur-md ${cat.isActive
+                            ? "bg-emerald-600/90 text-white"
+                            : "bg-amber-600/90 text-white"
+                            }`}
                         >
                           {cat.isActive ? "Active" : "Inactive"}
                         </span>
                       </div>
                     </div>
 
-                    {/* Bottom Title overlay over image */}
-                    <div className="absolute bottom-3 left-3 right-3 z-10 text-white">
-                      <h3 className="font-poppins font-bold text-base text-white drop-shadow-xs line-clamp-1">
+                    {/* Bottom Title Overlay over image */}
+                    <div className="absolute bottom-3.5 left-3.5 right-3.5 z-10 text-white">
+                      <h3 className="font-montserrat font-extrabold text-base sm:text-lg text-white drop-shadow-md leading-snug line-clamp-2 tracking-tight">
                         {cat.title}
                       </h3>
                     </div>
                   </div>
 
                   {/* Card Content Body */}
-                  <div className="p-4 sm:p-5 flex flex-col gap-3.5 flex-1 justify-between">
-                    
-                    <div className="flex flex-col gap-2">
+                  <div className="p-5 flex flex-col gap-4 flex-1 justify-between bg-white">
+
+                    <div className="flex flex-col gap-2.5">
                       {cat.hashtag && (
-                        <span className="text-[11px] font-mono font-bold text-[#E6532B] flex items-center gap-1">
-                          <FaTag className="w-2.5 h-2.5" /> {cat.hashtag.startsWith("#") ? cat.hashtag : `#${cat.hashtag}`}
+                        <span className="text-[11px] font-mono font-bold text-[#C15B3D] bg-orange-50/90 border border-orange-200/60 px-3 py-1 rounded-full w-fit flex items-center gap-1.5 shadow-2xs">
+                          <FaTag className="w-2.5 h-2.5 text-[#C15B3D]" /> {cat.hashtag.startsWith("#") ? cat.hashtag : `#${cat.hashtag}`}
                         </span>
                       )}
 
-                      <p className="text-xs font-inter text-zinc-600 line-clamp-2 leading-relaxed">
+                      <p className="text-xs font-montserrat text-zinc-600 line-clamp-2 leading-relaxed font-normal">
                         {cat.shortDescription || cat.description}
                       </p>
                     </div>
 
                     {/* Category Metrics & Prizes */}
-                    <div className="pt-3 border-t border-zinc-150 grid grid-cols-2 gap-2 text-xs font-inter">
-                      <div className="flex flex-col bg-zinc-50 p-2.5 rounded-xl border border-zinc-150">
-                        <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                          <FaCoins className="w-2.5 h-2.5 text-amber-500" /> Prize Tier
+                    <div className="grid grid-cols-2 gap-2.5 text-xs font-montserrat">
+                      <div className="flex flex-col bg-zinc-50/90 p-3 rounded-2xl border border-zinc-200/80">
+                        <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+                          <FaCoins className="w-3 h-3 text-amber-500" /> Prize Tier
                         </span>
-                        <span className="font-poppins font-bold text-zinc-900 text-xs mt-0.5">
+                        <span className="font-montserrat font-bold text-zinc-900 text-xs sm:text-sm mt-0.5 uppercase tracking-tight">
                           {cat.prizeTier || "STANDARD"}
                         </span>
                       </div>
 
-                      <div className="flex flex-col bg-zinc-50 p-2.5 rounded-xl border border-zinc-150">
-                        <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-wider">
+                      <div className="flex flex-col bg-amber-50/60 p-3 rounded-2xl border border-amber-200/60">
+                        <span className="text-[10px] font-montserrat font-bold text-amber-700/80 uppercase tracking-wider">
                           Cash Prize
                         </span>
-                        <span className="font-poppins font-bold text-[#E6532B] text-xs mt-0.5 truncate">
+                        <span className="font-montserrat font-extrabold text-[#C15B3D] text-xs sm:text-sm mt-0.5 truncate">
                           {cat.cashPrizeMax > 0
-                            ? `₹${Number(cat.cashPrizeMin).toLocaleString("en-IN")} - ₹${Number(cat.cashPrizeMax).toLocaleString("en-IN")}`
+                            ? cat.cashPrizeMin === cat.cashPrizeMax
+                              ? `₹${Number(cat.cashPrizeMax).toLocaleString("en-IN")}`
+                              : `₹${Number(cat.cashPrizeMin).toLocaleString("en-IN")} - ₹${Number(cat.cashPrizeMax).toLocaleString("en-IN")}`
                             : "Honors Trophy"}
                         </span>
                       </div>
                     </div>
 
                     {/* Card Actions (View, Edit, Delete) */}
-                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-zinc-150 mt-1">
+                    <div className="flex items-center justify-between gap-2 mt-1">
                       <button
                         onClick={() => handleViewCategory(cat)}
-                        className="flex-1 py-2 px-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-poppins font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        className="flex-1 py-2.5 px-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-montserrat font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs cursor-pointer"
                         title="View Category Details"
                       >
-                        <FaEye className="w-3 h-3 text-zinc-500" />
+                        <FaEye className="w-3.5 h-3.5 text-zinc-500" />
                         <span>View</span>
                       </button>
 
                       <button
                         onClick={() => handleOpenCategoryModal(cat)}
-                        className="flex-1 py-2 px-3 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-poppins font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        className="flex-1 py-2.5 px-3 rounded-2xl bg-orange-50 hover:bg-orange-100 text-[#C15B3D] font-montserrat font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs border border-orange-200/50 cursor-pointer"
                         title="Edit Category"
                       >
-                        <FaEdit className="w-3 h-3" />
+                        <FaEdit className="w-3.5 h-3.5" />
                         <span>Edit</span>
                       </button>
 
                       <button
                         onClick={() => handleDeleteCategory(cat._id || cat.id, cat.title)}
-                        className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-poppins font-bold text-xs flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                        className="w-10 h-10 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-montserrat font-bold text-xs flex items-center justify-center transition-all shrink-0 border border-rose-200/50 cursor-pointer"
                         title="Delete Category"
                       >
-                        <FaTrash className="w-3 h-3" />
+                        <FaTrash className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
@@ -1233,8 +1232,8 @@ export default function AdminDashboard({ token }) {
             {paginatedData.length === 0 && (
               <div className="col-span-full py-16 text-center bg-zinc-50 rounded-2xl border border-dashed border-zinc-300">
                 <FaLayerGroup className="w-8 h-8 text-zinc-400 mx-auto mb-3" />
-                <h4 className="font-poppins font-bold text-zinc-700 text-sm">No Categories Found</h4>
-                <p className="text-xs font-inter text-zinc-500 mt-1">Try adjusting your search criteria or add a new category.</p>
+                <h4 className="font-montserrat font-bold text-zinc-700 text-sm">No Categories Found</h4>
+                <p className="text-xs font-montserrat text-zinc-500 mt-1">Try adjusting your search criteria or add a new category.</p>
               </div>
             )}
           </div>
@@ -1245,7 +1244,7 @@ export default function AdminDashboard({ token }) {
           <div className="overflow-x-auto rounded-xl border border-zinc-200/70">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-zinc-50/80 border-b border-zinc-200 text-[11px] font-poppins font-bold text-zinc-400 uppercase tracking-wider">
+                <tr className="bg-zinc-50/80 border-b border-zinc-200 text-[11px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
                   <th className="py-3.5 px-4 w-12 text-center">#</th>
                   <th className="py-3.5 px-4">Image & Category Name</th>
                   <th className="py-3.5 px-4">Tier & Hashtag</th>
@@ -1255,7 +1254,7 @@ export default function AdminDashboard({ token }) {
                   <th className="py-3.5 px-4 text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-150 text-xs font-inter">
+              <tbody className="divide-y divide-zinc-150 text-xs font-montserrat">
                 {paginatedData.map((cat) => {
                   const tierInfo = getTierBadge(cat.tier);
                   return (
@@ -1276,7 +1275,7 @@ export default function AdminDashboard({ token }) {
                             }}
                           />
                           <div className="flex flex-col">
-                            <span className="font-poppins font-bold text-zinc-900 text-xs">
+                            <span className="font-montserrat font-bold text-zinc-900 text-xs">
                               {cat.title}
                             </span>
                             <span className="text-[10px] text-zinc-400 font-mono">
@@ -1288,7 +1287,7 @@ export default function AdminDashboard({ token }) {
 
                       <td className="py-4 px-4 whitespace-nowrap">
                         <div className="flex flex-col gap-1">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-poppins font-bold border w-fit ${tierInfo.color}`}>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-montserrat font-bold border w-fit ${tierInfo.color}`}>
                             {tierInfo.label}
                           </span>
                           <span className="text-[10px] font-mono text-[#E6532B]">
@@ -1301,7 +1300,7 @@ export default function AdminDashboard({ token }) {
                         {cat.shortDescription || cat.description}
                       </td>
 
-                      <td className="py-4 px-4 font-poppins font-bold text-zinc-800 whitespace-nowrap">
+                      <td className="py-4 px-4 font-montserrat font-bold text-zinc-800 whitespace-nowrap">
                         {cat.cashPrizeMax > 0
                           ? `₹${Number(cat.cashPrizeMin).toLocaleString("en-IN")} - ₹${Number(cat.cashPrizeMax).toLocaleString("en-IN")}`
                           : "Honors Trophy"}
@@ -1309,11 +1308,10 @@ export default function AdminDashboard({ token }) {
 
                       <td className="py-4 px-4 whitespace-nowrap">
                         <span
-                          className={`px-3 py-1 rounded-full text-[11px] font-poppins font-bold ${
-                            cat.isActive
-                              ? "bg-emerald-100/80 text-emerald-700"
-                              : "bg-amber-100/80 text-amber-700"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-[11px] font-montserrat font-bold ${cat.isActive
+                            ? "bg-emerald-100/80 text-emerald-700"
+                            : "bg-amber-100/80 text-amber-700"
+                            }`}
                         >
                           {cat.isActive ? "Active" : "Inactive"}
                         </span>
@@ -1352,7 +1350,7 @@ export default function AdminDashboard({ token }) {
 
                 {paginatedData.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-400 font-inter text-xs">
+                    <td colSpan={7} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
                       No categories found matching filter criteria.
                     </td>
                   </tr>
@@ -1367,7 +1365,7 @@ export default function AdminDashboard({ token }) {
           <div className="overflow-x-auto rounded-xl border border-zinc-200/70">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-zinc-50/80 border-b border-zinc-200 text-[11px] font-poppins font-bold text-zinc-400 uppercase tracking-wider">
+                <tr className="bg-zinc-50/80 border-b border-zinc-200 text-[11px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
                   <th className="py-3.5 px-4 w-12 text-center">App ID</th>
                   <th className="py-3.5 px-4">Participant Name</th>
                   <th className="py-3.5 px-4">Nomination Title</th>
@@ -1378,14 +1376,14 @@ export default function AdminDashboard({ token }) {
                   <th className="py-3.5 px-4 text-center">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-150 text-xs font-inter">
+              <tbody className="divide-y divide-zinc-150 text-xs font-montserrat">
                 {paginatedData.map((p) => (
                   <tr key={p._id} className="hover:bg-zinc-50/80 transition-colors">
                     <td className="py-4 px-4 font-mono font-bold text-zinc-700 text-center">
                       {p.applicationId}
                     </td>
 
-                    <td className="py-4 px-4 font-poppins font-bold text-zinc-900 whitespace-nowrap">
+                    <td className="py-4 px-4 font-montserrat font-bold text-zinc-900 whitespace-nowrap">
                       {p.name}
                     </td>
 
@@ -1403,12 +1401,12 @@ export default function AdminDashboard({ token }) {
                       {p.district}
                     </td>
 
-                    <td className="py-4 px-4 text-center font-poppins font-black text-[#E6532B]">
+                    <td className="py-4 px-4 text-center font-montserrat font-black text-[#E6532B]">
                       {Number(p.publicVotes || 0).toLocaleString("en-IN")}
                     </td>
 
                     <td className="py-4 px-4 whitespace-nowrap">
-                      <span className="px-3 py-1 rounded-full text-[10px] font-poppins font-bold bg-emerald-100/80 text-emerald-800">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-montserrat font-bold bg-emerald-100/80 text-emerald-800">
                         {p.status}
                       </span>
                     </td>
@@ -1417,7 +1415,7 @@ export default function AdminDashboard({ token }) {
                       <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => setSelectedItem(p)}
-                          className="p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-poppins font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                          className="p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
                           title="View Participant Details"
                         >
                           <FaEye className="w-3.5 h-3.5" />
@@ -1425,7 +1423,7 @@ export default function AdminDashboard({ token }) {
 
                         <button
                           onClick={() => handleOpenEditParticipant(p)}
-                          className="p-2 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-poppins font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                          className="p-2 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
                           title="Edit Participant"
                         >
                           <FaEdit className="w-3.5 h-3.5" />
@@ -1433,7 +1431,7 @@ export default function AdminDashboard({ token }) {
 
                         <button
                           onClick={() => handleDeleteParticipant(p._id || p.id, p.name)}
-                          className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-poppins font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                          className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
                           title="Delete Participant"
                         >
                           <FaTrash className="w-3.5 h-3.5" />
@@ -1445,7 +1443,7 @@ export default function AdminDashboard({ token }) {
 
                 {paginatedData.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-zinc-400 font-inter text-xs">
+                    <td colSpan={8} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
                       No participants found matching filter criteria.
                     </td>
                   </tr>
@@ -1460,7 +1458,7 @@ export default function AdminDashboard({ token }) {
           <div className="overflow-x-auto rounded-2xl border border-zinc-200/90 shadow-2xs">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-zinc-50 border-b border-zinc-200 text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-wider">
+                <tr className="bg-zinc-50 border-b border-zinc-200 text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
                   <th className="py-3.5 px-4">#</th>
                   <th className="py-3.5 px-4">User Details</th>
                   <th className="py-3.5 px-4">Email & Phone</th>
@@ -1470,13 +1468,13 @@ export default function AdminDashboard({ token }) {
                   <th className="py-3.5 px-4 text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200/80 text-xs font-inter bg-white">
+              <tbody className="divide-y divide-zinc-200/80 text-xs font-montserrat bg-white">
                 {paginatedData.map((u, idx) => (
                   <tr key={u._id || idx} className="hover:bg-zinc-50/80 transition-colors">
                     <td className="py-3.5 px-4 font-mono text-zinc-400 font-bold">
                       {String((currentPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, "0")}
                     </td>
-                    <td className="py-3.5 px-4 font-poppins font-bold text-zinc-950">
+                    <td className="py-3.5 px-4 font-montserrat font-bold text-zinc-950">
                       <div className="flex items-center gap-3">
                         {u.avatar ? (
                           <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full object-cover border border-zinc-200 shrink-0" />
@@ -1487,7 +1485,7 @@ export default function AdminDashboard({ token }) {
                         )}
                         <div className="flex flex-col">
                           <span>{u.name || "Registered User"}</span>
-                          <span className="text-[10px] font-inter font-normal text-zinc-400">ID: {u._id ? String(u._id).substring(0, 8) : `u-${idx}`}</span>
+                          <span className="text-[10px] font-montserrat font-normal text-zinc-400">ID: {u._id ? String(u._id).substring(0, 8) : `u-${idx}`}</span>
                         </div>
                       </div>
                     </td>
@@ -1498,13 +1496,12 @@ export default function AdminDashboard({ token }) {
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-poppins font-bold uppercase tracking-wider ${
-                        u.role === "ADMIN" || u.role === "SUPER_ADMIN"
-                          ? "bg-rose-100 text-rose-700 border border-rose-200"
-                          : u.role === "JURY"
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-montserrat font-bold uppercase tracking-wider ${u.role === "ADMIN" || u.role === "SUPER_ADMIN"
+                        ? "bg-rose-100 text-rose-700 border border-rose-200"
+                        : u.role === "JURY"
                           ? "bg-purple-100 text-purple-700 border border-purple-200"
                           : "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                      }`}>
+                        }`}>
                         {u.role || "CREATOR"}
                       </span>
                     </td>
@@ -1512,11 +1509,10 @@ export default function AdminDashboard({ token }) {
                       {u.district || "Raipur"}
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        u.status === "Inactive" || u.status === "Pending"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-emerald-100 text-emerald-800"
-                      }`}>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${u.status === "Inactive" || u.status === "Pending"
+                        ? "bg-amber-100 text-amber-800"
+                        : "bg-emerald-100 text-emerald-800"
+                        }`}>
                         {u.status || "Active"}
                       </span>
                     </td>
@@ -1550,7 +1546,7 @@ export default function AdminDashboard({ token }) {
 
                 {paginatedData.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-400 font-inter text-xs">
+                    <td colSpan={7} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
                       No users found matching filter criteria.
                     </td>
                   </tr>
@@ -1561,7 +1557,7 @@ export default function AdminDashboard({ token }) {
         )}
 
         {/* Dynamic Pagination Footer (Strictly 6 items per page) */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 text-xs font-inter text-zinc-500">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 text-xs font-montserrat text-zinc-500">
           <span>
             Showing {activeDataset.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to {Math.min(currentPage * ITEMS_PER_PAGE, activeDataset.length)} of {activeDataset.length} {activeTab.toLowerCase()}
           </span>
@@ -1581,11 +1577,10 @@ export default function AdminDashboard({ token }) {
               <button
                 key={pageNum}
                 onClick={() => setCurrentPage(pageNum)}
-                className={`w-8 h-8 rounded-lg font-poppins text-xs font-bold transition-all cursor-pointer ${
-                  currentPage === pageNum
-                    ? "bg-[#E6532B] text-white shadow-2xs"
-                    : "border border-zinc-200 text-zinc-700 hover:bg-zinc-100"
-                }`}
+                className={`w-8 h-8 rounded-lg font-montserrat text-xs font-bold transition-all cursor-pointer ${currentPage === pageNum
+                  ? "bg-[#E6532B] text-white shadow-2xs"
+                  : "border border-zinc-200 text-zinc-700 hover:bg-zinc-100"
+                  }`}
               >
                 {pageNum}
               </button>
@@ -1608,7 +1603,7 @@ export default function AdminDashboard({ token }) {
       {viewingCategory && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl border border-zinc-200 animate-scale-up flex flex-col max-h-[90vh]">
-            
+
             {/* Cover Image Header */}
             <div className="relative h-48 w-full bg-zinc-100 shrink-0">
               <img
@@ -1621,7 +1616,7 @@ export default function AdminDashboard({ token }) {
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-              
+
               <button
                 onClick={() => setViewingCategory(null)}
                 className="absolute top-4 right-4 p-2 rounded-full bg-black/50 hover:bg-black/80 text-white transition-colors z-20 cursor-pointer"
@@ -1631,22 +1626,22 @@ export default function AdminDashboard({ token }) {
 
               <div className="absolute bottom-4 left-5 right-5 text-white z-10">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2.5 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-poppins font-extrabold uppercase">
+                  <span className="px-2.5 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-montserrat font-extrabold uppercase">
                     {viewingCategory.tier}
                   </span>
                 </div>
-                <h2 className="text-xl font-poppins font-black text-white drop-shadow-md">
+                <h2 className="text-xl font-montserrat font-black text-white drop-shadow-md">
                   {viewingCategory.title}
                 </h2>
               </div>
             </div>
 
             {/* Modal Body Details */}
-            <div className="p-6 overflow-y-auto flex flex-col gap-5 text-xs font-inter text-zinc-700">
-              
+            <div className="p-6 overflow-y-auto flex flex-col gap-5 text-xs font-montserrat text-zinc-700">
+
               <div className="flex items-center justify-between gap-3 bg-zinc-50 p-3.5 rounded-2xl border border-zinc-200">
                 <div>
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-wider block">
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider block">
                     Hashtag & Slug
                   </span>
                   <span className="font-mono font-bold text-[#E6532B] text-xs">
@@ -1654,7 +1649,7 @@ export default function AdminDashboard({ token }) {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-wider block">
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider block">
                     Status
                   </span>
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${viewingCategory.isActive ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
@@ -1664,7 +1659,7 @@ export default function AdminDashboard({ token }) {
               </div>
 
               <div>
-                <h4 className="font-poppins font-bold text-zinc-900 text-xs mb-1">Short Description</h4>
+                <h4 className="font-montserrat font-bold text-zinc-900 text-xs mb-1">Short Description</h4>
                 <p className="text-zinc-600 leading-relaxed bg-zinc-50/50 p-3 rounded-xl border border-zinc-150">
                   {viewingCategory.shortDescription || viewingCategory.description || "No description provided."}
                 </p>
@@ -1672,7 +1667,7 @@ export default function AdminDashboard({ token }) {
 
               {viewingCategory.fullDescription && (
                 <div>
-                  <h4 className="font-poppins font-bold text-zinc-900 text-xs mb-1">Full Overview</h4>
+                  <h4 className="font-montserrat font-bold text-zinc-900 text-xs mb-1">Full Overview</h4>
                   <p className="text-zinc-600 leading-relaxed bg-zinc-50/50 p-3 rounded-xl border border-zinc-150">
                     {viewingCategory.fullDescription}
                   </p>
@@ -1681,7 +1676,7 @@ export default function AdminDashboard({ token }) {
 
               {viewingCategory.taskBrief && (
                 <div>
-                  <h4 className="font-poppins font-bold text-zinc-900 text-xs mb-1">Task & Nomination Brief</h4>
+                  <h4 className="font-montserrat font-bold text-zinc-900 text-xs mb-1">Task & Nomination Brief</h4>
                   <p className="text-zinc-600 leading-relaxed bg-orange-50/50 p-3 rounded-xl border border-orange-150">
                     {viewingCategory.taskBrief}
                   </p>
@@ -1691,13 +1686,13 @@ export default function AdminDashboard({ token }) {
               {/* Prize & Metadata Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 flex flex-col">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Prize Tier</span>
-                  <span className="font-poppins font-extrabold text-zinc-900 text-xs mt-0.5">{viewingCategory.prizeTier || "STANDARD"}</span>
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Prize Tier</span>
+                  <span className="font-montserrat font-extrabold text-zinc-900 text-xs mt-0.5">{viewingCategory.prizeTier || "STANDARD"}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 flex flex-col">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Cash Prize Range</span>
-                  <span className="font-poppins font-extrabold text-[#E6532B] text-xs mt-0.5">
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Cash Prize Range</span>
+                  <span className="font-montserrat font-extrabold text-[#E6532B] text-xs mt-0.5">
                     {viewingCategory.cashPrizeMax > 0
                       ? `₹${Number(viewingCategory.cashPrizeMin).toLocaleString("en-IN")} - ₹${Number(viewingCategory.cashPrizeMax).toLocaleString("en-IN")}`
                       : "Honors Trophy"}
@@ -1714,7 +1709,7 @@ export default function AdminDashboard({ token }) {
                   setViewingCategory(null);
                   handleOpenCategoryModal(viewingCategory);
                 }}
-                className="px-4 py-2 rounded-xl bg-orange-50 text-[#E6532B] hover:bg-orange-100 font-poppins font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-orange-50 text-[#E6532B] hover:bg-orange-100 font-montserrat font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <FaEdit className="w-3.5 h-3.5" />
                 <span>Edit Category</span>
@@ -1722,7 +1717,7 @@ export default function AdminDashboard({ token }) {
 
               <button
                 onClick={() => setViewingCategory(null)}
-                className="px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-poppins font-bold text-xs transition-colors cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-montserrat font-bold text-xs transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -1736,13 +1731,13 @@ export default function AdminDashboard({ token }) {
       {isCategoryModalOpen && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up max-h-[92vh] overflow-y-auto">
-            
+
             <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#E6532B] flex items-center justify-center">
                   <FaThList className="w-4 h-4" />
                 </div>
-                <h2 className="text-base font-poppins font-bold text-zinc-950 uppercase tracking-tight">
+                <h2 className="text-base font-montserrat font-bold text-zinc-950 uppercase tracking-tight">
                   {editingCategory ? "Edit Category (Admin Schema)" : "Add New Category (Admin Schema)"}
                 </h2>
               </div>
@@ -1755,22 +1750,21 @@ export default function AdminDashboard({ token }) {
             </div>
 
             {categoryActionMsg && (
-              <div className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${
-                categoryActionMsg.toLowerCase().includes("failed") || categoryActionMsg.toLowerCase().includes("required")
-                  ? "bg-rose-50 border border-rose-200 text-rose-800"
-                  : "bg-emerald-50 border border-emerald-200 text-emerald-800"
-              }`}>
+              <div className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${categoryActionMsg.toLowerCase().includes("failed") || categoryActionMsg.toLowerCase().includes("required")
+                ? "bg-rose-50 border border-rose-200 text-rose-800"
+                : "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                }`}>
                 <FaCheck className="w-4 h-4 shrink-0" />
                 <span>{categoryActionMsg}</span>
               </div>
             )}
 
-            <form onSubmit={handleSaveCategory} className="flex flex-col gap-4 text-xs font-inter">
-              
+            <form onSubmit={handleSaveCategory} className="flex flex-col gap-4 text-xs font-montserrat">
+
               {/* Row 1: Title & Slug */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">
+                  <label className="font-montserrat font-bold text-zinc-700">
                     Category Title <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -1784,7 +1778,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">
+                  <label className="font-montserrat font-bold text-zinc-700">
                     Slug (Auto-generated if empty)
                   </label>
                   <input
@@ -1800,7 +1794,7 @@ export default function AdminDashboard({ token }) {
               {/* Row 2: Category Image Upload & Image URL */}
               <div className="flex flex-col gap-2.5 bg-zinc-50/80 p-4 rounded-2xl border border-zinc-200">
                 <div className="flex items-center justify-between">
-                  <label className="font-poppins font-bold text-zinc-800 text-xs flex items-center gap-1.5">
+                  <label className="font-montserrat font-bold text-zinc-800 text-xs flex items-center gap-1.5">
                     <FaImage className="w-3.5 h-3.5 text-[#E6532B]" />
                     <span>Category Banner Image</span>
                     <span className="text-rose-500">*</span>
@@ -1809,7 +1803,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  
+
                   {/* File Upload Dropzone */}
                   <div className="relative border-2 border-dashed border-zinc-300 hover:border-[#E6532B] rounded-xl p-3 bg-white flex flex-col items-center justify-center text-center transition-all cursor-pointer group">
                     <input
@@ -1819,15 +1813,15 @@ export default function AdminDashboard({ token }) {
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
                     <FaCloudUploadAlt className="w-6 h-6 text-zinc-400 group-hover:text-[#E6532B] transition-colors mb-1" />
-                    <span className="font-poppins font-bold text-xs text-zinc-700 group-hover:text-[#E6532B]">
+                    <span className="font-montserrat font-bold text-xs text-zinc-700 group-hover:text-[#E6532B]">
                       Upload Image File
                     </span>
-                    <span className="text-[10px] text-zinc-400 font-inter">PNG, JPG, WEBP (Max 8MB)</span>
+                    <span className="text-[10px] text-zinc-400 font-montserrat">PNG, JPG, WEBP (Max 8MB)</span>
                   </div>
 
                   {/* Direct Image URL input */}
                   <div className="flex flex-col justify-center gap-1.5">
-                    <span className="text-[11px] font-poppins font-semibold text-zinc-600">Or Enter Image Web Link (URL)</span>
+                    <span className="text-[11px] font-montserrat font-semibold text-zinc-600">Or Enter Image Web Link (URL)</span>
                     <div className="relative">
                       <input
                         type="url"
@@ -1856,7 +1850,7 @@ export default function AdminDashboard({ token }) {
                         }}
                       />
                       <div className="flex flex-col min-w-0">
-                        <span className="text-[10px] font-poppins font-bold text-emerald-600 uppercase flex items-center gap-1">
+                        <span className="text-[10px] font-montserrat font-bold text-emerald-600 uppercase flex items-center gap-1">
                           <FaCheck className="w-2.5 h-2.5" /> Image Attached
                         </span>
                         <span className="text-[11px] font-mono text-zinc-600 truncate max-w-[280px]">
@@ -1868,7 +1862,7 @@ export default function AdminDashboard({ token }) {
                     <button
                       type="button"
                       onClick={() => setCategoryForm({ ...categoryForm, image: "" })}
-                      className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-poppins font-bold text-[11px] flex items-center gap-1 transition-colors shrink-0 cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-montserrat font-bold text-[11px] flex items-center gap-1 transition-colors shrink-0 cursor-pointer"
                       title="Remove Attached Image"
                     >
                       <FaTrash className="w-3 h-3" />
@@ -1881,7 +1875,7 @@ export default function AdminDashboard({ token }) {
               {/* Row 3: Tier & Prize Tier */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">
+                  <label className="font-montserrat font-bold text-zinc-700">
                     Tier Category
                   </label>
                   <select
@@ -1897,7 +1891,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">
+                  <label className="font-montserrat font-bold text-zinc-700">
                     Prize Tier
                   </label>
                   <select
@@ -1916,7 +1910,7 @@ export default function AdminDashboard({ token }) {
               {/* Row 4: Cash Prize Min & Max */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">
+                  <label className="font-montserrat font-bold text-zinc-700">
                     Cash Prize Min (₹)
                   </label>
                   <input
@@ -1929,7 +1923,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">
+                  <label className="font-montserrat font-bold text-zinc-700">
                     Cash Prize Max (₹)
                   </label>
                   <input
@@ -1945,7 +1939,7 @@ export default function AdminDashboard({ token }) {
               {/* Row 5: Short Description & Hashtag */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2 flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">
+                  <label className="font-montserrat font-bold text-zinc-700">
                     Short Description <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -1959,7 +1953,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">
+                  <label className="font-montserrat font-bold text-zinc-700">
                     Hashtag
                   </label>
                   <input
@@ -1974,7 +1968,7 @@ export default function AdminDashboard({ token }) {
 
               {/* Row 6: Full Description & Task Brief */}
               <div className="flex flex-col gap-1.5">
-                <label className="font-poppins font-bold text-zinc-700">
+                <label className="font-montserrat font-bold text-zinc-700">
                   Full Description & Scope
                 </label>
                 <textarea
@@ -1987,7 +1981,7 @@ export default function AdminDashboard({ token }) {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="font-poppins font-bold text-zinc-700">
+                <label className="font-montserrat font-bold text-zinc-700">
                   Task Brief (Submission Guidelines for Applicants)
                 </label>
                 <textarea
@@ -2008,7 +2002,7 @@ export default function AdminDashboard({ token }) {
                     onChange={(e) => setCategoryForm({ ...categoryForm, isActive: e.target.checked })}
                     className="w-4 h-4 accent-[#E6532B] rounded"
                   />
-                  <span className="font-poppins font-bold text-zinc-700 text-xs">Active Category</span>
+                  <span className="font-montserrat font-bold text-zinc-700 text-xs">Active Category</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -2018,7 +2012,7 @@ export default function AdminDashboard({ token }) {
                     onChange={(e) => setCategoryForm({ ...categoryForm, isFeatured: e.target.checked })}
                     className="w-4 h-4 accent-amber-500 rounded"
                   />
-                  <span className="font-poppins font-bold text-zinc-700 text-xs flex items-center gap-1">
+                  <span className="font-montserrat font-bold text-zinc-700 text-xs flex items-center gap-1">
                     <FaStar className="w-3 h-3 text-amber-500" /> Featured Category
                   </span>
                 </label>
@@ -2029,14 +2023,14 @@ export default function AdminDashboard({ token }) {
                 <button
                   type="button"
                   onClick={() => setIsCategoryModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-zinc-300 text-zinc-700 font-poppins font-bold hover:bg-zinc-100 transition-colors cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl border border-zinc-300 text-zinc-700 font-montserrat font-bold hover:bg-zinc-100 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={categorySaving}
-                  className="px-6 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-poppins font-bold shadow-xs transition-all cursor-pointer flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold shadow-xs transition-all cursor-pointer flex items-center gap-2"
                 >
                   {categorySaving ? "Saving Category..." : editingCategory ? "Save Category Changes" : "Create Category"}
                 </button>
@@ -2051,13 +2045,13 @@ export default function AdminDashboard({ token }) {
       {isParticipantModalOpen && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up">
-            
+
             <div className="flex items-center justify-between border-b border-zinc-150 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#E6532B] flex items-center justify-center">
                   <FaEdit className="w-4 h-4" />
                 </div>
-                <h3 className="font-poppins font-bold text-base text-zinc-900">
+                <h3 className="font-montserrat font-bold text-base text-zinc-900">
                   Edit Participant Details
                 </h3>
               </div>
@@ -2070,20 +2064,19 @@ export default function AdminDashboard({ token }) {
             </div>
 
             {participantActionMsg && (
-              <div className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${
-                participantActionMsg.toLowerCase().includes("failed") || participantActionMsg.toLowerCase().includes("required")
-                  ? "bg-rose-50 border border-rose-200 text-rose-800"
-                  : "bg-emerald-50 border border-emerald-200 text-emerald-800"
-              }`}>
+              <div className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${participantActionMsg.toLowerCase().includes("failed") || participantActionMsg.toLowerCase().includes("required")
+                ? "bg-rose-50 border border-rose-200 text-rose-800"
+                : "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                }`}>
                 <FaCheck className="w-4 h-4 shrink-0" />
                 <span>{participantActionMsg}</span>
               </div>
             )}
 
-            <form onSubmit={handleSaveParticipant} className="flex flex-col gap-4 text-xs font-inter">
-              
+            <form onSubmit={handleSaveParticipant} className="flex flex-col gap-4 text-xs font-montserrat">
+
               <div className="flex flex-col gap-1.5">
-                <label className="font-poppins font-bold text-zinc-700">
+                <label className="font-montserrat font-bold text-zinc-700">
                   Participant Full Name <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -2097,7 +2090,7 @@ export default function AdminDashboard({ token }) {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="font-poppins font-bold text-zinc-700">
+                <label className="font-montserrat font-bold text-zinc-700">
                   Nomination Title / Submission Work
                 </label>
                 <input
@@ -2111,7 +2104,7 @@ export default function AdminDashboard({ token }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">Category</label>
+                  <label className="font-montserrat font-bold text-zinc-700">Category</label>
                   <input
                     type="text"
                     value={participantForm.category}
@@ -2121,7 +2114,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">District</label>
+                  <label className="font-montserrat font-bold text-zinc-700">District</label>
                   <select
                     value={participantForm.district}
                     onChange={(e) => setParticipantForm({ ...participantForm, district: e.target.value })}
@@ -2136,7 +2129,7 @@ export default function AdminDashboard({ token }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">Mobile Phone</label>
+                  <label className="font-montserrat font-bold text-zinc-700">Mobile Phone</label>
                   <input
                     type="text"
                     value={participantForm.phone}
@@ -2146,7 +2139,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">Email Address</label>
+                  <label className="font-montserrat font-bold text-zinc-700">Email Address</label>
                   <input
                     type="email"
                     value={participantForm.email}
@@ -2158,7 +2151,7 @@ export default function AdminDashboard({ token }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">Public Votes Count</label>
+                  <label className="font-montserrat font-bold text-zinc-700">Public Votes Count</label>
                   <input
                     type="number"
                     value={participantForm.publicVotes}
@@ -2168,7 +2161,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-poppins font-bold text-zinc-700">Application Status</label>
+                  <label className="font-montserrat font-bold text-zinc-700">Application Status</label>
                   <select
                     value={participantForm.status}
                     onChange={(e) => setParticipantForm({ ...participantForm, status: e.target.value })}
@@ -2185,14 +2178,14 @@ export default function AdminDashboard({ token }) {
                 <button
                   type="button"
                   onClick={() => setIsParticipantModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-zinc-300 text-zinc-700 font-poppins font-bold hover:bg-zinc-100 transition-colors cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl border border-zinc-300 text-zinc-700 font-montserrat font-bold hover:bg-zinc-100 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={participantSaving}
-                  className="px-6 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-poppins font-bold shadow-xs transition-all cursor-pointer flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold shadow-xs transition-all cursor-pointer flex items-center gap-2"
                 >
                   {participantSaving ? "Saving..." : "Save Participant Changes"}
                 </button>
@@ -2208,7 +2201,7 @@ export default function AdminDashboard({ token }) {
       {selectedItem && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up">
-            
+
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
               <div className="flex items-center gap-3">
@@ -2219,7 +2212,7 @@ export default function AdminDashboard({ token }) {
                   <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider">
                     {selectedItem.applicationId || "Nominee Profile"}
                   </span>
-                  <h3 className="font-poppins font-extrabold text-base text-zinc-950">
+                  <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
                     {selectedItem.name || selectedItem.title}
                   </h3>
                 </div>
@@ -2234,49 +2227,49 @@ export default function AdminDashboard({ token }) {
             </div>
 
             {/* Modal Body */}
-            <div className="flex flex-col gap-3.5 text-xs font-inter">
-              
+            <div className="flex flex-col gap-3.5 text-xs font-montserrat">
+
               {/* Votes & Status Hero Banner */}
               <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl p-4 flex items-center justify-between shadow-md">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-poppins font-bold uppercase tracking-widest text-orange-100">
+                  <span className="text-[10px] font-montserrat font-bold uppercase tracking-widest text-orange-100">
                     TOTAL PUBLIC VOTES
                   </span>
-                  <span className="text-2xl font-poppins font-black text-white mt-0.5">
+                  <span className="text-2xl font-montserrat font-black text-white mt-0.5">
                     {Number(selectedItem.publicVotes || 0).toLocaleString("en-IN")} Votes
                   </span>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-md font-poppins font-bold text-xs">
+                <span className="px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-md font-montserrat font-bold text-xs">
                   {selectedItem.status || "APPROVED"}
                 </span>
               </div>
 
               {/* Data Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                
+
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Category</span>
-                  <span className="font-poppins font-bold text-zinc-900 text-xs">
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Category</span>
+                  <span className="font-montserrat font-bold text-zinc-900 text-xs">
                     {selectedItem.category || "General"}
                   </span>
                 </div>
 
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">District</span>
-                  <span className="font-poppins font-bold text-zinc-900 text-xs">
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">District</span>
+                  <span className="font-montserrat font-bold text-zinc-900 text-xs">
                     {selectedItem.district || "Raipur"}
                   </span>
                 </div>
 
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Mobile Phone</span>
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Mobile Phone</span>
                   <span className="font-mono font-medium text-zinc-800 text-xs">
                     {selectedItem.phone || "Not Provided"}
                   </span>
                 </div>
 
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Email Address</span>
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Email Address</span>
                   <span className="font-mono font-medium text-zinc-800 text-xs truncate">
                     {selectedItem.email || "Not Provided"}
                   </span>
@@ -2286,10 +2279,10 @@ export default function AdminDashboard({ token }) {
 
               {/* Work / Title */}
               <div className="bg-zinc-50 p-3.5 rounded-xl border border-zinc-200 flex flex-col gap-1">
-                <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">
+                <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">
                   Nomination Submission Title
                 </span>
-                <p className="font-poppins font-semibold text-zinc-800 leading-relaxed text-xs">
+                <p className="font-montserrat font-semibold text-zinc-800 leading-relaxed text-xs">
                   {selectedItem.title || "Nomination Candidate Submission"}
                 </p>
               </div>
@@ -2304,7 +2297,7 @@ export default function AdminDashboard({ token }) {
                   setSelectedItem(null);
                   handleDeleteParticipant(item._id || item.id, item.name);
                 }}
-                className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-poppins font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-montserrat font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <FaTrash className="w-3.5 h-3.5" />
                 <span>Delete Candidate</span>
@@ -2317,7 +2310,7 @@ export default function AdminDashboard({ token }) {
                     setSelectedItem(null);
                     handleOpenEditParticipant(item);
                   }}
-                  className="px-4 py-2 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-poppins font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-montserrat font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <FaEdit className="w-3.5 h-3.5" />
                   <span>Edit Details</span>
@@ -2325,7 +2318,7 @@ export default function AdminDashboard({ token }) {
 
                 <button
                   onClick={() => setSelectedItem(null)}
-                  className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-poppins font-bold text-xs transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-montserrat font-bold text-xs transition-colors cursor-pointer"
                 >
                   Close
                 </button>
@@ -2340,17 +2333,17 @@ export default function AdminDashboard({ token }) {
       {viewingUser && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up max-h-[90vh] overflow-y-auto">
-            
+
             <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm border border-emerald-200">
                   {(viewingUser.name || "User").substring(0, 2).toUpperCase()}
                 </div>
                 <div className="flex flex-col">
-                  <h3 className="font-poppins font-extrabold text-base text-zinc-950">
+                  <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
                     {viewingUser.name || "Registered User"}
                   </h3>
-                  <span className="text-xs font-inter text-zinc-400 font-medium">User Profile & Account Info</span>
+                  <span className="text-xs font-montserrat text-zinc-400 font-medium">User Profile & Account Info</span>
                 </div>
               </div>
               <button
@@ -2361,25 +2354,25 @@ export default function AdminDashboard({ token }) {
               </button>
             </div>
 
-            <div className="flex flex-col gap-4 text-xs font-inter text-zinc-700">
+            <div className="flex flex-col gap-4 text-xs font-montserrat text-zinc-700">
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Email Address</span>
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Email Address</span>
                   <span className="font-semibold text-zinc-900 truncate">{viewingUser.email}</span>
                 </div>
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Mobile Number</span>
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Mobile Number</span>
                   <span className="font-mono font-semibold text-zinc-900">{viewingUser.phone || "N/A"}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">Assigned Role</span>
-                  <span className="font-poppins font-bold text-emerald-800 uppercase">{viewingUser.role || "CREATOR"}</span>
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Assigned Role</span>
+                  <span className="font-montserrat font-bold text-emerald-800 uppercase">{viewingUser.role || "CREATOR"}</span>
                 </div>
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-poppins font-bold text-zinc-400 uppercase">District</span>
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">District</span>
                   <span className="font-semibold text-zinc-900">{viewingUser.district || "Raipur"}</span>
                 </div>
               </div>
@@ -2388,7 +2381,7 @@ export default function AdminDashboard({ token }) {
             <div className="flex justify-end border-t border-zinc-150 pt-4 mt-1">
               <button
                 onClick={() => setViewingUser(null)}
-                className="px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-poppins font-bold text-xs transition-colors cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-montserrat font-bold text-xs transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -2402,9 +2395,9 @@ export default function AdminDashboard({ token }) {
       {isUserModalOpen && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up max-h-[90vh] overflow-y-auto">
-            
+
             <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
-              <h3 className="font-poppins font-extrabold text-base text-zinc-950">
+              <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
                 Edit User Account & Role
               </h3>
               <button
@@ -2421,9 +2414,9 @@ export default function AdminDashboard({ token }) {
               </div>
             )}
 
-            <form onSubmit={handleSaveUser} className="flex flex-col gap-4 text-xs font-inter">
+            <form onSubmit={handleSaveUser} className="flex flex-col gap-4 text-xs font-montserrat">
               <div className="flex flex-col gap-1">
-                <label className="font-poppins font-bold text-zinc-700">Full Name</label>
+                <label className="font-montserrat font-bold text-zinc-700">Full Name</label>
                 <input
                   type="text"
                   value={userForm.name}
@@ -2435,7 +2428,7 @@ export default function AdminDashboard({ token }) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
-                  <label className="font-poppins font-bold text-zinc-700">Role</label>
+                  <label className="font-montserrat font-bold text-zinc-700">Role</label>
                   <select
                     value={userForm.role}
                     onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
@@ -2449,7 +2442,7 @@ export default function AdminDashboard({ token }) {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="font-poppins font-bold text-zinc-700">Status</label>
+                  <label className="font-montserrat font-bold text-zinc-700">Status</label>
                   <select
                     value={userForm.status}
                     onChange={(e) => setUserForm({ ...userForm, status: e.target.value })}
@@ -2466,13 +2459,13 @@ export default function AdminDashboard({ token }) {
                 <button
                   type="button"
                   onClick={() => setIsUserModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-zinc-200 hover:bg-zinc-100 text-zinc-700 font-poppins font-bold text-xs cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-zinc-200 hover:bg-zinc-100 text-zinc-700 font-montserrat font-bold text-xs cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-poppins font-bold text-xs shadow-xs cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold text-xs shadow-xs cursor-pointer"
                 >
                   Save User Changes
                 </button>

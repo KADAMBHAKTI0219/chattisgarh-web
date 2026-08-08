@@ -82,7 +82,7 @@ export default function DashboardLayout({ children }) {
   const mainMenuLinks = isAdmin ? adminMenuLinks : creatorMenuLinks;
 
   return (
-    <div className="h-screen max-h-screen overflow-hidden bg-[#F8FAFC] font-sans text-zinc-900 flex flex-col lg:flex-row relative">
+    <div className="h-screen max-h-screen overflow-hidden bg-[#F8FAFC] font-montserrat text-zinc-900 flex flex-col lg:flex-row relative">
       
       {/* Mobile Top Header */}
       <div className="lg:hidden bg-white border-b border-zinc-200/80 px-4 py-3 flex items-center justify-between shrink-0 z-40 shadow-2xs">
