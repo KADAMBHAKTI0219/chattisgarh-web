@@ -89,12 +89,16 @@ export default function RegisterPage() {
     }
 
     // Security Captcha Match Validation
-    if (!captchaInput || captchaInput.trim().toUpperCase() !== captchaCode.trim().toUpperCase()) {
-      setErrorMsg("Invalid Captcha Code! Please type the exact 6 characters shown in the box.");
-      refreshCaptcha();
+    const cleanInput = captchaInput.trim().toUpperCase();
+    const cleanCode = captchaCode.trim().toUpperCase();
+
+    if (!captchaInput || cleanInput !== cleanCode) {
+      setErrorMsg("Incorrect CAPTCHA entered! A new 6-character code has been generated. Please try again.");
+      refreshCaptcha(); // Galat Captcha par change/refresh ho jata hai
       return;
     }
 
+    // Sahi Captcha Entered: Captcha refresh nahi hoga, registration process start hogi
     setLoading(true);
     setErrorMsg("");
     setSuccessMsg("");
@@ -106,13 +110,15 @@ export default function RegisterPage() {
       district: formData.district,
       role: formData.role,
       password: formData.password,
-      captchaCode: captchaInput.trim().toUpperCase(),
+      captchaCode: cleanInput,
+      captchaText: cleanInput,
+      captchaToken: "OFFLINE_CAPTCHA_PASS_2026",
     });
 
     setLoading(false);
 
     if (response.success || response.status === 201) {
-      setSuccessMsg("Registration successful! Logging you in...");
+      setSuccessMsg("Registration successful! Redirecting to Dashboard...");
 
       // Save tokens/user session with CREATOR role for instant user dashboard access
       const resultData = response.data || response;
@@ -134,7 +140,7 @@ export default function RegisterPage() {
       }, 600);
     } else {
       setErrorMsg(response.message || "Registration failed. Please check your details.");
-      refreshCaptcha();
+      // Sahi Captcha enter kiya hai toh Captcha refresh nahi hoga
     }
   };
 

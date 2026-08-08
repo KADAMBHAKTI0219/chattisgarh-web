@@ -214,10 +214,10 @@ export default function DashboardLayout({ children }) {
       <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
         
         {/* Top Navbar Header */}
-        <header className="bg-white border-b border-zinc-200/80 px-6 py-4 flex items-center justify-between gap-4 shrink-0 z-30 shadow-2xs">
-          <div className="flex flex-col text-left">
-            <span className="text-xs text-zinc-500 font-inter font-medium">Welcome back,</span>
-            <h1 className="text-xl sm:text-2xl font-poppins font-extrabold text-zinc-950 flex items-center gap-1.5 mt-0.5">
+        <header className="bg-white border-b border-zinc-200/80 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 shrink-0 z-30 shadow-2xs">
+          <div className="flex flex-col text-left min-w-0">
+            <span className="text-[11px] sm:text-xs text-zinc-500 font-inter font-medium">Welcome back,</span>
+            <h1 className="text-base sm:text-2xl font-poppins font-extrabold text-zinc-950 flex items-center gap-1.5 mt-0.5 truncate">
               <span>{isAdmin ? "Admin" : userName}</span> 👋
             </h1>
             <p className="text-xs font-inter text-zinc-500 hidden sm:block mt-0.5">
