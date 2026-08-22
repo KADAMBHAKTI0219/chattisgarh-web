@@ -22,317 +22,6 @@ const mapTierSlug = (tierStr) => {
   return "culture";
 };
 
-// 25 Official Award Categories
-const STATIC_CATEGORIES = [
-  // Culture & Tourism (6)
-  {
-    id: 1,
-    tier: "culture",
-    tierLabel: "Culture & Tourism",
-    title: "Chhattisgarhiya Sanskriti Ambassador",
-    image: "/assets/images/raipur_landmark.jpg",
-    description: "Celebrating creators showcasing regional heritage, folk music, and local traditions.",
-    taskBrief: "Create a video highlighting traditional art, dance, or folk festivals of Chhattisgarh.",
-    color: "#C15B3D",
-    cashPrizeMin: 50000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 2,
-    tier: "culture",
-    tierLabel: "Culture & Tourism",
-    title: "Tribal Heritage Creator",
-    image: "/assets/images/chattisgarh_fall.jpg",
-    description: "Showcasing indigenous Bastar arts, tribal life, and folk customs.",
-    taskBrief: "Share stories celebrating tribal culture, festivals, and indigenous heritage.",
-    color: "#C15B3D",
-    cashPrizeMin: 50000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 3,
-    tier: "culture",
-    tierLabel: "Culture & Tourism",
-    title: "Best Food & Culinary Creator",
-    image: "/assets/images/category-3.jpg",
-    description: "Discovering classic Chhattisgarhi recipes, local ingredients, and street food.",
-    taskBrief: "Present authentic Chhattisgarhi dishes and local food culture.",
-    color: "#C15B3D",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 4,
-    tier: "culture",
-    tierLabel: "Culture & Tourism",
-    title: "Best Travel & Destination Creator",
-    image: "/assets/images/category-4.jpg",
-    description: "Guiding travelers to hidden waterfalls, forests, and cultural landmarks.",
-    taskBrief: "Highlight unexplored travel spots and eco-tourism in Chhattisgarh.",
-    color: "#C15B3D",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 5,
-    tier: "culture",
-    tierLabel: "Culture & Tourism",
-    title: "Folk Music & Performing Arts",
-    image: "/assets/images/category-5.jpg",
-    description: "Panthi, Karma, Raut Nacha and traditional musical storytelling.",
-    taskBrief: "Perform or document traditional Chhattisgarhi folk dance and music.",
-    color: "#C15B3D",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 6,
-    tier: "culture",
-    tierLabel: "Culture & Tourism",
-    title: "Heritage Photography & Vlog",
-    image: "/assets/images/category-6.jpg",
-    description: "Visual documentation of ancient temples, forts, and monuments.",
-    taskBrief: "Capture stunning photography or cinematic vlogs of historical sites.",
-    color: "#C15B3D",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-
-  // Tech & Media (7)
-  {
-    id: 7,
-    tier: "tech",
-    tierLabel: "Tech & Media",
-    title: "Tech & Civic Innovation Pioneer",
-    image: "/assets/images/category-7.jpg",
-    description: "Honoring creators bringing awareness to AI, smart governance, and innovation.",
-    taskBrief: "Demonstrate how digital initiatives improve public services and civic life.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 300000
-  },
-  {
-    id: 8,
-    tier: "tech",
-    tierLabel: "Tech & Media",
-    title: "Best YouTube Creator of the Year",
-    image: "/assets/images/category-8.jpg",
-    description: "Celebrating high-quality storytelling, cinematography, and long-form video excellence.",
-    taskBrief: "Submit your best YouTube long-form content highlighting innovation or story.",
-    color: "#2E5C31",
-    cashPrizeMin: 50000,
-    cashPrizeMax: 200000
-  },
-  {
-    id: 9,
-    tier: "tech",
-    tierLabel: "Tech & Media",
-    title: "Best Instagram Reel Creator",
-    image: "/assets/images/category-9.jpg",
-    description: "Recognizing high-impact vertical reels, daily trends, and short-form clips.",
-    taskBrief: "Submit creative Instagram reel content reaching wide digital audiences.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 10,
-    tier: "tech",
-    tierLabel: "Tech & Media",
-    title: "Digital Educator & Knowledge Creator",
-    image: "/assets/images/category-10.jpg",
-    description: "EdTech, competitive exam guidance, and skill development content.",
-    taskBrief: "Share educational videos helping students and youth gain skills.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 11,
-    tier: "tech",
-    tierLabel: "Tech & Media",
-    title: "Gaming & Esports Innovator",
-    image: "/assets/images/category-11.jpg",
-    description: "Esports live streaming, game design, and digital gaming entertainment.",
-    taskBrief: "Highlight gaming tournaments, streams, or game development in state.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 12,
-    tier: "tech",
-    tierLabel: "Tech & Media",
-    title: "Podcast & Voice Storyteller",
-    image: "/assets/images/category-12.jpg",
-    description: "Audio podcasts, voice-over commentary, and audio storytelling.",
-    taskBrief: "Submit an audio podcast episode discussing state culture or technology.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 13,
-    tier: "tech",
-    tierLabel: "Tech & Media",
-    title: "Infotainment & News Journalist",
-    image: "/assets/images/category-13.jpg",
-    description: "Fact-checked civic news, regional reporting, and social analysis.",
-    taskBrief: "Produce informative news or journalism pieces addressing key local issues.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-
-  // Social Impact & Welfare (6)
-  {
-    id: 14,
-    tier: "impact",
-    tierLabel: "Social Impact & Welfare",
-    title: "Swachh State & Eco Advocate",
-    image: "/assets/images/category-14.jpg",
-    description: "Campaigning for public cleanliness, local recycling, and waste management.",
-    taskBrief: "Document community environmental campaigns or cleanliness initiatives.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 15,
-    tier: "impact",
-    tierLabel: "Social Impact & Welfare",
-    title: "Women Empowerment Icon",
-    image: "/assets/images/category-15.jpg",
-    description: "Supporting women entrepreneurs, self-help groups, and social equity.",
-    taskBrief: "Share stories of women leaders and community change-makers.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 16,
-    tier: "impact",
-    tierLabel: "Social Impact & Welfare",
-    title: "Youth Upliftment & Career Mentor",
-    image: "/assets/images/event_presentation.jpg",
-    description: "Guiding youth towards employment, sports, and leadership development.",
-    taskBrief: "Create content mentoring youth for career and leadership growth.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 17,
-    tier: "impact",
-    tierLabel: "Social Impact & Welfare",
-    title: "Health, Wellness & Fitness Creator",
-    image: "/assets/images/category-17.jpg",
-    description: "Promoting physical fitness, mental wellness, and yoga awareness.",
-    taskBrief: "Promote healthy lifestyle, mental wellness, or fitness routines.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 18,
-    tier: "impact",
-    tierLabel: "Social Impact & Welfare",
-    title: "Agriculture & Krishi Innovator",
-    image: "/assets/images/category-18.jpg",
-    description: "Organic farming techniques, smart agriculture, and krishi technology.",
-    taskBrief: "Highlight innovative farming methods or agricultural success stories.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 19,
-    tier: "impact",
-    tierLabel: "Social Impact & Welfare",
-    title: "Animal Welfare & Nature Protector",
-    image: "/assets/images/category-19.jpg",
-    description: "Wildlife conservation, stray animal care, and forest protection.",
-    taskBrief: "Share initiatives protecting wildlife or caring for stray animals.",
-    color: "#2E5C31",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-
-  // Arts & Heritage (6)
-  {
-    id: 20,
-    tier: "arts",
-    tierLabel: "Arts & Heritage",
-    title: "Digital Craftsman & Micro-Creator",
-    image: "/assets/images/category-20.jpg",
-    description: "Spotlighting emerging nano creators, digital artists, and handicraft storytellers.",
-    taskBrief: "Share a story celebrating local artisan skills, handlooms, or crafts.",
-    color: "#D39B2C",
-    cashPrizeMin: 10000,
-    cashPrizeMax: 100000
-  },
-  {
-    id: 21,
-    tier: "arts",
-    tierLabel: "Arts & Heritage",
-    title: "Dhokra & Bell Metal Craft Promoter",
-    image: "/assets/images/category-21.jpg",
-    description: "Showcasing the ancient non-ferrous metal casting craft and tribal artisans.",
-    taskBrief: "Promote traditional Dhokra art making and artisan craftsmanship.",
-    color: "#D39B2C",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 22,
-    tier: "arts",
-    tierLabel: "Arts & Heritage",
-    title: "Kosa Silk & Handloom Ambassador",
-    image: "/assets/images/category-22.jpg",
-    description: "Chhattisgarhi Kosa silk weavers, handlooms, and indigenous fashion.",
-    taskBrief: "Highlight traditional Kosa silk weaving and artisan heritage.",
-    color: "#D39B2C",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 23,
-    tier: "arts",
-    tierLabel: "Arts & Heritage",
-    title: "Terracotta & Clay Art Champion",
-    image: "/assets/images/category-23.jpg",
-    description: "Traditional pottery, terracotta art, and indigenous clay mural work.",
-    taskBrief: "Showcase clay pottery artisans and traditional terracotta art forms.",
-    color: "#D39B2C",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 24,
-    tier: "arts",
-    tierLabel: "Arts & Heritage",
-    title: "Tattoo & Godna Art Storyteller",
-    image: "/assets/images/category-24.jpg",
-    description: "Preserving traditional Godna tribal body art, motifs, and history.",
-    taskBrief: "Document historical Godna art traditions and indigenous stories.",
-    color: "#D39B2C",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  },
-  {
-    id: 25,
-    tier: "arts",
-    tierLabel: "Arts & Heritage",
-    title: "Indigenous Performing Artist",
-    image: "/assets/images/category-25.jpg",
-    description: "Promoting Pandavani, Raut Nacha, and traditional folk theatre.",
-    taskBrief: "Perform or document traditional Chhattisgarhi stage art and theatre.",
-    color: "#D39B2C",
-    cashPrizeMin: 25000,
-    cashPrizeMax: 50000
-  }
-];
-
 export default function AwardCategoriesSection() {
   const { t } = useLanguage();
   const { openModal } = useParticipateModal();
@@ -344,31 +33,32 @@ export default function AwardCategoriesSection() {
   // Fetch Categories from Backend API on mount
   useEffect(() => {
     async function loadApiCategories() {
-      const res = await categoryService.getCategories({ isActive: true });
-      if (res.success && res.categories && res.categories.length > 0) {
-        setApiCategories(res.categories);
+      try {
+        const res = await categoryService.getCategories({ isActive: true });
+        if (res.success && Array.isArray(res.categories)) {
+          setApiCategories(res.categories);
+        } else if (Array.isArray(res.data)) {
+          setApiCategories(res.data);
+        }
+      } catch (err) {
+        console.warn("Failed to load API categories in AwardCategoriesSection:", err);
       }
     }
     loadApiCategories();
   }, []);
 
-  // Merge API categories if present with static categories
-  const allCategoriesList = apiCategories.length > 0
-    ? [
-      ...apiCategories.map((cat, idx) => ({
-        id: cat._id || `api-${idx}`,
-        tier: mapTierSlug(cat.tier),
-        title: cat.title,
-        image: cat.image || "/assets/images/raipur_landmark.jpg",
-        description: cat.shortDescription || cat.taskBrief || "",
-        taskBrief: cat.taskBrief || "",
-        cashPrizeMin: cat.cashPrizeMin || 25000,
-        cashPrizeMax: cat.cashPrizeMax || 100000,
-        color: cat.tier?.includes("CULTURE") ? "#C15B3D" : cat.tier?.includes("NATION") ? "#2E5C31" : "#D39B2C"
-      })),
-      ...STATIC_CATEGORIES
-    ]
-    : STATIC_CATEGORIES;
+  // Format categories strictly from API
+  const allCategoriesList = apiCategories.map((cat, idx) => ({
+    id: cat._id || `api-${idx}`,
+    tier: mapTierSlug(cat.tier),
+    title: cat.title || cat.name || "Award Category",
+    image: cat.image || "/assets/images/raipur_landmark.jpg",
+    description: cat.shortDescription || cat.description || cat.taskBrief || "",
+    taskBrief: cat.taskBrief || "",
+    cashPrizeMin: cat.cashPrizeMin || 25000,
+    cashPrizeMax: cat.cashPrizeMax || 100000,
+    color: cat.tier?.includes("CULTURE") ? "#C15B3D" : cat.tier?.includes("NATION") ? "#2E5C31" : "#D39B2C"
+  }));
 
   // Deduplicate by title
   const uniqueCategories = Array.from(

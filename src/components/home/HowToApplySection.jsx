@@ -73,7 +73,7 @@ export default function HowToApplySection() {
         {/* Section Header */}
         <Heading
           badge={t("Process Timeline")}
-          title={t("HOW TO")}
+          title={t("HOW TO BE")}
           highlightText={t("NOMINATE")}
           description={t("From Submission to State Recognition — Just Four Simple Steps. A transparent and creator-friendly journey designed to recognize the voices shaping the digital identity of Chhattisgarh.")}
           className="mb-14 lg:mb-18"
@@ -82,14 +82,8 @@ export default function HowToApplySection() {
         {/* Creative Interactive Timeline Flow Container */}
         <div className="relative w-full max-w-[1340px]">
 
-          {/* Connecting Progress Track Line for Desktop */}
-          <div className="hidden lg:block absolute top-[28px] left-[8%] right-[8%] h-[3px] bg-[#21593D]/15 rounded-full z-0">
-            {/* Animated Glowing Progress Line following active step */}
-            <div
-              className="h-full bg-gradient-to-r from-[#C45A32] via-[#D4A534] to-[#21593D] rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(212,165,52,0.6)]"
-              style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }}
-            />
-          </div>
+          {/* Connecting Colorful Track Line for Desktop (Always 100% Full) */}
+          <div className="hidden lg:block absolute top-[28px] left-[8%] right-[8%] h-[3px] bg-gradient-to-r from-[#C45A32] via-[#D4A534] to-[#21593D] rounded-full z-0 shadow-[0_0_12px_rgba(212,165,52,0.4)]" />
 
           {/* 4 Steps Flow Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 relative z-10">
@@ -106,15 +100,10 @@ export default function HowToApplySection() {
                   {/* Step Node Circle Badge */}
                   <div
                     className={`relative flex items-center justify-center w-14 h-14 rounded-full border-2 transition-all duration-500 z-20 shadow-md ${isCurrent
-                        ? "bg-white border-[#D4A534] scale-110 shadow-[0_0_24px_rgba(212,165,52,0.4)]"
-                        : "bg-white/90 border-[#21593D]/20 hover:border-[#C45A32]/60 hover:scale-105"
+                      ? "bg-white border-[#D4A534] scale-110 shadow-[0_0_24px_rgba(212,165,52,0.4)]"
+                      : "bg-white/90 border-[#21593D]/20 hover:border-[#C45A32]/60 hover:scale-105"
                       }`}
                   >
-                    {/* Glowing Ring on Active */}
-                    {isCurrent && (
-                      <span className="absolute -inset-1.5 rounded-full border border-[#D4A534]/50 animate-ping pointer-events-none" />
-                    )}
-
                     <span
                       className="font-poppins font-extrabold text-base transition-colors"
                       style={{ color: step.color }}
@@ -126,8 +115,8 @@ export default function HowToApplySection() {
                   {/* Step Card Container */}
                   <div
                     className={`mt-6 w-full flex-1 rounded-[28px] p-6 sm:p-7 flex flex-col items-center text-center gap-4 transition-all duration-500 border ${isCurrent
-                        ? "bg-white border-[#D4A534] shadow-[0_20px_50px_rgba(212,165,52,0.18)] -translate-y-2 ring-1 ring-[#D4A534]/30"
-                        : "bg-white/80 backdrop-blur-md border-[#21593D]/15 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:border-[#C45A32]/50 hover:shadow-[0_15px_40px_rgba(196,90,50,0.12)] hover:-translate-y-1"
+                      ? "bg-white border-[#D4A534] shadow-[0_20px_50px_rgba(212,165,52,0.18)] -translate-y-2 ring-1 ring-[#D4A534]/30"
+                      : "bg-white/80 backdrop-blur-md border-[#21593D]/15 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:border-[#C45A32]/50 hover:shadow-[0_15px_40px_rgba(196,90,50,0.12)] hover:-translate-y-1"
                       }`}
                   >
                     {/* Top Watermark Step Number & Category Badge */}

@@ -22,8 +22,14 @@ export const userService = {
   },
 
   // 5. Get All Users (Admin only)
-  async getAllUsers(params = {}, token) {
-    return await fetchApi("/users/all", { method: "GET", params, token });
+  async getAllUsers(paramsOrToken = {}, token = null) {
+    let params = paramsOrToken;
+    let authToken = token;
+    if (typeof paramsOrToken === "string") {
+      authToken = paramsOrToken;
+      params = {};
+    }
+    return await fetchApi("/users/all", { method: "GET", params, token: authToken });
   },
 };
 

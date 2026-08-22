@@ -27,7 +27,8 @@ import {
   FaCalendarAlt,
   FaBookOpen,
   FaQuestionCircle,
-  FaGlobe
+  FaGlobe,
+  FaNewspaper
 } from "react-icons/fa";
 
 export default function DashboardLayout({ children }) {
@@ -63,6 +64,7 @@ export default function DashboardLayout({ children }) {
     { name: "Public Votes", href: "/dashboard?tab=votes", tabKey: "votes", icon: FaVoteYea },
     { name: "Participants", href: "/dashboard?tab=participants", tabKey: "participants", icon: FaUsers },
     { name: "Users", href: "/dashboard?tab=users", tabKey: "users", icon: FaUserCircle },
+    { name: "News & Press", href: "/dashboard?tab=news", tabKey: "news", icon: FaNewspaper },
     { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: "3" },
     { name: "Reports", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
     { name: "Settings", href: "/dashboard/settings", tabKey: "settings", icon: FaCog },

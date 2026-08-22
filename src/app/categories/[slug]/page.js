@@ -17,8 +17,7 @@ import {
     FaChevronRight,
     FaArrowLeft,
     FaSearch,
-    FaHashtag,
-    FaRupeeSign
+    FaSpinner
 } from "react-icons/fa";
 
 // Tier definitions matching system design
@@ -63,109 +62,13 @@ const TIERS = {
 // Map backend tier enum string to frontend slug
 const mapTierSlug = (tierStr) => {
     if (!tierStr) return "culture";
-    if (tierStr === "A_CULTURE_IDENTITY") return "culture";
-    if (tierStr === "B_NATION_STATE_BUILDING") return "tech";
-    if (tierStr === "C_CRAFT_PLATFORM") return "arts";
-    const lower = String(tierStr).toLowerCase();
-    if (lower.includes("culture") || lower.includes("heritage")) return "culture";
-    if (lower.includes("tech") || lower.includes("nation")) return "tech";
-    if (lower.includes("impact") || lower.includes("welfare")) return "impact";
-    if (lower.includes("craft") || lower.includes("art")) return "arts";
+    const str = String(tierStr).toUpperCase();
+    if (str === "A_CULTURE_IDENTITY" || str.includes("CULTURE") || str.includes("HERITAGE") || str.includes("TOURISM")) return "culture";
+    if (str === "B_NATION_STATE_BUILDING" || str.includes("TECH") || str.includes("MEDIA") || str.includes("NATION")) return "tech";
+    if (str.includes("IMPACT") || str.includes("WELFARE") || str.includes("SOCIAL")) return "impact";
+    if (str === "C_CRAFT_PLATFORM" || str.includes("CRAFT") || str.includes("ART")) return "arts";
     return "culture";
 };
-
-// Full fallback list of Award Categories
-const STATIC_CATEGORIES = [
-    {
-        id: 101,
-        tier: "culture",
-        title: "Chhattisgarhiya Sanskriti Ambassador",
-        image: "/assets/images/raipur_landmark.jpg",
-        description: "Celebrating creators showcasing regional heritage, folk music, and local cultural traditions.",
-        taskBrief: "Create an engaging video highlighting traditional art, dance, or folk festivals of the state.",
-        hashtag: "#ChhattisgarhiyaSanskriti",
-        cashPrizeMin: 50000,
-        cashPrizeMax: 50000
-    },
-    {
-        id: 102,
-        tier: "tech",
-        title: "Tech & Civic Innovation Pioneer",
-        image: "/assets/images/emerging awards.jpg",
-        description: "Honoring creators bringing awareness to AI, smart governance, and infrastructure development.",
-        taskBrief: "Produce a video demonstrating how digital initiatives improve public services and citizen welfare.",
-        hashtag: "#GovTechBuilder",
-        cashPrizeMin: 25000,
-        cashPrizeMax: 300000
-    },
-    {
-        id: 103,
-        tier: "arts",
-        title: "Digital Craftsman & Micro-Creator",
-        image: "/assets/images/category-1.jpg",
-        description: "Spotlighting emerging nano creators, digital artists, and handicraft storytellers.",
-        taskBrief: "Share a story celebrating local artisan skills, handlooms, or sustainable eco-crafts.",
-        hashtag: "#MicroCraftCreator",
-        cashPrizeMin: 10000,
-        cashPrizeMax: 100000
-    },
-    {
-        id: 1,
-        tier: "culture",
-        title: "Sanskriti Ambassador",
-        image: "/assets/images/raipur_landmark.jpg",
-        description: "Promoting Chhattisgarh's rich heritage, historical temples, and vibrant folk festivals."
-    },
-    {
-        id: 2,
-        tier: "culture",
-        title: "Tribal Heritage Creator",
-        image: "/assets/images/chattisgarh_fall.jpg",
-        description: "Showcasing indigenous Bastar arts, folk traditions, and local languages."
-    },
-    {
-        id: 8,
-        tier: "culture",
-        title: "Best Food Creator",
-        image: "/assets/images/food-award.webp",
-        description: "Discovering classic Chhattisgarhi recipes, local ingredients, and street-food gems."
-    },
-    {
-        id: 9,
-        tier: "culture",
-        title: "Best Travel Creator",
-        image: "/assets/images/travellor award.jpg",
-        description: "Guiding travelers to hidden waterfalls, forests, and cultural landmarks of Chhattisgarh."
-    },
-    {
-        id: 4,
-        tier: "tech",
-        title: "Best YouTube Creator",
-        image: "/assets/images/creator-award.jpg",
-        description: "Celebrating high-quality storytelling, cinematography, and long-form video excellence."
-    },
-    {
-        id: 5,
-        tier: "tech",
-        title: "Best Instagram Creator",
-        image: "/assets/images/instagramaward.avif",
-        description: "Recognizing high-impact vertical reels, daily trends, and cinematic short-form clips."
-    },
-    {
-        id: 12,
-        tier: "impact",
-        title: "Swachh State Advocate",
-        image: "/assets/images/about-1.jpg",
-        description: "Campaigning for public cleanliness, local recycling initiatives, and waste management."
-    },
-    {
-        id: 14,
-        tier: "arts",
-        title: "Dhokra Art Promoter",
-        image: "/assets/images/category-1.jpg",
-        description: "Showcasing the ancient non-ferrous metal casting craft and its tribal artisans."
-    }
-];
 
 export default function CategorySlugPage({ params }) {
     const resolvedParams = use(params);
@@ -176,39 +79,48 @@ export default function CategorySlugPage({ params }) {
     const { openModal } = useParticipateModal();
     const [searchQuery, setSearchQuery] = useState("");
     const [apiCategories, setApiCategories] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedDetailCategory, setSelectedDetailCategory] = useState(null);
     const tabsRef = useRef(null);
 
     // Fetch Categories from Backend API on mount
     useEffect(() => {
+        let isMounted = true;
         async function loadCategories() {
-            const res = await categoryService.getCategories({ isActive: true });
-            if (res.success && res.categories && res.categories.length > 0) {
-                setApiCategories(res.categories);
+            try {
+                setIsLoading(true);
+                const res = await categoryService.getCategories({ isActive: true });
+                if (isMounted) {
+                    if (res.success && Array.isArray(res.categories)) {
+                        setApiCategories(res.categories);
+                    } else if (Array.isArray(res.data)) {
+                        setApiCategories(res.data);
+                    }
+                }
+            } catch (err) {
+                console.warn("Failed to load categories from API:", err);
+            } finally {
+                if (isMounted) setIsLoading(false);
             }
         }
         loadCategories();
+        return () => { isMounted = false; };
     }, []);
 
-    // Merge API categories with static list
-    const allCategoriesList = apiCategories.length > 0
-        ? [
-            ...apiCategories.map((cat, idx) => ({
-                id: cat._id || `api-${idx}`,
-                tier: mapTierSlug(cat.tier),
-                title: cat.title,
-                image: cat.image || "/assets/images/raipur_landmark.jpg",
-                description: cat.shortDescription || cat.taskBrief || "",
-                taskBrief: cat.taskBrief || "",
-                hashtag: cat.hashtag || "",
-                cashPrizeMin: cat.cashPrizeMin || 0,
-                cashPrizeMax: cat.cashPrizeMax || 0,
-                prizeTier: cat.prizeTier || "",
-                isApi: true
-            })),
-            ...STATIC_CATEGORIES
-        ]
-        : STATIC_CATEGORIES;
+    // Format categories directly from API
+    const allCategoriesList = apiCategories.map((cat, idx) => ({
+        id: cat._id || `api-${idx}`,
+        tier: mapTierSlug(cat.tier),
+        title: cat.title || cat.name || "Award Category",
+        image: cat.image || "/assets/images/raipur_landmark.jpg",
+        description: cat.shortDescription || cat.description || cat.taskBrief || "",
+        taskBrief: cat.taskBrief || "",
+        hashtag: cat.hashtag || "",
+        cashPrizeMin: cat.cashPrizeMin || 0,
+        cashPrizeMax: cat.cashPrizeMax || 0,
+        prizeTier: cat.prizeTier || "",
+        isApi: true
+    }));
 
     // Deduplicate by title
     const uniqueCategories = Array.from(
@@ -234,12 +146,13 @@ export default function CategorySlugPage({ params }) {
         if (slug !== "all" && cat.tier !== slug) return false;
         if (!searchQuery) return true;
         const title = t(cat.title).toLowerCase();
+        const desc = t(cat.description || "").toLowerCase();
         const query = searchQuery.toLowerCase();
-        return title.includes(query);
+        return title.includes(query) || desc.includes(query);
     });
 
     return (
-        <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
+        <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-8 md:gap-10 relative overflow-x-hidden animate-page-enter">
 
             {/* 1. Breadcrumb & Back Navigation */}
             <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto flex items-center justify-between gap-4">
@@ -283,17 +196,20 @@ export default function CategorySlugPage({ params }) {
                             {Object.keys(TIERS).map((key) => {
                                 const tierInfo = TIERS[key];
                                 const isActive = slug === tierInfo.slug;
+                                const categoryCount = uniqueCategories.filter(
+                                    (c) => tierInfo.slug === "all" || c.tier === tierInfo.slug
+                                ).length;
 
                                 return (
                                     <button
                                         key={key}
                                         onClick={() => handleTabClick(tierInfo.slug)}
-                                        className={`shrink-0 px-5 py-2.5 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${isActive
+                                        className={`shrink-0 px-4 sm:px-5 py-2.5 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${isActive
                                             ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
                                             : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
                                             }`}
                                     >
-                                        {t(tierInfo.title)}
+                                        {t(tierInfo.title)} ({categoryCount})
                                     </button>
                                 );
                             })}
@@ -331,51 +247,60 @@ export default function CategorySlugPage({ params }) {
                     </div>
 
                 </div>
-            </div>            {/* 4. Category Cards Grid */}
+            </div>
+
+            {/* 4. Category Cards Grid */}
             <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4">
-                    {filteredCategories.map((cat) => {
-                        const tierData = TIERS[cat.tier] || TIERS.culture;
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center py-24 gap-3 text-zinc-400">
+                        <FaSpinner className="w-8 h-8 animate-spin text-[var(--primary)]" />
+                        <p className="font-inter font-semibold text-sm">Loading Categories...</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4">
+                        {filteredCategories.map((cat) => {
+                            const tierData = TIERS[cat.tier] || TIERS.culture;
 
-                        return (
-                            <div
-                                key={cat.id}
-                                onClick={() => setSelectedDetailCategory(cat)}
-                                className="relative min-h-[165px] xs:min-h-[175px] sm:min-h-[185px] rounded-2xl overflow-hidden group border border-zinc-200/80 hover:border-[var(--primary)] shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-3 sm:p-4 text-left"
-                            >
-                                {/* Background Image */}
-                                <img
-                                    src={cat.image}
-                                    alt={t(cat.title)}
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100 z-0 bg-zinc-900"
-                                    loading="lazy"
-                                />
+                            return (
+                                <div
+                                    key={cat.id}
+                                    onClick={() => setSelectedDetailCategory(cat)}
+                                    className="relative min-h-[175px] xs:min-h-[185px] sm:min-h-[195px] rounded-2xl overflow-hidden group border border-zinc-200/80 hover:border-[var(--primary)] shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-3 sm:p-4 text-left"
+                                >
+                                    {/* Background Image */}
+                                    <img
+                                        src={cat.image}
+                                        alt={t(cat.title)}
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100 z-0 bg-zinc-900"
+                                        loading="lazy"
+                                    />
 
-                                {/* Dark Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
+                                    {/* Dark Gradient Overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
 
-                                {/* Tier Badge */}
-                                <div className="absolute top-2 left-2 xs:top-2.5 xs:left-2.5 z-20 max-w-[90%]">
-                                    <span
-                                        className="inline-block text-[8px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
-                                        style={{ backgroundColor: tierData.color }}
-                                    >
-                                        {t(tierData.title)}
-                                    </span>
+                                    {/* Tier Badge */}
+                                    <div className="absolute top-2 left-2 xs:top-2.5 xs:left-2.5 z-20 max-w-[90%]">
+                                        <span
+                                            className="inline-block text-[8px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
+                                            style={{ backgroundColor: tierData.color }}
+                                        >
+                                            {t(tierData.title)}
+                                        </span>
+                                    </div>
+
+                                    {/* Content Overlay */}
+                                    <div className="relative z-20 flex flex-col justify-end w-full">
+                                        <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
+                                            {t(cat.title)}
+                                        </h3>
+                                    </div>
                                 </div>
+                            );
+                        })}
+                    </div>
+                )}
 
-                                {/* Content Overlay */}
-                                <div className="relative z-20 flex flex-col justify-end w-full">
-                                    <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
-                                        {t(cat.title)}
-                                    </h3>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {filteredCategories.length === 0 && (
+                {!isLoading && filteredCategories.length === 0 && (
                     <div className="text-zinc-500 font-inter font-bold text-base py-20 bg-white/60 border border-zinc-200 rounded-3xl text-center">
                         No categories match your query.
                     </div>

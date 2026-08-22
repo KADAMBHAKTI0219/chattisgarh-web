@@ -15,7 +15,7 @@ export default function SearchPage() {
     { title: "Culture & Tribal Heritage", type: "Category", link: "/categories/culture", desc: "Showcasing folk dance, art, rituals, and regional traditions of Bastar & Chhattisgarh." },
     { title: "Tourism & Travel Vlogger", type: "Category", link: "/categories/tourism", desc: "Discovering waterfalls, Chitrakote, Sirpur temples, and wildlife sanctuaries." },
     { title: "Who Can Apply for Chhattisgarh Awards?", type: "FAQ", link: "/contact", desc: "Eligibility rules for creators aged 18+ and under-18 creators with guardian consent." },
-    { title: "Registration Opened For State Creator Awards 2026", type: "News", link: "/news/1", desc: "Official press announcement by Department of Culture & Tourism." },
+    { title: "Registration Opened For State Creator Awards 2026", type: "News", link: "/news/chhattisgarh-creator-awards-2026-registration-opened", desc: "Official press announcement by Department of Culture & Tourism." },
     { title: "Accessibility Statement & Guidelines", type: "Page", link: "/accessibility-statement", desc: "Inclusive digital accessibility compliance for screen readers and modern browsers." },
     { title: "Privacy Policy & Data Security", type: "Page", link: "/privacy-policy", desc: "Official data protection rules for applicant creator profiles." },
   ];

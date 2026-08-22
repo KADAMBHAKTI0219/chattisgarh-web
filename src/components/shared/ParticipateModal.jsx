@@ -56,9 +56,13 @@ export default function ParticipateModal() {
   // Fetch active categories from Backend API on mount
   useEffect(() => {
     async function loadCategories() {
-      const res = await categoryService.getCategories({ isActive: true });
-      if (res.success && res.categories && res.categories.length > 0) {
-        setApiCategories(res.categories);
+      try {
+        const res = await categoryService.getCategories({ isActive: true });
+        if (res.success && Array.isArray(res.categories) && res.categories.length > 0) {
+          setApiCategories(res.categories);
+        }
+      } catch (err) {
+        console.warn("Failed to load categories in ParticipateModal:", err);
       }
     }
     loadCategories();

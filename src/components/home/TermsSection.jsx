@@ -25,7 +25,7 @@ export default function TermsSection() {
       items: [
         { label: "Originality", text: "Fresh ideas and authentic storytelling." },
         { label: "Quality", text: "Creative presentation, editing, and production value." },
-        { label: "Impact", text: "Positive engagement and meaningful audience connection." },
+        { label: "Impact", text: "Positive engagement and meaningful audience connections." },
         { label: "Relevance", text: "Content that celebrates or contributes to Chhattisgarh’s culture, tourism, innovation, or society." },
         { label: "Overall Excellence", text: "The complete value and consistency of your work." }
       ]
@@ -43,10 +43,10 @@ export default function TermsSection() {
       id: "conduct",
       title: "CODE OF CONDUCT & COMPLIANCE",
       items: [
-        { label: "Original Content", text: "Submit only original content that you own or have the rights to use." },
-        { label: "Community Guidelines", text: "Content must follow community guidelines and applicable laws." },
-        { label: "Disqualification", text: "Any misleading information, plagiarism, or misuse may lead to disqualification." },
-        { label: "Official Agreement", text: "By participating, applicants agree to the official rules and verification process." }
+        { label: "Original Content", text: "All submitted material must be authentic, original intellectual property fully owned by the applicant or explicitly licensed with verified usage rights." },
+        { label: "Community Guidelines", text: "Submissions must strictly adhere to digital platform policies, statutory regulations, and applicable Indian media & IT laws." },
+        { label: "Disqualification", text: "Any evidence of plagiarism, copyright infringement, fraudulent engagement, or misleading declarations will result in immediate disqualification." },
+        { label: "Official Agreement", text: "Nomination submission constitutes binding agreement to all official award regulations, jury protocols, and verification procedures." }
       ]
     }
   ];
@@ -107,9 +107,8 @@ export default function TermsSection() {
 
                 {/* Plus / Minus indicator, rounded-md */}
                 <span
-                  className={`shrink-0 flex items-center justify-center w-7 h-7 md:w-8 md:h-8 border border-zinc-200 bg-zinc-50 rounded-lg transition-transform duration-200 ${
-                    isOpen ? "rotate-45" : "rotate-0"
-                  }`}
+                  className={`shrink-0 flex items-center justify-center w-7 h-7 md:w-8 md:h-8 border border-zinc-200 bg-zinc-50 rounded-lg transition-transform duration-200 ${isOpen ? "rotate-45" : "rotate-0"
+                    }`}
                 >
                   <span className="relative w-3.5 h-3.5">
                     <span className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-zinc-400"></span>
@@ -123,9 +122,8 @@ export default function TermsSection() {
                 id={`panel-${section.id}`}
                 role="region"
                 aria-labelledby={`heading-${section.id}`}
-                className={`grid transition-all duration-300 ease-in-out ${
-                  isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                }`}
+                className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
               >
                 <div className="overflow-hidden">
                   <ul className="flex flex-col gap-2.5 list-none px-5 pb-4 pt-1 md:px-6 md:pb-5 border-t border-zinc-150">

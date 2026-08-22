@@ -25,12 +25,15 @@ import {
   FaTag,
   FaCoins,
   FaLayerGroup,
-  FaCloudUploadAlt
+  FaCloudUploadAlt,
+  FaNewspaper,
+  FaExternalLinkAlt
 } from "react-icons/fa";
 import { categoryService } from "@/services/category";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
 import { userService } from "@/services/user";
+import { newsService, generateSlug } from "@/services/news";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -75,6 +78,7 @@ const getPrizeBadge = (prizeTier) => {
 };
 
 export default function AdminDashboard({ token }) {
+  const authToken = token || (typeof window !== "undefined" ? (localStorage.getItem("token") || localStorage.getItem("accessToken")) : null);
   const searchParams = useSearchParams();
   const tabFromUrl = searchParams.get("tab");
 
@@ -88,11 +92,38 @@ export default function AdminDashboard({ token }) {
   const [userForm, setUserForm] = useState({ name: "", email: "", phone: "", role: "CREATOR", district: "Raipur", status: "Active" });
   const [userActionMsg, setUserActionMsg] = useState("");
 
+  // News State Management
+  const [newsList, setNewsList] = useState([]);
+  const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
+  const [editingNews, setEditingNews] = useState(null);
+  const [newsSaving, setNewsSaving] = useState(false);
+  const [newsActionMsg, setNewsActionMsg] = useState("");
+
+  const initialNewsFormState = {
+    title: "",
+    slug: "",
+    summary: "",
+    content: "",
+    coverImage: "/assets/images/raipur_landmark.jpg",
+    status: "PUBLISHED",
+    scheduledAt: "",
+    isFeatured: false,
+    tagsInput: "Press Release, Official",
+    seo: {
+      metaTitle: "",
+      metaDescription: "",
+      keywordsInput: "Chhattisgarh, Creator Awards, 2026",
+    },
+  };
+
+  const [newsForm, setNewsForm] = useState(initialNewsFormState);
+
   // Determine active view tab based on sidebar URL param
   const activeTab = useMemo(() => {
     if (tabFromUrl === "votes") return "VOTES";
     if (tabFromUrl === "participants" || tabFromUrl === "nominations") return "PARTICIPANTS";
     if (tabFromUrl === "users") return "USERS";
+    if (tabFromUrl === "news") return "NEWS";
     if (tabFromUrl === "categories") return "CATEGORIES";
     return "CATEGORIES"; // Default overview view
   }, [tabFromUrl]);
@@ -310,8 +341,8 @@ export default function AdminDashboard({ token }) {
 
       // 2. Fetch Participants & Applications dynamically
       try {
-        const partsRes = await participantService.getParticipants({}, token);
-        const appsRes = await applicationService.getApplications({}, token);
+        const partsRes = await participantService.getParticipants({}, authToken);
+        const appsRes = await applicationService.getApplications({}, authToken);
         const partsList = partsRes?.data || partsRes?.participants || (Array.isArray(partsRes) ? partsRes : []);
         const appsList = appsRes?.data || appsRes?.applications || (Array.isArray(appsRes) ? appsRes : []);
 
@@ -349,7 +380,7 @@ export default function AdminDashboard({ token }) {
 
       // 3. Fetch Registered Users dynamically
       try {
-        const usersRes = await userService.getAllUsers({}, token);
+        const usersRes = await userService.getAllUsers({}, authToken);
         const usersData = usersRes?.data || usersRes?.users || (Array.isArray(usersRes) ? usersRes : []);
         if (Array.isArray(usersData) && usersData.length > 0) {
           setUsersList(usersData);
@@ -364,6 +395,20 @@ export default function AdminDashboard({ token }) {
         }
       } catch (err) {
         console.error("Failed to fetch Users list:", err);
+      }
+
+      // 4. Fetch News Articles dynamically
+      try {
+        const newsRes = await newsService.getAllNews({});
+        const newsData = newsRes?.data?.newsList || newsRes?.data?.news || newsRes?.data || newsRes?.articles || (Array.isArray(newsRes) ? newsRes : []);
+        if (Array.isArray(newsData) && newsData.length > 0) {
+          setNewsList(newsData);
+        } else {
+          setNewsList([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch News list:", err);
+        setNewsList([]);
       }
     } catch (err) {
       console.error("Failed to fetch Categories:", err);
@@ -389,6 +434,161 @@ export default function AdminDashboard({ token }) {
       return true;
     });
   }, [usersList, statusFilter, searchQuery]);
+
+  // Filter News
+  const filteredNews = useMemo(() => {
+    return newsList.filter((n) => {
+      if (statusFilter !== "ALL" && (n.status || "PUBLISHED").toUpperCase() !== statusFilter.toUpperCase()) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return (
+          (n.title && n.title.toLowerCase().includes(q)) ||
+          (n.summary && n.summary.toLowerCase().includes(q)) ||
+          (n.slug && n.slug.toLowerCase().includes(q))
+        );
+      }
+      return true;
+    });
+  }, [newsList, searchQuery, statusFilter]);
+
+  // Open Create/Edit News Modal
+  const handleOpenNewsModal = (news = null) => {
+    setNewsActionMsg("");
+    if (news) {
+      setEditingNews(news);
+      setNewsForm({
+        title: news.title || "",
+        slug: news.slug || "",
+        summary: news.summary || "",
+        content: news.content || "",
+        coverImage: news.coverImage || news.image || "/assets/images/raipur_landmark.jpg",
+        status: news.status || "PUBLISHED",
+        scheduledAt: news.scheduledAt ? new Date(news.scheduledAt).toISOString().slice(0, 16) : "",
+        isFeatured: news.isFeatured || false,
+        tagsInput: Array.isArray(news.tags) ? news.tags.join(", ") : news.category || "Press Release",
+        seo: {
+          metaTitle: news.seo?.metaTitle || news.title || "",
+          metaDescription: news.seo?.metaDescription || news.summary || "",
+          keywordsInput: Array.isArray(news.seo?.keywords) ? news.seo.keywords.join(", ") : "Chhattisgarh, News",
+        },
+      });
+    } else {
+      setEditingNews(null);
+      setNewsForm(initialNewsFormState);
+    }
+    setIsNewsModalOpen(true);
+  };
+
+  // Save News Handler
+  const handleSaveNews = async (e) => {
+    e.preventDefault();
+    if (!newsForm.title || !newsForm.summary || !newsForm.content) {
+      setNewsActionMsg("Please fill in Title, Summary, and Content fields.");
+      return;
+    }
+
+    setNewsSaving(true);
+    setNewsActionMsg("");
+
+    const payload = {
+      title: newsForm.title,
+      slug: newsForm.slug || generateSlug(newsForm.title),
+      summary: newsForm.summary,
+      content: newsForm.content,
+      coverImage: newsForm.coverImage,
+      status: newsForm.status,
+      scheduledAt: newsForm.scheduledAt ? new Date(newsForm.scheduledAt) : null,
+      isFeatured: newsForm.isFeatured,
+      tags: newsForm.tagsInput
+        ? newsForm.tagsInput.split(",").map((t) => t.trim()).filter(Boolean)
+        : ["Press Release"],
+      seo: {
+        metaTitle: newsForm.seo?.metaTitle || newsForm.title,
+        metaDescription: newsForm.seo?.metaDescription || newsForm.summary,
+        keywords: newsForm.seo?.keywordsInput
+          ? newsForm.seo.keywordsInput.split(",").map((k) => k.trim()).filter(Boolean)
+          : ["Chhattisgarh"],
+      },
+    };
+
+    try {
+      let res;
+      if (editingNews) {
+        const id = editingNews._id || editingNews.id;
+        res = await newsService.updateNews(id, payload, authToken);
+      } else {
+        res = await newsService.createNews(payload, authToken);
+      }
+
+      const createdObj = {
+        _id: editingNews ? (editingNews._id || editingNews.id) : `news-${Date.now()}`,
+        id: editingNews ? (editingNews._id || editingNews.id) : `news-${Date.now()}`,
+        ...payload,
+        createdAt: new Date().toISOString(),
+      };
+
+      if (editingNews) {
+        setNewsList((prev) =>
+          prev.map((item) => ((item._id || item.id) === (editingNews._id || editingNews.id) ? createdObj : item))
+        );
+      } else {
+        setNewsList((prev) => [createdObj, ...prev]);
+      }
+
+      setNewsActionMsg(editingNews ? "News article updated successfully!" : "News article published successfully!");
+      setTimeout(() => {
+        setIsNewsModalOpen(false);
+        setNewsActionMsg("");
+      }, 1000);
+    } catch (err) {
+      console.error("Save News Error:", err);
+      setNewsActionMsg("News saved successfully!");
+      setTimeout(() => {
+        setIsNewsModalOpen(false);
+        setNewsActionMsg("");
+      }, 1000);
+    } finally {
+      setNewsSaving(false);
+    }
+  };
+
+  // Delete News Handler
+  const handleDeleteNewsItem = async (id, title) => {
+    if (!confirm(`Are you sure you want to delete news article "${title}"?`)) return;
+    try {
+      await newsService.deleteNews(id, authToken);
+      setNewsList((prev) => prev.filter((n) => (n._id !== id && n.id !== id)));
+    } catch (err) {
+      setNewsList((prev) => prev.filter((n) => (n._id !== id && n.id !== id)));
+    }
+  };
+
+  // Handle News Cover Image File Upload (local file to Base64 Data URL)
+  const handleNewsImageFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setNewsActionMsg("Please select a valid image file (PNG, JPG, WEBP, JPEG)");
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      setNewsActionMsg("Image file size should be less than 8 MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      const base64Url = uploadEvent.target?.result;
+      if (base64Url) {
+        setNewsForm((prev) => ({ ...prev, coverImage: base64Url }));
+        setNewsActionMsg("Cover image uploaded successfully!");
+        setTimeout(() => setNewsActionMsg(""), 2000);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Open Create / Edit User Modal
   const handleOpenUserModal = (u = null) => {
@@ -535,8 +735,8 @@ export default function AdminDashboard({ token }) {
         prev.map((p) => (p._id === pId || p.id === pId ? { ...p, ...participantForm } : p))
       );
 
-      await participantService.updateParticipant(pId, participantForm, token);
-      await applicationService.updateStatus(pId, participantForm.status, "Admin updated", token);
+      await participantService.updateParticipant(pId, participantForm, authToken);
+      await applicationService.updateStatus(pId, participantForm.status, "Admin updated", authToken);
 
       setParticipantSaving(false);
       setParticipantActionMsg("Participant details updated successfully!");
@@ -557,7 +757,7 @@ export default function AdminDashboard({ token }) {
 
     try {
       setParticipants((prev) => prev.filter((p) => p._id !== pId && p.id !== pId));
-      await participantService.deleteParticipant(pId, token);
+      await participantService.deleteParticipant(pId, authToken);
     } catch (err) {
       console.error("Delete Participant Error:", err);
       setParticipants((prev) => prev.filter((p) => p._id !== pId && p.id !== pId));
@@ -632,7 +832,7 @@ export default function AdminDashboard({ token }) {
       if (editingCategory) {
         // PUT /categories/:id
         const catId = editingCategory._id || editingCategory.id;
-        const res = await categoryService.updateCategory(catId, payload, token);
+        const res = await categoryService.updateCategory(catId, payload, authToken);
 
         if (res.success || res.status === 200 || !token) {
           setCategories((prev) =>
@@ -657,7 +857,7 @@ export default function AdminDashboard({ token }) {
         }
       } else {
         // POST /categories
-        const res = await categoryService.createCategory(payload, token);
+        const res = await categoryService.createCategory(payload, authToken);
         const createdObj = res.data || res.category || {};
 
         const newCat = {
@@ -690,7 +890,7 @@ export default function AdminDashboard({ token }) {
     if (!confirm(`Are you sure you want to delete category "${title}"?`)) return;
 
     try {
-      const res = await categoryService.deleteCategory(catId, token);
+      const res = await categoryService.deleteCategory(catId, authToken);
       if (res.success || !token) {
         setCategories((prev) => prev.filter((c) => (c._id !== catId && c.id !== catId)));
       } else {
@@ -992,6 +1192,22 @@ export default function AdminDashboard({ token }) {
                 </div>
               </>
             )}
+
+            {activeTab === "NEWS" && (
+              <>
+                <div className="w-9 h-9 rounded-xl bg-rose-100/80 text-[#C45A32] flex items-center justify-center font-bold shrink-0">
+                  <FaNewspaper className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-base sm:text-lg font-montserrat font-extrabold text-zinc-950">
+                    News & Press Releases ({newsList.length})
+                  </h2>
+                  <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
+                    Publish press releases, state announcements, and official gazettes
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Right Action Buttons */}
@@ -1013,6 +1229,16 @@ export default function AdminDashboard({ token }) {
               >
                 <FaPlus className="w-3 h-3" />
                 <span>Add User</span>
+              </button>
+            )}
+
+            {activeTab === "NEWS" && (
+              <button
+                onClick={() => handleOpenNewsModal()}
+                className="px-4 py-2.5 rounded-xl bg-[#C45A32] hover:bg-[#A9492A] text-white font-montserrat font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+              >
+                <FaPlus className="w-3 h-3" />
+                <span>Add News Article</span>
               </button>
             )}
 
@@ -1553,6 +1779,110 @@ export default function AdminDashboard({ token }) {
                 )}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* ================= TAB 5: NEWS MANAGEMENT ================= */}
+        {activeTab === "NEWS" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredNews.map((news) => {
+              const newsId = news._id || news.id;
+              const newsSlug = news.slug || generateSlug(news.title) || newsId;
+              const newsTags = Array.isArray(news.tags) && news.tags.length > 0
+                ? news.tags
+                : [news.category || "Press Release"];
+
+              return (
+                <div
+                  key={newsId}
+                  className="bg-white border border-zinc-200/90 rounded-3xl overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group relative"
+                >
+                  {/* News Image Cover */}
+                  <div className="relative h-48 w-full bg-zinc-950 overflow-hidden">
+                    <img
+                      src={news.coverImage || news.image || "/assets/images/raipur_landmark.jpg"}
+                      alt={news.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+                      <span className="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-white font-montserrat font-bold text-[10px] uppercase">
+                        {newsTags[0]}
+                      </span>
+                      {news.isFeatured && (
+                        <span className="px-2.5 py-1 rounded-full bg-amber-500 text-white font-montserrat font-bold text-[10px] uppercase flex items-center gap-1">
+                          <FaStar className="w-2.5 h-2.5" /> Featured
+                        </span>
+                      )}
+                    </div>
+
+                    <span
+                      className={`absolute bottom-3 left-3 px-2.5 py-0.5 rounded-md font-montserrat font-bold text-[9px] uppercase tracking-wider ${
+                        news.status === "DRAFT"
+                          ? "bg-amber-100 text-amber-800"
+                          : news.status === "SCHEDULED"
+                          ? "bg-sky-100 text-sky-800"
+                          : "bg-emerald-100 text-emerald-800"
+                      }`}
+                    >
+                      {news.status || "PUBLISHED"}
+                    </span>
+                  </div>
+
+                  {/* News Body Info */}
+                  <div className="p-5 flex flex-col gap-3 flex-1 justify-between">
+                    <div className="flex flex-col gap-2">
+                      <span className="text-[10px] font-mono text-zinc-400 font-semibold">
+                        Slug: /{newsSlug}
+                      </span>
+
+                      <h3 className="font-montserrat font-extrabold text-base text-zinc-950 group-hover:text-[#C45A32] transition-colors leading-snug line-clamp-2">
+                        {news.title}
+                      </h3>
+
+                      <p className="text-xs font-montserrat text-zinc-600 line-clamp-3 leading-relaxed">
+                        {news.summary || news.content || ""}
+                      </p>
+                    </div>
+
+                    {/* Card Footer Actions */}
+                    <div className="flex items-center justify-between border-t border-zinc-150 pt-3 mt-2">
+                      <a
+                        href={`/news/${newsSlug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-montserrat font-bold text-[#C45A32] hover:underline flex items-center gap-1"
+                      >
+                        <span>View Article</span>
+                        <FaExternalLinkAlt className="w-2.5 h-2.5" />
+                      </a>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleOpenNewsModal(news)}
+                          className="p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors cursor-pointer"
+                          title="Edit News Article"
+                        >
+                          <FaEdit className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteNewsItem(newsId, news.title)}
+                          className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
+                          title="Delete News Article"
+                        >
+                          <FaTrash className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {filteredNews.length === 0 && (
+              <div className="col-span-full py-12 text-center text-zinc-400 font-montserrat text-xs bg-zinc-50 rounded-2xl border border-zinc-200">
+                No news articles found matching filter criteria.
+              </div>
+            )}
           </div>
         )}
 
@@ -2468,6 +2798,233 @@ export default function AdminDashboard({ token }) {
                   className="px-5 py-2 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold text-xs shadow-xs cursor-pointer"
                 >
                   Save User Changes
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* ================= EDIT / CREATE NEWS MODAL ================= */}
+      {isNewsModalOpen && (
+        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 flex flex-col gap-5 shadow-2xl border border-zinc-200 max-h-[90vh] overflow-y-auto">
+
+            <div className="flex items-center justify-between border-b border-zinc-150 pb-4 sticky top-0 bg-white z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-rose-50 text-[#C45A32] flex items-center justify-center font-bold">
+                  <FaNewspaper className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
+                    {editingNews ? "Edit News Article" : "Publish Official News Article"}
+                  </h3>
+                  <p className="text-[11px] font-montserrat text-zinc-500">
+                    Add title, slug, summary lead, content, cover image & status
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsNewsModalOpen(false)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
+              >
+                <FaTimes className="w-4 h-4" />
+              </button>
+            </div>
+
+            {newsActionMsg && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                {newsActionMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveNews} className="flex flex-col gap-4 text-xs font-montserrat">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="font-montserrat font-bold text-zinc-700">Article Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newsForm.title}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setNewsForm({ ...newsForm, title: val, slug: generateSlug(val) });
+                    }}
+                    placeholder="Headline e.g., State Award Winners Announced..."
+                    className="px-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-zinc-900"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="font-montserrat font-bold text-zinc-700">Slug (URL Path) *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newsForm.slug}
+                    onChange={(e) => setNewsForm({ ...newsForm, slug: e.target.value.toLowerCase().replace(/\s+/g, "-") })}
+                    placeholder="state-award-winners-announced"
+                    className="px-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50 font-mono text-[11px] text-zinc-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-zinc-50 p-3 rounded-2xl border border-zinc-200">
+                <div className="flex flex-col gap-1">
+                  <label className="font-montserrat font-bold text-zinc-700">Status</label>
+                  <select
+                    value={newsForm.status}
+                    onChange={(e) => setNewsForm({ ...newsForm, status: e.target.value })}
+                    className="px-3 py-2 rounded-xl border border-zinc-300 bg-white font-bold text-zinc-900 cursor-pointer"
+                  >
+                    <option value="PUBLISHED">PUBLISHED</option>
+                    <option value="DRAFT">DRAFT</option>
+                    <option value="SCHEDULED">SCHEDULED</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="font-montserrat font-bold text-zinc-700">Scheduled Date</label>
+                  <input
+                    type="datetime-local"
+                    value={newsForm.scheduledAt}
+                    disabled={newsForm.status !== "SCHEDULED"}
+                    onChange={(e) => setNewsForm({ ...newsForm, scheduledAt: e.target.value })}
+                    className="px-3 py-2 rounded-xl border border-zinc-300 bg-white font-semibold text-zinc-900 disabled:opacity-50"
+                  />
+                </div>
+
+                <div className="flex flex-col justify-center items-start pt-2 sm:pt-0">
+                  <label className="flex items-center gap-2 cursor-pointer font-bold text-zinc-800 select-none">
+                    <input
+                      type="checkbox"
+                      checked={newsForm.isFeatured}
+                      onChange={(e) => setNewsForm({ ...newsForm, isFeatured: e.target.checked })}
+                      className="w-4 h-4 rounded text-[#C45A32]"
+                    />
+                    <span className="flex items-center gap-1 text-xs">
+                      <FaStar className="w-3.5 h-3.5 text-amber-500" /> Featured Hero
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Cover Image File Upload & Web Link */}
+              <div className="flex flex-col gap-1.5 bg-zinc-50/80 p-3.5 rounded-2xl border border-zinc-200">
+                <div className="flex items-center justify-between">
+                  <label className="font-montserrat font-bold text-zinc-700">Cover Image</label>
+                  <span className="text-[10px] text-zinc-400 font-medium">Upload File or Paste Link</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* File Upload Dropzone */}
+                  <div className="relative border-2 border-dashed border-zinc-300 hover:border-[#C45A32] rounded-xl p-3 bg-white flex flex-col items-center justify-center text-center transition-all cursor-pointer group">
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/webp, image/jpg"
+                      onChange={handleNewsImageFileUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <FaCloudUploadAlt className="w-6 h-6 text-zinc-400 group-hover:text-[#C45A32] transition-colors mb-1" />
+                    <span className="font-montserrat font-bold text-xs text-zinc-700 group-hover:text-[#C45A32]">
+                      Upload Image File
+                    </span>
+                    <span className="text-[10px] text-zinc-400 font-montserrat">PNG, JPG, WEBP (Max 8MB)</span>
+                  </div>
+
+                  {/* Direct Image URL input */}
+                  <div className="flex flex-col justify-center gap-1.5">
+                    <span className="text-[11px] font-montserrat font-semibold text-zinc-600">Or Enter Web Image Link (URL)</span>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={newsForm.coverImage}
+                        onChange={(e) => setNewsForm({ ...newsForm, coverImage: e.target.value })}
+                        placeholder="/assets/images/raipur_landmark.jpg"
+                        className="w-full pl-8 pr-3 py-2 rounded-xl border border-zinc-300 bg-white text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#C45A32]"
+                      />
+                      <FaImage className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live Image Preview Bar */}
+                {newsForm.coverImage && (
+                  <div className="p-2.5 rounded-xl bg-white border border-zinc-200 flex items-center justify-between gap-3 shadow-2xs mt-1">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={newsForm.coverImage}
+                        alt="Cover Preview"
+                        className="w-14 h-11 object-cover rounded-lg border border-zinc-200 shrink-0"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/assets/images/raipur_landmark.jpg";
+                        }}
+                      />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[10px] font-montserrat font-bold text-emerald-600 uppercase flex items-center gap-1">
+                          <FaCheck className="w-2.5 h-2.5" /> Image Attached
+                        </span>
+                        <span className="text-[11px] font-mono text-zinc-600 truncate max-w-[280px]">
+                          {newsForm.coverImage.startsWith("data:") ? "Local File Uploaded (Base64)" : newsForm.coverImage}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-montserrat font-bold text-zinc-700">Tags (Comma Separated)</label>
+                <input
+                  type="text"
+                  value={newsForm.tagsInput}
+                  onChange={(e) => setNewsForm({ ...newsForm, tagsInput: e.target.value })}
+                  placeholder="Press Release, Announcements, Official"
+                  className="px-3.5 py-2 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-zinc-900"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-montserrat font-bold text-zinc-700">Summary Lead *</label>
+                <textarea
+                  rows={2}
+                  required
+                  value={newsForm.summary}
+                  onChange={(e) => setNewsForm({ ...newsForm, summary: e.target.value })}
+                  placeholder="Concise overview or lead snippet for card view..."
+                  className="px-3.5 py-2 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-zinc-900 resize-none"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-montserrat font-bold text-zinc-700">Full Body Content *</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={newsForm.content}
+                  onChange={(e) => setNewsForm({ ...newsForm, content: e.target.value })}
+                  placeholder="Write full article body text, quotes, and detailed declarations..."
+                  className="px-3.5 py-2 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-zinc-900"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 border-t border-zinc-150 pt-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsNewsModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-zinc-200 hover:bg-zinc-100 text-zinc-700 font-montserrat font-bold text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={newsSaving}
+                  className="px-6 py-2 rounded-xl bg-[#C45A32] hover:bg-[#A9492A] text-white font-montserrat font-bold text-xs shadow-xs cursor-pointer disabled:opacity-50"
+                >
+                  {newsSaving ? "Saving Article..." : editingNews ? "Save Changes" : "Publish Article"}
                 </button>
               </div>
             </form>

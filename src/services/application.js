@@ -2,8 +2,14 @@ import fetchApi from "./client";
 
 export const applicationService = {
   // 1. Get Applications (Filtered by status, category, district)
-  async getApplications(params = {}, token = null) {
-    return await fetchApi("/applications", { method: "GET", params, token });
+  async getApplications(paramsOrToken = {}, token = null) {
+    let params = paramsOrToken;
+    let authToken = token;
+    if (typeof paramsOrToken === "string") {
+      authToken = paramsOrToken;
+      params = {};
+    }
+    return await fetchApi("/applications", { method: "GET", params, token: authToken });
   },
 
   // 2. Create Nomination Application Draft

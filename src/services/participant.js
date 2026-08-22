@@ -11,8 +11,14 @@ export const participantService = {
   },
 
   // 2. Get All Registered Participants (Admin)
-  async getParticipants(params = {}, token) {
-    return await fetchApi("/participants", { method: "GET", params, token });
+  async getParticipants(paramsOrToken = {}, token = null) {
+    let params = paramsOrToken;
+    let authToken = token;
+    if (typeof paramsOrToken === "string") {
+      authToken = paramsOrToken;
+      params = {};
+    }
+    return await fetchApi("/participants", { method: "GET", params, token: authToken });
   },
 
   // 3. Update Participant Details (Admin)

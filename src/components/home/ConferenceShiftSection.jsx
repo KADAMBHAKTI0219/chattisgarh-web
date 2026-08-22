@@ -19,7 +19,7 @@ const GALLERY_CARDS = [
     title: "Sirpur Heritage",
     subtitle: "7th-Century Temple Complex",
     tag: "Sacred Architecture",
-    image: "/assets/images/raipur_landmark.jpg",
+    image: "/assets/images/about-1.jpg",
     desc: "Ancient brick monuments reflecting centuries of spiritual wisdom and craftsmanship.",
   },
   {
@@ -27,7 +27,7 @@ const GALLERY_CARDS = [
     title: "Bastar Tribal Culture",
     subtitle: "Living Indigenous Arts",
     tag: "Heritage",
-    image: "/assets/images/event-5.jpg",
+    image: "/assets/images/about-4.jpg",
     desc: "Vibrant rhythms, folk dances, and timeless storytelling passed through generations.",
   },
   {
@@ -35,7 +35,7 @@ const GALLERY_CARDS = [
     title: "Digital Innovators",
     subtitle: "Creators Shaping Tomorrow",
     tag: "Digital Ecosystem",
-    image: "/assets/images/event_networking.jpg",
+    image: "/assets/images/digitalinnovators.avif",
     desc: "Local storytellers taking Chhattisgarh's voice to millions across the globe.",
   },
   {
@@ -43,7 +43,7 @@ const GALLERY_CARDS = [
     title: "Sacred Woodlands",
     subtitle: "Heartland of Greenery",
     tag: "Eco-Tourism",
-    image: "/assets/images/about-5.jpg",
+    image: "/assets/images/abouttt-5.jpg",
     desc: "44% forest cover harboring rich biodiversity, wildlife sanctuaries, and natural tranquility.",
   },
 ];
