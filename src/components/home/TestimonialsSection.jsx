@@ -7,98 +7,7 @@ import Heading from "@/components/common/Heading";
 export default function TestimonialsSection() {
   const { t } = useLanguage();
 
-  const testimonials = [
-    {
-      id: 1,
-      name: "Technical Guruji",
-      handle: "@technicalguruji",
-      platform: "YouTube",
-      icon: FaYoutube,
-      color: "#FF0000",
-      role: "Tech Creator & Reviewer",
-      quote: "The State Creator Awards is a massive milestone for us. It gives regional creators a national platform to showcase our rich culture, tech, and innovations.",
-      link: "https://www.youtube.com/c/TechnicalGuruji",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop",
-      cardBg: "bg-gradient-to-br from-[#FFF0F5] via-[#FFF6FA] to-[#FCE4EC]", // Soft Pastel Rose
-      borderColor: "border-[#FBCFE8]",
-      tagBg: "bg-white/90 border-[#F472B6]/40 text-[#BE185D]"
-    },
-    {
-      id: 2,
-      name: "Gaurav Taneja",
-      handle: "@taneja.gaurav",
-      platform: "Instagram",
-      icon: FaInstagram,
-      color: "#E1306C",
-      role: "Pilot & Lifestyle Vlogger",
-      quote: "Nominating content for these official awards is incredibly seamless! Highlighting our heritage and culture has finally found the recognition it deserves.",
-      link: "https://www.instagram.com/taneja.gaurav",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop",
-      cardBg: "bg-gradient-to-br from-[#F0FDF4] via-[#F6FDF9] to-[#DCFCE7]", // Soft Pastel Mint
-      borderColor: "border-[#BBF7D0]",
-      tagBg: "bg-white/90 border-[#4ADE80]/40 text-[#15803D]"
-    },
-    {
-      id: 3,
-      name: "Ashish Chanchlani",
-      handle: "@ashishchanchlani",
-      platform: "Instagram",
-      icon: FaInstagram,
-      color: "#E1306C",
-      role: "Entertainment & Comedy",
-      quote: "This is a proud moment for traditional and new-age artists. Bringing local humor, arts, and lifestyle stories to the digital screen is now celebrated officially!",
-      link: "https://www.instagram.com/ashishchanchlani",
-      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop",
-      cardBg: "bg-gradient-to-br from-[#FFF7ED] via-[#FFFAF3] to-[#FFEDD5]", // Soft Pastel Peach
-      borderColor: "border-[#FED7AA]",
-      tagBg: "bg-white/90 border-[#FB923C]/40 text-[#C2410C]"
-    },
-    {
-      id: 4,
-      name: "Sharan Hegde",
-      handle: "@financewithsharan",
-      platform: "Instagram",
-      icon: FaInstagram,
-      color: "#E1306C",
-      role: "Personal Finance Educator",
-      quote: "Educators and financial creators are finally getting the spotlight. The support from the administration shows their commitment to building a thriving digital economy.",
-      link: "https://www.instagram.com/financewithsharan",
-      avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=150&auto=format&fit=crop",
-      cardBg: "bg-gradient-to-br from-[#F0F9FF] via-[#F5FCFF] to-[#E0F2FE]", // Soft Pastel Sky
-      borderColor: "border-[#BAE6FD]",
-      tagBg: "bg-white/90 border-[#38BDF8]/40 text-[#0369A1]"
-    },
-    {
-      id: 5,
-      name: "Komal Pandey",
-      handle: "@komalpandey212",
-      platform: "Instagram",
-      icon: FaInstagram,
-      color: "#E1306C",
-      role: "Fashion & Style Icon",
-      quote: "Promoting our local handlooms and sustainable styles on social media is my passion. This platform motivates emerging designers and storytellers to keep building.",
-      link: "https://www.instagram.com/komalpandey212",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop",
-      cardBg: "bg-gradient-to-br from-[#FAF5FF] via-[#FCF8FF] to-[#F3E8FF]", // Soft Pastel Lavender
-      borderColor: "border-[#E9D5FF]",
-      tagBg: "bg-white/90 border-[#C084FC]/40 text-[#6B21A8]"
-    },
-    {
-      id: 6,
-      name: "Kabita Singh",
-      handle: "@kabitaskitchen",
-      platform: "YouTube",
-      icon: FaYoutube,
-      color: "#FF0000",
-      role: "Culinary Artist & Recipe Creator",
-      quote: "Teaching traditional cooking online has been a beautiful journey. This initiative validates our effort to make local cuisines accessible to every household.",
-      link: "https://www.youtube.com/c/KabitasKitchen",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop",
-      cardBg: "bg-gradient-to-br from-[#FEFCE8] via-[#FFFDF0] to-[#FEF9C3]", // Soft Pastel Lemon
-      borderColor: "border-[#FEF08A]",
-      tagBg: "bg-white/90 border-[#FACC15]/40 text-[#854D0E]"
-    }
-  ];
+  const testimonials = [{ id: 1, name: "Technical Guruji", handle: "@technicalguruji", platform: "YouTube", icon: FaYoutube, color: "#FF0000", role: "Tech Creator & Reviewer", quote: "Content creation makes technology easier to understand and accessible to everyone. By sharing knowledge, reviews, and innovations, creators can help people make better decisions and stay connected with a rapidly changing digital world.", link: "https://www.youtube.com/c/TechnicalGuruji", avatar: "/assets/images/technicalguruji.webp", cardBg: "bg-gradient-to-br from-[#FFF0F5] via-[#FFF6FA] to-[#FCE4EC]", borderColor: "border-[#FBCFE8]", tagBg: "bg-white/90 border-[#F472B6]/40 text-[#BE185D]" }, { id: 2, name: "Gaurav Taneja", handle: "@taneja.gaurav", platform: "Instagram", icon: FaInstagram, color: "#E1306C", role: "Pilot & Lifestyle Vlogger", quote: "Content creation gives people a chance to share real experiences, inspire others, and see life from different perspectives. Sharing journeys, challenges, and everyday experiences can motivate people to explore, learn, and believe in themselves.", link: "https://www.instagram.com/taneja.gaurav", avatar: "/assets/images/gauravtaneja.webp", cardBg: "bg-gradient-to-br from-[#F0FDF4] via-[#F6FDF9] to-[#DCFCE7]", borderColor: "border-[#BBF7D0]", tagBg: "bg-white/90 border-[#4ADE80]/40 text-[#15803D]" }, { id: 3, name: "Ashish Chanchlani", handle: "@ashishchanchlani", platform: "Instagram", icon: FaInstagram, color: "#E1306C", role: "Entertainment & Comedy", quote: "Content creation is not just about entertainment; it is about connecting people through stories, humor, and shared experiences. Comedy and creative storytelling can spread positivity, bring people together, and make everyday moments more meaningful.", link: "https://www.instagram.com/ashishchanchlani", avatar: "/assets/images/AshishChanchlani.webp", cardBg: "bg-gradient-to-br from-[#FFF7ED] via-[#FFFAF3] to-[#FFEDD5]", borderColor: "border-[#FED7AA]", tagBg: "bg-white/90 border-[#FB923C]/40 text-[#C2410C]" }, { id: 4, name: "Sharan Hegde", handle: "@financewithsharan", platform: "Instagram", icon: FaInstagram, color: "#E1306C", role: "Personal Finance Educator", quote: "Financial content creation can turn complicated money concepts into simple, practical knowledge. When creators educate people about saving, investing, and managing money, they help build better financial habits and a more financially aware generation.", link: "https://www.instagram.com/financewithsharan", avatar: "/assets/images/sharanhegde.webp", cardBg: "bg-gradient-to-br from-[#F0F9FF] via-[#F5FCFF] to-[#E0F2FE]", borderColor: "border-[#BAE6FD]", tagBg: "bg-white/90 border-[#38BDF8]/40 text-[#0369A1]" }, { id: 5, name: "Komal Pandey", handle: "@komalpandey212", platform: "Instagram", icon: FaInstagram, color: "#E1306C", role: "Fashion & Style Icon", quote: "Content creation gives creators the power to express identity, creativity, and culture through fashion and storytelling. It helps bring local styles, traditional crafts, and new ideas to a wider audience while inspiring the next generation of creators.", link: "https://www.instagram.com/komalpandey212", avatar: "/assets/images/komalpandey.jpg", cardBg: "bg-gradient-to-br from-[#FAF5FF] via-[#FCF8FF] to-[#F3E8FF]", borderColor: "border-[#E9D5FF]", tagBg: "bg-white/90 border-[#C084FC]/40 text-[#6B21A8]" }, { id: 6, name: "Kabita Singh", handle: "@kabitaskitchen", platform: "YouTube", icon: FaYoutube, color: "#FF0000", role: "Culinary Artist & Recipe Creator", quote: "Content creation helps preserve traditions by passing knowledge from one generation to another. Sharing traditional recipes and local cuisines online keeps our food culture alive and allows people everywhere to discover and celebrate their heritage.", link: "https://www.youtube.com/c/KabitasKitchen", avatar: "/assets/images/kabitaSingh.jpg", cardBg: "bg-gradient-to-br from-[#FEFCE8] via-[#FFFDF0] to-[#FEF9C3]", borderColor: "border-[#FEF08A]", tagBg: "bg-white/90 border-[#FACC15]/40 text-[#854D0E]" }];
 
   return (
     <section
@@ -144,7 +53,7 @@ export default function TestimonialsSection() {
                 className="w-[260px] h-[340px] sm:w-[310px] sm:h-[370px] xl:w-[350px] xl:h-[410px] 2xl:w-[390px] 2xl:h-[450px] shrink-0 p-6 sm:p-8 xl:p-10 flex flex-col justify-between rounded-3xl border border-zinc-200 bg-white shadow-sm hover:shadow-md hover:border-zinc-300 text-left hover:scale-[1.01] hover:-translate-y-1 transition-all duration-300"
               >
                 {/* Quote */}
-                <p className="font-sans font-medium text-sm sm:text-base xl:text-lg 2xl:text-xl leading-relaxed text-zinc-900">
+                <p className="font-sans font-medium text-xs sm:text-sm xl:text-base 2xl:text-base leading-relaxed text-zinc-900">
                   &ldquo;{t(test.quote)}&rdquo;
                 </p>
 

@@ -50,7 +50,7 @@ export default function Navbar() {
   const NAV_LINKS = [
     { name: "About", href: "/about" },
     { name: "Categories", href: "/categories" },
-    { name: "Winners", href: "/winners" },
+    // { name: "Winners", href: "/winners" },
     { name: "Gallery", href: "/gallery" },
     { name: "News", href: "/news" },
     { name: "Contact", href: "/contact" },
@@ -186,7 +186,7 @@ export default function Navbar() {
                     />
 
                     <div className="absolute right-0 mt-3 w-64 bg-white border border-zinc-200/90 rounded-2xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-150">
-                      
+
                       {/* Profile Header */}
                       <div className="p-4 bg-gradient-to-br from-emerald-50 via-zinc-50 to-orange-50/50 border-b border-zinc-150 flex items-center gap-3">
                         {user?.avatar ? (
