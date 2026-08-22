@@ -5,7 +5,7 @@ import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { ParticipateButton } from "@/components/common/Button";
 
 const DESKTOP_HERO_IMAGE = "/assets/images/herosection.png";
-const MOBILE_HERO_IMAGE = "/assets/images/mob-Hero.png";
+const MOBILE_HERO_IMAGE = "/assets/images/mob-hero.png";
 
 export default function HeroSection() {
   const { openModal } = useParticipateModal();
