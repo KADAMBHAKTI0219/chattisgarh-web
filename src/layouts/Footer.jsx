@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { PhoneCall, Mail, Clock, ArrowUp, QrCode } from "lucide-react";
-import { FaYoutube, FaInstagram, FaFacebookF, FaTwitter, FaLinkedinIn } from "react-icons/fa";
+import { FaYoutube, FaInstagram, FaFacebookF, FaLinkedinIn } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
@@ -22,11 +23,11 @@ export default function Footer() {
   const backToTopText = "BACK TO TOP";
 
   const socialLinks = [
-    { name: "Twitter", icon: FaTwitter, link: "#twitter" },
-    { name: "Facebook", icon: FaFacebookF, link: "#facebook" },
-    { name: "YouTube", icon: FaYoutube, link: "#youtube" },
-    { name: "Instagram", icon: FaInstagram, link: "#instagram" },
-    { name: "LinkedIn", icon: FaLinkedinIn, link: "#linkedin" },
+    { name: "Twitter / X", icon: FaXTwitter, link: "https://x.com/cgmygov" },
+    { name: "Facebook", icon: FaFacebookF, link: "https://www.facebook.com/mygovcg/" },
+    { name: "YouTube", icon: FaYoutube, link: "https://www.youtube.com/channel/UCOcSIE1R6TlskjcQg3gO_rA" },
+    { name: "Instagram", icon: FaInstagram, link: "https://www.instagram.com/cgmygov/" },
+    { name: "LinkedIn", icon: FaLinkedinIn, link: "https://www.linkedin.com/in/cg-mygov-10a59a425/" },
   ];
 
   return (
@@ -221,6 +222,8 @@ export default function Footer() {
                   <a 
                     key={i}
                     href={soc.link} 
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-white border border-zinc-200 text-[var(--secondary)] hover:bg-[var(--secondary)] hover:text-white hover:border-[var(--secondary)] flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:-translate-y-0.5 shadow-sm"
                     aria-label={`Follow on ${soc.name}`}
                   >
