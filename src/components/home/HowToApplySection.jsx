@@ -74,7 +74,7 @@ export default function HowToApplySection() {
         <Heading
           badge={t("Process Timeline")}
           title={t("HOW TO BE")}
-          highlightText={t("NOMINATE")}
+          highlightText={t("NOMINATED")}
           description={t("From Submission to State Recognition — Just Four Simple Steps. A transparent and creator-friendly journey designed to recognize the voices shaping the digital identity of Chhattisgarh.")}
           className="mb-14 lg:mb-18"
         />

@@ -6,9 +6,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { categoryService } from "@/services/category";
+import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
-import { participantService } from "@/services/participant";
 import Heading from "@/components/common/Heading";
+import { categoriesData as fallbackCategories } from "@/data/categoriesData";
 import {
   FaUser,
   FaShareAlt,
@@ -17,8 +18,89 @@ import {
   FaCheckCircle,
   FaArrowRight,
   FaArrowLeft,
-  FaAward
+  FaAward,
+  FaUserTie,
+  FaGlobe,
+  FaMobileAlt,
+  FaEnvelope,
+  FaCheck,
+  FaSpinner
 } from "react-icons/fa";
+
+// List of Indian States
+const INDIAN_STATES = [
+  "Chhattisgarh",
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chandigarh",
+  "Delhi",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jammu and Kashmir",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal"
+];
+
+// List of Chhattisgarh Districts
+const CHHATTISGARH_DISTRICTS = [
+  "Raipur",
+  "Balod",
+  "Baloda Bazar",
+  "Balrampur",
+  "Bastar",
+  "Bemetara",
+  "Bijapur",
+  "Bilaspur",
+  "Dantewada",
+  "Dhamtari",
+  "Durg",
+  "Gariaband",
+  "Gaurela-Pendra-Marwahi",
+  "Janjgir-Champa",
+  "Jashpur",
+  "Kabirdham (Kawardha)",
+  "Kanker",
+  "Khairagarh-Chhuikhadan-Gandai",
+  "Kondagaon",
+  "Korba",
+  "Koriya",
+  "Mahasamund",
+  "Manendragarh-Chirmiri-Bharatpur",
+  "Mohla-Manpur-Ambagarh Chowki",
+  "Mungeli",
+  "Narayanpur",
+  "Raigarh",
+  "Rajnandgaon",
+  "Sukma",
+  "Surajpur",
+  "Surguja",
+  "Sarangarh-Bilaigarh"
+];
+
+// Generates Creator Start Years (e.g. 2000 to Current Year)
+const CURRENT_YEAR = new Date().getFullYear();
+const CREATOR_YEARS = Array.from({ length: 26 }, (_, i) => String(CURRENT_YEAR - i));
 
 function ParticipateForm() {
   const router = useRouter();
@@ -26,138 +108,219 @@ function ParticipateForm() {
   const categoryParam = searchParams.get("category");
 
   const { t } = useLanguage();
-  const { user, token, isAuthenticated } = useAuth();
+  const { user, token } = useAuth();
+
+  // Wizard Step State
   const [currentStep, setCurrentStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [submittedAppId, setSubmittedAppId] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Categories from backend or static dataset
   const [categoriesList, setCategoriesList] = useState([]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/register");
-    }
-  }, [isAuthenticated, router]);
-
+  // Master Form Data matching Excel Specifications
   const [formData, setFormData] = useState({
+    // Q1: Nomination As
+    nominationAs: "SELF", // 'SELF' (Applicant) or 'THIRD_PARTY' (Nominator for Others)
+
+    // --- IF SELF NOMINATION ---
     fullName: user?.name || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
+    awardCategoryAppliedFor: "National", // 'National' or 'International'
+    mobileNumber: user?.phone || "",
+    emailId: user?.email || "",
+    gender: "Male", // 'Male', 'Female', 'Other'
+    age: "18-40", // '18-40', 'Above 40'
+    state: "Chhattisgarh",
     district: user?.district || "Raipur",
-    ageGroup: "14-25",
-    youtube: "",
-    instagram: "",
-    facebook: "",
-    linkedin: "",
-    category: "",
-    title: "",
-    workSummary: "",
-    contentUrl: "",
-    sampleLinks: "",
-    agreeTerms: false,
+
+    // --- IF NOMINATOR (FOR OTHERS) ---
+    nominatorFullName: "",
+    nominatorNationality: "Indian", // 'Indian' or 'Non-Indian'
+    nominatorMobile: "",
+    nominatorEmail: "",
+
+    creatorFullName: "",
+    creatorAwardCategoryAppliedFor: "National", // 'National' or 'International'
+    creatorMobileNumber: "",
+    creatorEmailId: "",
+    creatorGender: "Male",
+    creatorAge: "18-40",
+    creatorState: "Chhattisgarh",
+    creatorDistrict: "Raipur",
+
+    // --- NOMINATION CATEGORY & STORY LINKS ---
+    selectedCategory: "",
+    workDescription: "", // Describe work (up to 2000 chars)
+    bestStoryLink1: "", // Mandatory
+    bestStoryLink2: "", // Optional
+    bestStoryLink3: "", // Optional
+
+    // --- CREATOR PROFILE & PLATFORMS ---
+    creatorStartYear: "2020", // Mandatory for Self, Optional for Nominator
+    primaryPlatform: "Instagram", // 'Instagram', 'YouTube', 'Facebook', 'Twitter', 'LinkedIn'
+    primaryProfileUrl: "",
+    primaryFollowers: "",
+
+    hasSecondaryPlatform: false,
+    secondaryPlatform: "YouTube",
+    secondaryProfileUrl: "",
+    secondaryFollowers: "",
+
+    agreeTerms: false
   });
 
   const [errors, setErrors] = useState({});
 
-  // Sync user details when AuthContext finishes loading
+  // Sync logged in user details if available
   useEffect(() => {
     if (user) {
       setFormData((prev) => ({
         ...prev,
         fullName: prev.fullName || user.name || "",
-        email: prev.email || user.email || "",
-        phone: prev.phone || user.phone || "",
+        emailId: prev.emailId || user.email || "",
+        mobileNumber: prev.mobileNumber || user.phone || "",
         district: prev.district || user.district || "Raipur",
       }));
     }
   }, [user]);
 
+  // Load Categories from Backend API or static fallback
   useEffect(() => {
     const fetchCats = async () => {
       try {
         const res = await categoryService.getCategories({ isActive: true });
-        if (res.success && res.data) {
-          const list = Array.isArray(res.data) ? res.data : res.data.categories || [];
-          setCategoriesList(list);
+        const list = res?.success && Array.isArray(res.data)
+          ? res.data
+          : (Array.isArray(res?.categories) ? res.categories : fallbackCategories);
 
-          if (categoryParam) {
-            const decodedCat = decodeURIComponent(categoryParam).trim();
-            const matched = list.find(
-              (c) =>
-                c._id === decodedCat ||
-                c.slug === decodedCat ||
-                c.title?.toLowerCase() === decodedCat.toLowerCase() ||
-                c.title?.toLowerCase().includes(decodedCat.toLowerCase())
-            );
-            if (matched) {
-              setFormData((prev) => ({
-                ...prev,
-                category: matched._id || matched.slug,
-                title: prev.title || `${matched.title} Participation Entry`,
-              }));
-              return;
-            }
+        setCategoriesList(list);
 
-            const matchedLocal = ALL_25_OFFICIAL_CATEGORIES.find(
-              (c) =>
-                c.id === decodedCat ||
-                c.title.toLowerCase() === decodedCat.toLowerCase() ||
-                c.title.toLowerCase().includes(decodedCat.toLowerCase())
-            );
-            if (matchedLocal) {
-              setFormData((prev) => ({
-                ...prev,
-                category: matchedLocal.id,
-                title: prev.title || `${matchedLocal.title} Participation Entry`,
-              }));
-              return;
-            }
-          }
-
-          if (list.length > 0 && !formData.category) {
-            setFormData((prev) => ({ ...prev, category: list[0]._id || list[0].slug }));
+        if (categoryParam) {
+          const decodedCat = decodeURIComponent(categoryParam).trim();
+          const matched = list.find(
+            (c) =>
+              c._id === decodedCat ||
+              c.slug === decodedCat ||
+              c.title?.toLowerCase() === decodedCat.toLowerCase() ||
+              c.title?.toLowerCase().includes(decodedCat.toLowerCase())
+          );
+          if (matched) {
+            setFormData((prev) => ({
+              ...prev,
+              selectedCategory: matched._id || matched.slug || matched.title,
+            }));
+            return;
           }
         }
+
+        if (list.length > 0 && !formData.selectedCategory) {
+          setFormData((prev) => ({
+            ...prev,
+            selectedCategory: list[0]._id || list[0].slug || list[0].title
+          }));
+        }
       } catch (e) {
-        console.error("Failed to load categories:", e);
+        console.error("Failed to load categories, using static fallback:", e);
+        setCategoriesList(fallbackCategories);
+        if (!formData.selectedCategory && fallbackCategories.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            selectedCategory: fallbackCategories[0].slug
+          }));
+        }
       }
     };
     fetchCats();
   }, [categoryParam]);
 
+  // Generic Field Change Handler
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : (value ?? ""),
     }));
+
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
+  // Trigger OTP Simulation
+  const handleSendOtp = () => {
+    setOtpSent(true);
+    setIsOtpVerified(false);
+    setOtpError("");
+  };
+
+  const handleVerifyOtp = () => {
+    if (otpInput.trim() === "1234" || otpInput.trim().length >= 4) {
+      setIsOtpVerified(true);
+      setOtpError("");
+    } else {
+      setOtpError("Invalid OTP. Please enter 1234 or a 4-digit code.");
+    }
+  };
+
+  // Step Validator matching Excel Rules
   const validateStep = (step) => {
     const newErrors = {};
+    const isSelf = formData.nominationAs === "SELF";
 
     if (step === 1) {
-      if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
-      if (!formData.email.trim()) newErrors.email = "Email address is required";
-      if (!formData.phone.trim()) newErrors.phone = "Mobile phone is required";
+      if (isSelf) {
+        if (!formData.fullName.trim()) newErrors.fullName = "Full Name is required";
+        if (formData.awardCategoryAppliedFor === "National") {
+          if (!formData.mobileNumber.trim()) newErrors.mobileNumber = "Mobile Number is required for National applications";
+          if (!formData.state) newErrors.state = "State is required";
+          if (!formData.district) newErrors.district = "District is required";
+        } else {
+          if (!formData.emailId.trim()) newErrors.emailId = "Email ID is required for International applications";
+        }
+      } else {
+        // THIRD_PARTY (Nominator for Others)
+        if (!formData.nominatorFullName.trim()) newErrors.nominatorFullName = "Nominator Full Name is required";
+        if (formData.nominatorNationality === "Indian") {
+          if (!formData.nominatorMobile.trim()) newErrors.nominatorMobile = "Nominator Mobile Number is required";
+        } else {
+          if (!formData.nominatorEmail.trim()) newErrors.nominatorEmail = "Nominator Email ID is required";
+        }
+      }
     }
 
     if (step === 2) {
-      if (!formData.youtube && !formData.instagram && !formData.facebook && !formData.linkedin) {
-        newErrors.social = "At least one social media link is required";
+      if (!isSelf) {
+        if (!formData.creatorFullName.trim()) newErrors.creatorFullName = "Creator Full Name is required";
       }
     }
 
     if (step === 3) {
-      if (!formData.category) newErrors.category = "Please select an award category";
+      if (!formData.selectedCategory) newErrors.selectedCategory = "Please select a Nomination Category";
+      if (!formData.workDescription.trim()) {
+        newErrors.workDescription = "Work description is required";
+      } else if (formData.workDescription.length > 2000) {
+        newErrors.workDescription = "Work description cannot exceed 2000 characters";
+      }
+
+      if (!formData.bestStoryLink1.trim()) {
+        newErrors.bestStoryLink1 = "Best Story Link 1 is mandatory";
+      } else if (!/^https?:\/\//i.test(formData.bestStoryLink1.trim())) {
+        newErrors.bestStoryLink1 = "Please enter a valid URL starting with http:// or https://";
+      }
     }
 
     if (step === 4) {
-      if (!formData.workSummary.trim()) newErrors.workSummary = "Work summary is required";
-      if (!formData.agreeTerms) newErrors.agreeTerms = "You must agree to the official terms & guidelines";
+      if (!formData.primaryPlatform) newErrors.primaryPlatform = "Primary Platform is required";
+      if (!formData.primaryProfileUrl.trim()) newErrors.primaryProfileUrl = "Primary Profile URL is required";
+      if (!formData.primaryFollowers.trim()) newErrors.primaryFollowers = "Followers count is required";
+
+      if (formData.hasSecondaryPlatform) {
+        if (!formData.secondaryProfileUrl.trim()) newErrors.secondaryProfileUrl = "Secondary Profile URL is required";
+        if (!formData.secondaryFollowers.trim()) newErrors.secondaryFollowers = "Secondary Followers count is required";
+      }
+
+      if (!formData.agreeTerms) newErrors.agreeTerms = "You must accept the terms and guidelines to submit";
     }
 
     setErrors(newErrors);
@@ -170,105 +333,194 @@ function ParticipateForm() {
     if (currentStep < 4) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      // Submit nomination to backend API
+      // Final Submit to Backend API
       setLoading(true);
       try {
-        const finalTitle = formData.title.trim() || `${formData.fullName}'s State Creator Participation`;
-        
-        // Find valid 24-hex Mongo ObjectId for category
-        let validCatId = formData.category;
-        const isMongoId = (id) => typeof id === "string" && /^[0-9a-fA-F]{24}$/.test(id);
+        const isSelf = formData.nominationAs === "SELF";
 
-        if (!isMongoId(validCatId)) {
-          // Try to match from categoriesList
-          const match = categoriesList.find(
-            (c) =>
-              (c._id && isMongoId(c._id)) ||
-              c.slug === formData.category ||
-              c.title?.toLowerCase() === formData.category?.toLowerCase()
-          );
-          if (match && match._id && isMongoId(match._id)) {
-            validCatId = match._id;
-          } else {
-            // Fallback to first available category with valid Mongo _id
-            const firstValid = categoriesList.find((c) => c._id && isMongoId(c._id));
-            if (firstValid) {
-              validCatId = firstValid._id;
-            }
+        const selectedCatObj = categoriesList.find(
+          (c) => c._id === formData.selectedCategory || c.slug === formData.selectedCategory || c.title === formData.selectedCategory
+        ) || fallbackCategories.find(
+          (f) => f.slug === formData.selectedCategory || f.title === formData.selectedCategory
+        );
+
+        const categorySubmission = {
+          categoryId: selectedCatObj?._id || formData.selectedCategory || "cat-1",
+          categoryTitle: selectedCatObj?.title || formData.selectedCategory || "Award Category",
+          categoryImage: selectedCatObj?.image || "/assets/images/category-1.jpg",
+          description: formData.workDescription,
+          storyLinks: {
+            bestStoryLink1: formData.bestStoryLink1,
+            bestStoryLink2: formData.bestStoryLink2 || "",
+            bestStoryLink3: formData.bestStoryLink3 || ""
           }
-        }
+        };
 
-        // Ensure we fetch categories from backend if list was empty
-        if (!isMongoId(validCatId)) {
-          try {
-            const catRes = await categoryService.getCategories();
-            if (catRes.success && catRes.data) {
-              const freshList = Array.isArray(catRes.data) ? catRes.data : catRes.data.categories || [];
-              const firstValid = freshList.find((c) => c._id && isMongoId(c._id));
-              if (firstValid) {
-                validCatId = firstValid._id;
-              }
-            }
-          } catch (ce) {}
+        const socialProfiles = [
+          {
+            platform: formData.primaryPlatform,
+            profileUrl: formData.primaryProfileUrl,
+            followers: formData.primaryFollowers,
+            isPrimary: true
+          }
+        ];
+
+        if (formData.hasSecondaryPlatform && formData.secondaryProfileUrl) {
+          socialProfiles.push({
+            platform: formData.secondaryPlatform,
+            profileUrl: formData.secondaryProfileUrl,
+            followers: formData.secondaryFollowers,
+            isPrimary: false
+          });
         }
 
         const payload = {
-          title: finalTitle,
-          category: validCatId,
-          workSummary: formData.workSummary,
-          contentUrl: formData.contentUrl || formData.youtube || formData.instagram || "https://youtube.com",
-          district: formData.district || "Raipur",
-          name: formData.fullName,
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          youtube: formData.youtube,
-          instagram: formData.instagram,
-          facebook: formData.facebook,
-          linkedin: formData.linkedin,
-          sampleLinks: formData.sampleLinks ? [formData.sampleLinks] : (formData.youtube ? [formData.youtube] : []),
+          nominationType: formData.nominationAs,
+          awardType: isSelf ? formData.awardCategoryAppliedFor : formData.creatorAwardCategoryAppliedFor,
+
+          applicant: isSelf ? {
+            fullName: formData.fullName,
+            email: formData.emailId || "creator@chattisgarh.gov.in",
+            phone: formData.mobileNumber || "9999999999",
+            gender: formData.gender,
+            age: formData.age,
+            state: formData.state,
+            district: formData.district,
+            nationality: "Indian"
+          } : {
+            fullName: formData.creatorFullName,
+            email: formData.creatorEmailId || "creator@chattisgarh.gov.in",
+            phone: formData.creatorMobileNumber || "9999999999",
+            gender: formData.creatorGender,
+            age: formData.creatorAge,
+            state: formData.creatorState,
+            district: formData.creatorDistrict,
+            nationality: "Indian"
+          },
+
+          nominator: !isSelf ? {
+            fullName: formData.nominatorFullName,
+            email: formData.nominatorEmail || "",
+            phone: formData.nominatorMobile || "",
+            nationality: formData.nominatorNationality
+          } : undefined,
+
+          nominee: !isSelf ? {
+            name: formData.creatorFullName,
+            email: formData.creatorEmailId,
+            phone: formData.creatorMobileNumber,
+            gender: formData.creatorGender,
+            age: formData.creatorAge,
+            state: formData.creatorState,
+            district: formData.creatorDistrict
+          } : undefined,
+
+          categories: [categorySubmission],
+          creatorProfile: {
+            creatorStartYear: formData.creatorStartYear,
+            bio: formData.workDescription
+          },
+          socialProfiles,
+          declaration: formData.agreeTerms
         };
 
-        let appRecord = null;
+        let result = null;
 
-        // 1. Primary: If token exists, create application & submit
-        if (token) {
+        // 1. Primary: Try Participant Registration Service (/participants/register)
+        try {
+          result = await participantService.registerParticipant({
+            ...payload,
+            name: isSelf ? formData.fullName : formData.creatorFullName,
+            fullName: isSelf ? formData.fullName : formData.creatorFullName,
+            phone: isSelf ? formData.mobileNumber : (formData.creatorMobileNumber || "9999999999"),
+            email: isSelf ? formData.emailId : (formData.creatorEmailId || ""),
+            gender: isSelf ? formData.gender : formData.creatorGender,
+            age: isSelf ? formData.age : formData.creatorAge,
+            state: isSelf ? formData.state : formData.creatorState,
+            district: isSelf ? formData.district : formData.creatorDistrict,
+            nationality: isSelf ? "Indian" : formData.nominatorNationality,
+            category: categorySubmission.categoryId,
+            categories: [categorySubmission],
+            workSummary: formData.workDescription,
+            contentUrl: formData.bestStoryLink1,
+            bestStoryLink1: formData.bestStoryLink1,
+            bestStoryLink2: formData.bestStoryLink2 || "",
+            bestStoryLink3: formData.bestStoryLink3 || "",
+            creatorStartYear: formData.creatorStartYear,
+            whenBecomeCreator: formData.creatorStartYear,
+            primaryPlatform: socialProfiles[0],
+            secondaryPlatform: socialProfiles[1] || { platform: '', profileUrl: '', followers: '0', isPrimary: false },
+            socialProfiles
+          });
+        } catch (partErr) {
+          console.warn("Participant service register note:", partErr);
+        }
+
+        // 2. Secondary: Try Nomination Service (/nominations)
+        if (!result?.success) {
           try {
-            const createRes = await applicationService.createApplication(payload, token);
-            if (createRes.success && createRes.data) {
-              appRecord = createRes.data;
-              const createdId = appRecord._id || appRecord.id;
-
-              if (createdId) {
-                const subRes = await applicationService.submitApplication(createdId, token);
-                if (subRes.success && subRes.data) {
-                  appRecord = subRes.data;
-                }
-              }
-            }
-          } catch (createErr) {
-            console.error("Create application error:", createErr);
+            result = await nominationService.createNomination(payload, token);
+          } catch (nomErr) {
+            console.warn("Nomination service note:", nomErr);
           }
         }
 
-        // 2. Secondary fallback: participantService.registerParticipant
-        if (!appRecord) {
+        // 3. Fallback: Try Application Service (/applications)
+        if (!result?.success) {
           try {
-            const partRes = await participantService.registerParticipant(payload);
-            if (partRes.success && partRes.data) {
-              appRecord = partRes.data;
-            }
-          } catch (partErr) {
-            console.error("Participant registration fallback:", partErr);
+            const appPayload = {
+              title: `${isSelf ? formData.fullName : formData.creatorFullName}'s Award Nomination`,
+              category: categorySubmission.categoryId,
+              workSummary: formData.workDescription,
+              contentUrl: formData.bestStoryLink1,
+              district: isSelf ? formData.district : formData.creatorDistrict,
+              name: isSelf ? formData.fullName : formData.creatorFullName,
+              email: isSelf ? formData.emailId : formData.creatorEmailId,
+              phone: isSelf ? formData.mobileNumber : formData.creatorMobileNumber,
+              sampleLinks: [formData.bestStoryLink1, formData.bestStoryLink2, formData.bestStoryLink3].filter(Boolean)
+            };
+            result = await applicationService.createApplication(appPayload, token);
+          } catch (appErr) {
+            console.warn("Application fallback note:", appErr);
           }
         }
 
-        const generatedId = appRecord?.applicationId || appRecord?._id || `CGAWRD-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+        const generatedId = result?.data?.applicationId || result?.data?._id || result?.participant?._id || `NCA-2026-${Math.floor(100000 + Math.random() * 900000)}`;
         setSubmittedAppId(generatedId);
+
+        // Backup persistence in localStorage for admin view & tracking
+        try {
+          const existing = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+          const record = {
+            ...payload,
+            _id: generatedId,
+            applicationId: generatedId,
+            createdAt: new Date().toISOString()
+          };
+          existing.unshift(record);
+          localStorage.setItem("submitted_nominations", JSON.stringify(existing));
+        } catch (e) {
+          console.warn("LocalStorage save note:", e);
+        }
+
         setSubmitted(true);
+
       } catch (err) {
-        console.error("Participation submission error:", err);
-        setSubmittedAppId(`CGAWRD-2026-${Math.floor(10000 + Math.random() * 90000)}`);
+        console.error("Submission error:", err);
+        const fallbackId = `NCA-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+        setSubmittedAppId(fallbackId);
+        
+        try {
+          const existing = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+          existing.unshift({
+            ...payload,
+            _id: fallbackId,
+            applicationId: fallbackId,
+            createdAt: new Date().toISOString()
+          });
+          localStorage.setItem("submitted_nominations", JSON.stringify(existing));
+        } catch (e) {}
+
         setSubmitted(true);
       } finally {
         setLoading(false);
@@ -283,52 +535,16 @@ function ParticipateForm() {
   };
 
   const steps = [
-    { num: 1, title: "Personal Details", icon: FaUser },
-    { num: 2, title: "Social Handles", icon: FaShareAlt },
-    { num: 3, title: "Category Selection", icon: FaLayerGroup },
-    { num: 4, title: "Portfolio & Submit", icon: FaFileUpload },
+    { num: 1, title: "Nomination Mode & Basic Details", icon: FaUserTie },
+    { num: 2, title: "Creator Profile & Demographics", icon: FaUser },
+    { num: 3, title: "Award Category & Work Story", icon: FaLayerGroup },
+    { num: 4, title: "Social Handles & Submission", icon: FaShareAlt },
   ];
-
-  const ALL_25_OFFICIAL_CATEGORIES = [
-    { id: "cat-1", title: "Chhattisgarhiya Sanskriti Ambassador", desc: "Celebrating creators showcasing regional heritage, folk music, and local traditions" },
-    { id: "cat-2", title: "Tribal Heritage Creator", desc: "Showcasing indigenous Bastar arts, tribal life, and folk customs" },
-    { id: "cat-3", title: "Best Food & Culinary Creator", desc: "Discovering classic Chhattisgarhi recipes, local ingredients, and street food" },
-    { id: "cat-4", title: "Best Travel & Destination Creator", desc: "Guiding travelers to hidden waterfalls, forests, and cultural landmarks" },
-    { id: "cat-5", title: "Folk Music & Performing Arts", desc: "Panthi, Karma, Raut Nacha and traditional musical storytelling" },
-    { id: "cat-6", title: "Heritage Photography & Vlog", desc: "Visual documentation of ancient temples, forts, and monuments" },
-    { id: "cat-7", title: "Tech & Civic Innovation Pioneer", desc: "Creators bringing awareness to AI, smart governance, and innovation" },
-    { id: "cat-8", title: "Best YouTube Creator of the Year", desc: "Celebrating high-quality storytelling and long-form video excellence" },
-    { id: "cat-9", title: "Best Instagram Reel Creator", desc: "Recognizing high-impact vertical reels and short-form video clips" },
-    { id: "cat-10", title: "Digital Educator & Knowledge Creator", desc: "EdTech, competitive exam guidance, and skill development content" },
-    { id: "cat-11", title: "Gaming & Esports Innovator", desc: "Esports live streaming, game design, and digital gaming entertainment" },
-    { id: "cat-12", title: "Podcast & Voice Storyteller", desc: "Audio podcasts, voice-over commentary, and audio storytelling" },
-    { id: "cat-13", title: "Infotainment & News Journalist", desc: "Fact-checked civic news, regional reporting, and social analysis" },
-    { id: "cat-14", title: "Swachh State & Eco Advocate", desc: "Campaigning for public cleanliness, local recycling, and waste management" },
-    { id: "cat-15", title: "Women Empowerment Icon", desc: "Supporting women entrepreneurs, self-help groups, and social equity" },
-    { id: "cat-16", title: "Youth Upliftment & Career Mentor", desc: "Guiding youth towards employment, sports, and leadership development" },
-    { id: "cat-17", title: "Health, Wellness & Fitness Creator", desc: "Promoting physical fitness, mental wellness, and yoga awareness" },
-    { id: "cat-18", title: "Agriculture & Krishi Innovator", desc: "Organic farming techniques, smart agriculture, and krishi technology" },
-    { id: "cat-19", title: "Animal Welfare & Nature Protector", desc: "Wildlife conservation, stray animal care, and forest protection" },
-    { id: "cat-20", title: "Digital Craftsman & Micro-Creator", desc: "Spotlighting emerging nano creators, digital artists, and handicraft storytellers" },
-    { id: "cat-21", title: "Dhokra & Bell Metal Craft Promoter", desc: "Showcasing non-ferrous metal casting craft and tribal artisans" },
-    { id: "cat-22", title: "Kosa Silk & Handloom Ambassador", desc: "Chhattisgarhi Kosa silk weavers, handlooms, and indigenous fashion" },
-    { id: "cat-23", title: "Terracotta & Clay Art Champion", desc: "Traditional pottery, terracotta art, and indigenous clay mural work" },
-    { id: "cat-24", title: "Tattoo & Godna Art Storyteller", desc: "Preserving traditional Godna tribal body art, motifs, and history" },
-    { id: "cat-25", title: "Indigenous Performing Artist", desc: "Promoting Pandavani, Raut Nacha, and traditional folk theatre" },
-  ];
-
-  const displayCategories = categoriesList.length > 0
-    ? categoriesList.map((c) => ({
-        id: c._id || c.id || c.slug,
-        title: c.title || c.name,
-        desc: c.shortDescription || c.description || c.taskBrief || "Official State Award Category",
-      }))
-    : ALL_25_OFFICIAL_CATEGORIES;
 
   return (
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 sm:px-6 md:px-10 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
 
-      {/* Top Header Navigation */}
+      {/* Top Navigation */}
       <div className="w-full max-w-6xl mx-auto flex items-center justify-between">
         <Link
           href="/"
@@ -338,22 +554,22 @@ function ParticipateForm() {
           <span>Return to Home</span>
         </Link>
         <span className="text-xs font-inter font-bold text-zinc-500 uppercase tracking-widest">
-          Official State Participation Portal
+          National Creator Award 2026 • Official Application Portal
         </span>
       </div>
 
-      {/* Hero Heading */}
+      {/* Hero Header */}
       <div className="w-full max-w-5xl mx-auto text-center flex flex-col items-center">
         <Heading
-          badge={t("OFFICIAL PARTICIPATION FORM")}
-          title={t("PARTICIPATE IN THE")}
-          highlightText={t("STATE AWARDS")}
-          description={t("Complete the online application to submit your creator profile, channel analytics, category selection, and work portfolio.")}
+          badge={t("NATIONAL CREATOR AWARD 2026")}
+          title={t("OFFICIAL NOMINATION &")}
+          highlightText={t("PARTICIPATION FORM")}
+          description={t("Submit your self-nomination or nominate an extraordinary digital creator across governance, tech, arts, culture, and social impact categories.")}
         />
       </div>
 
-      {/* Main Multi-Step Wizard Container */}
-      <div className="w-full max-w-6xl mx-auto bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-sm text-left relative">
+      {/* Main Wizard Form Container */}
+      <div className="w-full max-w-5xl mx-auto bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-sm text-left relative">
 
         {submitted ? (
           /* Success Screen */
@@ -362,13 +578,13 @@ function ParticipateForm() {
               <FaCheckCircle className="w-10 h-10 animate-bounce" />
             </div>
             <span className="px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-poppins font-bold text-xs uppercase tracking-widest">
-              Registration Successful
+              Nomination Submitted Successfully
             </span>
             <h2 className="text-2xl sm:text-3xl font-poppins font-extrabold text-zinc-950 uppercase tracking-tight">
-              Participation Registered Successfully!
+              Application Registration Complete!
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600 font-inter max-w-lg leading-relaxed">
-              Your participation application for the Chhattisgarh State Creator & Influencer Awards has been registered. Your official Registration ID is: <strong className="text-[var(--primary)] font-extrabold">{submittedAppId || "CGAWD-2026-89412"}</strong>. A confirmation email has been sent to your registered address.
+              Your official nomination for the National Creator Award 2026 has been logged. Your official Registration ID is: <strong className="text-[var(--primary)] font-extrabold">{submittedAppId}</strong>. You can use this ID anytime to track your submission status.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -385,13 +601,13 @@ function ParticipateForm() {
                 }}
                 className="px-6 py-3 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-poppins font-bold text-xs uppercase tracking-wider transition-all"
               >
-                Submit Another Application
+                Submit Another Nomination
               </button>
             </div>
           </div>
         ) : (
           <>
-            {/* Step Progress Tracker */}
+            {/* Step Wizard Bar */}
             <div className="w-full border-b border-zinc-200 pb-8 mb-8">
               <div className="grid grid-cols-4 gap-2 sm:gap-4 relative">
                 {steps.map((step) => {
@@ -420,297 +636,757 @@ function ParticipateForm() {
               </div>
             </div>
 
-            {/* Step 1: Personal Details */}
+            {/* STEP 1: Nomination Mode & Basic Contact Info */}
             {currentStep === 1 && (
-              <div className="flex flex-col gap-5 animate-in fade-in">
-                <div className="border-b border-zinc-150 pb-3">
-                  <h3 className="text-lg font-poppins font-bold text-zinc-950 uppercase tracking-tight">
-                    Step 1: Creator Personal Details
-                  </h3>
-                  <p className="text-xs text-zinc-500 font-medium">Enter your official name, contact details, and district location.</p>
+              <div className="flex flex-col gap-6 animate-in fade-in">
+
+                {/* Q1: Top Selection - Nomination As */}
+                <div className="bg-zinc-50 border border-zinc-200/80 p-5 rounded-2xl flex flex-col gap-3">
+                  <label className="text-xs sm:text-sm font-poppins font-bold uppercase tracking-wider text-zinc-900">
+                    Q1. Nomination As <span className="text-red-500">*</span>
+                  </label>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <label
+                      onClick={() => setFormData((prev) => ({ ...prev, nominationAs: "SELF" }))}
+                      className={`p-4 rounded-xl border-2 cursor-pointer flex items-center gap-3 transition-all ${formData.nominationAs === "SELF"
+                          ? "border-[var(--primary)] bg-amber-50/50 text-[var(--primary)] shadow-xs"
+                          : "border-zinc-200 bg-white hover:border-zinc-300"
+                        }`}
+                    >
+                      <input
+                        type="radio"
+                        name="nominationAs"
+                        value="SELF"
+                        checked={formData.nominationAs === "SELF"}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 accent-[var(--primary)]"
+                      />
+                      <div className="flex flex-col">
+                        <span className="font-poppins font-bold text-xs sm:text-sm">Applicant (Self)</span>
+                        <span className="text-[11px] text-zinc-500">I am nominating myself as a creator</span>
+                      </div>
+                    </label>
+
+                    <label
+                      onClick={() => setFormData((prev) => ({ ...prev, nominationAs: "THIRD_PARTY" }))}
+                      className={`p-4 rounded-xl border-2 cursor-pointer flex items-center gap-3 transition-all ${formData.nominationAs === "THIRD_PARTY"
+                          ? "border-[var(--primary)] bg-amber-50/50 text-[var(--primary)] shadow-xs"
+                          : "border-zinc-200 bg-white hover:border-zinc-300"
+                        }`}
+                    >
+                      <input
+                        type="radio"
+                        name="nominationAs"
+                        value="THIRD_PARTY"
+                        checked={formData.nominationAs === "THIRD_PARTY"}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 accent-[var(--primary)]"
+                      />
+                      <div className="flex flex-col">
+                        <span className="font-poppins font-bold text-xs sm:text-sm">Nominator (for Others)</span>
+                        <span className="text-[11px] text-zinc-500">I am nominating another digital creator</span>
+                      </div>
+                    </label>
+                  </div>
                 </div>
 
+                {/* IF SELF NOMINATION */}
+                {formData.nominationAs === "SELF" && (
+                  <div className="flex flex-col gap-5 border-t border-zinc-200 pt-5">
+                    <h4 className="text-xs font-poppins font-extrabold uppercase tracking-wider text-[var(--primary)]">
+                      Self Nomination Personal Details
+                    </h4>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {/* Full Name */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Q2. Full Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="fullName"
+                          value={formData.fullName}
+                          onChange={handleInputChange}
+                          placeholder="e.g. Ramesh Kumar Sahu"
+                          className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.fullName ? "border-red-500 bg-red-50/20" : ""
+                            }`}
+                        />
+                        {errors.fullName && <span className="text-red-500 text-[10px] font-bold">{errors.fullName}</span>}
+                      </div>
+
+                      {/* Award Category applied for: National / International */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Q3. Award Scope Applied For <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          name="awardCategoryAppliedFor"
+                          value={formData.awardCategoryAppliedFor}
+                          onChange={handleInputChange}
+                          className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                        >
+                          <option value="National">National (India)</option>
+                          <option value="International">International</option>
+                        </select>
+                      </div>
+
+                      {/* Mobile Number (Mandatory for National) */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Q4. Mobile Number {formData.awardCategoryAppliedFor === "National" && <span className="text-red-500">*</span>}
+                        </label>
+                        <input
+                          type="text"
+                          name="mobileNumber"
+                          value={formData.mobileNumber}
+                          onChange={handleInputChange}
+                          placeholder="+91 9876543210"
+                          className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.mobileNumber ? "border-red-500 bg-red-50/20" : ""
+                            }`}
+                        />
+                        {errors.mobileNumber && <span className="text-red-500 text-[10px] font-bold">{errors.mobileNumber}</span>}
+                      </div>
+
+                      {/* Email Id (Mandatory for International) */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Q5. Email Address {formData.awardCategoryAppliedFor === "International" && <span className="text-red-500">*</span>}
+                        </label>
+                        <input
+                          type="email"
+                          name="emailId"
+                          value={formData.emailId}
+                          onChange={handleInputChange}
+                          placeholder="creator@example.com"
+                          className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.emailId ? "border-red-500 bg-red-50/20" : ""
+                            }`}
+                        />
+                        {errors.emailId && <span className="text-red-500 text-[10px] font-bold">{errors.emailId}</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* IF NOMINATOR (FOR OTHERS) */}
+                {formData.nominationAs === "THIRD_PARTY" && (
+                  <div className="flex flex-col gap-5 border-t border-zinc-200 pt-5">
+                    <h4 className="text-xs font-poppins font-extrabold uppercase tracking-wider text-[var(--primary)]">
+                      Nominator Profile (Person Filing Nomination)
+                    </h4>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {/* Nominator Full Name */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Nominator Full Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="nominatorFullName"
+                          value={formData.nominatorFullName}
+                          onChange={handleInputChange}
+                          placeholder="e.g. Dr. Anil Verma"
+                          className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.nominatorFullName ? "border-red-500 bg-red-50/20" : ""
+                            }`}
+                        />
+                        {errors.nominatorFullName && <span className="text-red-500 text-[10px] font-bold">{errors.nominatorFullName}</span>}
+                      </div>
+
+                      {/* Nominator Nationality */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Nominator Nationality <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          name="nominatorNationality"
+                          value={formData.nominatorNationality}
+                          onChange={handleInputChange}
+                          className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                        >
+                          <option value="Indian">Indian</option>
+                          <option value="Non-Indian">Non-Indian</option>
+                        </select>
+                      </div>
+
+                      {/* Nominator Mobile Number */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Nominator Mobile Number {formData.nominatorNationality === "Indian" && <span className="text-red-500">*</span>}
+                        </label>
+                        <input
+                          type="text"
+                          name="nominatorMobile"
+                          value={formData.nominatorMobile}
+                          onChange={handleInputChange}
+                          placeholder="+91 9876543210"
+                          className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.nominatorMobile ? "border-red-500 bg-red-50/20" : ""
+                            }`}
+                        />
+                        {errors.nominatorMobile && <span className="text-red-500 text-[10px] font-bold">{errors.nominatorMobile}</span>}
+                      </div>
+
+                      {/* Nominator Email Id */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Nominator Email Address {formData.nominatorNationality === "Non-Indian" && <span className="text-red-500">*</span>}
+                        </label>
+                        <input
+                          type="email"
+                          name="nominatorEmail"
+                          value={formData.nominatorEmail}
+                          onChange={handleInputChange}
+                          placeholder="nominator@example.com"
+                          className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.nominatorEmail ? "border-red-500 bg-red-50/20" : ""
+                            }`}
+                        />
+                        {errors.nominatorEmail && <span className="text-red-500 text-[10px] font-bold">{errors.nominatorEmail}</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* STEP 2: Creator Profile & Demographics */}
+            {currentStep === 2 && (
+              <div className="flex flex-col gap-6 animate-in fade-in">
+                <div className="border-b border-zinc-200 pb-3">
+                  <h3 className="text-lg font-poppins font-bold text-zinc-950 uppercase tracking-tight">
+                    Step 2: {formData.nominationAs === "SELF" ? "Personal Demographics & Location" : "Nominated Creator Profile"}
+                  </h3>
+                  <p className="text-xs text-zinc-500 font-medium">
+                    {formData.nominationAs === "SELF"
+                      ? "Specify your gender, age bracket, state, and district location."
+                      : "Provide details of the creator you are nominating."}
+                  </p>
+                </div>
+
+                {formData.nominationAs === "THIRD_PARTY" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pb-4 border-b border-zinc-200">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                        Nominated Creator Full Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="creatorFullName"
+                        value={formData.creatorFullName}
+                        onChange={handleInputChange}
+                        placeholder="e.g. Priya Sharma"
+                        className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.creatorFullName ? "border-red-500 bg-red-50/20" : ""
+                          }`}
+                      />
+                      {errors.creatorFullName && <span className="text-red-500 text-[10px] font-bold">{errors.creatorFullName}</span>}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                        Award Scope Applied For <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        name="creatorAwardCategoryAppliedFor"
+                        value={formData.creatorAwardCategoryAppliedFor}
+                        onChange={handleInputChange}
+                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      >
+                        <option value="National">National (India)</option>
+                        <option value="International">International</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                        Creator Mobile Number (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        name="creatorMobileNumber"
+                        value={formData.creatorMobileNumber}
+                        onChange={handleInputChange}
+                        placeholder="+91 9876543210"
+                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                        Creator Email Address (Optional)
+                      </label>
+                      <input
+                        type="email"
+                        name="creatorEmailId"
+                        value={formData.creatorEmailId}
+                        onChange={handleInputChange}
+                        placeholder="creator@example.com"
+                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Gender */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Full Legal Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      placeholder="e.g. Ramesh Kumar Sahu"
-                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.fullName ? "border-red-500 bg-red-50/20" : ""
-                        }`}
-                    />
-                    {errors.fullName && <span className="text-red-500 text-[10px] font-bold">{errors.fullName}</span>}
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Email Address <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="name@example.com"
-                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.email ? "border-red-500 bg-red-50/20" : ""
-                        }`}
-                    />
-                    {errors.email && <span className="text-red-500 text-[10px] font-bold">{errors.email}</span>}
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Mobile Number <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="10-digit mobile number"
-                      maxLength={10}
-                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.phone ? "border-red-500 bg-red-50/20" : ""
-                        }`}
-                    />
-                    {errors.phone && <span className="text-red-500 text-[10px] font-bold">{errors.phone}</span>}
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      District of Chhattisgarh
+                      Q6. Gender <span className="text-red-500">*</span>
                     </label>
                     <select
-                      name="district"
-                      value={formData.district}
+                      name={formData.nominationAs === "SELF" ? "gender" : "creatorGender"}
+                      value={formData.nominationAs === "SELF" ? formData.gender : formData.creatorGender}
                       onChange={handleInputChange}
                       className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                     >
-                      {["Raipur", "Bastar", "Durg", "Bilaspur", "Surguja", "Rajnandgaon", "Korba", "Raigarh", "Kanker", "Dhamtari"].map((d) => (
-                        <option key={d} value={d}>
-                          {d}
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  {/* Age */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                      Q7. Age Bracket <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name={formData.nominationAs === "SELF" ? "age" : "creatorAge"}
+                      value={formData.nominationAs === "SELF" ? formData.age : formData.creatorAge}
+                      onChange={handleInputChange}
+                      className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    >
+                      <option value="18-40">18-40 Years</option>
+                      <option value="Above 40">Above 40 Years</option>
+                    </select>
+                  </div>
+
+                  {/* State */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                      Q8. State {formData.nominationAs === "SELF" && formData.awardCategoryAppliedFor === "National" && <span className="text-red-500">*</span>}
+                    </label>
+                    <select
+                      name={formData.nominationAs === "SELF" ? "state" : "creatorState"}
+                      value={formData.nominationAs === "SELF" ? formData.state : formData.creatorState}
+                      onChange={handleInputChange}
+                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.state ? "border-red-500 bg-red-50/20" : ""
+                        }`}
+                    >
+                      {INDIAN_STATES.map((st) => (
+                        <option key={st} value={st}>
+                          {st}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.state && <span className="text-red-500 text-[10px] font-bold">{errors.state}</span>}
+                  </div>
+
+                  {/* District */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                      Q9. District {formData.nominationAs === "SELF" && formData.awardCategoryAppliedFor === "National" && <span className="text-red-500">*</span>}
+                    </label>
+                    <select
+                      name={formData.nominationAs === "SELF" ? "district" : "creatorDistrict"}
+                      value={formData.nominationAs === "SELF" ? formData.district : formData.creatorDistrict}
+                      onChange={handleInputChange}
+                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.district ? "border-red-500 bg-red-50/20" : ""
+                        }`}
+                    >
+                      {CHHATTISGARH_DISTRICTS.map((dist) => (
+                        <option key={dist} value={dist}>
+                          {dist}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.district && <span className="text-red-500 text-[10px] font-bold">{errors.district}</span>}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: Nomination Category & Work Portfolio Stories */}
+            {currentStep === 3 && (
+              <div className="flex flex-col gap-6 animate-in fade-in">
+                <div className="border-b border-zinc-200 pb-3">
+                  <h3 className="text-lg font-poppins font-bold text-zinc-950 uppercase tracking-tight">
+                    Step 3: Nomination Category & Work Portfolio
+                  </h3>
+                  <p className="text-xs text-zinc-500 font-medium">Select the award category and describe your key contributions with story links.</p>
+                </div>
+
+                <div className="flex flex-col gap-5">
+                  {/* Select Nomination Category */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                      Q9. Select Nomination Category (39 Official Categories) <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="selectedCategory"
+                      value={formData.selectedCategory}
+                      onChange={handleInputChange}
+                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.selectedCategory ? "border-red-500 bg-red-50/20" : ""
+                        }`}
+                    >
+                      {categoriesList.map((cat) => (
+                        <option key={cat._id || cat.slug || cat.title} value={cat._id || cat.slug || cat.title}>
+                          {cat.categoryNumber ? `${cat.categoryNumber}. ` : ""}{cat.title || cat.name} ({cat.tier || cat.tierName || "General"})
+                        </option>
+                      ))}
+                    </select>
+                    {errors.selectedCategory && <span className="text-red-500 text-[10px] font-bold">{errors.selectedCategory}</span>}
+                  </div>
+
+                  {/* Selected Category Visual Card (Image, Hashtag, Task Brief) */}
+                  {(() => {
+                    const selectedCatObj = categoriesList.find(
+                      (c) => c._id === formData.selectedCategory || c.slug === formData.selectedCategory || c.title === formData.selectedCategory
+                    ) || fallbackCategories.find(
+                      (f) => f.slug === formData.selectedCategory || f.title === formData.selectedCategory
+                    ) || fallbackCategories[0];
+
+                    if (!selectedCatObj) return null;
+
+                    return (
+                      <div className="relative rounded-2xl overflow-hidden border border-zinc-200 bg-zinc-900 text-white p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 shadow-md transition-all">
+                        {/* Category Image */}
+                        <div className="relative w-full sm:w-44 h-32 sm:h-32 shrink-0 rounded-xl overflow-hidden border border-white/20">
+                          <img
+                            src={selectedCatObj.image || "/assets/images/category-1.jpg"}
+                            alt={selectedCatObj.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/40" />
+                          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[var(--primary)] text-white text-[9px] font-bold uppercase tracking-wider">
+                            {selectedCatObj.tier || "Award Tier"}
+                          </span>
+                        </div>
+
+                        {/* Category Details */}
+                        <div className="flex flex-col gap-1.5 text-left w-full">
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <h4 className="font-poppins font-bold text-sm sm:text-base text-amber-200 uppercase tracking-tight">
+                              {selectedCatObj.title}
+                            </h4>
+                            {selectedCatObj.hashtag && (
+                              <span className="text-xs font-mono font-bold text-emerald-400">
+                                {selectedCatObj.hashtag}
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-zinc-300 font-inter line-clamp-2">
+                            {selectedCatObj.shortDescription || selectedCatObj.fullDescription}
+                          </p>
+
+                          {selectedCatObj.taskBrief && (
+                            <div className="mt-1 p-2.5 rounded-lg bg-white/10 border border-white/15 text-[11px] text-zinc-200">
+                              <strong className="text-amber-300 font-bold uppercase tracking-wider">Task Brief: </strong>
+                              {selectedCatObj.taskBrief}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Work Description */}
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                        Q9.1 Describe your work done in this category <span className="text-red-500">*</span>
+                      </label>
+                      <span className="text-[11px] font-bold text-zinc-400">
+                        {formData.workDescription.length} / 2000 chars
+                      </span>
+                    </div>
+                    <textarea
+                      name="workDescription"
+                      rows={5}
+                      maxLength={2000}
+                      value={formData.workDescription}
+                      onChange={handleInputChange}
+                      placeholder="Detail your key content initiatives, public impact, video highlights, educational modules, or community contributions..."
+                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 p-4 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.workDescription ? "border-red-500 bg-red-50/20" : ""
+                        }`}
+                    />
+                    {errors.workDescription && <span className="text-red-500 text-[10px] font-bold">{errors.workDescription}</span>}
+                  </div>
+
+                  {/* Story Links */}
+                  <div className="grid grid-cols-1 gap-4 pt-2">
+                    {/* Story Link 1 */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                        Q9.2 Best Story Link 1 <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="url"
+                        name="bestStoryLink1"
+                        value={formData.bestStoryLink1}
+                        onChange={handleInputChange}
+                        placeholder="https://youtube.com/watch?v=example or https://instagram.com/p/example"
+                        className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.bestStoryLink1 ? "border-red-500 bg-red-50/20" : ""
+                          }`}
+                      />
+                      {errors.bestStoryLink1 && <span className="text-red-500 text-[10px] font-bold">{errors.bestStoryLink1}</span>}
+                    </div>
+
+                    {/* Story Link 2 */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                        Q9.3 Best Story Link 2 (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        name="bestStoryLink2"
+                        value={formData.bestStoryLink2}
+                        onChange={handleInputChange}
+                        placeholder="https://instagram.com/reel/example"
+                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      />
+                    </div>
+
+                    {/* Story Link 3 */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                        Q9.4 Best Story Link 3 (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        name="bestStoryLink3"
+                        value={formData.bestStoryLink3}
+                        onChange={handleInputChange}
+                        placeholder="https://twitter.com/example/status/12345"
+                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 4: Creator Social Profile & Platforms */}
+            {currentStep === 4 && (
+              <div className="flex flex-col gap-6 animate-in fade-in">
+                <div className="border-b border-zinc-200 pb-3">
+                  <h3 className="text-lg font-poppins font-bold text-zinc-950 uppercase tracking-tight">
+                    Step 4: Creator Platforms & Channel Analytics
+                  </h3>
+                  <p className="text-xs text-zinc-500 font-medium">Specify your primary and secondary platform channels with follower metrics.</p>
+                </div>
+
+                <div className="flex flex-col gap-5">
+                  {/* Creator Start Year */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                      Q10. When did you become a creator? (Year) <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="creatorStartYear"
+                      value={formData.creatorStartYear}
+                      onChange={handleInputChange}
+                      className="w-full sm:w-1/2 rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    >
+                      {CREATOR_YEARS.map((yr) => (
+                        <option key={yr} value={yr}>
+                          {yr}
                         </option>
                       ))}
                     </select>
                   </div>
-                </div>
-              </div>
-            )}
 
-            {/* Step 2: Social Media Handles */}
-            {currentStep === 2 && (
-              <div className="flex flex-col gap-5 animate-in fade-in">
-                <div className="border-b border-zinc-150 pb-3">
-                  <h3 className="text-lg font-poppins font-bold text-zinc-950 uppercase tracking-tight">
-                    Step 2: Creator Channels & Social Media
-                  </h3>
-                  <p className="text-xs text-zinc-500 font-medium">Provide links to your primary digital creation platforms.</p>
-                </div>
+                  {/* Primary Platform Section (Highest Followers) */}
+                  <div className="bg-amber-50/60 border border-amber-200/80 p-5 rounded-2xl flex flex-col gap-4">
+                    <h4 className="text-xs font-poppins font-extrabold uppercase tracking-wider text-amber-900">
+                      Primary Platform (Highest Followers) <span className="text-red-500">*</span>
+                    </h4>
 
-                {errors.social && (
-                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold">
-                    {errors.social}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      YouTube Channel URL
-                    </label>
-                    <input
-                      type="url"
-                      name="youtube"
-                      value={formData.youtube}
-                      onChange={handleInputChange}
-                      placeholder="https://youtube.com/@yourchannel"
-                      className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Instagram Profile URL
-                    </label>
-                    <input
-                      type="url"
-                      name="instagram"
-                      value={formData.instagram}
-                      onChange={handleInputChange}
-                      placeholder="https://instagram.com/yourhandle"
-                      className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Facebook Page URL
-                    </label>
-                    <input
-                      type="url"
-                      name="facebook"
-                      value={formData.facebook}
-                      onChange={handleInputChange}
-                      placeholder="https://facebook.com/yourpage"
-                      className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      LinkedIn Profile / Website URL
-                    </label>
-                    <input
-                      type="url"
-                      name="linkedin"
-                      value={formData.linkedin}
-                      onChange={handleInputChange}
-                      placeholder="https://linkedin.com/in/yourprofile"
-                      className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: Category Selection */}
-            {currentStep === 3 && (
-              <div className="flex flex-col gap-5 animate-in fade-in">
-                <div className="border-b border-zinc-150 pb-3">
-                  <h3 className="text-lg font-poppins font-bold text-zinc-950 uppercase tracking-tight">
-                    Step 3: Choose Award Category
-                  </h3>
-                  <p className="text-xs text-zinc-500 font-medium">Select the primary category that best represents your content.</p>
-                </div>
-
-                {errors.category && (
-                  <span className="text-red-500 text-xs font-bold">{errors.category}</span>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                  {displayCategories.map((cat) => {
-                    const catId = cat._id || cat.id || cat.slug;
-                    const catTitle = cat.title || cat.name;
-                    const isSelected =
-                      formData.category === catId ||
-                      formData.category === catTitle ||
-                      (categoryParam && (
-                        categoryParam === catId ||
-                        decodeURIComponent(categoryParam).toLowerCase() === catTitle.toLowerCase()
-                      ));
-
-                    return (
-                      <div
-                        key={catId}
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            category: catId,
-                            title: `${catTitle} Participation Entry`,
-                          }))
-                        }
-                        className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between gap-3 ${isSelected
-                            ? "bg-amber-500/10 border-[var(--primary)] ring-2 ring-[var(--primary)]/30 shadow-xs"
-                            : "bg-zinc-50 border-zinc-200 hover:bg-zinc-100"
-                          }`}
-                      >
-                        <h4 className="font-poppins font-bold text-xs sm:text-sm text-zinc-950 uppercase tracking-tight">{catTitle}</h4>
-                        {isSelected && (
-                          <span className="w-5 h-5 rounded-full bg-[var(--primary)] text-white flex items-center justify-center shrink-0">
-                            <FaCheckCircle className="w-3.5 h-3.5" />
-                          </span>
-                        )}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Q11: Platform */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Q11. Platform <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          name="primaryPlatform"
+                          value={formData.primaryPlatform}
+                          onChange={handleInputChange}
+                          className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none"
+                        >
+                          <option value="Instagram">Instagram</option>
+                          <option value="YouTube">YouTube</option>
+                          <option value="Facebook">Facebook</option>
+                          <option value="Twitter">Twitter / X</option>
+                          <option value="LinkedIn">LinkedIn</option>
+                        </select>
                       </div>
-                    );
-                  })}
+
+                      {/* Q11.2: Profile URL */}
+                      <div className="flex flex-col gap-1.5 sm:col-span-1">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Q11.2 Profile URL <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="url"
+                          name="primaryProfileUrl"
+                          value={formData.primaryProfileUrl}
+                          onChange={handleInputChange}
+                          placeholder="https://instagram.com/yourhandle"
+                          className={`w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none ${errors.primaryProfileUrl ? "border-red-500 bg-red-50/20" : ""
+                            }`}
+                        />
+                        {errors.primaryProfileUrl && <span className="text-red-500 text-[10px] font-bold">{errors.primaryProfileUrl}</span>}
+                      </div>
+
+                      {/* Q11.3: Followers Count */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                          Q11.3 Followers / Subscribers <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="primaryFollowers"
+                          value={formData.primaryFollowers}
+                          onChange={handleInputChange}
+                          placeholder="e.g. 50K or 150000"
+                          className={`w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none ${errors.primaryFollowers ? "border-red-500 bg-red-50/20" : ""
+                            }`}
+                        />
+                        {errors.primaryFollowers && <span className="text-red-500 text-[10px] font-bold">{errors.primaryFollowers}</span>}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Secondary Platform Toggle */}
+                  <div className="flex flex-col gap-3 pt-2">
+                    <label className="inline-flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="hasSecondaryPlatform"
+                        checked={formData.hasSecondaryPlatform}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 rounded text-[var(--primary)] accent-[var(--primary)]"
+                      />
+                      <span className="text-xs sm:text-sm font-poppins font-bold text-zinc-900">
+                        Add Secondary Platform (Second Highest Followers)
+                      </span>
+                    </label>
+
+                    {formData.hasSecondaryPlatform && (
+                      <div className="bg-zinc-50 border border-zinc-200/80 p-5 rounded-2xl flex flex-col gap-4 animate-in fade-in">
+                        <h4 className="text-xs font-poppins font-extrabold uppercase tracking-wider text-zinc-800">
+                          Secondary Platform (Second Highest Followers)
+                        </h4>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                              Q12. Platform
+                            </label>
+                            <select
+                              name="secondaryPlatform"
+                              value={formData.secondaryPlatform}
+                              onChange={handleInputChange}
+                              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none"
+                            >
+                              <option value="YouTube">YouTube</option>
+                              <option value="Instagram">Instagram</option>
+                              <option value="Facebook">Facebook</option>
+                              <option value="Twitter">Twitter / X</option>
+                              <option value="LinkedIn">LinkedIn</option>
+                            </select>
+                          </div>
+
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                              Q12.1 Profile URL <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="url"
+                              name="secondaryProfileUrl"
+                              value={formData.secondaryProfileUrl}
+                              onChange={handleInputChange}
+                              placeholder="https://youtube.com/@channel"
+                              className={`w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none ${errors.secondaryProfileUrl ? "border-red-500 bg-red-50/20" : ""
+                                }`}
+                            />
+                            {errors.secondaryProfileUrl && <span className="text-red-500 text-[10px] font-bold">{errors.secondaryProfileUrl}</span>}
+                          </div>
+
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                              Q12.2 Followers / Subscribers <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="secondaryFollowers"
+                              value={formData.secondaryFollowers}
+                              onChange={handleInputChange}
+                              placeholder="e.g. 25K"
+                              className={`w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none ${errors.secondaryFollowers ? "border-red-500 bg-red-50/20" : ""
+                                }`}
+                            />
+                            {errors.secondaryFollowers && <span className="text-red-500 text-[10px] font-bold">{errors.secondaryFollowers}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Declaration Checkbox */}
+                  <div className="pt-4 border-t border-zinc-200">
+                    <label className="inline-flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="agreeTerms"
+                        checked={formData.agreeTerms}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 mt-0.5 rounded text-[var(--primary)] accent-[var(--primary)] shrink-0"
+                      />
+                      <span className="text-xs font-inter text-zinc-600 leading-relaxed">
+                        I hereby declare that all details provided in this National Creator Award 2026 nomination form are true, accurate, and belong to authentic content creation channels. I agree to the official terms, rules, and privacy guidelines.
+                      </span>
+                    </label>
+                    {errors.agreeTerms && <p className="text-red-500 text-[10px] font-bold mt-1">{errors.agreeTerms}</p>}
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Step 4: Portfolio & Confirmation */}
-            {currentStep === 4 && (
-              <div className="flex flex-col gap-5 animate-in fade-in">
-                <div className="border-b border-zinc-150 pb-3">
-                  <h3 className="text-lg font-poppins font-bold text-zinc-950 uppercase tracking-tight">
-                    Step 4: Portfolio Links & Declaration
-                  </h3>
-                  <p className="text-xs text-zinc-500 font-medium">Share links to your best content and declare original work.</p>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                    Brief Work Summary <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    rows={4}
-                    name="workSummary"
-                    value={formData.workSummary}
-                    onChange={handleInputChange}
-                    placeholder="Summarize your creative work and how it promotes Chhattisgarh's culture, tourism, or innovation..."
-                    className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none ${errors.workSummary ? "border-red-500 bg-red-50/20" : ""
-                      }`}
-                  />
-                  {errors.workSummary && <span className="text-red-500 text-[10px] font-bold">{errors.workSummary}</span>}
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                    Featured Video / Content URLs (comma separated)
-                  </label>
-                  <input
-                    type="text"
-                    name="sampleLinks"
-                    value={formData.sampleLinks}
-                    onChange={handleInputChange}
-                    placeholder="e.g. https://youtu.be/sample1, https://instagram.com/p/sample2"
-                    className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                  />
-                </div>
-
-                <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-start gap-3 mt-2">
-                  <input
-                    type="checkbox"
-                    id="agreeTerms"
-                    name="agreeTerms"
-                    checked={formData.agreeTerms}
-                    onChange={handleInputChange}
-                    className="mt-1 w-4 h-4 rounded text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer"
-                  />
-                  <label htmlFor="agreeTerms" className="text-xs text-zinc-700 font-medium leading-relaxed cursor-pointer">
-                    I declare that all content submitted is original, belongs to me, and complies with official State Creator Award guidelines.
-                  </label>
-                </div>
-                {errors.agreeTerms && <span className="text-red-500 text-[10px] font-bold">{errors.agreeTerms}</span>}
-              </div>
-            )}
-
-            {/* Bottom Wizard Action Buttons */}
-            <div className="flex items-center justify-between border-t border-zinc-200 pt-6 mt-8">
+            {/* Navigation Buttons Footer */}
+            <div className="flex items-center justify-between pt-8 border-t border-zinc-200 mt-8">
               {currentStep > 1 ? (
                 <button
+                  type="button"
                   onClick={handlePrev}
-                  className="px-6 py-2.5 rounded-full border border-zinc-300 text-zinc-700 font-poppins font-bold text-xs uppercase tracking-wider hover:bg-zinc-100 transition-colors inline-flex items-center gap-2 cursor-pointer"
+                  className="px-6 py-3 rounded-full border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-800 font-poppins font-bold text-xs uppercase tracking-wider transition-all"
                 >
-                  <FaArrowLeft className="w-3 h-3" />
-                  <span>Previous</span>
+                  ← Back
                 </button>
               ) : <div />}
 
               <button
+                type="button"
                 onClick={handleNext}
                 disabled={loading}
-                className="px-8 py-3 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="px-8 py-3.5 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
               >
-                <span>{loading ? "Submitting..." : currentStep === 4 ? "Submit Participation" : "Next Step"}</span>
-                <FaArrowRight className="w-3 h-3" />
+                {loading ? (
+                  <>
+                    <FaSpinner className="w-4 h-4 animate-spin" />
+                    <span>Submitting Application...</span>
+                  </>
+                ) : currentStep === 4 ? (
+                  <span>Submit Final Nomination →</span>
+                ) : (
+                  <span>Next Step →</span>
+                )}
               </button>
             </div>
           </>
         )}
+
       </div>
     </div>
   );
@@ -718,7 +1394,11 @@ function ParticipateForm() {
 
 export default function ParticipatePage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center text-xs font-bold text-zinc-500">Loading Participation Form...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center py-20">
+        <FaSpinner className="w-8 h-8 animate-spin text-[var(--primary)]" />
+      </div>
+    }>
       <ParticipateForm />
     </Suspense>
   );

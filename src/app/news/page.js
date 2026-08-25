@@ -284,7 +284,7 @@ export default function NewsPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
-      
+
       {/* Header Banner - Clean Light Portal Theme */}
       <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-[#F8F4EA] via-white to-[#FDF8F5] border border-orange-200/80 text-zinc-950 p-8 md:p-10 rounded-3xl shadow-xs relative overflow-hidden">
         <div className="absolute right-0 bottom-0 opacity-5 pointer-events-none transform translate-x-10 translate-y-10">
@@ -318,11 +318,10 @@ export default function NewsPage() {
       {/* Global Toast / Notice Alert */}
       {notice && (
         <div
-          className={`w-full max-w-7xl mx-auto p-4 rounded-2xl border text-xs font-bold flex items-center justify-between gap-3 shadow-sm ${
-            notice.type === "error"
+          className={`w-full max-w-7xl mx-auto p-4 rounded-2xl border text-xs font-bold flex items-center justify-between gap-3 shadow-sm ${notice.type === "error"
               ? "bg-rose-50 border-rose-200 text-rose-800"
               : "bg-emerald-50 border-emerald-200 text-emerald-800"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2.5">
             {notice.type === "error" ? (
@@ -340,7 +339,7 @@ export default function NewsPage() {
 
       {/* Control Toolbar (Search, Filter by Tag, Status Filter, Featured Toggle) */}
       <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white border border-zinc-200 p-4 rounded-2xl shadow-xs">
-        
+
         {/* Search Bar */}
         <div className="relative flex-1 min-w-[240px]">
           <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
@@ -359,11 +358,10 @@ export default function NewsPage() {
             <button
               key={tag}
               onClick={() => setSelectedTag(tag)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-poppins font-bold uppercase transition-all cursor-pointer border shrink-0 ${
-                selectedTag === tag
+              className={`px-3 py-1.5 rounded-full text-[11px] font-poppins font-bold uppercase transition-all cursor-pointer border shrink-0 ${selectedTag === tag
                   ? "bg-[#C45A32] text-white border-[#C45A32]"
                   : "bg-zinc-50 text-zinc-700 border-zinc-200 hover:bg-zinc-100"
-              }`}
+                }`}
             >
               {tag}
             </button>
@@ -451,13 +449,12 @@ export default function NewsPage() {
 
                   {/* Status Badge (Draft/Scheduled/Published) */}
                   <span
-                    className={`absolute bottom-3 left-3 px-2.5 py-0.5 rounded-md font-poppins font-bold text-[9px] uppercase tracking-wider ${
-                      article.status === "DRAFT"
+                    className={`absolute bottom-3 left-3 px-2.5 py-0.5 rounded-md font-poppins font-bold text-[9px] uppercase tracking-wider ${article.status === "DRAFT"
                         ? "bg-amber-100 text-amber-800 border border-amber-300"
                         : article.status === "SCHEDULED"
-                        ? "bg-sky-100 text-sky-800 border border-sky-300"
-                        : "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                    }`}
+                          ? "bg-sky-100 text-sky-800 border border-sky-300"
+                          : "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                      }`}
                   >
                     {article.status || "PUBLISHED"}
                   </span>
@@ -491,10 +488,10 @@ export default function NewsPage() {
                         <FaCalendarAlt className="w-3 h-3 text-[#C45A32]" />
                         {article.createdAt
                           ? new Date(article.createdAt).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
                           : article.date || "August 2026"}
                       </span>
 
@@ -579,7 +576,7 @@ export default function NewsPage() {
 
             {/* Modal Form */}
             <form onSubmit={handleSubmitNews} className="flex flex-col gap-5">
-              
+
               {/* Title & Slug */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">

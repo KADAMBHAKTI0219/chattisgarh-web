@@ -29,9 +29,11 @@ import {
   FaNewspaper,
   FaExternalLinkAlt
 } from "react-icons/fa";
+import fetchApi from "@/services/client";
 import { categoryService } from "@/services/category";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
+import { nominationService } from "@/services/nomination";
 import { userService } from "@/services/user";
 import { newsService, generateSlug } from "@/services/news";
 
@@ -339,41 +341,77 @@ export default function AdminDashboard({ token }) {
       }
       setCategories(processedCategories);
 
-      // 2. Fetch Participants & Applications dynamically
+      // 2. Fetch Participants & Nominations dynamically from all backend services & localStorage
       try {
-        const partsRes = await participantService.getParticipants({}, authToken);
-        const appsRes = await applicationService.getApplications({}, authToken);
-        const partsList = partsRes?.data || partsRes?.participants || (Array.isArray(partsRes) ? partsRes : []);
-        const appsList = appsRes?.data || appsRes?.applications || (Array.isArray(appsRes) ? appsRes : []);
+        const adminNomsRes = await fetchApi("/admin/nominations", { method: "GET", token: authToken }).catch(() => ({}));
+        const partsRes = await participantService.getParticipants({}, authToken).catch(() => ({}));
+        const nomsRes = await nominationService.getNominations({}, authToken).catch(() => ({}));
+        const appsRes = await applicationService.getApplications({}, authToken).catch(() => ({}));
 
-        const combinedRaw = partsList.length > 0 ? partsList : appsList;
+        const extractArray = (res) => {
+          if (!res) return [];
+          if (Array.isArray(res)) return res;
+          if (Array.isArray(res.data)) return res.data;
+          if (Array.isArray(res.participants)) return res.participants;
+          if (Array.isArray(res.nominations)) return res.nominations;
+          if (Array.isArray(res.applications)) return res.applications;
+          if (res.data && Array.isArray(res.data.participants)) return res.data.participants;
+          if (res.data && Array.isArray(res.data.nominations)) return res.data.nominations;
+          if (res.data && Array.isArray(res.data.applications)) return res.data.applications;
+          return [];
+        };
 
-        if (Array.isArray(combinedRaw) && combinedRaw.length > 0) {
-          const fetchedParts = combinedRaw.map((p, idx) => ({
+        const adminNomsList = extractArray(adminNomsRes);
+        const partsList = extractArray(partsRes);
+        const nomsList = extractArray(nomsRes);
+        const appsList = extractArray(appsRes);
+
+        // Also check localStorage submitted_nominations
+        let localList = [];
+        try {
+          localList = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+        } catch (e) {}
+
+        const rawCombined = [...localList, ...adminNomsList, ...partsList, ...nomsList, ...appsList];
+
+        const fetchedParts = rawCombined.map((p, idx) => {
+          const isSelf = (p.nominationType || p.nominationAs) === "SELF" || (p.nominationType || p.nominationAs) === "Applicant(Self)" || !p.nominator;
+          const displayName = p.name || p.fullName || (isSelf ? p.applicant?.fullName : p.nominee?.fullName || p.nominee?.name) || p.creator?.name || p.creatorName || "Nominee Candidate";
+          const displayTitle = p.title || p.projectTitle || p.workSummary || (p.categories && p.categories[0]?.description) || `${displayName}'s Award Nomination`;
+          const catTitle = p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (p.categories && p.categories[0]?.categoryTitle) || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "Creator Award Category"));
+
+          return {
             _id: p._id || p.id || `p-${idx}`,
             num: String(idx + 1).padStart(2, "0"),
-            applicationId: p.applicationId || p.applicationNo || `CG-2026-${1000 + idx}`,
-            name: p.name || p.fullName || p.creator?.name || "Nominee Candidate",
-            title: p.title || p.projectTitle || "Nomination Submission",
-            category: p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "Chhattisgarhiya Sanskriti Ambassador")),
-            district: p.district || "Raipur",
-            publicVotes: p.publicVotes || p.votesCount || p.votes || (8000 - idx * 600),
-            status: p.status || "APPROVED",
-            createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "12 May 2025",
-            phone: p.phone || p.mobile || "+91 98765 43210",
-            email: p.email || "nominee@cg.gov.in"
-          }));
-          setParticipants(fetchedParts);
-        } else {
-          setParticipants([
-            { _id: "p1", num: "01", applicationId: "CG-2026-1001", name: "Bhakti Kadam", title: "Preserving Ancient Chhattisgarhi Folk Songs", category: "Chhattisgarhiya Sanskriti Ambassador", district: "Raipur", publicVotes: 8940, status: "APPROVED", createdAt: "12 May 2025", phone: "+91 98765 43210", email: "bhakti.kadam@cg.gov.in" },
-            { _id: "p2", num: "02", applicationId: "CG-2026-1002", name: "Rameshwar Jharlal", title: "Bell Metal & Dhokra Art Sculptures of Kondagaon", category: "Indigenous Handicrafts & Craft Platform", district: "Bastar", publicVotes: 7520, status: "SHORTLISTED", createdAt: "10 May 2025", phone: "+91 98765 00112", email: "rameshwar.art@gmail.com" },
-            { _id: "p3", num: "03", applicationId: "CG-2026-1003", name: "Aakash Sahu", title: "Digital Documentary on Chhattisgarh Waterfalls", category: "Innovation & Digital Empowerment", district: "Durg", publicVotes: 6230, status: "APPROVED", createdAt: "08 May 2025", phone: "+91 91234 56789", email: "aakash.vlogs@gmail.com" },
-            { _id: "p4", num: "04", applicationId: "CG-2026-1004", name: "Dr. Vinod Kumar Verma", title: "Voice of Soil: Regional Idiom Poetry Archive", category: "Education & Literacy Excellence", district: "Bilaspur", publicVotes: 5410, status: "UNDER_REVIEW", createdAt: "05 May 2025", phone: "+91 94255 99887", email: "dr.vinod@yahoo.com" },
-            { _id: "p5", num: "05", applicationId: "CG-2026-1005", name: "Kosa Bunkar Samiti", title: "Organic Tussar Silk Weaving Cooperative", category: "Indigenous Handicrafts & Craft Platform", district: "Janjgir-Champa", publicVotes: 4120, status: "APPROVED", createdAt: "03 May 2025", phone: "+91 97543 21098", email: "kosa.samiti@gmail.com" },
-            { _id: "p6", num: "06", applicationId: "CG-2026-1006", name: "Mamta Chandrakar Kitchen", title: "Documentation of 150 Traditional Millet Recipes", category: "Tribal Heritage Creator", district: "Dhamtari", publicVotes: 3998, status: "SUBMITTED", createdAt: "01 May 2025", phone: "+91 99811 22334", email: "mamta.cgfood@gmail.com" }
-          ]);
-        }
+            applicationId: p.applicationId || p.applicationNo || p._id || `CG-2026-${1000 + idx}`,
+            name: displayName,
+            title: displayTitle,
+            category: catTitle || "Creator Award Category",
+            district: p.district || (isSelf ? p.applicant?.district : p.nominee?.district) || "Raipur",
+            publicVotes: p.publicVotes || p.votesCount || p.votes || 0,
+            status: (p.status || "SUBMITTED").toUpperCase(),
+            createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Recently",
+            phone: p.phone || (isSelf ? p.applicant?.phone : p.nominator?.phone || p.nominee?.phone) || "N/A",
+            email: p.email || (isSelf ? p.applicant?.email : p.nominator?.email || p.nominee?.email) || "N/A",
+            nominationType: p.nominationType || p.nominationAs || "SELF",
+            awardType: p.awardType || "National",
+            workSummary: p.workSummary || p.description || "",
+            bestStoryLink1: p.bestStoryLink1 || p.contentUrl || "",
+            bestStoryLink2: p.bestStoryLink2 || "",
+            bestStoryLink3: p.bestStoryLink3 || ""
+          };
+        });
+
+        // Deduplicate by applicationId or _id
+        const uniqueMap = new Map();
+        fetchedParts.forEach((item) => {
+          const key = item.applicationId || item._id;
+          if (key && !uniqueMap.has(key)) {
+            uniqueMap.set(key, item);
+          }
+        });
+
+        setParticipants(Array.from(uniqueMap.values()));
       } catch (err) {
         console.error("Failed to fetch participant metrics:", err);
       }
@@ -2530,17 +2568,17 @@ export default function AdminDashboard({ token }) {
       {/* ================= PARTICIPANT DETAILS VIEW MODAL ================= */}
       {selectedItem && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up max-h-[90vh] overflow-y-auto">
 
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-100/80 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-orange-100 text-[#E6532B] flex items-center justify-center font-bold text-lg shrink-0">
                   <FaUsers className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider">
-                    {selectedItem.applicationId || "Nominee Profile"}
+                    Application ID: {selectedItem.applicationId || selectedItem._id || "NCA-2026-ENTRY"}
                   </span>
                   <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
                     {selectedItem.name || selectedItem.title}
@@ -2557,37 +2595,65 @@ export default function AdminDashboard({ token }) {
             </div>
 
             {/* Modal Body */}
-            <div className="flex flex-col gap-3.5 text-xs font-montserrat">
+            <div className="flex flex-col gap-4 text-xs font-montserrat">
 
               {/* Votes & Status Hero Banner */}
-              <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl p-4 flex items-center justify-between shadow-md">
+              <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-2xl p-4 flex items-center justify-between shadow-md">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-montserrat font-bold uppercase tracking-widest text-orange-100">
-                    TOTAL PUBLIC VOTES
+                    STATUS & RECOGNITION
                   </span>
-                  <span className="text-2xl font-montserrat font-black text-white mt-0.5">
-                    {Number(selectedItem.publicVotes || 0).toLocaleString("en-IN")} Votes
+                  <span className="text-xl font-montserrat font-black text-white mt-0.5">
+                    {selectedItem.status || "SUBMITTED"}
                   </span>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-md font-montserrat font-bold text-xs">
-                  {selectedItem.status || "APPROVED"}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-md font-montserrat font-bold text-xs">
+                    Scope: {selectedItem.awardType || "National"}
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-black/20 text-white backdrop-blur-md font-montserrat font-bold text-xs">
+                    Type: {selectedItem.nominationType === "THIRD_PARTY" || selectedItem.nominationAs === "THIRD_PARTY" ? "Nominator for Others" : "Self Nomination"}
+                  </span>
+                </div>
               </div>
 
-              {/* Data Grid */}
+              {/* Nominator Information Box (If THIRD_PARTY) */}
+              {(selectedItem.nominationType === "THIRD_PARTY" || selectedItem.nominationAs === "THIRD_PARTY" || selectedItem.nominator) && (
+                <div className="bg-amber-50/70 border border-amber-200/90 p-4 rounded-2xl flex flex-col gap-2">
+                  <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">
+                    Nominator Information (Submitted for Candidate)
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Name</span>
+                      <span className="font-bold text-zinc-900">{selectedItem.nominator?.fullName || selectedItem.nominatorName || "Citizen Nominator"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Nationality</span>
+                      <span className="font-bold text-zinc-900">{selectedItem.nominator?.nationality || "Indian"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Contact</span>
+                      <span className="font-mono text-zinc-800">{selectedItem.nominator?.phone || selectedItem.nominator?.email || "Submitted"}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Data Grid: Candidate Details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
 
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Category</span>
-                  <span className="font-montserrat font-bold text-zinc-900 text-xs">
-                    {selectedItem.category || "General"}
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Award Category</span>
+                  <span className="font-montserrat font-bold text-[#E6532B] text-xs">
+                    {selectedItem.category || "Creator Award Category"}
                   </span>
                 </div>
 
                 <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">District</span>
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">District & State</span>
                   <span className="font-montserrat font-bold text-zinc-900 text-xs">
-                    {selectedItem.district || "Raipur"}
+                    {selectedItem.district || "Raipur"}, {selectedItem.state || "Chhattisgarh"}
                   </span>
                 </div>
 
@@ -2607,15 +2673,90 @@ export default function AdminDashboard({ token }) {
 
               </div>
 
-              {/* Work / Title */}
-              <div className="bg-zinc-50 p-3.5 rounded-xl border border-zinc-200 flex flex-col gap-1">
-                <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">
-                  Nomination Submission Title
+              {/* Work Narrative / Summary */}
+              <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-1.5">
+                <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
+                  Nomination Title & Work Summary
                 </span>
-                <p className="font-montserrat font-semibold text-zinc-800 leading-relaxed text-xs">
-                  {selectedItem.title || "Nomination Candidate Submission"}
+                <p className="font-montserrat font-bold text-zinc-950 text-xs">
+                  {selectedItem.title}
                 </p>
+                {selectedItem.workSummary && (
+                  <p className="font-inter text-zinc-700 text-xs leading-relaxed pt-1 border-t border-zinc-200/80 whitespace-pre-line">
+                    {selectedItem.workSummary}
+                  </p>
+                )}
               </div>
+
+              {/* Story Links Section */}
+              {(selectedItem.bestStoryLink1 || selectedItem.bestStoryLink2 || selectedItem.bestStoryLink3) && (
+                <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-2">
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
+                    Featured Story Content Links
+                  </span>
+
+                  {selectedItem.bestStoryLink1 && (
+                    <a
+                      href={selectedItem.bestStoryLink1}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-2.5 rounded-xl bg-white border border-zinc-200 text-[#E6532B] font-bold text-xs flex items-center justify-between hover:bg-orange-50 transition-colors"
+                    >
+                      <span className="truncate">Story Link 1: {selectedItem.bestStoryLink1}</span>
+                      <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-2" />
+                    </a>
+                  )}
+
+                  {selectedItem.bestStoryLink2 && (
+                    <a
+                      href={selectedItem.bestStoryLink2}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-2.5 rounded-xl bg-white border border-zinc-200 text-[#E6532B] font-bold text-xs flex items-center justify-between hover:bg-orange-50 transition-colors"
+                    >
+                      <span className="truncate">Story Link 2: {selectedItem.bestStoryLink2}</span>
+                      <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-2" />
+                    </a>
+                  )}
+
+                  {selectedItem.bestStoryLink3 && (
+                    <a
+                      href={selectedItem.bestStoryLink3}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-2.5 rounded-xl bg-white border border-zinc-200 text-[#E6532B] font-bold text-xs flex items-center justify-between hover:bg-orange-50 transition-colors"
+                    >
+                      <span className="truncate">Story Link 3: {selectedItem.bestStoryLink3}</span>
+                      <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-2" />
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {/* Social Media Profiles */}
+              {(selectedItem.primaryPlatform || selectedItem.secondaryPlatform || (selectedItem.socialProfiles && selectedItem.socialProfiles.length > 0)) && (
+                <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-2">
+                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
+                    Social Media Profiles & Metrics
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {selectedItem.primaryPlatform && (
+                      <div className="p-3 rounded-xl bg-white border border-zinc-200 flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-emerald-700 uppercase">Primary: {selectedItem.primaryPlatform.platform || "Instagram"}</span>
+                        <span className="font-bold text-xs text-zinc-900 truncate">{selectedItem.primaryPlatform.profileUrl || "URL Provided"}</span>
+                        <span className="text-[11px] text-zinc-500 font-semibold">Followers: {selectedItem.primaryPlatform.followers || "N/A"}</span>
+                      </div>
+                    )}
+                    {selectedItem.secondaryPlatform && selectedItem.secondaryPlatform.profileUrl && (
+                      <div className="p-3 rounded-xl bg-white border border-zinc-200 flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-purple-700 uppercase">Secondary: {selectedItem.secondaryPlatform.platform || "YouTube"}</span>
+                        <span className="font-bold text-xs text-zinc-900 truncate">{selectedItem.secondaryPlatform.profileUrl}</span>
+                        <span className="text-[11px] text-zinc-500 font-semibold">Followers: {selectedItem.secondaryPlatform.followers || "N/A"}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
             </div>
 

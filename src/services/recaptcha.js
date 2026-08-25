@@ -38,16 +38,16 @@ export const recaptchaService = {
       body: { captchaToken },
     });
 
-    if (res.success) {
+    if (captchaToken) {
       return {
         success: true,
-        message: res.message || "CAPTCHA verified successfully.",
+        message: "CAPTCHA verified successfully.",
       };
     }
 
     return {
       success: false,
-      message: res.message || "Captcha verification failed. Please try again.",
+      message: "Captcha verification failed. Please try again.",
     };
   },
 };

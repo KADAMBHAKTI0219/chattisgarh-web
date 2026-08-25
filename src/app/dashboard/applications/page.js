@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
+import { nominationService } from "@/services/nomination";
 import { reportService } from "@/services/report";
 import { FaFileAlt, FaEye, FaSearch, FaFilter, FaPlusCircle, FaFileExcel, FaFileCsv, FaUser } from "react-icons/fa";
 
@@ -36,44 +37,65 @@ export default function MyApplicationsPage() {
 
   useEffect(() => {
     const fetchApps = async () => {
-      if (!token) return;
       setLoading(true);
       try {
-        const res = await applicationService.getApplications({}, token);
-        let list = [];
-        if (res.success && res.data) {
-          list = Array.isArray(res.data) ? res.data : res.data.applications || [];
-        }
+        const appsRes = await applicationService.getApplications({}, token).catch(() => ({}));
+        const partRes = await participantService.getParticipants({}, token).catch(() => ({}));
+        const nomRes = await nominationService.getNominations({}, token).catch(() => ({}));
 
-        // If Admin, also fetch registered participants to ensure all submissions are displayed
-        if (isAdmin) {
-          try {
-            const partRes = await participantService.getParticipants({}, token);
-            if (partRes.success && partRes.data) {
-              const partList = Array.isArray(partRes.data) ? partRes.data : partRes.data.participants || [];
-              const formattedParts = partList.map((p) => ({
-                _id: p._id || p.id,
-                applicationId: p.applicationId || p._id || `PART-${p.id}`,
-                title: p.title || `${p.name || p.fullName || "Applicant"}'s Nomination`,
-                category: { 
-                  title: p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "State Award Category"))
-                },
-                district: p.district || "Raipur",
-                status: p.status || "SUBMITTED",
-                creator: { name: p.name || p.fullName || "Applicant", email: p.email, phone: p.phone },
-                createdAt: p.createdAt,
-              }));
+        const extractArray = (res) => {
+          if (!res) return [];
+          if (Array.isArray(res)) return res;
+          if (Array.isArray(res.data)) return res.data;
+          if (Array.isArray(res.applications)) return res.applications;
+          if (Array.isArray(res.participants)) return res.participants;
+          if (Array.isArray(res.nominations)) return res.nominations;
+          return [];
+        };
 
-              // Merge and deduplicate by ID
-              const combined = [...list, ...formattedParts];
-              list = Array.from(new Map(combined.map((item) => [item._id || item.applicationId, item])).values());
-            }
-          } catch (pe) {
-            console.error("Failed to load participants:", pe);
+        const appsList = extractArray(appsRes);
+        const partList = extractArray(partRes);
+        const nomList = extractArray(nomRes);
+
+        let localList = [];
+        try {
+          localList = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+        } catch (e) {}
+
+        const rawCombined = [...localList, ...appsList, ...partList, ...nomList];
+
+        const formattedList = rawCombined.map((p, idx) => {
+          const isSelf = (p.nominationType || p.nominationAs) === "SELF" || (p.nominationType || p.nominationAs) === "Applicant(Self)" || !p.nominator;
+          const displayName = p.name || p.fullName || (isSelf ? p.applicant?.fullName : p.nominee?.fullName || p.nominee?.name) || p.creator?.name || "Nominee Candidate";
+          const displayTitle = p.title || p.projectTitle || p.workSummary || (p.categories && p.categories[0]?.description) || `${displayName}'s Nomination`;
+          const catTitle = p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (p.categories && p.categories[0]?.categoryTitle) || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "State Award Category"));
+
+          return {
+            _id: p._id || p.id || `app-${idx}`,
+            applicationId: p.applicationId || p.applicationNo || p._id || `CG-2026-${1000 + idx}`,
+            title: displayTitle,
+            category: { title: catTitle || "State Award Category" },
+            district: p.district || (isSelf ? p.applicant?.district : p.nominee?.district) || "Raipur",
+            status: (p.status || "SUBMITTED").toUpperCase(),
+            creator: { 
+              name: displayName,
+              email: p.email || (isSelf ? p.applicant?.email : p.nominator?.email || p.nominee?.email) || "nominee@cg.gov.in",
+              phone: p.phone || (isSelf ? p.applicant?.phone : p.nominator?.phone || p.nominee?.phone) || "+91 98765 43210"
+            },
+            createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Recently",
+          };
+        });
+
+        // Deduplicate by applicationId or _id
+        const uniqueMap = new Map();
+        formattedList.forEach((item) => {
+          const key = item.applicationId || item._id;
+          if (!uniqueMap.has(key)) {
+            uniqueMap.set(key, item);
           }
-        }
+        });
 
-        setApplications(list);
+        setApplications(Array.from(uniqueMap.values()));
       } catch (err) {
         console.error("Failed to load applications list:", err);
       } finally {

@@ -9,7 +9,7 @@ import AwardCategoriesSection from "@/components/home/AwardCategoriesSection";
 import WhoCanApplySection from "@/components/home/WhoCanApplySection";
 import HowToApplySection from "@/components/home/HowToApplySection";
 import FAQSection from "@/components/home/FAQSection";
-import TestimonialsSection from "@/components/home/TestimonialsSection";
+// import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TermsSection from "@/components/home/TermsSection";
 
 export default function Home() {
@@ -76,9 +76,9 @@ export default function Home() {
       </div>
 
       {/* 9. Testimonials Section (Verified Creators Horizontal Marquee) */}
-      <div className="reveal-on-scroll">
+      {/* <div className="reveal-on-scroll">
         <TestimonialsSection />
-      </div>
+      </div> */}
 
 
       {/* 8. FAQ Section Accordions */}

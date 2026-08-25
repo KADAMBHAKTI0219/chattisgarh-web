@@ -8,67 +8,15 @@ import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { categoryService } from "@/services/api";
 import Heading from "@/components/common/Heading";
 import CategoryDetailModal from "@/components/common/CategoryDetailModal";
+import { categoriesData as fallbackCategories } from "@/data/categoriesData";
+import { extractDynamicTiers, getTierSlug, getTierColor, getTierTitle } from "@/utils/tierUtils";
 import {
-    FaLandmark,
-    FaLaptopCode,
-    FaHandsHelping,
-    FaPalette,
     FaChevronLeft,
     FaChevronRight,
     FaArrowLeft,
     FaSearch,
     FaSpinner
 } from "react-icons/fa";
-
-// Tier definitions matching system design
-const TIERS = {
-    all: {
-        slug: "all",
-        title: "All Categories",
-        description: "Explore all official award categories across Culture, Tech, Social Impact, and Arts & Heritage.",
-        color: "#C15B3D",
-        icon: FaLandmark
-    },
-    culture: {
-        slug: "culture",
-        title: "Culture & Tourism",
-        description: "Showcasing the beauty of Chhattisgarh's heritage, traditions, festivals, art, cuisine and breathtaking destinations.",
-        color: "#C15B3D",
-        icon: FaLandmark
-    },
-    tech: {
-        slug: "tech",
-        title: "Tech & Media",
-        description: "Honouring digital creators, storytellers, influencers and innovators using technology to inform, entertain and inspire.",
-        color: "#2E5C31",
-        icon: FaLaptopCode
-    },
-    impact: {
-        slug: "impact",
-        title: "Social Impact & Welfare",
-        description: "Recognising creators driving positive social change, awareness, education, environment and community development.",
-        color: "#2E5C31",
-        icon: FaHandsHelping
-    },
-    arts: {
-        slug: "arts",
-        title: "Arts & Heritage",
-        description: "Celebrating artists, artisans and creators preserving Chhattisgarh's rich artistic legacy and indigenous crafts.",
-        color: "#D39B2C",
-        icon: FaPalette
-    }
-};
-
-// Map backend tier enum string to frontend slug
-const mapTierSlug = (tierStr) => {
-    if (!tierStr) return "culture";
-    const str = String(tierStr).toUpperCase();
-    if (str === "A_CULTURE_IDENTITY" || str.includes("CULTURE") || str.includes("HERITAGE") || str.includes("TOURISM")) return "culture";
-    if (str === "B_NATION_STATE_BUILDING" || str.includes("TECH") || str.includes("MEDIA") || str.includes("NATION")) return "tech";
-    if (str.includes("IMPACT") || str.includes("WELFARE") || str.includes("SOCIAL")) return "impact";
-    if (str === "C_CRAFT_PLATFORM" || str.includes("CRAFT") || str.includes("ART")) return "arts";
-    return "culture";
-};
 
 export default function CategorySlugPage({ params }) {
     const resolvedParams = use(params);
@@ -91,14 +39,17 @@ export default function CategorySlugPage({ params }) {
                 setIsLoading(true);
                 const res = await categoryService.getCategories({ isActive: true });
                 if (isMounted) {
-                    if (res.success && Array.isArray(res.categories)) {
+                    if (res?.success && Array.isArray(res.categories) && res.categories.length > 0) {
                         setApiCategories(res.categories);
-                    } else if (Array.isArray(res.data)) {
+                    } else if (Array.isArray(res?.data) && res.data.length > 0) {
                         setApiCategories(res.data);
+                    } else {
+                        setApiCategories(fallbackCategories);
                     }
                 }
             } catch (err) {
-                console.warn("Failed to load categories from API:", err);
+                console.warn("Failed to load categories from API, using fallback:", err);
+                if (isMounted) setApiCategories(fallbackCategories);
             } finally {
                 if (isMounted) setIsLoading(false);
             }
@@ -107,28 +58,49 @@ export default function CategorySlugPage({ params }) {
         return () => { isMounted = false; };
     }, []);
 
-    // Format categories directly from API
-    const allCategoriesList = apiCategories.map((cat, idx) => ({
-        id: cat._id || `api-${idx}`,
-        tier: mapTierSlug(cat.tier),
-        title: cat.title || cat.name || "Award Category",
-        image: cat.image || "/assets/images/raipur_landmark.jpg",
-        description: cat.shortDescription || cat.description || cat.taskBrief || "",
-        taskBrief: cat.taskBrief || "",
-        hashtag: cat.hashtag || "",
-        cashPrizeMin: cat.cashPrizeMin || 0,
-        cashPrizeMax: cat.cashPrizeMax || 0,
-        prizeTier: cat.prizeTier || "",
-        isApi: true
-    }));
+    const rawList = apiCategories.length > 0 ? apiCategories : fallbackCategories;
+
+    // Format category objects
+    const allCategoriesList = rawList.map((cat, idx) => {
+        const fallbackMatch = fallbackCategories.find(
+            (f) => f.slug === cat.slug || f.title.toLowerCase() === (cat.title || cat.name || "").toLowerCase()
+        );
+
+        const rawTier = cat.tier || cat.tierName || fallbackMatch?.tier || "General Tier";
+        const tierNum = cat.tierNumber || fallbackMatch?.tierNumber || null;
+        const tierSlug = getTierSlug(rawTier, tierNum);
+        const tierTitle = getTierTitle(rawTier, tierNum);
+        const badgeColor = getTierColor(rawTier, tierNum);
+
+        return {
+            id: cat._id || cat.slug || `api-${idx}`,
+            categoryNumber: cat.categoryNumber || fallbackMatch?.categoryNumber || idx + 1,
+            tierNumber: tierNum,
+            tierSlug,
+            tierTitle,
+            badgeColor,
+            title: cat.title || cat.name || fallbackMatch?.title || "Award Category",
+            slug: cat.slug || fallbackMatch?.slug || "",
+            image: cat.image || fallbackMatch?.image || "/assets/images/category-1.jpg",
+            shortDescription: cat.shortDescription || cat.description || fallbackMatch?.shortDescription || "",
+            fullDescription: cat.fullDescription || fallbackMatch?.fullDescription || "",
+            taskBrief: cat.taskBrief || fallbackMatch?.taskBrief || "",
+            hashtag: cat.hashtag || fallbackMatch?.hashtag || "",
+            isFeatured: cat.isFeatured ?? fallbackMatch?.isFeatured ?? false,
+            isActive: cat.isActive ?? fallbackMatch?.isActive ?? true
+        };
+    });
 
     // Deduplicate by title
     const uniqueCategories = Array.from(
         new Map(allCategoriesList.map((item) => [item.title.toLowerCase(), item])).values()
     );
 
-    // Fallback to "all" if slug is unrecognized
-    const activeTierObj = TIERS[slug] || TIERS.all;
+    // Extract dynamic tiers (All Categories + 11 Tiers)
+    const tierTabs = extractDynamicTiers(uniqueCategories);
+
+    // Match currently active tier object
+    const activeTierObj = tierTabs.find((t) => t.slug === slug) || tierTabs[0];
 
     const handleTabClick = (tierSlug) => {
         router.push(`/categories/${tierSlug}`);
@@ -141,12 +113,12 @@ export default function CategorySlugPage({ params }) {
         }
     };
 
-    // Filter categories by slug tier & search text
+    // Filter categories by active tier slug & search text
     const filteredCategories = uniqueCategories.filter((cat) => {
-        if (slug !== "all" && cat.tier !== slug) return false;
+        if (slug !== "all" && cat.tierSlug !== slug) return false;
         if (!searchQuery) return true;
         const title = t(cat.title).toLowerCase();
-        const desc = t(cat.description || "").toLowerCase();
+        const desc = t(cat.shortDescription || "").toLowerCase();
         const query = searchQuery.toLowerCase();
         return title.includes(query) || desc.includes(query);
     });
@@ -171,7 +143,7 @@ export default function CategorySlugPage({ params }) {
                     badge={t(activeTierObj.title)}
                     title={t("CATEGORIES IN")}
                     highlightText={t(activeTierObj.title)}
-                    description={t(activeTierObj.description)}
+                    description={t("Explore official state award categories across governance, tech, arts, culture, and social impact.")}
                 />
             </div>
 
@@ -193,23 +165,18 @@ export default function CategorySlugPage({ params }) {
                             ref={tabsRef}
                             className="flex items-center gap-2.5 overflow-x-auto no-scrollbar scroll-smooth px-1 py-1"
                         >
-                            {Object.keys(TIERS).map((key) => {
-                                const tierInfo = TIERS[key];
+                            {tierTabs.map((tierInfo) => {
                                 const isActive = slug === tierInfo.slug;
-                                const categoryCount = uniqueCategories.filter(
-                                    (c) => tierInfo.slug === "all" || c.tier === tierInfo.slug
-                                ).length;
-
                                 return (
                                     <button
-                                        key={key}
+                                        key={tierInfo.slug}
                                         onClick={() => handleTabClick(tierInfo.slug)}
                                         className={`shrink-0 px-4 sm:px-5 py-2.5 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${isActive
                                             ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
                                             : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
                                             }`}
                                     >
-                                        {t(tierInfo.title)} ({categoryCount})
+                                        {t(tierInfo.title)} ({tierInfo.count})
                                     </button>
                                 );
                             })}
@@ -258,45 +225,41 @@ export default function CategorySlugPage({ params }) {
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4">
-                        {filteredCategories.map((cat) => {
-                            const tierData = TIERS[cat.tier] || TIERS.culture;
+                        {filteredCategories.map((cat) => (
+                            <div
+                                key={cat.id}
+                                onClick={() => setSelectedDetailCategory(cat)}
+                                className="relative min-h-[175px] xs:min-h-[185px] sm:min-h-[195px] rounded-2xl overflow-hidden group border border-zinc-200/80 hover:border-[var(--primary)] shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-3 sm:p-4 text-left"
+                            >
+                                {/* Background Image */}
+                                <img
+                                    src={cat.image}
+                                    alt={t(cat.title)}
+                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100 z-0 bg-zinc-900"
+                                    loading="lazy"
+                                />
 
-                            return (
-                                <div
-                                    key={cat.id}
-                                    onClick={() => setSelectedDetailCategory(cat)}
-                                    className="relative min-h-[175px] xs:min-h-[185px] sm:min-h-[195px] rounded-2xl overflow-hidden group border border-zinc-200/80 hover:border-[var(--primary)] shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 select-none cursor-pointer flex flex-col justify-end p-3 sm:p-4 text-left"
-                                >
-                                    {/* Background Image */}
-                                    <img
-                                        src={cat.image}
-                                        alt={t(cat.title)}
-                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100 z-0 bg-zinc-900"
-                                        loading="lazy"
-                                    />
+                                {/* Dark Gradient Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
 
-                                    {/* Dark Gradient Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
-
-                                    {/* Tier Badge */}
-                                    <div className="absolute top-2 left-2 xs:top-2.5 xs:left-2.5 z-20 max-w-[90%]">
-                                        <span
-                                            className="inline-block text-[8px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
-                                            style={{ backgroundColor: tierData.color }}
-                                        >
-                                            {t(tierData.title)}
-                                        </span>
-                                    </div>
-
-                                    {/* Content Overlay */}
-                                    <div className="relative z-20 flex flex-col justify-end w-full">
-                                        <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
-                                            {t(cat.title)}
-                                        </h3>
-                                    </div>
+                                {/* Tier Badge */}
+                                <div className="absolute top-2 left-2 xs:top-2.5 xs:left-2.5 z-20 max-w-[90%]">
+                                    <span
+                                        className="inline-block text-[8px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
+                                        style={{ backgroundColor: cat.badgeColor || "#C15B3D" }}
+                                    >
+                                        {t(cat.tierTitle)}
+                                    </span>
                                 </div>
-                            );
-                        })}
+
+                                {/* Content Overlay */}
+                                <div className="relative z-20 flex flex-col justify-end w-full">
+                                    <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
+                                        {t(cat.title)}
+                                    </h3>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
 

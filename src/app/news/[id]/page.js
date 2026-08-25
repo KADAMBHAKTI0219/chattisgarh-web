@@ -57,7 +57,7 @@ export default function NewsDetailPage({ params }) {
           title: article?.title || "Chhattisgarh News Article",
           text: article?.summary,
           url: window.location.href,
-        }).catch(() => {});
+        }).catch(() => { });
       } else {
         navigator.clipboard.writeText(window.location.href);
         setCopied(true);
@@ -85,7 +85,7 @@ export default function NewsDetailPage({ params }) {
 
   return (
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-8 relative overflow-x-hidden animate-page-enter">
-      
+
       {/* Top Navigation & Share Toolbar */}
       <div className="w-full max-w-4xl mx-auto flex items-center justify-between gap-4">
         <Link
@@ -127,7 +127,7 @@ export default function NewsDetailPage({ params }) {
         </div>
       ) : (
         <article className="w-full max-w-4xl mx-auto bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-10 shadow-sm text-left flex flex-col gap-8">
-          
+
           {/* Header Metadata */}
           <div className="flex flex-col gap-4 border-b border-zinc-200 pb-6">
             <div className="flex flex-wrap items-center gap-2">
@@ -161,11 +161,11 @@ export default function NewsDetailPage({ params }) {
                 <FaCalendarAlt className="w-3.5 h-3.5 text-[#C45A32]" />
                 {article.createdAt
                   ? new Date(article.createdAt).toLocaleDateString("en-US", {
-                      weekday: "long",
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })
                   : article.date || "August 01, 2026"}
               </span>
 

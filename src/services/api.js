@@ -17,6 +17,7 @@ import { reportService } from "./report";
 import { contactService } from "./contact";
 import { recaptchaService } from "./recaptcha";
 import { participantService } from "./participant";
+import { nominationService } from "./nomination";
 
 export {
   fetchApi,
@@ -37,6 +38,7 @@ export {
   contactService,
   recaptchaService,
   participantService,
+  nominationService,
 };
 
 export default {
@@ -58,5 +60,6 @@ export default {
   contact: contactService,
   recaptcha: recaptchaService,
   participant: participantService,
+  nomination: nominationService,
 };
 

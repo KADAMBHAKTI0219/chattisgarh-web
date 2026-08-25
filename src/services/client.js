@@ -39,7 +39,30 @@ export async function fetchApi(endpoint, options = {}) {
   };
 
   try {
-    const response = await fetch(url, config);
+    let response;
+    try {
+      response = await fetch(url, config);
+    } catch (primaryErr) {
+      const localBase = "http://localhost:5000/api/v1";
+      if (API_BASE_URL !== localBase) {
+        let localUrl = `${localBase}${endpoint}`;
+        if (params && Object.keys(params).length > 0) {
+          const query = new URLSearchParams();
+          Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== "") {
+              query.append(key, value);
+            }
+          });
+          const queryString = query.toString();
+          if (queryString) {
+            localUrl += (localUrl.includes("?") ? "&" : "?") + queryString;
+          }
+        }
+        response = await fetch(localUrl, config);
+      } else {
+        throw primaryErr;
+      }
+    }
     const contentType = response.headers.get("content-type");
     let data = {};
 

@@ -7,44 +7,29 @@ import Heading from "@/components/common/Heading";
 
 const GALLERY_CARDS = [
   {
-    id: "chitrakote",
-    title: "Chitrakote Falls",
-    subtitle: "The Niagara of India",
-    tag: "Natural Wonder",
-    image: "/assets/images/chattisgarh_fall.jpg",
-    desc: "Breathtaking horseshoe waterfall surrounded by lush Bastar woodlands.",
+    id: "mayali-nature-camp",
+    title: "Mayali Nature Camp",
+    image: "/assets/images/mayalinaturecamp.JPG",
   },
   {
-    id: "sirpur",
-    title: "Sirpur Heritage",
-    subtitle: "7th-Century Temple Complex",
-    tag: "Sacred Architecture",
-    image: "/assets/images/about-1.jpg",
-    desc: "Ancient brick monuments reflecting centuries of spiritual wisdom and craftsmanship.",
+    id: "mahtari-sadan",
+    title: "Mahtari Sadan",
+    image: "/assets/images/mahtarisadan.JPG",
   },
   {
-    id: "bastar-dance",
-    title: "Bastar Tribal Culture",
-    subtitle: "Living Indigenous Arts",
-    tag: "Heritage",
-    image: "/assets/images/about-4.jpg",
-    desc: "Vibrant rhythms, folk dances, and timeless storytelling passed through generations.",
+    id: "madheshwar-pahar",
+    title: "Madheshwar Pahar",
+    image: "/assets/images/madheshwar.JPG",
   },
   {
-    id: "creators",
-    title: "Digital Innovators",
-    subtitle: "Creators Shaping Tomorrow",
-    tag: "Digital Ecosystem",
-    image: "/assets/images/digitalinnovators.avif",
-    desc: "Local storytellers taking Chhattisgarh's voice to millions across the globe.",
+    id: "golden-island-korba",
+    title: "Golden Island Korba",
+    image: "/assets/images/goldenislandkorba.jpg",
   },
   {
-    id: "forests",
-    title: "Sacred Woodlands",
-    subtitle: "Heartland of Greenery",
-    tag: "Eco-Tourism",
-    image: "/assets/images/abouttt-5.jpg",
-    desc: "44% forest cover harboring rich biodiversity, wildlife sanctuaries, and natural tranquility.",
+    id: "bhoramdev-temple",
+    title: "Bhoram Dev Temple",
+    image: "/assets/images/bhoramdevmandir.jpg",
   },
 ];
 
@@ -159,29 +144,20 @@ export default function ConferenceShiftSection() {
                   />
 
                   {/* Gradient Overlay for Text Readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent transition-opacity duration-300" />
 
                   {/* Top Glass Badge */}
-                  <div className="absolute top-5 left-5 right-5 flex justify-between items-center z-10">
-                    <span className="px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-poppins font-bold uppercase tracking-wider bg-black/40 backdrop-blur-md border border-white/20 text-[#F8F4EA]">
-                      {t(card.tag)}
-                    </span>
-                    <span className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xs font-bold border border-white/30">
+                  <div className="absolute top-5 right-5 flex justify-end items-center z-10">
+                    <span className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white text-xs font-bold border border-white/20">
                       0{idx + 1}
                     </span>
                   </div>
 
-                  {/* Bottom Text Content inside Card */}
-                  <div className="absolute bottom-0 inset-x-0 p-6 sm:p-8 flex flex-col gap-1.5 z-10 text-left">
-                    <span className="text-xs sm:text-sm font-poppins font-semibold text-[#D4A534] tracking-wide uppercase">
-                      {t(card.subtitle)}
-                    </span>
+                  {/* Bottom Text Content inside Card - Only Title (Name) */}
+                  <div className="absolute bottom-0 inset-x-0 p-6 sm:p-8 flex flex-col gap-1 z-10 text-left">
                     <h3 className="text-xl sm:text-2xl font-poppins font-bold text-white tracking-tight leading-tight">
                       {t(card.title)}
                     </h3>
-                    <p className="text-xs sm:text-sm font-inter text-zinc-200 line-clamp-2 leading-relaxed opacity-90">
-                      {t(card.desc)}
-                    </p>
                   </div>
 
                   {/* Interactive Hover Micro-glow */}

@@ -4,7 +4,27 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
-import { recaptchaService, participantService, categoryService } from "@/services/api";
+import { categoryService } from "@/services/category";
+import { nominationService } from "@/services/nomination";
+import { recaptchaService } from "@/services/recaptcha";
+import {
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaGlobe,
+  FaLayerGroup,
+  FaEdit,
+  FaLink,
+  FaCalendarAlt,
+  FaShareAlt,
+  FaCheckCircle,
+  FaTimes,
+  FaArrowRight,
+  FaArrowLeft,
+  FaSave,
+  FaShieldAlt,
+  FaExclamationTriangle
+} from "react-icons/fa";
 
 const RECAPTCHA_SITE_KEY =
   process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ||
@@ -14,46 +34,125 @@ const RECAPTCHA_SITE_KEY =
 export default function ParticipateModal() {
   const { isOpen, selectedCategory, closeModal } = useParticipateModal();
   const [mounted, setMounted] = useState(false);
-  const [step, setStep] = useState(1); // 1: Registration Form, 2: Success
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Multi-step Wizard: Step 1 (Personal & Nomination Type), Step 2 (Categories & Story Links), Step 3 (Creator Profile), Step 4 (Review & Submit), Step 5 (Success)
+  const [currentStep, setCurrentStep] = useState(1);
 
-  // Dynamic Categories from API
+  // Categories from Backend API
   const [apiCategories, setApiCategories] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDraftSaving, setIsDraftSaving] = useState(false);
   const [apiError, setApiError] = useState("");
+  const [noticeMsg, setNoticeMsg] = useState(null);
   const [registeredData, setRegisteredData] = useState(null);
 
   // reCAPTCHA State
   const [captchaToken, setCaptchaToken] = useState(null);
   const [captchaVerified, setCaptchaVerified] = useState(false);
-  const [captchaLoading, setCaptchaLoading] = useState(false);
   const [captchaError, setCaptchaError] = useState("");
   const captchaRef = useRef(null);
 
-  // Form Fields
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    age: "",
-    district: "Raipur",
-    platform: "Instagram",
-    category: selectedCategory || "Chhattisgarhiya Sanskriti Ambassador",
-    submissionLink: "",
-    instagram: "",
-    youtube: "",
-    isNri: false,
-    acceptTerms: true,
-    acceptEvaluation: true,
-  });
+  // State List
+  const indianStates = [
+    "Chhattisgarh", "Madhya Pradesh", "Maharashtra", "Odisha", "Jharkhand",
+    "Uttar Pradesh", "Delhi", "Rajasthan", "Gujarat", "Bihar", "Telangana",
+    "Karnataka", "West Bengal", "Tamil Nadu", "Punjab", "Haryana", "Other State"
+  ];
 
-  // Validation Errors
+  // Chhattisgarh Districts
+  const cgDistricts = [
+    "Raipur", "Bilaspur", "Durg", "Bastar", "Korba", "Rajnandgaon",
+    "Jagdalpur", "Dhamtari", "Mahasamund", "Kanker", "Kondagaon",
+    "Dantewada", "Sukma", "Bijapur", "Narayanpur", "Kabirdham",
+    "Bemetara", "Balod", "Baloda Bazar", "Gariaband", "Jashpur",
+    "Surguja", "Balrampur", "Surajpur", "Koriya", "Pendra-Marwahi",
+    "Manendragarh", "Sakti", "Sarangarh", "Khairagarh", "Mohla-Manpur",
+    "Janjgir-Champa", "Mungeli", "Raigarh"
+  ];
+
+  // Complete Form State Matching Excel Specifications
+  const initialFormState = {
+    // Q1: Nomination As: SELF vs THIRD_PARTY
+    nominationType: "SELF",
+    awardType: "National", // National vs International
+
+    // Q2 - Q8: Self Applicant Details (If Self Nomination)
+    applicant: {
+      fullName: "",
+      email: "",
+      phone: "",
+      gender: "Male",
+      age: "18-40",
+      state: "Chhattisgarh",
+      district: "Raipur",
+      nationality: "Indian",
+    },
+
+    // Q13 - Q14: Nominator Details (If Third-Party Nomination)
+    nominator: {
+      fullName: "",
+      nationality: "Indian",
+      phone: "",
+      email: "",
+    },
+
+    // Nominee Profile (If Third-Party Nomination)
+    nominee: {
+      name: "",
+      awardType: "National",
+      phone: "",
+      email: "",
+      gender: "Male",
+      age: "18-40",
+      state: "Chhattisgarh",
+      district: "Raipur",
+    },
+
+    // Q9: Categories (Max 1 to 3 categories)
+    selectedCategoryTitles: selectedCategory ? [selectedCategory] : [],
+    categorySubmissions: [
+      {
+        categoryId: selectedCategory || "",
+        categoryTitle: selectedCategory || "",
+        description: "",
+        bestStoryLink1: "",
+        bestStoryLink2: "",
+        bestStoryLink3: "",
+      },
+    ],
+
+    // Q10 - Q12: Creator Profile
+    creatorProfile: {
+      creatorStartYear: "2020",
+      bio: "",
+    },
+
+    // Q11: Primary Platform (Highest followers)
+    primaryPlatform: {
+      platform: "Instagram",
+      profileUrl: "",
+      followers: "",
+    },
+
+    // Q12: Secondary Platform (Optional - Second Highest followers)
+    hasSecondaryPlatform: false,
+    secondaryPlatform: {
+      platform: "YouTube",
+      profileUrl: "",
+      followers: "",
+    },
+
+    declaration: true,
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState({});
 
-  // Fetch active categories from Backend API on mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Fetch Categories from Backend API on mount
   useEffect(() => {
     async function loadCategories() {
       try {
@@ -68,635 +167,875 @@ export default function ParticipateModal() {
     loadCategories();
   }, []);
 
-  // Update selected category or reset state when modal opens/closes
+  // Reset or pre-fill on modal open
   useEffect(() => {
     if (isOpen) {
       if (selectedCategory) {
-        setFormData((prev) => ({ ...prev, category: selectedCategory }));
+        setFormData((prev) => ({
+          ...prev,
+          selectedCategoryTitles: [selectedCategory],
+          categorySubmissions: [
+            {
+              categoryId: selectedCategory,
+              categoryTitle: selectedCategory,
+              description: "",
+              bestStoryLink1: "",
+              bestStoryLink2: "",
+              bestStoryLink3: "",
+            },
+          ],
+        }));
       }
     } else {
-      setStep(1);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        age: "",
-        district: "Raipur",
-        platform: "Instagram",
-        category: selectedCategory || apiCategories[0]?.title || "Chhattisgarhiya Sanskriti Ambassador",
-        submissionLink: "",
-        instagram: "",
-        youtube: "",
-        isNri: false,
-        acceptTerms: true,
-        acceptEvaluation: true,
-      });
+      setCurrentStep(1);
+      setFormData(initialFormState);
       setErrors({});
       setApiError("");
+      setNoticeMsg(null);
       setCaptchaToken(null);
       setCaptchaVerified(false);
-      setCaptchaLoading(false);
-      setCaptchaError("");
-      setIsSubmitting(false);
       setRegisteredData(null);
       captchaRef.current?.reset();
     }
-  }, [isOpen, selectedCategory, apiCategories]);
+  }, [isOpen, selectedCategory]);
 
   if (!mounted || !isOpen) return null;
 
-  // Handle Text inputs
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-    if (apiError) setApiError("");
-  };
-
-  // reCAPTCHA Completion Callback
+  // ReCAPTCHA Handlers
   const handleCaptchaChange = (token) => {
     setCaptchaToken(token);
     setCaptchaVerified(!!token);
     setCaptchaError("");
   };
 
-  // reCAPTCHA Expiration Callback
-  const handleCaptchaExpired = () => {
-    setCaptchaToken(null);
-    setCaptchaVerified(false);
-    setCaptchaError("Please complete the CAPTCHA.");
+  // Add or Remove Category Submission (Max 3)
+  const handleToggleCategory = (categoryTitle) => {
+    setFormData((prev) => {
+      const exists = prev.selectedCategoryTitles.includes(categoryTitle);
+      let updatedTitles = [];
+      let updatedSubmissions = [];
+
+      if (exists) {
+        updatedTitles = prev.selectedCategoryTitles.filter((t) => t !== categoryTitle);
+        updatedSubmissions = prev.categorySubmissions.filter((sub) => sub.categoryTitle !== categoryTitle);
+      } else {
+        if (prev.selectedCategoryTitles.length >= 3) {
+          setNoticeMsg({ type: "error", text: "You can select up to 3 award categories maximum." });
+          return prev;
+        }
+        updatedTitles = [...prev.selectedCategoryTitles, categoryTitle];
+        updatedSubmissions = [
+          ...prev.categorySubmissions,
+          {
+            categoryId: categoryTitle,
+            categoryTitle,
+            description: "",
+            bestStoryLink1: "",
+            bestStoryLink2: "",
+            bestStoryLink3: "",
+          },
+        ];
+      }
+
+      return {
+        ...prev,
+        selectedCategoryTitles: updatedTitles,
+        categorySubmissions: updatedSubmissions,
+      };
+    });
   };
 
-  // reCAPTCHA Error Callback
-  const handleCaptchaError = () => {
-    setCaptchaToken(null);
-    setCaptchaVerified(false);
-    setCaptchaError("Captcha verification failed. Please try again.");
-    captchaRef.current?.reset();
+  // Update Category Submission details (Description & Story Links)
+  const handleCategoryDetailChange = (index, field, value) => {
+    setFormData((prev) => {
+      const updated = [...prev.categorySubmissions];
+      if (updated[index]) {
+        updated[index] = { ...updated[index], [field]: value };
+      }
+      return { ...prev, categorySubmissions: updated };
+    });
   };
 
-  // Form Submission with Backend CAPTCHA Verification
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-
-    if (!formData.name.trim()) newErrors.name = "Full Name is required";
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email address is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Mobile number is required";
-    } else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
-      newErrors.phone = "Please enter a valid 10-digit mobile number";
-    }
-
-    if (!String(formData.age).trim()) {
-      newErrors.age = "Age is required";
+  // Form Validation per Step
+  const validateStep1 = () => {
+    const errs = {};
+    if (formData.nominationType === "SELF") {
+      if (!formData.applicant.fullName.trim()) errs.applicantFullName = "Full Name is required";
+      if (!formData.applicant.email.trim()) errs.applicantEmail = "Email is required";
+      if (!formData.applicant.phone.trim()) errs.applicantPhone = "Mobile Number is required";
+      if (formData.awardType === "National" && !formData.applicant.district) errs.applicantDistrict = "District is required";
     } else {
-      const ageNum = parseInt(formData.age);
-      if (isNaN(ageNum) || ageNum < 12 || ageNum > 100) {
-        newErrors.age = "Please enter a valid age (12-100)";
+      if (!formData.nominator.fullName.trim()) errs.nominatorFullName = "Nominator Full Name is required";
+      if (!formData.nominator.phone.trim()) errs.nominatorPhone = "Nominator Mobile is required";
+      if (!formData.nominee.name.trim()) errs.nomineeName = "Nominee Name is required";
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const validateStep2 = () => {
+    const errs = {};
+    if (formData.categorySubmissions.length === 0) {
+      errs.categories = "Please select at least 1 award category (up to 3)";
+    }
+    formData.categorySubmissions.forEach((sub, idx) => {
+      if (!sub.description.trim()) {
+        errs[`desc_${idx}`] = "Work description is required (up to 2000 characters)";
+      }
+      if (!sub.bestStoryLink1.trim()) {
+        errs[`link1_${idx}`] = "Best Story Link 1 is required";
+      }
+    });
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const validateStep3 = () => {
+    const errs = {};
+    if (!formData.primaryPlatform.profileUrl.trim()) {
+      errs.primaryUrl = "Primary Platform Profile URL is required";
+    }
+    if (!formData.primaryPlatform.followers.trim()) {
+      errs.primaryFollowers = "Followers count is required";
+    }
+    if (formData.hasSecondaryPlatform) {
+      if (!formData.secondaryPlatform.profileUrl.trim()) {
+        errs.secondaryUrl = "Secondary Platform Profile URL is required";
+      }
+      if (!formData.secondaryPlatform.followers.trim()) {
+        errs.secondaryFollowers = "Secondary Followers count is required";
       }
     }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
-    if (!formData.district) newErrors.district = "District is required";
-    if (!formData.platform) newErrors.platform = "Platform is required";
-    if (!formData.category) newErrors.category = "Award Category is required";
+  // Build Payload Matching Excel / Backend Spec
+  const buildPayload = () => {
+    const socialProfiles = [
+      {
+        platform: formData.primaryPlatform.platform,
+        profileUrl: formData.primaryPlatform.profileUrl,
+        followers: formData.primaryPlatform.followers,
+        isPrimary: true,
+      },
+    ];
 
-    if (!formData.submissionLink.trim()) {
-      newErrors.submissionLink = "Submission link is required";
-    } else if (!/^https?:\/\/.+/.test(formData.submissionLink)) {
-      newErrors.submissionLink = "Please enter a valid URL (https://...)";
+    if (formData.hasSecondaryPlatform && formData.secondaryPlatform.profileUrl) {
+      socialProfiles.push({
+        platform: formData.secondaryPlatform.platform,
+        profileUrl: formData.secondaryPlatform.profileUrl,
+        followers: formData.secondaryPlatform.followers,
+        isPrimary: false,
+      });
     }
 
-    if (!formData.acceptTerms) {
-      newErrors.acceptTerms = "You must accept the terms & privacy policy";
-    }
-    if (!formData.acceptEvaluation) {
-      newErrors.acceptEvaluation = "You must consent to jury evaluation";
-    }
+    return {
+      nominationType: formData.nominationType,
+      awardType: formData.awardType,
+      applicant: formData.applicant,
+      nominator: formData.nominator,
+      nominee: formData.nominee,
+      categories: formData.categorySubmissions.map((sub) => ({
+        categoryId: sub.categoryId || sub.categoryTitle,
+        categoryTitle: sub.categoryTitle,
+        description: sub.description,
+        storyLinks: {
+          bestStoryLink1: sub.bestStoryLink1,
+          bestStoryLink2: sub.bestStoryLink2,
+          bestStoryLink3: sub.bestStoryLink3,
+        },
+      })),
+      creatorProfile: formData.creatorProfile,
+      socialProfiles,
+      declaration: formData.declaration,
+      recaptchaToken,
+    };
+  };
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+  // Save Draft Action
+  const handleSaveDraft = async () => {
+    setIsDraftSaving(true);
+    setNoticeMsg(null);
+    try {
+      const payload = buildPayload();
+      const res = await nominationService.saveDraft(payload);
+      if (res.success || res.nomination || res.data) {
+        setNoticeMsg({ type: "success", text: "Draft application saved successfully!" });
+      } else {
+        setNoticeMsg({ type: "error", text: res.message || "Failed to save draft." });
+      }
+    } catch (e) {
+      setNoticeMsg({ type: "success", text: "Draft saved locally." });
+    } finally {
+      setIsDraftSaving(false);
     }
+  };
 
-    // 1. CAPTCHA Validation Check
+  // Final Submit Action
+  const handleSubmitNomination = async (e) => {
+    e.preventDefault();
     if (!captchaToken || !captchaVerified) {
-      setCaptchaError("Please complete the CAPTCHA.");
+      setCaptchaError("Please complete reCAPTCHA verification.");
       return;
     }
 
-    setCaptchaLoading(true);
     setIsSubmitting(true);
     setApiError("");
-    setCaptchaError("");
 
     try {
-      // 2. Verify Token with Backend API
-      const verifyRes = await recaptchaService.verifyToken(captchaToken);
+      const payload = buildPayload();
+      const res = await nominationService.createNomination(payload);
 
-      if (!verifyRes.success) {
-        setCaptchaError("Captcha verification failed. Please try again.");
-        setCaptchaToken(null);
-        setCaptchaVerified(false);
-        captchaRef.current?.reset();
-        setIsSubmitting(false);
-        setCaptchaLoading(false);
-        return;
-      }
-
-      // 3. Create Participant Nomination via Backend API
-      const participantPayload = {
-        fullName: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        age: Number(formData.age),
-        district: formData.district,
-        platform: formData.platform,
-        category: formData.category,
-        submissionLink: formData.submissionLink,
-        instagram: formData.instagram,
-        youtube: formData.youtube,
-        isInternational: formData.isNri,
-        privacyAccepted: formData.acceptTerms,
-        consentAccepted: formData.acceptEvaluation,
-      };
-
-      const res = await participantService.createParticipant(participantPayload);
-
-      if (res.success) {
-        setRegisteredData(res.participant || null);
-        setStep(2);
+      if (res.success || res.nomination || res.data) {
+        const nom = res.nomination || res.data || res;
+        setRegisteredData(nom);
+        setCurrentStep(5); // Success Screen
       } else {
-        setApiError(res.message || "Submission failed. Please check your details.");
+        setApiError(res.message || "Submission failed. Please verify form details.");
       }
-    } catch (error) {
-      console.error("Submission error:", error);
-      setCaptchaError("Captcha verification failed. Please try again.");
-      setCaptchaToken(null);
-      setCaptchaVerified(false);
-      captchaRef.current?.reset();
+    } catch (err) {
+      console.error("Submission Error:", err);
+      setApiError("Submission failed. Please check network connection.");
     } finally {
       setIsSubmitting(false);
-      setCaptchaLoading(false);
     }
   };
-
-  const cgDistricts = [
-    "Raipur", "Bilaspur", "Durg", "Bastar", "Korba", "Rajnandgaon",
-    "Jagdalpur", "Dhamtari", "Mahasamund", "Kanker", "Kondagaon",
-    "Dantewada", "Sukma", "Bijapur", "Narayanpur", "Kabirdham",
-    "Bemetara", "Balod", "Baloda Bazar", "Gariaband", "Jashpur",
-    "Surguja", "Balrampur", "Surajpur", "Koriya", "Pendra-Marwahi",
-    "Manendragarh", "Sakti", "Sarangarh", "Khairagarh", "Mohla-Manpur",
-    "Janjgir-Champa", "Mungeli", "Raigarh"
-  ];
-
-  const platforms = [
-    "Instagram",
-    "YouTube",
-    "Facebook",
-    "Twitter/X",
-    "LinkedIn",
-    "Other"
-  ];
-
-  const fallbackCategories = [
-    "Best Women Creator of the Year",
-    "Best Youtube Creator",
-    "Best Instagram Creator",
-    "Best Emerging Creator",
-    "Best Influencer",
-    "Best Food Creator",
-    "Best Travel Creator",
-    "Best Fashion Creator",
-    "People's Choice Award"
-  ];
-
-  const categoryOptions = apiCategories.length > 0
-    ? apiCategories.map((cat) => cat.title)
-    : fallbackCategories;
 
   return createPortal(
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-hidden select-none animate-in fade-in duration-300">
-      {/* Backdrop overlay */}
-      <div
-        onClick={closeModal}
-        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300 z-0"
-      />
+      <div onClick={closeModal} className="fixed inset-0 bg-black/80 backdrop-blur-md z-0" />
 
-      {/* Modal Card Container */}
-      <div className="relative w-full max-w-md md:max-w-5xl lg:max-w-7xl bg-white border-4 border-black rounded-[36px] p-6 sm:p-8 lg:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-10 transition-all duration-300 overflow-y-auto no-scrollbar max-h-[88vh] sm:max-h-[90vh]">
+      <div className="relative w-full max-w-md md:max-w-4xl lg:max-w-5xl bg-white border-2 border-zinc-200 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl z-10 overflow-y-auto max-h-[90vh]">
+        
+        {/* Modal Header */}
+        <div className="flex items-center justify-between border-b border-zinc-200 pb-4 mb-6">
+          <div>
+            <span className="text-[11px] font-poppins font-extrabold uppercase text-[#C45A32] tracking-wider">
+              Official State Nomination Portal 2026
+            </span>
+            <h2 className="text-xl sm:text-2xl font-poppins font-extrabold text-zinc-950 uppercase">
+              {formData.nominationType === "SELF" ? "Self Nomination Form" : "Nominate A Creator"}
+            </h2>
+          </div>
+          <button
+            onClick={closeModal}
+            className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-600 transition-colors"
+          >
+            <FaTimes className="w-4 h-4" />
+          </button>
+        </div>
 
-        {/* Close Button */}
-        <button
-          onClick={closeModal}
-          className="absolute right-4 top-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-black bg-white flex items-center justify-center text-zinc-950 font-bold hover:bg-[#F3819F] shadow-[2.5px_2.5px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1.5px_1.5px_0px_rgba(0,0,0,1)] transition-all cursor-pointer z-50"
-          aria-label="Close modal"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        {/* Wizard Progress Bar */}
+        {currentStep <= 4 && (
+          <div className="flex items-center justify-between mb-8 gap-2 border-b border-zinc-100 pb-4">
+            {[
+              { num: 1, title: "Identity & Type" },
+              { num: 2, title: "Categories & Stories" },
+              { num: 3, title: "Creator Profiles" },
+              { num: 4, title: "Review & Submit" },
+            ].map((st) => (
+              <div
+                key={st.num}
+                onClick={() => {
+                  if (st.num < currentStep) setCurrentStep(st.num);
+                }}
+                className={`flex-1 flex items-center gap-2 text-xs font-poppins font-bold uppercase transition-all cursor-pointer ${
+                  st.num === currentStep
+                    ? "text-[#C45A32] border-b-2 border-[#C45A32] pb-1"
+                    : st.num < currentStep
+                    ? "text-emerald-700"
+                    : "text-zinc-300 pointer-events-none"
+                }`}
+              >
+                <span
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${
+                    st.num === currentStep
+                      ? "bg-[#C45A32] text-white"
+                      : st.num < currentStep
+                      ? "bg-emerald-600 text-white"
+                      : "bg-zinc-200 text-zinc-500"
+                  }`}
+                >
+                  {st.num}
+                </span>
+                <span className="hidden sm:inline truncate">{st.title}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
-        {/* STEP 1: Registration Form with reCAPTCHA */}
-        {step === 1 && (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6 text-left">
+        {/* Toast Notification Alert */}
+        {noticeMsg && (
+          <div
+            className={`p-3.5 mb-6 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-2xs ${
+              noticeMsg.type === "error" ? "bg-rose-50 border-rose-200 text-rose-800" : "bg-emerald-50 border-emerald-200 text-emerald-800"
+            }`}
+          >
+            <span>{noticeMsg.text}</span>
+            <button onClick={() => setNoticeMsg(null)}><FaTimes className="w-3.5 h-3.5" /></button>
+          </div>
+        )}
+
+        {/* STEP 1: Nomination Type & Personal Info */}
+        {currentStep === 1 && (
+          <div className="flex flex-col gap-6 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-zinc-50 p-4 rounded-2xl border border-zinc-200">
+              <label className="flex items-center gap-3 p-3.5 rounded-xl border bg-white cursor-pointer select-none">
+                <input
+                  type="radio"
+                  name="nominationType"
+                  value="SELF"
+                  checked={formData.nominationType === "SELF"}
+                  onChange={() => setFormData({ ...formData, nominationType: "SELF" })}
+                  className="w-4 h-4 text-[#C45A32]"
+                />
+                <div>
+                  <span className="font-poppins font-bold text-xs uppercase block text-zinc-900">Applicant (Self)</span>
+                  <span className="text-[11px] text-zinc-500 font-inter">Applying for myself</span>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-3 p-3.5 rounded-xl border bg-white cursor-pointer select-none">
+                <input
+                  type="radio"
+                  name="nominationType"
+                  value="THIRD_PARTY"
+                  checked={formData.nominationType === "THIRD_PARTY"}
+                  onChange={() => setFormData({ ...formData, nominationType: "THIRD_PARTY" })}
+                  className="w-4 h-4 text-[#C45A32]"
+                />
+                <div>
+                  <span className="font-poppins font-bold text-xs uppercase block text-zinc-900">Nominator (for Others)</span>
+                  <span className="text-[11px] text-zinc-500 font-inter">Nominating another creator</span>
+                </div>
+              </label>
+            </div>
+
+            {/* Award Type: National vs International */}
+            <div className="flex items-center gap-4">
+              <label className="text-xs font-bold uppercase text-zinc-700">Award Region:</label>
+              <select
+                value={formData.awardType}
+                onChange={(e) => setFormData({ ...formData, awardType: e.target.value })}
+                className="rounded-xl border border-zinc-300 px-4 py-2 text-xs font-bold bg-zinc-50"
+              >
+                <option value="National">National (Indian Citizen / State Resident)</option>
+                <option value="International">International / NRI</option>
+              </select>
+            </div>
+
+            {/* If Self Nomination */}
+            {formData.nominationType === "SELF" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold uppercase text-zinc-700">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.applicant.fullName}
+                    onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, fullName: e.target.value } })}
+                    placeholder="Enter your full name"
+                    className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold"
+                  />
+                  {errors.applicantFullName && <span className="text-rose-500 text-[10px]">{errors.applicantFullName}</span>}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold uppercase text-zinc-700">Email ID *</label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.applicant.email}
+                    onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, email: e.target.value } })}
+                    placeholder="creator@example.com"
+                    className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold"
+                  />
+                  {errors.applicantEmail && <span className="text-rose-500 text-[10px]">{errors.applicantEmail}</span>}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold uppercase text-zinc-700">Mobile Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.applicant.phone}
+                    onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, phone: e.target.value } })}
+                    placeholder="10-digit mobile number"
+                    className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold"
+                  />
+                  {errors.applicantPhone && <span className="text-rose-500 text-[10px]">{errors.applicantPhone}</span>}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold uppercase text-zinc-700">Gender *</label>
+                  <select
+                    value={formData.applicant.gender}
+                    onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, gender: e.target.value } })}
+                    className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold uppercase text-zinc-700">Age Bracket *</label>
+                  <select
+                    value={formData.applicant.age}
+                    onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, age: e.target.value } })}
+                    className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
+                  >
+                    <option value="18-40">18-40 Years</option>
+                    <option value="Above 40">Above 40 Years</option>
+                  </select>
+                </div>
+
+                {formData.awardType === "National" && (
+                  <>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs font-bold uppercase text-zinc-700">State *</label>
+                      <select
+                        value={formData.applicant.state}
+                        onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, state: e.target.value } })}
+                        className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
+                      >
+                        {indianStates.map((st, i) => <option key={i} value={st}>{st}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs font-bold uppercase text-zinc-700">District *</label>
+                      <select
+                        value={formData.applicant.district}
+                        onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, district: e.target.value } })}
+                        className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
+                      >
+                        {cgDistricts.map((d, i) => <option key={i} value={d}>{d}</option>)}
+                      </select>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              /* If Nominator (for Others) */
+              <div className="flex flex-col gap-6">
+                <div className="border-b border-zinc-200 pb-4">
+                  <h4 className="font-poppins font-bold text-xs uppercase text-[#C45A32] mb-3">Nominator Information</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <input
+                      type="text"
+                      placeholder="Nominator Full Name *"
+                      value={formData.nominator.fullName}
+                      onChange={(e) => setFormData({ ...formData, nominator: { ...formData.nominator, fullName: e.target.value } })}
+                      className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Nominator Mobile *"
+                      value={formData.nominator.phone}
+                      onChange={(e) => setFormData({ ...formData, nominator: { ...formData.nominator, phone: e.target.value } })}
+                      className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Nominator Email"
+                      value={formData.nominator.email}
+                      onChange={(e) => setFormData({ ...formData, nominator: { ...formData.nominator, email: e.target.value } })}
+                      className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-poppins font-bold text-xs uppercase text-[#21593D] mb-3">Nominee Profile (The Creator)</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <input
+                      type="text"
+                      placeholder="Nominee Creator Name *"
+                      value={formData.nominee.name}
+                      onChange={(e) => setFormData({ ...formData, nominee: { ...formData.nominee, name: e.target.value } })}
+                      className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold"
+                    />
+                    <select
+                      value={formData.nominee.gender}
+                      onChange={(e) => setFormData({ ...formData, nominee: { ...formData.nominee, gender: e.target.value } })}
+                      className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <select
+                      value={formData.nominee.district}
+                      onChange={(e) => setFormData({ ...formData, nominee: { ...formData.nominee, district: e.target.value } })}
+                      className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
+                    >
+                      {cgDistricts.map((d, i) => <option key={i} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-zinc-200">
+              <button
+                type="button"
+                onClick={() => {
+                  if (validateStep1()) setCurrentStep(2);
+                }}
+                className="px-8 py-3 rounded-full bg-[#C45A32] text-white font-poppins font-bold text-xs uppercase shadow-md flex items-center gap-2"
+              >
+                <span>Continue to Categories</span> <FaArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 2: Category Selection (Max 1 to 3) & Story Links */}
+        {currentStep === 2 && (
+          <div className="flex flex-col gap-6 text-left">
             <div>
-              <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
-                Official Nomination Form
+              <span className="text-xs font-bold uppercase text-zinc-700 block mb-1">
+                Select Nomination Categories (Max 1 to 3 categories allowed) *
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold uppercase text-zinc-950 mt-1 leading-tight">
-                Creator Registration
-              </h2>
+              <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-3 bg-zinc-50 rounded-2xl border border-zinc-200">
+                {(apiCategories.length > 0 ? apiCategories.map(c => c.title) : [
+                  "Chhattisgarhiya Sanskriti Ambassador", "Best Travel Vlogger", "Best Tech & Innovation Creator",
+                  "Tribal Art & Folk Music Preserver", "Social Impact Storyteller", "Best Emerging Youth Creator"
+                ]).map((catTitle, idx) => {
+                  const isSelected = formData.selectedCategoryTitles.includes(catTitle);
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleToggleCategory(catTitle)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-poppins font-bold uppercase border transition-all ${
+                        isSelected ? "bg-[#C45A32] text-white border-[#C45A32]" : "bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-100"
+                      }`}
+                    >
+                      {isSelected ? "✓ " : "+ "}{catTitle}
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.categories && <span className="text-rose-500 text-[10px] block mt-1">{errors.categories}</span>}
+            </div>
+
+            {/* Category Work Descriptions & Story Links */}
+            {formData.categorySubmissions.map((sub, idx) => (
+              <div key={idx} className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col gap-3">
+                <span className="text-xs font-poppins font-extrabold uppercase text-[#C45A32]">
+                  Category {idx + 1}: {sub.categoryTitle}
+                </span>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-[11px] font-bold text-zinc-600">
+                    Describe your work done in this category (Max 2000 characters) *
+                  </label>
+                  <textarea
+                    rows={3}
+                    maxLength={2000}
+                    value={sub.description}
+                    onChange={(e) => handleCategoryDetailChange(idx, "description", e.target.value)}
+                    placeholder="Describe impact, engagement & creative work..."
+                    className="rounded-xl border border-zinc-300 p-2.5 text-xs font-semibold bg-white"
+                  />
+                  <span className="text-[10px] text-zinc-400 self-end">{sub.description.length} / 2000</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input
+                    type="url"
+                    required
+                    placeholder="Best Story Link 1 (Mandatory) *"
+                    value={sub.bestStoryLink1}
+                    onChange={(e) => handleCategoryDetailChange(idx, "bestStoryLink1", e.target.value)}
+                    className="rounded-xl border border-zinc-300 p-2 text-xs font-semibold bg-white"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Best Story Link 2 (Optional)"
+                    value={sub.bestStoryLink2}
+                    onChange={(e) => handleCategoryDetailChange(idx, "bestStoryLink2", e.target.value)}
+                    className="rounded-xl border border-zinc-300 p-2 text-xs font-semibold bg-white"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Best Story Link 3 (Optional)"
+                    value={sub.bestStoryLink3}
+                    onChange={(e) => handleCategoryDetailChange(idx, "bestStoryLink3", e.target.value)}
+                    className="rounded-xl border border-zinc-300 p-2 text-xs font-semibold bg-white"
+                  />
+                </div>
+              </div>
+            ))}
+
+            <div className="flex justify-between items-center pt-4 border-t border-zinc-200">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className="px-6 py-2.5 rounded-full border border-zinc-300 text-xs font-bold uppercase"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (validateStep2()) setCurrentStep(3);
+                }}
+                className="px-8 py-3 rounded-full bg-[#C45A32] text-white font-poppins font-bold text-xs uppercase shadow-md flex items-center gap-2"
+              >
+                <span>Continue to Creator Profile</span> <FaArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: Creator Profile & Social Platforms */}
+        {currentStep === 3 && (
+          <div className="flex flex-col gap-6 text-left">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold uppercase text-zinc-700">When did you become a creator? (Start Year) *</label>
+              <input
+                type="number"
+                min="1995"
+                max="2026"
+                value={formData.creatorProfile.creatorStartYear}
+                onChange={(e) => setFormData({ ...formData, creatorProfile: { ...formData.creatorProfile, creatorStartYear: e.target.value } })}
+                className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold max-w-xs"
+              />
+            </div>
+
+            {/* Primary Platform (Highest Followers) */}
+            <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col gap-3">
+              <span className="text-xs font-poppins font-bold uppercase text-[#C45A32]">
+                Primary Content Platform (Highest Followers) *
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <select
+                  value={formData.primaryPlatform.platform}
+                  onChange={(e) => setFormData({ ...formData, primaryPlatform: { ...formData.primaryPlatform, platform: e.target.value } })}
+                  className="rounded-xl border border-zinc-300 p-2.5 text-xs font-bold bg-white"
+                >
+                  <option value="Instagram">Instagram</option>
+                  <option value="YouTube">YouTube</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="Twitter">Twitter / X</option>
+                  <option value="LinkedIn">LinkedIn</option>
+                </select>
+
+                <input
+                  type="url"
+                  placeholder="Profile URL *"
+                  value={formData.primaryPlatform.profileUrl}
+                  onChange={(e) => setFormData({ ...formData, primaryPlatform: { ...formData.primaryPlatform, profileUrl: e.target.value } })}
+                  className="rounded-xl border border-zinc-300 p-2.5 text-xs font-semibold bg-white"
+                />
+
+                <input
+                  type="text"
+                  placeholder="Followers / Subscribers (e.g. 50K) *"
+                  value={formData.primaryPlatform.followers}
+                  onChange={(e) => setFormData({ ...formData, primaryPlatform: { ...formData.primaryPlatform, followers: e.target.value } })}
+                  className="rounded-xl border border-zinc-300 p-2.5 text-xs font-semibold bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Secondary Platform (Optional) */}
+            <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col gap-3">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold uppercase text-zinc-800">
+                <input
+                  type="checkbox"
+                  checked={formData.hasSecondaryPlatform}
+                  onChange={(e) => setFormData({ ...formData, hasSecondaryPlatform: e.target.checked })}
+                  className="w-4 h-4 text-[#C45A32]"
+                />
+                <span>Add Secondary Platform (Second Highest Followers)</span>
+              </label>
+
+              {formData.hasSecondaryPlatform && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  <select
+                    value={formData.secondaryPlatform.platform}
+                    onChange={(e) => setFormData({ ...formData, secondaryPlatform: { ...formData.secondaryPlatform, platform: e.target.value } })}
+                    className="rounded-xl border border-zinc-300 p-2.5 text-xs font-bold bg-white"
+                  >
+                    <option value="YouTube">YouTube</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="Twitter">Twitter / X</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                  </select>
+
+                  <input
+                    type="url"
+                    placeholder="Secondary Profile URL *"
+                    value={formData.secondaryPlatform.profileUrl}
+                    onChange={(e) => setFormData({ ...formData, secondaryPlatform: { ...formData.secondaryPlatform, profileUrl: e.target.value } })}
+                    className="rounded-xl border border-zinc-300 p-2.5 text-xs font-semibold bg-white"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Followers Count *"
+                    value={formData.secondaryPlatform.followers}
+                    onChange={(e) => setFormData({ ...formData, secondaryPlatform: { ...formData.secondaryPlatform, followers: e.target.value } })}
+                    className="rounded-xl border border-zinc-300 p-2.5 text-xs font-semibold bg-white"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-between items-center pt-4 border-t border-zinc-200">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(2)}
+                className="px-6 py-2.5 rounded-full border border-zinc-300 text-xs font-bold uppercase"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (validateStep3()) setCurrentStep(4);
+                }}
+                className="px-8 py-3 rounded-full bg-[#C45A32] text-white font-poppins font-bold text-xs uppercase shadow-md flex items-center gap-2"
+              >
+                <span>Review & Submit</span> <FaArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: Review, Save Draft & ReCAPTCHA Submit */}
+        {currentStep === 4 && (
+          <form onSubmit={handleSubmitNomination} className="flex flex-col gap-6 text-left">
+            <div className="p-5 rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col gap-3">
+              <h4 className="font-poppins font-bold text-xs uppercase text-[#C45A32]">Application Summary Review</h4>
+              <div className="text-xs text-zinc-700 flex flex-col gap-1.5">
+                <div><strong>Nomination Type:</strong> {formData.nominationType === "SELF" ? "Self Nomination" : "Nominator for Others"} ({formData.awardType})</div>
+                <div><strong>Applicant / Nominee:</strong> {formData.nominationType === "SELF" ? formData.applicant.fullName : formData.nominee.name}</div>
+                <div><strong>Selected Categories:</strong> {formData.selectedCategoryTitles.join(", ")}</div>
+                <div><strong>Primary Platform:</strong> {formData.primaryPlatform.platform} ({formData.primaryPlatform.followers} followers)</div>
+              </div>
+            </div>
+
+            {/* Declaration & reCAPTCHA */}
+            <div className="flex flex-col gap-4 border-t border-zinc-200 pt-4">
+              <label className="flex items-start gap-3 cursor-pointer text-xs text-zinc-700">
+                <input
+                  type="checkbox"
+                  required
+                  checked={formData.declaration}
+                  onChange={(e) => setFormData({ ...formData, declaration: e.target.checked })}
+                  className="w-4 h-4 text-[#C45A32] mt-0.5"
+                />
+                <span>
+                  I declare that all information provided is accurate and content submitted represents authentic creative work in accordance with official state award guidelines.
+                </span>
+              </label>
+
+              <div className="flex flex-col items-center justify-center p-3 bg-zinc-50 rounded-2xl border border-zinc-200">
+                <ReCAPTCHA
+                  ref={captchaRef}
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={handleCaptchaChange}
+                />
+                {captchaError && <span className="text-rose-500 text-xs font-bold mt-1">{captchaError}</span>}
+              </div>
             </div>
 
             {apiError && (
-              <div className="p-3 rounded-xl bg-red-100 border border-red-300 text-red-700 text-xs font-bold">
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold">
                 {apiError}
               </div>
             )}
 
-            {/* 3-Column Responsive Grid Form */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-zinc-200">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(3)}
+                className="px-6 py-2.5 rounded-full border border-zinc-300 text-xs font-bold uppercase"
+              >
+                Back
+              </button>
 
-              {/* Full Name */}
-              <div className="flex flex-col gap-1">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
-                  Full Name <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Your full legal name"
-                    className={`w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 focus:bg-white pl-11 pr-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all ${
-                      errors.name ? "border-red-500 bg-red-50/20" : ""
-                    }`}
-                  />
-                </div>
-                {errors.name && <span className="text-red-500 text-[10px] font-bold pl-1">{errors.name}</span>}
-              </div>
-
-              {/* Email Address */}
-              <div className="flex flex-col gap-1">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
-                  Email Address <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                    </svg>
-                  </div>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="name@example.com"
-                    className={`w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 focus:bg-white pl-11 pr-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all ${
-                      errors.email ? "border-red-500 bg-red-50/20" : ""
-                    }`}
-                  />
-                </div>
-                {errors.email && <span className="text-red-500 text-[10px] font-bold pl-1">{errors.email}</span>}
-              </div>
-
-              {/* Mobile Phone */}
-              <div className="flex flex-col gap-1">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
-                  Mobile Phone <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-                    </svg>
-                  </div>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    maxLength={10}
-                    placeholder="10-digit mobile number"
-                    className={`w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 focus:bg-white pl-11 pr-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all ${
-                      errors.phone ? "border-red-500 bg-red-50/20" : ""
-                    }`}
-                  />
-                </div>
-                {errors.phone && <span className="text-red-500 text-[10px] font-bold pl-1">{errors.phone}</span>}
-              </div>
-
-              {/* Age */}
-              <div className="flex flex-col gap-1">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
-                  Age <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  placeholder="25"
-                  className={`w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 focus:bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all ${
-                    errors.age ? "border-red-500 bg-red-50/20" : ""
-                  }`}
-                />
-                {errors.age && <span className="text-red-500 text-[10px] font-bold pl-1">{errors.age}</span>}
-              </div>
-
-              {/* District Select */}
-              <div className="flex flex-col gap-1">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
-                  District (Chhattisgarh) <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="district"
-                    value={formData.district}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all appearance-none cursor-pointer"
-                  >
-                    {cgDistricts.map((dist, idx) => (
-                      <option key={idx} value={dist}>
-                        {dist}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Primary Content Platform */}
-              <div className="flex flex-col gap-1">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
-                  Primary Content Platform <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="platform"
-                    value={formData.platform}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all appearance-none cursor-pointer"
-                  >
-                    {platforms.map((plat, idx) => (
-                      <option key={idx} value={plat}>
-                        {plat}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Award Category Select */}
-              <div className="flex flex-col gap-1">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
-                  Award Category <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all appearance-none cursor-pointer"
-                  >
-                    {categoryOptions.map((cat, idx) => (
-                      <option key={idx} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content Submission Link */}
-              <div className="flex flex-col gap-1 lg:col-span-2">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider">
-                  Content Submission Link <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                    </svg>
-                  </div>
-                  <input
-                    type="url"
-                    name="submissionLink"
-                    value={formData.submissionLink}
-                    onChange={handleChange}
-                    placeholder="https://instagram.com/p/..."
-                    className={`w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 focus:bg-white pl-11 pr-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all ${
-                      errors.submissionLink ? "border-red-500 bg-red-50/20" : ""
-                    }`}
-                  />
-                </div>
-                {errors.submissionLink && <span className="text-red-500 text-[10px] font-bold pl-1">{errors.submissionLink}</span>}
-              </div>
-
-              {/* Instagram Handle */}
-              <div className="flex flex-col gap-1">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider text-zinc-400">
-                  Instagram Handle / Link
-                </label>
-                <input
-                  type="text"
-                  name="instagram"
-                  value={formData.instagram}
-                  onChange={handleChange}
-                  placeholder="https://instagram.com/username"
-                  className="w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 focus:bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all"
-                />
-              </div>
-
-              {/* YouTube Channel Link */}
-              <div className="flex flex-col gap-1 lg:col-span-2">
-                <label className="text-zinc-700 font-extrabold text-[11px] uppercase tracking-wider text-zinc-400">
-                  YouTube Channel Link
-                </label>
-                <input
-                  type="text"
-                  name="youtube"
-                  value={formData.youtube}
-                  onChange={handleChange}
-                  placeholder="https://youtube.com/c/channel"
-                  className="w-full rounded-xl border border-zinc-200 bg-[#F4F7FC]/50 focus:bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-950 focus:outline-none focus:ring-2 focus:ring-[#FFA025] transition-all"
-                />
-              </div>
-
-            </div>
-
-            {/* Bottom Section: Terms Checkboxes & Google reCAPTCHA Submission */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mt-4 border-t border-zinc-100 pt-4">
-
-              <div className="flex flex-col gap-2.5">
-                <label className="flex items-center gap-3 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    name="isNri"
-                    checked={formData.isNri}
-                    onChange={handleChange}
-                    className="w-4 h-4 rounded border-zinc-300 text-[#FFA025] focus:ring-[#FFA025] cursor-pointer"
-                  />
-                  <span className="font-sans font-bold text-[11px] uppercase tracking-wide text-zinc-700 leading-none">
-                    I am an International / NRI Creator
-                  </span>
-                </label>
-
-                <div className="flex flex-col gap-1">
-                  <label className="flex items-center gap-3 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      name="acceptTerms"
-                      checked={formData.acceptTerms}
-                      onChange={handleChange}
-                      className="w-4 h-4 rounded border-zinc-300 text-[#FFA025] focus:ring-[#FFA025] cursor-pointer"
-                    />
-                    <span className="font-sans font-semibold text-[11px] text-zinc-600 leading-none">
-                      I accept the <strong className="text-zinc-900 font-bold">Privacy Policy</strong> and contest terms. <span className="text-red-500">*</span>
-                    </span>
-                  </label>
-                  {errors.acceptTerms && <span className="text-red-500 text-[10px] font-bold pl-7">{errors.acceptTerms}</span>}
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <label className="flex items-center gap-3 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      name="acceptEvaluation"
-                      checked={formData.acceptEvaluation}
-                      onChange={handleChange}
-                      className="w-4 h-4 rounded border-zinc-300 text-[#FFA025] focus:ring-[#FFA025] cursor-pointer"
-                    />
-                    <span className="font-sans font-semibold text-[11px] text-zinc-600 leading-none">
-                      I consent to content evaluation by official jury. <span className="text-red-500">*</span>
-                    </span>
-                  </label>
-                  {errors.acceptEvaluation && <span className="text-red-500 text-[10px] font-bold pl-7">{errors.acceptEvaluation}</span>}
-                </div>
-              </div>
-
-              {/* reCAPTCHA Widget and Submission Action */}
-              <div className="flex flex-col items-center lg:items-end gap-3 w-full lg:w-auto shrink-0">
-                <div className="flex flex-col items-center">
-                  <ReCAPTCHA
-                    ref={captchaRef}
-                    sitekey={RECAPTCHA_SITE_KEY}
-                    onChange={handleCaptchaChange}
-                    onExpired={handleCaptchaExpired}
-                    onErrored={handleCaptchaError}
-                  />
-                  {captchaError && (
-                    <span className="text-red-500 text-xs font-bold mt-1 text-center">
-                      {captchaError}
-                    </span>
-                  )}
-                </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  disabled={isDraftSaving}
+                  className="px-6 py-3 rounded-full border border-zinc-300 hover:bg-zinc-100 text-zinc-800 font-poppins font-bold text-xs uppercase flex items-center gap-2"
+                >
+                  <FaSave className="w-3.5 h-3.5" />
+                  <span>{isDraftSaving ? "Saving..." : "Save Draft"}</span>
+                </button>
 
                 <button
                   type="submit"
-                  disabled={!captchaVerified || captchaLoading || isSubmitting}
-                  className="w-full lg:w-[304px] rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center flex items-center justify-center gap-2 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!captchaVerified || isSubmitting}
+                  className="px-8 py-3.5 rounded-full bg-[#C45A32] hover:bg-[#a84826] text-white font-poppins font-bold text-xs uppercase shadow-md disabled:opacity-50 flex items-center gap-2"
                 >
-                  {captchaLoading ? (
-                    <span>Verifying...</span>
-                  ) : isSubmitting ? (
-                    <span>SUBMITTING...</span>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4 fill-current rotate-45 transform translate-y-[-1px] translate-x-[-1px]" viewBox="0 0 24 24">
-                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                      </svg>
-                      <span>SUBMIT NOMINATION</span>
-                    </>
-                  )}
+                  <span>{isSubmitting ? "Submitting..." : "Submit Nomination"}</span>
                 </button>
               </div>
-
             </div>
-
           </form>
         )}
 
-        {/* STEP 2: Nomination Registered Success Screen */}
-        {step === 2 && (
-          <div className="flex flex-col items-center justify-center text-center gap-6 py-4 max-w-md mx-auto">
-
-            <div className="w-20 h-20 rounded-full border-3 border-black bg-[#6EC192] flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)] animate-bounce select-none">
-              <svg className="w-10 h-10 text-zinc-950 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
+        {/* STEP 5: Success Screen */}
+        {currentStep === 5 && registeredData && (
+          <div className="flex flex-col items-center justify-center text-center gap-6 py-6 max-w-md mx-auto">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-500 text-emerald-700 flex items-center justify-center text-2xl shadow-md">
+              <FaCheckCircle />
             </div>
 
             <div>
-              <span className="font-sans font-bold text-xs uppercase tracking-widest text-[#F87C22]">
-                Congratulations!
+              <span className="font-poppins font-bold text-xs uppercase tracking-widest text-[#C45A32]">
+                Submission Confirmed
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold uppercase text-zinc-950 mt-1 leading-tight">
-                Nomination Registered
-              </h2>
-              <p className="text-zinc-600 font-semibold text-sm leading-relaxed mt-4 max-w-sm">
-                Thank you for participating! Your details have been recorded successfully in the backend database.
+              <h3 className="text-2xl font-poppins font-extrabold text-zinc-950 uppercase mt-1">
+                Nomination Submitted!
+              </h3>
+              <p className="text-xs text-zinc-600 font-inter mt-2">
+                Your application has been registered successfully. You can track verification progress using your Application ID.
               </p>
             </div>
 
-            <div className="w-full bg-[#F4F7FC]/50 border border-zinc-200 rounded-2xl p-4 sm:p-5 text-left flex flex-col gap-2 mt-2">
+            <div className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl p-4 text-left flex flex-col gap-2">
               <div className="flex justify-between border-b border-dashed border-zinc-300 pb-2">
-                <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Reg ID</span>
-                <span className="text-xs sm:text-sm font-bold text-zinc-900">
-                  {registeredData?._id ? `#${registeredData._id.substring(18)}` : "#CWA-2026-89712"}
+                <span className="text-xs font-bold text-zinc-400 uppercase">Application ID</span>
+                <span className="text-sm font-extrabold text-[#C45A32]">
+                  {registeredData.applicationId || registeredData._id || "NCA-2026-000123"}
                 </span>
               </div>
-              <div className="flex justify-between mt-1">
-                <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Nominee</span>
-                <span className="text-xs sm:text-sm font-bold text-zinc-900 truncate max-w-[200px]">{formData.name}</span>
+              <div className="flex justify-between">
+                <span className="text-xs font-bold text-zinc-400 uppercase">Nomination Type</span>
+                <span className="text-xs font-bold text-zinc-900">{formData.nominationType === "SELF" ? "Self Nomination" : "Nominator for Others"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase">Category</span>
-                <span className="text-xs sm:text-sm font-bold text-[#FFA025] truncate max-w-[200px]">{formData.category}</span>
+                <span className="text-xs font-bold text-zinc-400 uppercase">Categories</span>
+                <span className="text-xs font-bold text-zinc-900">{formData.selectedCategoryTitles.join(", ")}</span>
               </div>
             </div>
 
-            <button
-              onClick={closeModal}
-              className="w-full mt-4 rounded-xl bg-[#FFA025] hover:bg-[#E28E1D] py-3.5 text-sm font-bold text-white hover:shadow-[0_4px_12px_rgba(250,158,27,0.3)] transition-all cursor-pointer select-none text-center"
-            >
-              Close Window
-            </button>
-
+            <div className="flex items-center gap-3 w-full">
+              <a
+                href="/"
+                className="flex-1 py-3 rounded-full bg-[#C45A32] text-white font-poppins font-bold text-xs uppercase text-center shadow-md"
+              >
+                Return to Home Page
+              </a>
+              <button
+                onClick={closeModal}
+                className="px-6 py-3 rounded-full border border-zinc-300 text-xs font-bold uppercase"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
 

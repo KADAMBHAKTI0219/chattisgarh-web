@@ -17,4 +17,5 @@ export { default as reportService } from "./report";
 export { default as contactService } from "./contact";
 export { default as recaptchaService } from "./recaptcha";
 export { default as participantService } from "./participant";
+export { default as nominationService } from "./nomination";
 
