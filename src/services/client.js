@@ -28,8 +28,18 @@ export async function fetchApi(endpoint, options = {}) {
     reqHeaders["Content-Type"] = "application/json";
   }
 
-  if (token) {
-    reqHeaders["Authorization"] = `Bearer ${token}`;
+  const effectiveToken =
+    token ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("accessToken") ||
+        localStorage.getItem("token") ||
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("auth_token") ||
+        localStorage.getItem("cg_auth_token")
+      : null);
+
+  if (effectiveToken) {
+    reqHeaders["Authorization"] = `Bearer ${effectiveToken}`;
   }
 
   const config = {

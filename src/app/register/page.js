@@ -46,6 +46,11 @@ export default function RegisterPage() {
     agreeTerms: true,
   });
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Fetch Public Locations Dynamically from Backend API
   useEffect(() => {
     async function fetchLocations() {
@@ -62,36 +67,50 @@ export default function RegisterPage() {
     fetchLocations();
   }, []);
 
-  // Available States List
+  // Available States List - SSR matched initial state, updated dynamically from Backend API on client mount
   const availableStates = useMemo(() => {
-    if (apiLocations.length > 0) {
-      return apiLocations.map((l) => l.stateName).sort();
+    if (Array.isArray(apiLocations) && apiLocations.length > 0) {
+      return Array.from(new Set(apiLocations.map((l) => l.stateName))).sort();
     }
-    return ["Chhattisgarh", "Delhi", "Maharashtra", "Madhya Pradesh", "Uttar Pradesh"];
-  }, [apiLocations]);
+    return formData.state ? [formData.state] : ["Chhattisgarh"];
+  }, [apiLocations, formData.state]);
 
-  // Available Districts / Cities List for Selected State
+  // Available Districts / Cities List for Selected State - SSR matched initial district, updated dynamically
   const availableDistricts = useMemo(() => {
-    if (apiLocations.length > 0 && formData.state) {
+    if (Array.isArray(apiLocations) && apiLocations.length > 0 && formData.state) {
+      const selectedState = formData.state.trim().toLowerCase();
       const locObj = apiLocations.find(
-        (l) => l.stateName.toLowerCase() === (formData.state || "").toLowerCase()
+        (l) => l.stateName.toLowerCase() === selectedState
       );
       if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
-        return locObj.cities.map((c) => c.cityName || c);
+        return locObj.cities
+          .filter((c) => c.isActive !== false)
+          .map((c) => c.cityName || c);
       }
     }
-    return ["Raipur", "Bastar", "Durg", "Bilaspur", "Surguja", "Rajnandgaon", "Korba", "Raigarh", "Kanker", "Kondagaon"];
-  }, [apiLocations, formData.state]);
+    return formData.district ? [formData.district] : ["Raipur"];
+  }, [apiLocations, formData.state, formData.district]);
+
+  // Sync state & district to first available backend state on API load
+  useEffect(() => {
+    if (apiLocations.length > 0 && availableStates.length > 0) {
+      if (!availableStates.includes(formData.state)) {
+        setFormData((prev) => ({ ...prev, state: availableStates[0] }));
+      }
+    }
+  }, [apiLocations, availableStates]);
 
   // Auto-sync selected district when selected state changes
   useEffect(() => {
-    if (availableDistricts.length > 0 && !availableDistricts.includes(formData.district)) {
-      setFormData((prev) => ({
-        ...prev,
-        district: availableDistricts[0],
-      }));
+    if (apiLocations.length > 0 && availableDistricts.length > 0) {
+      if (!availableDistricts.includes(formData.district)) {
+        setFormData((prev) => ({
+          ...prev,
+          district: availableDistricts[0],
+        }));
+      }
     }
-  }, [availableDistricts, formData.district]);
+  }, [apiLocations, availableDistricts]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -198,7 +217,7 @@ export default function RegisterPage() {
       
       {/* Background Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] pointer-events-none opacity-[0.015] -z-10">
-        <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill className="object-contain" />
+        <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill sizes="(max-width: 768px) 100vw, 700px" className="object-contain" />
       </div>
 
       {/* Top Header Navigation */}

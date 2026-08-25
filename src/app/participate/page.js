@@ -118,39 +118,56 @@ function ParticipateForm() {
 
   const [errors, setErrors] = useState({});
 
-  // Dynamic Cascading States List from Backend API
+  // Dynamic Cascading States List from Backend API - SSR matched initial state, updated on client API load
   const availableStates = useMemo(() => {
-    if (apiLocations.length > 0) {
-      return apiLocations.map((loc) => loc.stateName).sort();
+    if (Array.isArray(apiLocations) && apiLocations.length > 0) {
+      return Array.from(new Set(apiLocations.map((loc) => loc.stateName))).sort();
     }
-    return ["Chhattisgarh", "Delhi", "Maharashtra", "Madhya Pradesh", "Uttar Pradesh"];
-  }, [apiLocations]);
+    const initialSt = formData.state || "Chhattisgarh";
+    return [initialSt];
+  }, [apiLocations, formData.state]);
 
   // Currently Active Selected State
   const activeSelectedState = formData.nominationAs === "SELF" ? formData.state : formData.creatorState;
 
   // Dynamic Cascading Cities / Districts List for Selected State from Backend API
   const availableDistricts = useMemo(() => {
-    if (apiLocations.length > 0 && activeSelectedState) {
+    if (Array.isArray(apiLocations) && apiLocations.length > 0 && activeSelectedState) {
+      const targetState = activeSelectedState.trim().toLowerCase();
       const locObj = apiLocations.find(
-        (l) => l.stateName.toLowerCase() === activeSelectedState.toLowerCase()
+        (l) => l.stateName.toLowerCase() === targetState
       );
       if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
-        return locObj.cities.map((c) => c.cityName || c);
+        return locObj.cities
+          .filter((c) => c.isActive !== false)
+          .map((c) => c.cityName || c);
       }
     }
-    return ["Raipur", "Balod", "Baloda Bazar", "Bastar", "Bilaspur", "Durg", "Korba", "Raigarh", "Rajnandgaon", "Surguja"];
-  }, [apiLocations, activeSelectedState]);
+    const initialDist = formData.nominationAs === "SELF" ? (formData.district || "Raipur") : (formData.creatorDistrict || "Raipur");
+    return [initialDist];
+  }, [apiLocations, activeSelectedState, formData.district, formData.creatorDistrict, formData.nominationAs]);
+
+  // Sync initial state to first available backend state on initial load
+  useEffect(() => {
+    if (availableStates.length > 0) {
+      if (!formData.state || !availableStates.includes(formData.state)) {
+        setFormData((prev) => ({ ...prev, state: availableStates[0] }));
+      }
+      if (!formData.creatorState || !availableStates.includes(formData.creatorState)) {
+        setFormData((prev) => ({ ...prev, creatorState: availableStates[0] }));
+      }
+    }
+  }, [availableStates]);
 
   // Auto-sync selected district when active state changes
   useEffect(() => {
     if (availableDistricts.length > 0) {
       if (formData.nominationAs === "SELF") {
-        if (!availableDistricts.includes(formData.district)) {
+        if (!formData.district || !availableDistricts.includes(formData.district)) {
           setFormData((prev) => ({ ...prev, district: availableDistricts[0] }));
         }
       } else {
-        if (!availableDistricts.includes(formData.creatorDistrict)) {
+        if (!formData.creatorDistrict || !availableDistricts.includes(formData.creatorDistrict)) {
           setFormData((prev) => ({ ...prev, creatorDistrict: availableDistricts[0] }));
         }
       }

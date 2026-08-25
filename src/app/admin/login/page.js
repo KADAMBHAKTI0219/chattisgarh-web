@@ -69,6 +69,8 @@ export default function AdminLoginPage() {
         };
 
         localStorage.setItem("accessToken", tokenObj);
+        localStorage.setItem("token", tokenObj);
+        localStorage.setItem("adminToken", tokenObj);
         localStorage.setItem("user", JSON.stringify(adminEnforcedUser));
         if (updateUser) updateUser(adminEnforcedUser);
 

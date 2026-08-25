@@ -63,13 +63,13 @@ export default function Navbar() {
         <div className="mx-auto w-full max-w-[1480px] flex items-center justify-between">
           {/* Left: Indian Emblem & State Gov Name */}
           <div className="flex items-center gap-2 md:gap-3">
-            <svg viewBox="0 0 36 24" className="h-3.5 sm:h-4.5 w-auto rounded-[2px] shadow-sm shrink-0 border border-white/20" aria-label="Indian National Flag">
-              <rect width="36" height="8" fill="#FF9933" />
-              <rect y="8" width="36" height="8" fill="#FFFFFF" />
-              <rect y="16" width="36" height="8" fill="#138808" />
-              <circle cx="18" cy="12" r="3.2" fill="none" stroke="#000080" strokeWidth="0.7" />
-              <circle cx="18" cy="12" r="0.6" fill="#000080" />
-            </svg>
+            <Image
+              src="/assets/images/govt-cg-logo.jpeg"
+              alt="Government of Chhattisgarh Emblem"
+              width={120}
+              height={36}
+              className="h-7 sm:h-12 w-auto rounded-[3px] object-contain shrink-0 bg-white/95 p-0.5 shadow-xs"
+            />
             <span className="font-inter font-semibold uppercase tracking-wider text-zinc-100 text-[10px] sm:text-xs">
               {t("Government Of Chattisgarh")}
             </span>

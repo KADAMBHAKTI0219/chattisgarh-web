@@ -1093,41 +1093,54 @@ export default function AdminDashboard({ token }) {
       isFeatured: Boolean(categoryForm.isFeatured),
     };
 
+    const isMongoId = (id) => typeof id === "string" && /^[0-9a-fA-F]{24}$/.test(String(id).trim());
+
     try {
       if (editingCategory) {
-        // PUT /categories/:id
         const catId = editingCategory._id || editingCategory.id;
-        const res = await categoryService.updateCategory(catId, payload, authToken);
 
-        if (res.success || res.status === 200 || !token) {
-          setCategories((prev) =>
-            prev.map((c) =>
-              (c._id === catId || c.id === catId)
-                ? {
-                  ...c,
-                  ...payload,
-                  image: payload.image || c.image || DEFAULT_CATEGORY_IMAGES[0],
-                  isActive: payload.isActive
-                }
-                : c
-            )
-          );
-          setCategoryActionMsg("Category updated successfully!");
-          setTimeout(() => {
-            setIsCategoryModalOpen(false);
-            setCategoryActionMsg("");
-          }, 800);
+        // Instant Optimistic UI Update for zero-lag response
+        setCategories((prev) =>
+          prev.map((c) =>
+            (c._id === catId || c.id === catId)
+              ? {
+                ...c,
+                ...payload,
+                image: payload.image || c.image || DEFAULT_CATEGORY_IMAGES[0],
+                isActive: payload.isActive
+              }
+              : c
+          )
+        );
+
+        setCategoryActionMsg("Category updated successfully!");
+        setIsCategoryModalOpen(false);
+
+        // Background API Sync: Update if real Mongo ID, or Create if demo ID
+        if (isMongoId(catId)) {
+          categoryService.updateCategory(catId, payload).catch((err) => {
+            console.warn("Background Category Update Sync Warning:", err);
+          });
         } else {
-          setCategoryActionMsg(res.message || "Failed to update category");
+          categoryService.createCategory(payload).then((res) => {
+            if (res?.data?._id || res?.category?._id) {
+              const serverId = res.data._id || res.category._id;
+              setCategories((prev) =>
+                prev.map((c) => (c._id === catId || c.id === catId ? { ...c, _id: serverId, id: serverId } : c))
+              );
+            }
+          }).catch((err) => {
+            console.warn("Background Category Create Sync Warning:", err);
+          });
         }
-      } else {
-        // POST /categories
-        const res = await categoryService.createCategory(payload, authToken);
-        const createdObj = res.data || res.category || {};
 
+        setEditingCategory(null);
+        setCategoryForm(initialFormState);
+      } else {
+        const tempId = `cat-${Date.now()}`;
         const newCat = {
-          _id: createdObj._id || createdObj.id || `cat-${Date.now()}`,
-          id: createdObj._id || createdObj.id || `cat-${Date.now()}`,
+          _id: tempId,
+          id: tempId,
           num: String(categories.length + 1).padStart(2, "0"),
           ...payload,
           image: payload.image || DEFAULT_CATEGORY_IMAGES[categories.length % DEFAULT_CATEGORY_IMAGES.length],
@@ -1135,12 +1148,25 @@ export default function AdminDashboard({ token }) {
           createdAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
         };
 
+        // Instant Optimistic UI Addition
         setCategories((prev) => [newCat, ...prev]);
         setCategoryActionMsg("Category created successfully!");
-        setTimeout(() => {
-          setIsCategoryModalOpen(false);
-          setCategoryActionMsg("");
-        }, 800);
+        setIsCategoryModalOpen(false);
+
+        // Background API Sync
+        categoryService.createCategory(payload).then((res) => {
+          if (res?.data?._id || res?.category?._id) {
+            const serverId = res.data._id || res.category._id;
+            setCategories((prev) =>
+              prev.map((c) => (c._id === tempId ? { ...c, _id: serverId, id: serverId } : c))
+            );
+          }
+        }).catch((err) => {
+          console.warn("Background Category Create Sync Error:", err);
+        });
+
+        setEditingCategory(null);
+        setCategoryForm(initialFormState);
       }
     } catch (err) {
       console.error("Save Category Error:", err);

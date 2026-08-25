@@ -71,24 +71,6 @@ export default function ParticipateModal() {
   const [captchaError, setCaptchaError] = useState("");
   const captchaRef = useRef(null);
 
-  // State List
-  const indianStates = [
-    "Chhattisgarh", "Madhya Pradesh", "Maharashtra", "Odisha", "Jharkhand",
-    "Uttar Pradesh", "Delhi", "Rajasthan", "Gujarat", "Bihar", "Telangana",
-    "Karnataka", "West Bengal", "Tamil Nadu", "Punjab", "Haryana", "Other State"
-  ];
-
-  // Chhattisgarh Districts
-  const cgDistricts = [
-    "Raipur", "Bilaspur", "Durg", "Bastar", "Korba", "Rajnandgaon",
-    "Jagdalpur", "Dhamtari", "Mahasamund", "Kanker", "Kondagaon",
-    "Dantewada", "Sukma", "Bijapur", "Narayanpur", "Kabirdham",
-    "Bemetara", "Balod", "Baloda Bazar", "Gariaband", "Jashpur",
-    "Surguja", "Balrampur", "Surajpur", "Koriya", "Pendra-Marwahi",
-    "Manendragarh", "Sakti", "Sarangarh", "Khairagarh", "Mohla-Manpur",
-    "Janjgir-Champa", "Mungeli", "Raigarh"
-  ];
-
   // Complete Form State Matching Excel Specifications
   const initialFormState = {
     // Q1: Nomination As: SELF vs THIRD_PARTY
@@ -166,6 +148,21 @@ export default function ParticipateModal() {
 
   const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState({});
+
+  // State List - strictly 100% from Backend API
+  const indianStates = Array.isArray(apiLocations) && apiLocations.length > 0
+    ? apiLocations.map((l) => l.stateName).sort()
+    : [];
+
+  // District/City List - strictly 100% from Backend API for selected state
+  const selectedApplicantState = (formData.applicant?.state || "").trim().toLowerCase();
+  const matchedLocationObj = Array.isArray(apiLocations)
+    ? apiLocations.find((l) => l.stateName.toLowerCase() === selectedApplicantState)
+    : null;
+
+  const cgDistricts = matchedLocationObj && Array.isArray(matchedLocationObj.cities)
+    ? matchedLocationObj.cities.filter((c) => c.isActive !== false).map((c) => c.cityName || c)
+    : [];
 
   useEffect(() => {
     setMounted(true);

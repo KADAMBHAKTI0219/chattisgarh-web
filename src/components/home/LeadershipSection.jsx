@@ -109,7 +109,7 @@ export default function LeadershipSection() {
     >
       {/* Centered Heading */}
       <Heading
-        badge={t("TRUST &CREATOR VISION")}
+        badge={t("TRUST & CREATOR VISION")}
         title={t("LEADERSHIP")}
         highlightText={t("Messages")}
         description={t("Watch official messages and creator interactions highlighting digital empowerment across India.")}
