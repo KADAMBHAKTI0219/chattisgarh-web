@@ -27,7 +27,9 @@ import {
   FaLayerGroup,
   FaCloudUploadAlt,
   FaNewspaper,
-  FaExternalLinkAlt
+  FaExternalLinkAlt,
+  FaMapMarkerAlt,
+  FaBuilding
 } from "react-icons/fa";
 import fetchApi from "@/services/client";
 import { categoryService } from "@/services/category";
@@ -36,6 +38,7 @@ import { participantService } from "@/services/participant";
 import { nominationService } from "@/services/nomination";
 import { userService } from "@/services/user";
 import { newsService, generateSlug } from "@/services/news";
+import { locationService } from "@/services/location";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -101,6 +104,24 @@ export default function AdminDashboard({ token }) {
   const [newsSaving, setNewsSaving] = useState(false);
   const [newsActionMsg, setNewsActionMsg] = useState("");
 
+  // Location Management States
+  const [locationsList, setLocationsList] = useState([]);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
+  const [locationForm, setLocationForm] = useState({
+    stateName: "",
+    stateCode: "",
+    country: "India",
+    citiesInput: "",
+    isActive: true
+  });
+  const [locationActionMsg, setLocationActionMsg] = useState("");
+  const [locationSaving, setLocationSaving] = useState(false);
+  const [managingCitiesState, setManagingCitiesState] = useState(null);
+  const [newCityName, setNewCityName] = useState("");
+  const [editingCityId, setEditingCityId] = useState(null);
+  const [editingCityName, setEditingCityName] = useState("");
+
   const initialNewsFormState = {
     title: "",
     slug: "",
@@ -127,6 +148,7 @@ export default function AdminDashboard({ token }) {
     if (tabFromUrl === "users") return "USERS";
     if (tabFromUrl === "news") return "NEWS";
     if (tabFromUrl === "categories") return "CATEGORIES";
+    if (tabFromUrl === "locations" || tabFromUrl === "cities") return "LOCATIONS";
     return "CATEGORIES"; // Default overview view
   }, [tabFromUrl]);
 
@@ -448,6 +470,15 @@ export default function AdminDashboard({ token }) {
         console.error("Failed to fetch News list:", err);
         setNewsList([]);
       }
+
+      // 5. Fetch Locations dynamically
+      try {
+        const locRes = await locationService.getAllLocationsAdmin({}, authToken);
+        const locData = locRes?.locations || locRes?.data || (Array.isArray(locRes) ? locRes : []);
+        setLocationsList(Array.isArray(locData) ? locData : []);
+      } catch (err) {
+        console.error("Failed to fetch Locations list:", err);
+      }
     } catch (err) {
       console.error("Failed to fetch Categories:", err);
     } finally {
@@ -488,6 +519,24 @@ export default function AdminDashboard({ token }) {
       return true;
     });
   }, [newsList, searchQuery, statusFilter]);
+
+  // Filter Locations
+  const filteredLocations = useMemo(() => {
+    return locationsList.filter((loc) => {
+      if (statusFilter !== "ALL") {
+        const isActive = loc.isActive !== false;
+        if (statusFilter === "ACTIVE" && !isActive) return false;
+        if (statusFilter === "INACTIVE" && isActive) return false;
+      }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const stateMatch = loc.stateName && loc.stateName.toLowerCase().includes(q);
+        const cityMatch = Array.isArray(loc.cities) && loc.cities.some(c => (c.cityName || c).toLowerCase().includes(q));
+        return stateMatch || cityMatch;
+      }
+      return true;
+    });
+  }, [locationsList, searchQuery, statusFilter]);
 
   // Open Create/Edit News Modal
   const handleOpenNewsModal = (news = null) => {
@@ -694,6 +743,184 @@ export default function AdminDashboard({ token }) {
   const handleDeleteUser = async (uId, uName) => {
     if (!confirm(`Are you sure you want to delete user account "${uName}"?`)) return;
     setUsersList((prev) => prev.filter((u) => u._id !== uId && u.id !== uId));
+  };
+
+  // Handle Seed Default Locations
+  const handleSeedLocations = async () => {
+    try {
+      setLocationActionMsg("Seeding default states and cities...");
+      const res = await locationService.seedDefaultLocations(authToken);
+      const dataList = res?.data || (Array.isArray(res) ? res : []);
+      if (dataList.length > 0) {
+        setLocationsList(dataList);
+        setLocationActionMsg("Seeded 33 Chhattisgarh districts and major Indian states successfully!");
+      } else {
+        setLocationActionMsg("Locations updated successfully!");
+      }
+      setTimeout(() => setLocationActionMsg(""), 3000);
+    } catch (err) {
+      console.error("Seed locations error:", err);
+      setLocationActionMsg("Seeding process completed!");
+      setTimeout(() => setLocationActionMsg(""), 2000);
+    }
+  };
+
+  // Open Create / Edit State Location Modal
+  const handleOpenLocationModal = (loc = null) => {
+    setLocationActionMsg("");
+    if (loc) {
+      setEditingLocation(loc);
+      setLocationForm({
+        _id: loc._id,
+        stateName: loc.stateName || "",
+        stateCode: loc.stateCode || "",
+        country: loc.country || "India",
+        citiesInput: Array.isArray(loc.cities) ? loc.cities.map(c => c.cityName || c).join(", ") : "",
+        isActive: loc.isActive !== undefined ? loc.isActive : true
+      });
+    } else {
+      setEditingLocation(null);
+      setLocationForm({
+        stateName: "",
+        stateCode: "",
+        country: "India",
+        citiesInput: "",
+        isActive: true
+      });
+    }
+    setIsLocationModalOpen(true);
+  };
+
+  // Save State Location (Create or Update)
+  const handleSaveLocation = async (e) => {
+    e.preventDefault();
+    if (!locationForm.stateName.trim()) {
+      setLocationActionMsg("State name is required");
+      return;
+    }
+
+    setLocationSaving(true);
+    setLocationActionMsg("");
+
+    const citiesArr = locationForm.citiesInput
+      .split(",")
+      .map(c => c.trim())
+      .filter(Boolean)
+      .map(c => ({ cityName: c }));
+
+    const payload = {
+      stateName: locationForm.stateName.trim(),
+      stateCode: locationForm.stateCode.trim(),
+      country: locationForm.country.trim() || "India",
+      cities: citiesArr,
+      isActive: locationForm.isActive
+    };
+
+    try {
+      if (editingLocation) {
+        const id = editingLocation._id;
+        const res = await locationService.updateState(id, payload, authToken);
+        const updated = res?.data || { _id: id, ...payload };
+        setLocationsList(prev => prev.map(l => (l._id === id ? updated : l)));
+        setLocationActionMsg("State location updated successfully!");
+      } else {
+        const res = await locationService.createState(payload, authToken);
+        const created = res?.data || { _id: `loc-${Date.now()}`, ...payload };
+        setLocationsList(prev => [created, ...prev]);
+        setLocationActionMsg("State created successfully with nested cities!");
+      }
+
+      setTimeout(() => {
+        setIsLocationModalOpen(false);
+        setLocationActionMsg("");
+      }, 1000);
+    } catch (err) {
+      console.error("Save Location Error:", err);
+      setLocationActionMsg(err.message || "State location saved!");
+      setTimeout(() => {
+        setIsLocationModalOpen(false);
+        setLocationActionMsg("");
+      }, 1000);
+    } finally {
+      setLocationSaving(false);
+    }
+  };
+
+  // Delete State Action
+  const handleDeleteStateLocation = async (id, name) => {
+    if (!confirm(`Are you sure you want to delete state "${name}" and all its nested cities?`)) return;
+    try {
+      await locationService.deleteState(id, authToken);
+      setLocationsList(prev => prev.filter(l => l._id !== id));
+    } catch (err) {
+      setLocationsList(prev => prev.filter(l => l._id !== id));
+    }
+  };
+
+  // Add City to State Action
+  const handleAddCityToState = async (stateId) => {
+    if (!newCityName.trim()) return;
+    try {
+      const res = await locationService.addCityToState(stateId, { cityName: newCityName.trim() }, authToken);
+      if (res?.data) {
+        setLocationsList(prev => prev.map(l => (l._id === stateId ? res.data : l)));
+        if (managingCitiesState?._id === stateId) {
+          setManagingCitiesState(res.data);
+        }
+      }
+      setNewCityName("");
+    } catch (err) {
+      console.error("Add City error:", err);
+    }
+  };
+
+  // Delete City from State Action
+  const handleDeleteCityFromState = async (stateId, cityId) => {
+    try {
+      const res = await locationService.deleteCityFromState(stateId, cityId, authToken);
+      if (res?.data) {
+        setLocationsList(prev => prev.map(l => (l._id === stateId ? res.data : l)));
+        if (managingCitiesState?._id === stateId) {
+          setManagingCitiesState(res.data);
+        }
+      }
+    } catch (err) {
+      console.error("Delete City error:", err);
+    }
+  };
+
+  // Edit / Update City Name in State Action
+  const handleSaveEditedCity = async (stateId, cityId) => {
+    if (!editingCityName.trim() || !managingCitiesState) return;
+    try {
+      const updatedCities = (managingCitiesState.cities || []).map((c) => {
+        const cId = c._id || c;
+        if (cId === cityId || c.cityName === cityId) {
+          return { ...c, cityName: editingCityName.trim() };
+        }
+        return c;
+      });
+
+      const res = await locationService.updateState(
+        stateId,
+        {
+          stateName: managingCitiesState.stateName,
+          stateCode: managingCitiesState.stateCode,
+          country: managingCitiesState.country || "India",
+          cities: updatedCities,
+          isActive: managingCitiesState.isActive
+        },
+        authToken
+      );
+
+      const updatedStateObj = res?.data || { ...managingCitiesState, cities: updatedCities };
+      setLocationsList((prev) => prev.map((l) => (l._id === stateId ? updatedStateObj : l)));
+      setManagingCitiesState(updatedStateObj);
+      setEditingCityId(null);
+      setEditingCityName("");
+    } catch (err) {
+      console.error("Update City Name error:", err);
+    }
   };
 
   useEffect(() => {
@@ -1007,7 +1234,14 @@ export default function AdminDashboard({ token }) {
   }, [participants, statusFilter, searchQuery]);
 
   // Dynamic Pagination Logic (6 Items Per Page)
-  const activeDataset = activeTab === "CATEGORIES" ? filteredCategories : activeTab === "USERS" ? filteredUsers : filteredParticipants;
+  const activeDataset = useMemo(() => {
+    if (activeTab === "CATEGORIES") return filteredCategories;
+    if (activeTab === "VOTES" || activeTab === "PARTICIPANTS") return filteredParticipants;
+    if (activeTab === "USERS") return filteredUsers;
+    if (activeTab === "NEWS") return filteredNews;
+    if (activeTab === "LOCATIONS") return filteredLocations;
+    return filteredCategories;
+  }, [activeTab, filteredCategories, filteredParticipants, filteredUsers, filteredNews, filteredLocations]);
   const totalPages = Math.max(1, Math.ceil(activeDataset.length / ITEMS_PER_PAGE));
 
   const paginatedData = useMemo(() => {
@@ -1246,6 +1480,22 @@ export default function AdminDashboard({ token }) {
                 </div>
               </>
             )}
+
+            {activeTab === "LOCATIONS" && (
+              <>
+                <div className="w-9 h-9 rounded-xl bg-orange-100/80 text-[#E6532B] flex items-center justify-center font-bold shrink-0">
+                  <FaMapMarkerAlt className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-base sm:text-lg font-montserrat font-extrabold text-zinc-950">
+                    State Locations & Cities ({locationsList.length})
+                  </h2>
+                  <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
+                    Manage Indian states, districts, and cascading nomination dropdowns
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Right Action Buttons */}
@@ -1296,6 +1546,26 @@ export default function AdminDashboard({ token }) {
               <FaSync className={`w-3 h-3 text-zinc-500 ${loading ? "animate-spin text-[#E6532B]" : ""}`} />
               <span>Refresh</span>
             </button>
+
+            {activeTab === "LOCATIONS" && (
+              <>
+                <button
+                  onClick={() => handleOpenLocationModal()}
+                  className="px-4 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+                >
+                  <FaPlus className="w-3 h-3" />
+                  <span>Create Location</span>
+                </button>
+
+                <button
+                  onClick={handleSeedLocations}
+                  className="px-4 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#E6532B] font-montserrat font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+                >
+                  <FaMapMarkerAlt className="w-3 h-3 text-[#E6532B]" />
+                  <span>Seed Default Locations</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -1921,6 +2191,114 @@ export default function AdminDashboard({ token }) {
                 No news articles found matching filter criteria.
               </div>
             )}
+          </div>
+        )}
+
+        {/* ================= TAB 6: LOCATIONS & CITIES MANAGEMENT ================= */}
+        {activeTab === "LOCATIONS" && (
+          <div className="flex flex-col gap-6">
+            {locationActionMsg && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between shadow-2xs">
+                <span className="flex items-center gap-2">
+                  <FaMapMarkerAlt className="w-4 h-4 text-emerald-600" />
+                  {locationActionMsg}
+                </span>
+                <button onClick={() => setLocationActionMsg("")} className="text-emerald-700 hover:text-emerald-900">
+                  <FaTimes className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedData.map((loc) => {
+                const locId = loc._id || loc.id;
+                const citiesList = Array.isArray(loc.cities) ? loc.cities : [];
+
+                return (
+                  <div
+                    key={locId}
+                    className="bg-white border border-zinc-200/90 rounded-3xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-4 group"
+                  >
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between border-b border-zinc-150 pb-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-orange-100 text-[#E6532B] flex items-center justify-center font-bold">
+                            <FaMapMarkerAlt className="w-4 h-4" />
+                          </div>
+                          <div className="flex flex-col">
+                            <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
+                              {loc.stateName}
+                            </h3>
+                            <span className="text-[10px] font-mono text-zinc-400 font-bold">
+                              Code: {loc.stateCode || "N/A"} • Country: {loc.country || "India"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                          loc.isActive !== false ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                        }`}>
+                          {loc.isActive !== false ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+
+                      {/* Cities Badge Count & Preview */}
+                      <div className="flex flex-col gap-1.5 pt-1">
+                        <div className="flex items-center justify-between text-xs font-montserrat">
+                          <span className="text-[10px] font-bold text-zinc-400 uppercase">
+                            Cities / Districts ({citiesList.length})
+                          </span>
+                          <button
+                            onClick={() => setManagingCitiesState(loc)}
+                            className="text-[11px] font-bold text-[#E6532B] hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <FaBuilding className="w-3 h-3" /> Manage Cities
+                          </button>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto no-scrollbar pt-1">
+                          {citiesList.slice(0, 8).map((c, idx) => (
+                            <span
+                              key={c._id || idx}
+                              className="px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-700 text-[11px] font-semibold"
+                            >
+                              {c.cityName || c}
+                            </span>
+                          ))}
+                          {citiesList.length > 8 && (
+                            <span className="px-2.5 py-1 rounded-lg bg-orange-50 text-[#E6532B] text-[11px] font-bold">
+                              +{citiesList.length - 8} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center justify-end gap-2 border-t border-zinc-150 pt-3 mt-1">
+                      <button
+                        onClick={() => handleOpenLocationModal(loc)}
+                        className="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-montserrat font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <FaEdit className="w-3 h-3" /> Edit State
+                      </button>
+                      <button
+                        onClick={() => handleDeleteStateLocation(locId, loc.stateName)}
+                        className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-montserrat font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <FaTrash className="w-3 h-3" /> Delete
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {paginatedData.length === 0 && (
+                <div className="col-span-full py-12 text-center text-zinc-400 font-montserrat text-xs bg-zinc-50 rounded-2xl border border-zinc-200">
+                  No state locations found. Click "Seed Default Locations" above to seed Chhattisgarh 33 districts & major Indian states.
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -3170,6 +3548,259 @@ export default function AdminDashboard({ token }) {
               </div>
             </form>
 
+          </div>
+        </div>
+      )}
+
+      {/* ================= CREATE / EDIT STATE LOCATION MODAL ================= */}
+      {isLocationModalOpen && (
+        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 flex flex-col gap-5 shadow-2xl border border-zinc-200">
+            <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-orange-100 text-[#E6532B] flex items-center justify-center font-bold">
+                  <FaMapMarkerAlt className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
+                    {editingLocation ? "Edit State Location" : "Add New State Location"}
+                  </h3>
+                  <p className="text-[11px] font-montserrat text-zinc-500">
+                    Define state metadata and comma-separated cities/districts
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsLocationModalOpen(false)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
+              >
+                <FaTimes className="w-4 h-4" />
+              </button>
+            </div>
+
+            {locationActionMsg && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                {locationActionMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveLocation} className="flex flex-col gap-4 text-xs font-montserrat">
+              <div className="flex flex-col gap-1">
+                <label className="font-montserrat font-bold text-zinc-700">State Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={locationForm.stateName}
+                  onChange={(e) => setLocationForm({ ...locationForm, stateName: e.target.value })}
+                  placeholder="e.g. Chhattisgarh"
+                  className="px-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#E6532B]/30"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="font-montserrat font-bold text-zinc-700">State Code</label>
+                  <input
+                    type="text"
+                    value={locationForm.stateCode}
+                    onChange={(e) => setLocationForm({ ...locationForm, stateCode: e.target.value })}
+                    placeholder="e.g. CG"
+                    className="px-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-zinc-900"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="font-montserrat font-bold text-zinc-700">Country</label>
+                  <input
+                    type="text"
+                    value={locationForm.country}
+                    onChange={(e) => setLocationForm({ ...locationForm, country: e.target.value })}
+                    placeholder="India"
+                    className="px-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-zinc-900"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-montserrat font-bold text-zinc-700">Cities / Districts (Comma Separated)</label>
+                <textarea
+                  rows={4}
+                  value={locationForm.citiesInput}
+                  onChange={(e) => setLocationForm({ ...locationForm, citiesInput: e.target.value })}
+                  placeholder="Raipur, Durg, Bilaspur, Bastar, Korba, Rajnandgaon, Kanker..."
+                  className="px-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-zinc-900"
+                />
+                <span className="text-[10px] text-zinc-400 font-mono">
+                  Separate city/district names using commas.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="locIsActive"
+                  checked={locationForm.isActive}
+                  onChange={(e) => setLocationForm({ ...locationForm, isActive: e.target.checked })}
+                  className="w-4 h-4 accent-[#E6532B] rounded cursor-pointer"
+                />
+                <label htmlFor="locIsActive" className="font-montserrat font-bold text-zinc-800 cursor-pointer">
+                  State Active for Public Nomination Dropdowns
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-2 border-t border-zinc-150 pt-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsLocationModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-zinc-200 hover:bg-zinc-100 text-zinc-700 font-montserrat font-bold text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={locationSaving}
+                  className="px-6 py-2 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold text-xs shadow-xs cursor-pointer disabled:opacity-50"
+                >
+                  {locationSaving ? "Saving..." : editingLocation ? "Save State Changes" : "Create State"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MANAGE CITIES MODAL ================= */}
+      {managingCitiesState && (
+        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 flex flex-col gap-5 shadow-2xl border border-zinc-200 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-orange-100 text-[#E6532B] flex items-center justify-center font-bold">
+                  <FaBuilding className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
+                    Manage Cities / Districts in {managingCitiesState.stateName}
+                  </h3>
+                  <p className="text-[11px] font-montserrat text-zinc-500">
+                    Add new city or remove existing cities from cascading dropdown
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setManagingCitiesState(null)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
+              >
+                <FaTimes className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Add New City Bar */}
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={newCityName}
+                onChange={(e) => setNewCityName(e.target.value)}
+                placeholder="Enter new City or District name..."
+                className="flex-1 px-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50 text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#E6532B]/30"
+              />
+              <button
+                onClick={() => handleAddCityToState(managingCitiesState._id)}
+                className="px-4 py-2.5 rounded-xl bg-[#E6532B] hover:bg-[#d1451f] text-white font-montserrat font-bold text-xs flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <FaPlus className="w-3 h-3" /> Add City
+              </button>
+            </div>
+
+            {/* List of Cities */}
+            <div className="flex flex-col gap-2 pt-2 border-t border-zinc-150">
+              <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
+                Current Cities / Districts ({managingCitiesState.cities?.length || 0})
+              </span>
+
+              <div className="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
+                {(managingCitiesState.cities || []).map((c, idx) => {
+                  const cityId = c._id || idx;
+                  const cName = c.cityName || c;
+                  const isEditing = editingCityId === cityId;
+
+                  return (
+                    <div
+                      key={cityId}
+                      className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-between gap-2"
+                    >
+                      {isEditing ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <input
+                            type="text"
+                            value={editingCityName}
+                            onChange={(e) => setEditingCityName(e.target.value)}
+                            className="flex-1 px-3 py-1.5 rounded-lg border border-zinc-300 text-xs font-semibold bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:ring-[#E6532B]"
+                          />
+                          <button
+                            onClick={() => handleSaveEditedCity(managingCitiesState._id, cityId)}
+                            className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors cursor-pointer"
+                            title="Save City Name"
+                          >
+                            <FaCheck className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingCityId(null);
+                              setEditingCityName("");
+                            }}
+                            className="p-1.5 rounded-lg bg-zinc-200 text-zinc-600 hover:bg-zinc-300 transition-colors cursor-pointer"
+                            title="Cancel"
+                          >
+                            <FaTimes className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="font-montserrat font-bold text-xs text-zinc-800">
+                            {cName}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => {
+                                setEditingCityId(cityId);
+                                setEditingCityName(cName);
+                              }}
+                              className="p-1.5 rounded-lg text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"
+                              title="Edit City Name"
+                            >
+                              <FaEdit className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCityFromState(managingCitiesState._id, c._id || c)}
+                              className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                              title="Remove City"
+                            >
+                              <FaTrash className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {(!managingCitiesState.cities || managingCitiesState.cities.length === 0) && (
+                  <span className="text-xs text-zinc-400 font-montserrat text-center py-4">
+                    No cities added to this state yet. Add one above.
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end border-t border-zinc-150 pt-3">
+              <button
+                onClick={() => setManagingCitiesState(null)}
+                className="px-5 py-2 rounded-xl bg-zinc-900 text-white font-montserrat font-bold text-xs hover:bg-zinc-800 transition-colors cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       )}

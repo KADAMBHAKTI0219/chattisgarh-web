@@ -8,7 +8,6 @@ import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { categoryService } from "@/services/api";
 import Heading from "@/components/common/Heading";
 import CategoryDetailModal from "@/components/common/CategoryDetailModal";
-import { categoriesData as fallbackCategories } from "@/data/categoriesData";
 import { extractDynamicTiers, getTierSlug, getTierColor, getTierTitle } from "@/utils/tierUtils";
 import {
     FaChevronLeft,
@@ -39,17 +38,18 @@ export default function CategorySlugPage({ params }) {
                 setIsLoading(true);
                 const res = await categoryService.getCategories({ isActive: true });
                 if (isMounted) {
-                    if (res?.success && Array.isArray(res.categories) && res.categories.length > 0) {
-                        setApiCategories(res.categories);
-                    } else if (Array.isArray(res?.data) && res.data.length > 0) {
-                        setApiCategories(res.data);
-                    } else {
-                        setApiCategories(fallbackCategories);
+                    let list = [];
+                    if (res?.categories && Array.isArray(res.categories) && res.categories.length > 0) {
+                        list = res.categories;
+                    } else if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+                        list = res.data;
+                    } else if (res?.data?.categories && Array.isArray(res.data.categories) && res.data.categories.length > 0) {
+                        list = res.data.categories;
                     }
+                    setApiCategories(list);
                 }
             } catch (err) {
-                console.warn("Failed to load categories from API, using fallback:", err);
-                if (isMounted) setApiCategories(fallbackCategories);
+                console.warn("Failed to load categories from API:", err);
             } finally {
                 if (isMounted) setIsLoading(false);
             }
@@ -58,36 +58,30 @@ export default function CategorySlugPage({ params }) {
         return () => { isMounted = false; };
     }, []);
 
-    const rawList = apiCategories.length > 0 ? apiCategories : fallbackCategories;
-
     // Format category objects
-    const allCategoriesList = rawList.map((cat, idx) => {
-        const fallbackMatch = fallbackCategories.find(
-            (f) => f.slug === cat.slug || f.title.toLowerCase() === (cat.title || cat.name || "").toLowerCase()
-        );
-
-        const rawTier = cat.tier || cat.tierName || fallbackMatch?.tier || "General Tier";
-        const tierNum = cat.tierNumber || fallbackMatch?.tierNumber || null;
+    const allCategoriesList = apiCategories.map((cat, idx) => {
+        const rawTier = cat.tier || cat.tierName || "General Tier";
+        const tierNum = cat.tierNumber || null;
         const tierSlug = getTierSlug(rawTier, tierNum);
         const tierTitle = getTierTitle(rawTier, tierNum);
         const badgeColor = getTierColor(rawTier, tierNum);
 
         return {
-            id: cat._id || cat.slug || `api-${idx}`,
-            categoryNumber: cat.categoryNumber || fallbackMatch?.categoryNumber || idx + 1,
+            id: cat._id || cat.slug || `cat-${idx}`,
+            categoryNumber: cat.categoryNumber || idx + 1,
             tierNumber: tierNum,
             tierSlug,
             tierTitle,
             badgeColor,
-            title: cat.title || cat.name || fallbackMatch?.title || "Award Category",
-            slug: cat.slug || fallbackMatch?.slug || "",
-            image: cat.image || fallbackMatch?.image || "/assets/images/category-1.jpg",
-            shortDescription: cat.shortDescription || cat.description || fallbackMatch?.shortDescription || "",
-            fullDescription: cat.fullDescription || fallbackMatch?.fullDescription || "",
-            taskBrief: cat.taskBrief || fallbackMatch?.taskBrief || "",
-            hashtag: cat.hashtag || fallbackMatch?.hashtag || "",
-            isFeatured: cat.isFeatured ?? fallbackMatch?.isFeatured ?? false,
-            isActive: cat.isActive ?? fallbackMatch?.isActive ?? true
+            title: cat.title || cat.name || "Award Category",
+            slug: cat.slug || "",
+            image: cat.image || "/assets/images/category-1.jpg",
+            shortDescription: cat.shortDescription || cat.description || "",
+            fullDescription: cat.fullDescription || "",
+            taskBrief: cat.taskBrief || "",
+            hashtag: cat.hashtag || "",
+            isFeatured: cat.isFeatured ?? false,
+            isActive: cat.isActive ?? true
         };
     });
 

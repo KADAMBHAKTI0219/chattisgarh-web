@@ -7,6 +7,7 @@ import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { categoryService } from "@/services/category";
 import { nominationService } from "@/services/nomination";
 import { recaptchaService } from "@/services/recaptcha";
+import { locationService } from "@/services/location";
 import {
   FaUser,
   FaEnvelope,
@@ -34,6 +35,24 @@ const RECAPTCHA_SITE_KEY =
 export default function ParticipateModal() {
   const { isOpen, selectedCategory, closeModal } = useParticipateModal();
   const [mounted, setMounted] = useState(false);
+
+  // Dynamic API Locations State
+  const [apiLocations, setApiLocations] = useState([]);
+
+  useEffect(() => {
+    async function fetchLocations() {
+      try {
+        const res = await locationService.getPublicLocations();
+        const locList = res?.locations || res?.data || (Array.isArray(res) ? res : []);
+        if (Array.isArray(locList) && locList.length > 0) {
+          setApiLocations(locList);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch public locations:", err);
+      }
+    }
+    fetchLocations();
+  }, []);
 
   // Multi-step Wizard: Step 1 (Personal & Nomination Type), Step 2 (Categories & Story Links), Step 3 (Creator Profile), Step 4 (Review & Submit), Step 5 (Success)
   const [currentStep, setCurrentStep] = useState(1);

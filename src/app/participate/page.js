@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
+import { useMemo } from "react";
 import { categoryService } from "@/services/category";
 import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
+import { locationService } from "@/services/location";
 import Heading from "@/components/common/Heading";
-import { categoriesData as fallbackCategories } from "@/data/categoriesData";
 import {
   FaUser,
   FaShareAlt,
@@ -26,77 +27,6 @@ import {
   FaCheck,
   FaSpinner
 } from "react-icons/fa";
-
-// List of Indian States
-const INDIAN_STATES = [
-  "Chhattisgarh",
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chandigarh",
-  "Delhi",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jammu and Kashmir",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal"
-];
-
-// List of Chhattisgarh Districts
-const CHHATTISGARH_DISTRICTS = [
-  "Raipur",
-  "Balod",
-  "Baloda Bazar",
-  "Balrampur",
-  "Bastar",
-  "Bemetara",
-  "Bijapur",
-  "Bilaspur",
-  "Dantewada",
-  "Dhamtari",
-  "Durg",
-  "Gariaband",
-  "Gaurela-Pendra-Marwahi",
-  "Janjgir-Champa",
-  "Jashpur",
-  "Kabirdham (Kawardha)",
-  "Kanker",
-  "Khairagarh-Chhuikhadan-Gandai",
-  "Kondagaon",
-  "Korba",
-  "Koriya",
-  "Mahasamund",
-  "Manendragarh-Chirmiri-Bharatpur",
-  "Mohla-Manpur-Ambagarh Chowki",
-  "Mungeli",
-  "Narayanpur",
-  "Raigarh",
-  "Rajnandgaon",
-  "Sukma",
-  "Surajpur",
-  "Surguja",
-  "Sarangarh-Bilaigarh"
-];
 
 // Generates Creator Start Years (e.g. 2000 to Current Year)
 const CURRENT_YEAR = new Date().getFullYear();
@@ -118,6 +48,22 @@ function ParticipateForm() {
 
   // Categories from backend or static dataset
   const [categoriesList, setCategoriesList] = useState([]);
+  const [apiLocations, setApiLocations] = useState([]);
+
+  // Fetch Public Locations (States with nested Cities) from Backend API
+  useEffect(() => {
+    async function fetchLocations() {
+      try {
+        const res = await locationService.getPublicLocations();
+        if (res?.locations && Array.isArray(res.locations) && res.locations.length > 0) {
+          setApiLocations(res.locations);
+        }
+      } catch (err) {
+        console.warn("Using default static states & districts lists:", err);
+      }
+    }
+    fetchLocations();
+  }, []);
 
   // Master Form Data matching Excel Specifications
   const [formData, setFormData] = useState({
@@ -171,6 +117,45 @@ function ParticipateForm() {
   });
 
   const [errors, setErrors] = useState({});
+
+  // Dynamic Cascading States List from Backend API
+  const availableStates = useMemo(() => {
+    if (apiLocations.length > 0) {
+      return apiLocations.map((loc) => loc.stateName).sort();
+    }
+    return ["Chhattisgarh", "Delhi", "Maharashtra", "Madhya Pradesh", "Uttar Pradesh"];
+  }, [apiLocations]);
+
+  // Currently Active Selected State
+  const activeSelectedState = formData.nominationAs === "SELF" ? formData.state : formData.creatorState;
+
+  // Dynamic Cascading Cities / Districts List for Selected State from Backend API
+  const availableDistricts = useMemo(() => {
+    if (apiLocations.length > 0 && activeSelectedState) {
+      const locObj = apiLocations.find(
+        (l) => l.stateName.toLowerCase() === activeSelectedState.toLowerCase()
+      );
+      if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
+        return locObj.cities.map((c) => c.cityName || c);
+      }
+    }
+    return ["Raipur", "Balod", "Baloda Bazar", "Bastar", "Bilaspur", "Durg", "Korba", "Raigarh", "Rajnandgaon", "Surguja"];
+  }, [apiLocations, activeSelectedState]);
+
+  // Auto-sync selected district when active state changes
+  useEffect(() => {
+    if (availableDistricts.length > 0) {
+      if (formData.nominationAs === "SELF") {
+        if (!availableDistricts.includes(formData.district)) {
+          setFormData((prev) => ({ ...prev, district: availableDistricts[0] }));
+        }
+      } else {
+        if (!availableDistricts.includes(formData.creatorDistrict)) {
+          setFormData((prev) => ({ ...prev, creatorDistrict: availableDistricts[0] }));
+        }
+      }
+    }
+  }, [availableDistricts, activeSelectedState]);
 
   // Sync logged in user details if available
   useEffect(() => {
@@ -972,7 +957,7 @@ function ParticipateForm() {
                       className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.state ? "border-red-500 bg-red-50/20" : ""
                         }`}
                     >
-                      {INDIAN_STATES.map((st) => (
+                      {availableStates.map((st) => (
                         <option key={st} value={st}>
                           {st}
                         </option>
@@ -993,7 +978,7 @@ function ParticipateForm() {
                       className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.district ? "border-red-500 bg-red-50/20" : ""
                         }`}
                     >
-                      {CHHATTISGARH_DISTRICTS.map((dist) => (
+                      {availableDistricts.map((dist) => (
                         <option key={dist} value={dist}>
                           {dist}
                         </option>

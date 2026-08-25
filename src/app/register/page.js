@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth";
+import { locationService } from "@/services/location";
 import {
   FaUser,
   FaEnvelope,
@@ -32,16 +33,65 @@ const generateCaptchaCode = () => {
 export default function RegisterPage() {
   const router = useRouter();
 
+  const [apiLocations, setApiLocations] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
+    state: "Chhattisgarh",
     district: "Raipur",
     role: "CREATOR",
     password: "",
     confirmPassword: "",
     agreeTerms: true,
   });
+
+  // Fetch Public Locations Dynamically from Backend API
+  useEffect(() => {
+    async function fetchLocations() {
+      try {
+        const res = await locationService.getPublicLocations();
+        const locList = res?.locations || res?.data || (Array.isArray(res) ? res : []);
+        if (Array.isArray(locList) && locList.length > 0) {
+          setApiLocations(locList);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch public locations:", err);
+      }
+    }
+    fetchLocations();
+  }, []);
+
+  // Available States List
+  const availableStates = useMemo(() => {
+    if (apiLocations.length > 0) {
+      return apiLocations.map((l) => l.stateName).sort();
+    }
+    return ["Chhattisgarh", "Delhi", "Maharashtra", "Madhya Pradesh", "Uttar Pradesh"];
+  }, [apiLocations]);
+
+  // Available Districts / Cities List for Selected State
+  const availableDistricts = useMemo(() => {
+    if (apiLocations.length > 0 && formData.state) {
+      const locObj = apiLocations.find(
+        (l) => l.stateName.toLowerCase() === (formData.state || "").toLowerCase()
+      );
+      if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
+        return locObj.cities.map((c) => c.cityName || c);
+      }
+    }
+    return ["Raipur", "Bastar", "Durg", "Bilaspur", "Surguja", "Rajnandgaon", "Korba", "Raigarh", "Kanker", "Kondagaon"];
+  }, [apiLocations, formData.state]);
+
+  // Auto-sync selected district when selected state changes
+  useEffect(() => {
+    if (availableDistricts.length > 0 && !availableDistricts.includes(formData.district)) {
+      setFormData((prev) => ({
+        ...prev,
+        district: availableDistricts[0],
+      }));
+    }
+  }, [availableDistricts, formData.district]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -267,7 +317,27 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Row 2: Column 1 - District Location */}
+          {/* Row 2: Column 1 - State Location */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
+              State Location
+            </label>
+            <div className="relative">
+              <FaMapMarkerAlt className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
+              <select
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              >
+                {availableStates.map((st) => (
+                  <option key={st} value={st}>{st}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Row 2: Column 2 - District Location */}
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               District Location
@@ -280,7 +350,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
-                {["Raipur", "Bastar", "Durg", "Bilaspur", "Surguja", "Rajnandgaon", "Korba", "Raigarh", "Kanker", "Kondagaon"].map((d) => (
+                {availableDistricts.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}
               </select>
