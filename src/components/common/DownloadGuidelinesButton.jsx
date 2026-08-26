@@ -29,12 +29,39 @@ export default function DownloadGuidelinesButton({
       "bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-700",
   }[variant] || "bg-emerald-700 hover:bg-emerald-800 text-white";
 
+  const handleDownload = async (e) => {
+    e.preventDefault();
+    const pdfUrl = "/assets/Guidelines.pdf";
+    const fileName = "State_Creator_Awards_2026_Guidelines.pdf";
+
+    try {
+      const response = await fetch(pdfUrl);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    } catch (err) {
+      console.warn("Direct blob download failed, falling back to anchor click", err);
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <a
       href="/assets/Guidelines.pdf"
       download="State_Creator_Awards_2026_Guidelines.pdf"
-      target="_blank"
-      rel="noopener noreferrer"
+      onClick={handleDownload}
       title="Download Official State Creator Awards 2026 Guidelines PDF"
       className={`${baseClasses} ${sizeClasses} ${variantClasses} ${className}`}
     >

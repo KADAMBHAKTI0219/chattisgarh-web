@@ -474,44 +474,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Row 3: Column 2 - Instagram Profile Link */}
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700 flex items-center justify-between">
-              <span>Instagram Link</span>
-              <span className="text-[9.5px] text-pink-600 font-normal lowercase">(profile)</span>
-            </label>
-            <div className="relative">
-              <FaInstagram className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pink-500 w-3.5 h-3.5" />
-              <input
-                type="url"
-                name="instagramLink"
-                value={formData.instagramLink}
-                onChange={handleChange}
-                placeholder="https://instagram.com/your_handle"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-              />
-            </div>
-          </div>
-
-          {/* Row 3: Column 3 - Instagram Video / Reel Link */}
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700 flex items-center justify-between">
-              <span>Video Link</span>
-              <span className="text-[9.5px] text-purple-600 font-normal lowercase">(reel/video)</span>
-            </label>
-            <div className="relative">
-              <FaVideo className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-500 w-3.5 h-3.5" />
-              <input
-                type="url"
-                name="videoLink"
-                value={formData.videoLink}
-                onChange={handleChange}
-                placeholder="https://instagram.com/reel/..."
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-              />
-            </div>
-          </div>
-
           {/* Row 4: Full Width Security Captcha Box (Span 3 Columns) */}
           <div className="md:col-span-3 flex flex-col justify-center gap-1.5 p-3 bg-zinc-50 border border-zinc-200 rounded-2xl">
             <div className="flex items-center justify-between">

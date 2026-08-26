@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import Heading from "@/components/common/Heading";
+import DownloadGuidelinesButton from "@/components/common/DownloadGuidelinesButton";
 
 export default function TermsSection() {
   const { t } = useLanguage();
@@ -74,15 +75,12 @@ export default function TermsSection() {
         />
 
         {/* Downloadable Official Guidelines Button */}
-        <a
-          href="/assets/Guidelines.pdf"
-          download="State_Creator_Awards_2026_Guidelines.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="self-start sm:self-center rounded-full border border-zinc-200 bg-[#C45A32] hover:bg-[#a84926] px-6 py-3 font-bold text-white text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer select-none inline-flex items-center gap-2"
-        >
-          <span>📁</span> {t("Download Guidelines")} (PDF)
-        </a>
+        <DownloadGuidelinesButton
+          size="lg"
+          variant="amber"
+          customText={`${t("Download Guidelines")} (PDF)`}
+          className="self-start sm:self-center"
+        />
       </div>
 
       {/* Accordion list */}

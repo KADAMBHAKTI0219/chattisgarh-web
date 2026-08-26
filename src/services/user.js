@@ -29,7 +29,18 @@ export const userService = {
       authToken = paramsOrToken;
       params = {};
     }
-    return await fetchApi("/users/all", { method: "GET", params, token: authToken });
+
+    // Try /users/all
+    let res = await fetchApi("/users/all", { method: "GET", params, token: authToken });
+    if (res && res.success && res.data) return res;
+
+    // Fallback 1: /users
+    res = await fetchApi("/users", { method: "GET", params, token: authToken });
+    if (res && res.success && res.data) return res;
+
+    // Fallback 2: /admin/users
+    res = await fetchApi("/admin/users", { method: "GET", params, token: authToken });
+    return res;
   },
 };
 
