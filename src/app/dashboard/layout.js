@@ -101,7 +101,6 @@ export default function DashboardLayout({ children }) {
     { name: "My Profile", href: "/dashboard/profile", tabKey: "profile", icon: FaUserCircle },
     { name: "My Participation", href: "/dashboard?tab=participation", tabKey: "participation", icon: FaLayerGroup },
     { name: "My Submissions", href: "/dashboard/applications", tabKey: "applications", icon: FaFileAlt },
-    { name: "Messages", href: "/dashboard/messages", tabKey: "messages", icon: FaCommentDots },
     { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: unreadNotificationsCount > 0 ? String(unreadNotificationsCount) : null },
     { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
   ];

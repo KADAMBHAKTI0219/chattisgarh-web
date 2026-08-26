@@ -2,11 +2,11 @@ import fetchApi from "./client";
 
 export const participantService = {
   // 1. Register / Create Participant (Public Nomination Form)
-  async registerParticipant(participantData) {
-    return this.createParticipant(participantData);
+  async registerParticipant(participantData, token = null) {
+    return this.createParticipant(participantData, token);
   },
 
-  async createParticipant(participantData) {
+  async createParticipant(participantData, token = null) {
     const cleanPhone = participantData.phone ? String(participantData.phone).trim() : "";
     if (cleanPhone) {
       try {
@@ -18,10 +18,16 @@ export const participantService = {
       }
     }
 
-    let res = await fetchApi("/participants", { method: "POST", body: participantData });
-    if (!res.success && (res.status === 404 || res.message?.includes("not found"))) {
-      res = await fetchApi("/participants/register", { method: "POST", body: participantData });
-    }
+    // 1. Try /applications endpoint
+    let res = await fetchApi("/applications", { method: "POST", body: participantData, token });
+    if (res?.success) return res;
+
+    // 2. Try /participants/register endpoint
+    res = await fetchApi("/participants/register", { method: "POST", body: participantData, token });
+    if (res?.success) return res;
+
+    // 3. Fallback to /participants
+    res = await fetchApi("/participants", { method: "POST", body: participantData, token });
     return res;
   },
 

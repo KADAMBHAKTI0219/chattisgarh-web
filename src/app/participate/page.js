@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import { categoryService } from "@/services/category";
 import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
+import { participantService } from "@/services/participant";
 import { locationService } from "@/services/location";
 import Heading from "@/components/common/Heading";
 import {
@@ -377,39 +378,73 @@ function ParticipateForm() {
           });
         }
 
-        const payload = {
-          nominationType: formData.nominationAs,
-          awardType: isSelf ? formData.awardCategoryAppliedFor : formData.creatorAwardCategoryAppliedFor,
+        const mainVideo = formData.bestStoryLink1 || formData.bestStoryLink2 || formData.bestStoryLink3 || "";
 
-          applicant: isSelf ? {
-            fullName: formData.fullName,
-            email: formData.emailId || "creator@chattisgarh.gov.in",
-            phone: formData.mobileNumber || "9999999999",
-            gender: formData.gender,
-            age: formData.age,
-            state: formData.state,
-            district: formData.district,
-            nationality: "Indian"
-          } : {
-            fullName: formData.creatorFullName,
-            email: formData.creatorEmailId || "creator@chattisgarh.gov.in",
-            phone: formData.creatorMobileNumber || "9999999999",
-            gender: formData.creatorGender,
-            age: formData.creatorAge,
-            state: formData.creatorState,
-            district: formData.creatorDistrict,
+        const payload = {
+          nominationType: formData.nominationAs === "Nominator(for Others)" ? "THIRD_PARTY" : "SELF",
+          awardType: isSelf ? (formData.awardCategoryAppliedFor || "National") : (formData.creatorAwardCategoryAppliedFor || "National"),
+
+          // Top-level flat fields for direct query parsing in backend Participant model
+          name: isSelf ? formData.fullName : formData.creatorFullName,
+          fullName: isSelf ? formData.fullName : formData.creatorFullName,
+          phone: isSelf ? formData.mobileNumber : (formData.creatorMobileNumber || "9999999999"),
+          email: isSelf ? formData.emailId : (formData.creatorEmailId || ""),
+          gender: isSelf ? formData.gender : formData.creatorGender,
+          age: isSelf ? formData.age : formData.creatorAge,
+          state: isSelf ? formData.state : formData.creatorState,
+          district: isSelf ? formData.district : formData.creatorDistrict,
+          nationality: "Indian",
+
+          // Story & Video Links (matching backend videoLink, mainVideoLink, reelUrl, videoUrl, instagramReelUrl, instagramLink)
+          workSummary: formData.workDescription,
+          contentUrl: formData.bestStoryLink1,
+          bestStoryLink1: formData.bestStoryLink1,
+          bestStoryLink2: formData.bestStoryLink2 || "",
+          bestStoryLink3: formData.bestStoryLink3 || "",
+          videoLink: mainVideo,
+          mainVideoLink: mainVideo,
+          reelUrl: mainVideo,
+          videoUrl: mainVideo,
+          instagramReelUrl: mainVideo,
+          instagramLink: mainVideo,
+
+          // Creator Profile
+          creatorStartYear: formData.creatorStartYear,
+          whenBecomeCreator: formData.creatorStartYear,
+          creatorProfile: {
+            creatorStartYear: formData.creatorStartYear,
+            bio: formData.workDescription
+          },
+
+          // Primary Platform & Secondary Platform
+          primaryPlatform: socialProfiles[0],
+          secondaryPlatform: socialProfiles[1] || { platform: 'YouTube', profileUrl: '', followers: '0', isPrimary: false },
+          socialProfiles,
+
+          // Nested Applicant object for Nomination model
+          applicant: {
+            fullName: isSelf ? formData.fullName : formData.creatorFullName,
+            email: isSelf ? formData.emailId : (formData.creatorEmailId || ""),
+            phone: isSelf ? formData.mobileNumber : (formData.creatorMobileNumber || "9999999999"),
+            gender: isSelf ? formData.gender : formData.creatorGender,
+            age: isSelf ? formData.age : formData.creatorAge,
+            state: isSelf ? formData.state : formData.creatorState,
+            district: isSelf ? formData.district : formData.creatorDistrict,
             nationality: "Indian"
           },
 
+          // Nominator (for Others)
           nominator: !isSelf ? {
             fullName: formData.nominatorFullName,
             email: formData.nominatorEmail || "",
             phone: formData.nominatorMobile || "",
-            nationality: formData.nominatorNationality
+            nationality: formData.nominatorNationality || "Indian"
           } : undefined,
 
+          // Nominee (for Others)
           nominee: !isSelf ? {
             name: formData.creatorFullName,
+            fullName: formData.creatorFullName,
             email: formData.creatorEmailId,
             phone: formData.creatorMobileNumber,
             gender: formData.creatorGender,
@@ -418,73 +453,64 @@ function ParticipateForm() {
             district: formData.creatorDistrict
           } : undefined,
 
-          categories: [categorySubmission],
-          creatorProfile: {
-            creatorStartYear: formData.creatorStartYear,
-            bio: formData.workDescription
-          },
-          socialProfiles,
-          declaration: formData.agreeTerms
+          category: categorySubmission.categoryId,
+          categories: [{
+            ...categorySubmission,
+            storyLinks: {
+              bestStoryLink1: formData.bestStoryLink1,
+              bestStoryLink2: formData.bestStoryLink2 || "",
+              bestStoryLink3: formData.bestStoryLink3 || ""
+            },
+            videoLink: mainVideo,
+            mainVideoLink: mainVideo,
+            reelUrl: mainVideo,
+            videoUrl: mainVideo,
+            instagramReelUrl: mainVideo,
+            instagramLink: mainVideo,
+            district: isSelf ? formData.district : formData.creatorDistrict
+          }],
+          declaration: formData.agreeTerms,
+          status: "SUBMITTED"
         };
 
         let result = null;
 
-        // 1. Primary: Try Participant Registration Service (/participants/register)
+        // 1. Primary: Try Application Service (POST /applications)
         try {
-          result = await participantService.registerParticipant({
-            ...payload,
-            name: isSelf ? formData.fullName : formData.creatorFullName,
-            fullName: isSelf ? formData.fullName : formData.creatorFullName,
-            phone: isSelf ? formData.mobileNumber : (formData.creatorMobileNumber || "9999999999"),
-            email: isSelf ? formData.emailId : (formData.creatorEmailId || ""),
-            gender: isSelf ? formData.gender : formData.creatorGender,
-            age: isSelf ? formData.age : formData.creatorAge,
-            state: isSelf ? formData.state : formData.creatorState,
-            district: isSelf ? formData.district : formData.creatorDistrict,
-            nationality: isSelf ? "Indian" : formData.nominatorNationality,
+          const appPayload = {
+            title: `${isSelf ? formData.fullName : formData.creatorFullName}'s Award Nomination`,
             category: categorySubmission.categoryId,
-            categories: [categorySubmission],
             workSummary: formData.workDescription,
             contentUrl: formData.bestStoryLink1,
-            bestStoryLink1: formData.bestStoryLink1,
-            bestStoryLink2: formData.bestStoryLink2 || "",
-            bestStoryLink3: formData.bestStoryLink3 || "",
-            creatorStartYear: formData.creatorStartYear,
-            whenBecomeCreator: formData.creatorStartYear,
-            primaryPlatform: socialProfiles[0],
-            secondaryPlatform: socialProfiles[1] || { platform: '', profileUrl: '', followers: '0', isPrimary: false },
-            socialProfiles
-          });
-        } catch (partErr) {
-          console.warn("Participant service register note:", partErr);
+            district: isSelf ? formData.district : formData.creatorDistrict,
+            name: isSelf ? formData.fullName : formData.creatorFullName,
+            email: isSelf ? formData.emailId : formData.creatorEmailId,
+            phone: isSelf ? formData.mobileNumber : formData.creatorMobileNumber,
+            sampleLinks: [formData.bestStoryLink1, formData.bestStoryLink2, formData.bestStoryLink3].filter(Boolean),
+            ...payload
+          };
+          result = await applicationService.createApplication(appPayload, token);
+        } catch (appErr) {
+          console.warn("Application service note:", appErr);
         }
 
-        // 2. Secondary: Try Nomination Service (/nominations)
+        // 2. Secondary: Try Participant Registration Service (/participants/register)
+        if (!result?.success) {
+          try {
+            if (participantService?.registerParticipant) {
+              result = await participantService.registerParticipant(payload, token);
+            }
+          } catch (partErr) {
+            console.warn("Participant service note:", partErr);
+          }
+        }
+
+        // 3. Fallback: Try Nomination Service (/nominations)
         if (!result?.success) {
           try {
             result = await nominationService.createNomination(payload, token);
           } catch (nomErr) {
             console.warn("Nomination service note:", nomErr);
-          }
-        }
-
-        // 3. Fallback: Try Application Service (/applications)
-        if (!result?.success) {
-          try {
-            const appPayload = {
-              title: `${isSelf ? formData.fullName : formData.creatorFullName}'s Award Nomination`,
-              category: categorySubmission.categoryId,
-              workSummary: formData.workDescription,
-              contentUrl: formData.bestStoryLink1,
-              district: isSelf ? formData.district : formData.creatorDistrict,
-              name: isSelf ? formData.fullName : formData.creatorFullName,
-              email: isSelf ? formData.emailId : formData.creatorEmailId,
-              phone: isSelf ? formData.mobileNumber : formData.creatorMobileNumber,
-              sampleLinks: [formData.bestStoryLink1, formData.bestStoryLink2, formData.bestStoryLink3].filter(Boolean)
-            };
-            result = await applicationService.createApplication(appPayload, token);
-          } catch (appErr) {
-            console.warn("Application fallback note:", appErr);
           }
         }
 
@@ -502,6 +528,7 @@ function ParticipateForm() {
           };
           existing.unshift(record);
           localStorage.setItem("submitted_nominations", JSON.stringify(existing));
+          localStorage.setItem("user_applications", JSON.stringify(existing));
         } catch (e) {
           console.warn("LocalStorage save note:", e);
         }
@@ -515,13 +542,15 @@ function ParticipateForm() {
         
         try {
           const existing = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
-          existing.unshift({
+          const rec = {
             ...payload,
             _id: fallbackId,
             applicationId: fallbackId,
             createdAt: new Date().toISOString()
-          });
+          };
+          existing.unshift(rec);
           localStorage.setItem("submitted_nominations", JSON.stringify(existing));
+          localStorage.setItem("user_applications", JSON.stringify(existing));
         } catch (e) {}
 
         setSubmitted(true);

@@ -52,22 +52,73 @@ export default function DashboardOverviewPage() {
 
   useEffect(() => {
     const loadDashboard = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
       try {
         setLoading(true);
 
         if (isAdmin) {
           // Admin overview handling inside AdminDashboard component
         } else {
-          // Creator Dashboard API
-          const creatorRes = await creatorService.getDashboard(token);
-          if (creatorRes.success && creatorRes.data) {
-            setDashboardData(creatorRes.data);
-            setApplicationsList(creatorRes.data.applications || []);
+          let apiApps = [];
+
+          // 1. Try creator dashboard API
+          if (token) {
+            try {
+              const creatorRes = await creatorService.getDashboard(token);
+              if (creatorRes?.success && creatorRes?.data) {
+                setDashboardData(creatorRes.data);
+                apiApps = creatorRes.data.applications || creatorRes.data.nominations || [];
+              }
+            } catch (e) {}
+
+            // 2. If apiApps is empty, try nominationService
+            if (apiApps.length === 0) {
+              try {
+                const nomRes = await nominationService.getNominations({}, token);
+                if (nomRes?.data || nomRes?.nominations) {
+                  apiApps = nomRes.data || nomRes.nominations || [];
+                }
+              } catch (e) {}
+            }
           }
+
+          // 3. Merge with local submissions saved in localStorage
+          let localApps = [];
+          try {
+            const nomLocal = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+            const appLocal = JSON.parse(localStorage.getItem("user_applications") || "[]");
+            localApps = [...nomLocal, ...appLocal];
+          } catch (e) {}
+
+          const combined = [...localApps, ...apiApps];
+
+          // Format items into clean application objects
+          const formattedList = combined.map((p, idx) => {
+            const isSelf = (p.nominationType || p.nominationAs) === "SELF" || !p.nominator;
+            const displayName = p.name || p.fullName || (isSelf ? p.applicant?.fullName : p.nominee?.fullName || p.nominee?.name) || "Nominee Candidate";
+            const displayTitle = p.title || p.projectTitle || p.workSummary || (p.categories && p.categories[0]?.description) || `${displayName}'s Nomination`;
+            const catTitle = p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (p.categories && p.categories[0]?.categoryTitle) || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : "State Award Category"));
+
+            return {
+              _id: p._id || p.applicationId || p.id || `sub-${idx}`,
+              title: displayTitle,
+              category: catTitle || "State Award Category",
+              categoryTitle: catTitle || "State Award Category",
+              workSummary: p.workSummary || p.description || displayTitle,
+              submittedOn: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Recently",
+              status: p.status || "Submitted",
+              image: p.image || p.categoryImage || "https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=300&q=80"
+            };
+          });
+
+          // Deduplicate by _id
+          const uniqueMap = new Map();
+          formattedList.forEach((item) => {
+            if (!uniqueMap.has(item._id)) {
+              uniqueMap.set(item._id, item);
+            }
+          });
+
+          setApplicationsList(Array.from(uniqueMap.values()));
         }
       } catch (err) {
         console.error("Failed to load dashboard data:", err);

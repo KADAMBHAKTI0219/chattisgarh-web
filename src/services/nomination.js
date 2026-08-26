@@ -57,13 +57,22 @@ export const nominationService = {
   /**
    * 6. Get All Nominations (Admin View)
    */
-  async getNominations(params = {}, token = null) {
-    let res = await fetchApi("/admin/nominations", {
+  async getNominations(params = {}, token = null, isAdmin = false) {
+    if (isAdmin) {
+      const res = await fetchApi("/admin/nominations", {
+        method: "GET",
+        params,
+        token,
+      });
+      if (res?.success) return res;
+    }
+    
+    let res = await fetchApi("/applications", {
       method: "GET",
       params,
       token,
     });
-    if (!res?.success || !res?.data) {
+    if (!res?.success) {
       res = await fetchApi("/nominations", {
         method: "GET",
         params,
