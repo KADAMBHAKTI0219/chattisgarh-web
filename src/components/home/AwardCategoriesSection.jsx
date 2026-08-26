@@ -192,15 +192,7 @@ export default function AwardCategoriesSection() {
             {/* Dark Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
 
-            {/* Tier Badge */}
-            <div className="absolute top-2 left-2 xs:top-2.5 xs:left-2.5 z-20 max-w-[90%]">
-              <span
-                className="inline-block text-[8px] xs:text-[9px] sm:text-[9.5px] font-inter font-bold uppercase px-2 py-0.5 rounded-full text-white backdrop-blur-md border border-white/20 shadow-xs tracking-wider truncate max-w-full"
-                style={{ backgroundColor: cat.badgeColor || "#C15B3D" }}
-              >
-                {t(cat.tierTitle)}
-              </span>
-            </div>
+
 
             {/* Title Overlay */}
             <div className="relative z-20 flex flex-col justify-end w-full">

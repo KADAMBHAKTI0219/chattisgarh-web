@@ -12,43 +12,38 @@ export default function TermsSection() {
     {
       id: "who-can-apply",
       title: "WHO CAN APPLY?",
-      items: [
-        { label: "AGE LIMIT", text: "Applicants must be 18 years of age or above at the time of nomination." },
-        { label: "UNDER-18 CREATORS", text: "Creators below 18 years of age may also participate, provided their application, consent, and further process are completed under the supervision and approval of a parent or legal guardian." },
-        { label: "NATIONALITY", text: "Open to Indian citizens." },
-        { label: "ELIGIBLE PLATFORMS", text: "Your content should be published on an active YouTube, Instagram, Facebook, LinkedIn, or other recognized digital platform." },
-        { label: "CATEGORY LIMIT", text: "You may apply in up to three award categories." }
-      ]
+      content: (
+        <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
+          Eligible participants with an active Instagram account can participate. Each participant must create an original Reel based on one of the approved competition topics and publish it on their own Instagram page. There is no limit on how many participants can choose the same topic or scheme.
+        </p>
+      )
     },
     {
       id: "evaluation",
       title: "HOW ENTRIES ARE EVALUATED",
-      items: [
-        { label: "Originality", text: "Fresh ideas and authentic storytelling." },
-        { label: "Quality", text: "Creative presentation, editing, and production value." },
-        { label: "Impact", text: "Positive engagement and meaningful audience connections." },
-        { label: "Relevance", text: "Content that celebrates or contributes to Chhattisgarh’s culture, tourism, innovation, or society." },
-        { label: "Overall Excellence", text: "The complete value and consistency of your work." }
-      ]
+      content: (
+        <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
+          Entries will be evaluated through a combination of <strong className="text-zinc-950 font-bold">jury evaluation, authentic Instagram engagement and public voting</strong>. The evaluation will consider the quality of the story, creativity, audience impact, visual execution, factual accuracy, editing and overall communication value of the Reel.
+        </p>
+      )
     },
     {
       id: "jury",
       title: "JURY & SELECTION PROCESS",
-      items: [
-        { label: "Independent Jury", text: "Entries will be reviewed by an independent jury comprising creators, industry experts, and subject specialists." },
-        { label: "Verification", text: "Shortlisted entries may undergo additional verification before final selection." },
-        { label: "Final Decision", text: "The jury’s decision will be fair, transparent, and final." }
-      ]
+      content: (
+        <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
+          A jury will review eligible submissions and assess their creative and storytelling quality. Audience engagement and public voting will also contribute to the selection process. The strongest entries, as determined by the official evaluation methodology, will be <strong className="text-zinc-950 font-bold">nominated for the next round</strong>. The final weightage and selection criteria will be as per the official competition rules.
+        </p>
+      )
     },
     {
       id: "conduct",
       title: "CODE OF CONDUCT & COMPLIANCE",
-      items: [
-        { label: "Original Content", text: "All submitted material must be authentic, original intellectual property fully owned by the applicant or explicitly licensed with verified usage rights." },
-        { label: "Community Guidelines", text: "Submissions must strictly adhere to digital platform policies, statutory regulations, and applicable Indian media & IT laws." },
-        { label: "Disqualification", text: "Any evidence of plagiarism, copyright infringement, fraudulent engagement, or misleading declarations will result in immediate disqualification." },
-        { label: "Official Agreement", text: "Nomination submission constitutes binding agreement to all official award regulations, jury protocols, and verification procedures." }
-      ]
+      content: (
+        <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
+          All submissions must be original, relevant to the selected scheme or initiative, and factually accurate. Participants must not use <strong className="text-zinc-950 font-bold">Trial Reels, paid boosting, advertisements, purchased engagement, bots or any form of artificial engagement</strong> to influence their results. Organic sharing through normal social and personal networks is permitted. Any violation of the competition rules may result in disqualification.
+        </p>
+      )
     }
   ];
 
@@ -126,22 +121,9 @@ export default function TermsSection() {
                   }`}
               >
                 <div className="overflow-hidden">
-                  <ul className="flex flex-col gap-2.5 list-none px-5 pb-4 pt-1 md:px-6 md:pb-5 border-t border-zinc-150">
-                    {section.items.map((item, idx) => (
-                      <li
-                        key={idx}
-                        className="relative text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed pl-5 sm:pl-6 mt-2"
-                      >
-                        {/* Custom dot indicator */}
-                        <span className="absolute left-0 top-[7px] w-2 h-2 bg-[#C45A32] rounded-full"></span>
-
-                        <strong className="text-zinc-950 font-bold uppercase text-[10px] sm:text-xs tracking-wide mr-1">
-                          {t(item.label)}:
-                        </strong>{" "}
-                        {t(item.text)}
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="px-5 pb-4 pt-3 md:px-6 md:pb-5 border-t border-zinc-150">
+                    {section.content}
+                  </div>
                 </div>
               </div>
             </div>

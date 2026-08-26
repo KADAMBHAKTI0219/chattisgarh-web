@@ -59,31 +59,31 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Top Bar for GIGW compliance and official attributions */}
-      <div className="w-full bg-gradient-to-r from-[#1b3827] via-[#2E5C31] to-[#1b3827] text-white py-1.5 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-b border-white/10 text-[10px] sm:text-xs select-none relative z-50">
+      <div className="w-full bg-white text-zinc-900 py-1.5 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-b-2 border-[#2E5C31] text-[10px] sm:text-xs select-none relative z-50 shadow-xs">
         <div className="mx-auto w-full max-w-[1480px] flex items-center justify-between">
           {/* Left: Indian Emblem & State Gov Name */}
           <div className="flex items-center gap-2 md:gap-3">
             <Image
-              src="/assets/images/govt-cg-logo.jpeg"
+              src="/assets/images/govt-cg-logo.png"
               alt="Government of Chhattisgarh Emblem"
               width={120}
               height={36}
-              className="h-7 sm:h-12 w-auto rounded-[3px] object-contain shrink-0 bg-white/95 p-0.5 shadow-xs"
+              className="h-7 sm:h-12 w-auto rounded-[3px] object-contain shrink-0 p-0.5"
             />
-            <span className="font-inter font-semibold uppercase tracking-wider text-zinc-100 text-[10px] sm:text-xs">
+            <span className="font-inter font-bold uppercase tracking-wider text-zinc-900 text-[10px] sm:text-xs">
               {t("Government Of Chattisgarh")}
             </span>
           </div>
 
           {/* Right: Official Language Selector */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-[10px] sm:text-xs text-zinc-200 font-medium uppercase tracking-wider hidden sm:inline">
+            <span className="text-[10px] sm:text-xs text-zinc-600 font-bold uppercase tracking-wider hidden sm:inline">
               Language:
             </span>
             <select
               value={language}
               onChange={(e) => changeLanguage(e.target.value)}
-              className="bg-[#1f4233] border border-white/25 rounded-md px-2.5 py-0.5 text-white text-[10px] sm:text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer transition-colors"
+              className="bg-zinc-50 border border-zinc-300 rounded-md px-2.5 py-0.5 text-zinc-900 text-[10px] sm:text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#2E5C31] cursor-pointer transition-colors"
             >
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
