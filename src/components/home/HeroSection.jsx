@@ -4,8 +4,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { ParticipateButton } from "@/components/common/Button";
 
-const DESKTOP_HERO_IMAGE = "/assets/images/herosection.png";
-const MOBILE_HERO_IMAGE = "/assets/images/mob-hero.jpeg";
+const DESKTOP_HERO_IMAGE = "/assets/images/herobanner.png";
+const MOBILE_HERO_IMAGE = "/assets/images/mob-herobanner.png";
 
 export default function HeroSection() {
   const { openModal } = useParticipateModal();
