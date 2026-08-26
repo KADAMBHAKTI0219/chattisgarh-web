@@ -30,6 +30,19 @@ export default function DownloadGuidelinesButton({
   }[variant] || "bg-emerald-700 hover:bg-emerald-800 text-white";
 
   const handleDownload = async (e) => {
+    // Detect iOS (iPhone / iPad / iPod)
+    const isIOS =
+      typeof navigator !== "undefined" &&
+      (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+
+    if (isIOS) {
+      // On iOS Safari, synthetic click on blob: URL causes a 404 / WebKit error.
+      // Opening the PDF directly in a tab lets iOS Safari open its native PDF viewer cleanly.
+      window.open("/assets/Guidelines.pdf", "_blank");
+      return;
+    }
+
     e.preventDefault();
     const pdfUrl = "/assets/Guidelines.pdf";
     const fileName = "State_Creator_Awards_2026_Guidelines.pdf";
@@ -47,13 +60,8 @@ export default function DownloadGuidelinesButton({
       document.body.removeChild(link);
       setTimeout(() => window.URL.revokeObjectURL(url), 1000);
     } catch (err) {
-      console.warn("Direct blob download failed, falling back to anchor click", err);
-      const link = document.createElement("a");
-      link.href = pdfUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      console.warn("Direct blob download failed, falling back to window.open", err);
+      window.open(pdfUrl, "_blank");
     }
   };
 
