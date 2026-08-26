@@ -518,20 +518,52 @@ function ParticipateForm() {
         setSubmittedAppId(generatedId);
 
         // Backup persistence in localStorage for admin view & tracking
-        try {
-          const existing = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
-          const record = {
-            ...payload,
-            _id: generatedId,
-            applicationId: generatedId,
-            createdAt: new Date().toISOString()
-          };
-          existing.unshift(record);
-          localStorage.setItem("submitted_nominations", JSON.stringify(existing));
-          localStorage.setItem("user_applications", JSON.stringify(existing));
-        } catch (e) {
-          console.warn("LocalStorage save note:", e);
-        }
+        const record = {
+          ...payload,
+          _id: generatedId,
+          applicationId: generatedId,
+          createdAt: new Date().toISOString()
+        };
+
+        const safeSaveLocalStorage = (key, newRecord) => {
+          try {
+            let existing = [];
+            try {
+              existing = JSON.parse(localStorage.getItem(key) || "[]");
+              if (!Array.isArray(existing)) existing = [];
+            } catch (e) {
+              existing = [];
+            }
+
+            const cleanRecord = JSON.parse(JSON.stringify(newRecord, (k, v) => {
+              if (typeof v === 'string' && v.length > 3000 && (v.startsWith('data:') || v.startsWith('blob:'))) {
+                return '[binary_data]';
+              }
+              return v;
+            }));
+
+            existing = [cleanRecord, ...existing.filter(item => item._id !== cleanRecord._id && item.applicationId !== cleanRecord.applicationId)].slice(0, 12);
+
+            try {
+              localStorage.setItem(key, JSON.stringify(existing));
+            } catch (quotaErr) {
+              console.warn(`LocalStorage quota reached for ${key}, trimming storage...`);
+              const trimmed = existing.slice(0, 4);
+              try {
+                localStorage.setItem(key, JSON.stringify(trimmed));
+              } catch (e) {
+                // If storage is completely full from other keys, clear old keys safely
+                localStorage.removeItem(key);
+                localStorage.setItem(key, JSON.stringify([cleanRecord]));
+              }
+            }
+          } catch (err) {
+            console.warn("Safe localStorage save error:", err);
+          }
+        };
+
+        safeSaveLocalStorage("submitted_nominations", record);
+        safeSaveLocalStorage("user_applications", record);
 
         setSubmitted(true);
 
@@ -540,18 +572,34 @@ function ParticipateForm() {
         const fallbackId = `NCA-2026-${Math.floor(100000 + Math.random() * 900000)}`;
         setSubmittedAppId(fallbackId);
         
-        try {
-          const existing = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
-          const rec = {
-            ...payload,
-            _id: fallbackId,
-            applicationId: fallbackId,
-            createdAt: new Date().toISOString()
-          };
-          existing.unshift(rec);
-          localStorage.setItem("submitted_nominations", JSON.stringify(existing));
-          localStorage.setItem("user_applications", JSON.stringify(existing));
-        } catch (e) {}
+        const fallbackRecord = {
+          ...payload,
+          _id: fallbackId,
+          applicationId: fallbackId,
+          createdAt: new Date().toISOString()
+        };
+
+        const safeSaveLocalStorage = (key, newRecord) => {
+          try {
+            let existing = [];
+            try {
+              existing = JSON.parse(localStorage.getItem(key) || "[]");
+              if (!Array.isArray(existing)) existing = [];
+            } catch (e) {
+              existing = [];
+            }
+            existing = [newRecord, ...existing.filter(item => item._id !== newRecord._id)].slice(0, 12);
+            try {
+              localStorage.setItem(key, JSON.stringify(existing));
+            } catch (quotaErr) {
+              localStorage.removeItem(key);
+              localStorage.setItem(key, JSON.stringify([newRecord]));
+            }
+          } catch (e) {}
+        };
+
+        safeSaveLocalStorage("submitted_nominations", fallbackRecord);
+        safeSaveLocalStorage("user_applications", fallbackRecord);
 
         setSubmitted(true);
       } finally {

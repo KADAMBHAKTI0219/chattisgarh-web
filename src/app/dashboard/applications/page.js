@@ -40,8 +40,8 @@ export default function MyApplicationsPage() {
       setLoading(true);
       try {
         const appsRes = await applicationService.getApplications({}, token).catch(() => ({}));
-        const partRes = await participantService.getParticipants({}, token).catch(() => ({}));
-        const nomRes = await nominationService.getNominations({}, token).catch(() => ({}));
+        const partRes = isAdmin ? await participantService.getParticipants({}, token).catch(() => ({})) : {};
+        const nomRes = await nominationService.getNominations({}, token, isAdmin).catch(() => ({}));
 
         const extractArray = (res) => {
           if (!res) return [];

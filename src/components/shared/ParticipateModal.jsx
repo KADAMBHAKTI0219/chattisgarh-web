@@ -500,12 +500,44 @@ export default function ParticipateModal() {
         createdAt: new Date().toISOString()
       };
 
-      try {
-        const existing = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
-        existing.unshift(record);
-        localStorage.setItem("submitted_nominations", JSON.stringify(existing));
-        localStorage.setItem("user_applications", JSON.stringify(existing));
-      } catch (e) {}
+      const safeSaveLocalStorage = (key, newRecord) => {
+        try {
+          let existing = [];
+          try {
+            existing = JSON.parse(localStorage.getItem(key) || "[]");
+            if (!Array.isArray(existing)) existing = [];
+          } catch (e) {
+            existing = [];
+          }
+
+          const cleanRecord = JSON.parse(JSON.stringify(newRecord, (k, v) => {
+            if (typeof v === 'string' && v.length > 3000 && (v.startsWith('data:') || v.startsWith('blob:'))) {
+              return '[binary_data]';
+            }
+            return v;
+          }));
+
+          existing = [cleanRecord, ...existing.filter(item => item._id !== cleanRecord._id && item.applicationId !== cleanRecord.applicationId)].slice(0, 12);
+
+          try {
+            localStorage.setItem(key, JSON.stringify(existing));
+          } catch (quotaErr) {
+            console.warn(`LocalStorage quota reached for ${key}, trimming storage...`);
+            const trimmed = existing.slice(0, 4);
+            try {
+              localStorage.setItem(key, JSON.stringify(trimmed));
+            } catch (e) {
+              localStorage.removeItem(key);
+              localStorage.setItem(key, JSON.stringify([cleanRecord]));
+            }
+          }
+        } catch (err) {
+          console.warn("Safe localStorage save error:", err);
+        }
+      };
+
+      safeSaveLocalStorage("submitted_nominations", record);
+      safeSaveLocalStorage("user_applications", record);
 
       setRegisteredData(record);
       setCurrentStep(5); // Success Screen
