@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { notificationService } from "@/services/notification";
 import {
   FaTachometerAlt,
   FaThList,
@@ -36,8 +37,30 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, logout, isAdmin, isJury, isSuperAdmin } = useAuth();
+  const { user, token, logout, isAdmin, isJury, isSuperAdmin } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      if (!token) {
+        setUnreadNotificationsCount(0);
+        return;
+      }
+      try {
+        const res = await notificationService.getUserNotifications(token);
+        if (res.success && res.data) {
+          const list = Array.isArray(res.data) ? res.data : res.data.notifications || [];
+          setUnreadNotificationsCount(list.length);
+        } else {
+          setUnreadNotificationsCount(0);
+        }
+      } catch (err) {
+        setUnreadNotificationsCount(0);
+      }
+    };
+    fetchNotificationCount();
+  }, [token]);
 
   const currentTab = searchParams.get("tab") || "overview";
 
@@ -58,7 +81,7 @@ export default function DashboardLayout({ children }) {
     ? "Jury Panel"
     : "Creator";
 
-  // Sidebar links configuration (Admin vs Creator)
+  // Sidebar links configuration (Admin vs Creator) - Only showing dynamic badge if notifications exist
   const adminMenuLinks = [
     { name: "Dashboard", href: "/dashboard", tabKey: "overview", icon: FaTachometerAlt },
     { name: "Categories", href: "/dashboard?tab=categories", tabKey: "categories", icon: FaThList },
@@ -67,7 +90,7 @@ export default function DashboardLayout({ children }) {
     { name: "Users", href: "/dashboard?tab=users", tabKey: "users", icon: FaUserCircle },
     { name: "News & Press", href: "/dashboard?tab=news", tabKey: "news", icon: FaNewspaper },
     { name: "Locations & Cities", href: "/dashboard?tab=locations", tabKey: "locations", icon: FaMapMarkerAlt },
-    { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: "3" },
+    { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: unreadNotificationsCount > 0 ? String(unreadNotificationsCount) : null },
     { name: "Reports", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
     { name: "Settings", href: "/dashboard/settings", tabKey: "settings", icon: FaCog },
     { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
@@ -78,8 +101,8 @@ export default function DashboardLayout({ children }) {
     { name: "My Profile", href: "/dashboard/profile", tabKey: "profile", icon: FaUserCircle },
     { name: "My Participation", href: "/dashboard?tab=participation", tabKey: "participation", icon: FaLayerGroup },
     { name: "My Submissions", href: "/dashboard/applications", tabKey: "applications", icon: FaFileAlt },
-    { name: "Messages", href: "/dashboard/messages", tabKey: "messages", icon: FaCommentDots, badge: "3" },
-    { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: "5" },
+    { name: "Messages", href: "/dashboard/messages", tabKey: "messages", icon: FaCommentDots },
+    { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: unreadNotificationsCount > 0 ? String(unreadNotificationsCount) : null },
     { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
   ];
 
@@ -239,10 +262,16 @@ export default function DashboardLayout({ children }) {
               <span className="hidden sm:inline">Move to Website</span>
             </Link>
 
-            <button className="p-2.5 rounded-2xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-600 relative cursor-pointer shadow-2xs">
+            <Link
+              href="/dashboard/notifications"
+              className="p-2.5 rounded-2xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-600 relative cursor-pointer shadow-2xs flex items-center justify-center"
+              title="Notifications"
+            >
               <FaBell className="w-4.5 h-4.5" />
-              <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-2 right-2 ring-2 ring-white" />
-            </button>
+              {unreadNotificationsCount > 0 && (
+                <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-2 right-2 ring-2 ring-white" />
+              )}
+            </Link>
 
             <div className="flex items-center gap-3 pl-2 border-l border-zinc-200">
               {user?.avatar ? (

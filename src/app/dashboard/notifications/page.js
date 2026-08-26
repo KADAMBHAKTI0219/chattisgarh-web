@@ -25,7 +25,8 @@ export default function NotificationsPage() {
     try {
       const res = await notificationService.getUserNotifications(token);
       if (res.success && res.data) {
-        const list = Array.isArray(res.data) ? res.data : res.data.notifications || [];
+        const payload = res.data?.data ?? res.data;
+        const list = Array.isArray(payload) ? payload : (payload?.notifications || payload?.data || []);
         setNotificationsList(list);
       }
     } catch (err) {
@@ -46,7 +47,7 @@ export default function NotificationsPage() {
     setBroadcastNotice("");
     try {
       const res = await notificationService.broadcastAnnouncement(
-        { title: broadcastTitle, message: broadcastMessage },
+        { title: broadcastTitle, message: broadcastMessage, type: "ANNOUNCEMENT" },
         token
       );
       if (res.success) {
@@ -68,53 +69,39 @@ export default function NotificationsPage() {
     }
   };
 
-  const defaultNotifications = [
-    {
-      id: "1",
-      type: "Announcement",
-      title: "Public Voting Phase Starting Soon",
-      desc: "Shortlisted candidates in public choice categories will be featured on the portal for voting starting August 15, 2026.",
-      date: "August 04, 2026",
-      icon: FaBell,
-      color: "bg-blue-100 text-blue-700 border-blue-200",
-    },
-    {
-      id: "2",
-      type: "Application Update",
-      title: "Nomination CGAWD-2026-89412 Shortlisted",
-      desc: "Congratulations! Your entry in Culture & Tribal Heritage has passed technical audit and shortlisted for jury review.",
-      date: "August 02, 2026",
-      icon: FaCheckCircle,
-      color: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    },
-    {
-      id: "3",
-      type: "Reminder",
-      title: "Complete Category Details",
-      desc: "Ensure all featured links in your portfolio are publicly accessible to the jury panel.",
-      date: "July 30, 2026",
-      icon: FaExclamationCircle,
-      color: "bg-amber-100 text-amber-700 border-amber-200",
-    },
-  ];
+  const getNotificationConfig = (type) => {
+    switch (type) {
+      case "ANNOUNCEMENT":
+        return { icon: FaBullhorn, color: "bg-amber-100 text-amber-700 border border-amber-200" };
+      case "APPLICATION_UPDATE":
+        return { icon: FaCheckCircle, color: "bg-emerald-100 text-emerald-700 border border-emerald-200" };
+      case "SYSTEM":
+        return { icon: FaExclamationCircle, color: "bg-rose-100 text-rose-700 border border-rose-200" };
+      default:
+        return { icon: FaBell, color: "bg-blue-100 text-blue-700 border border-blue-200" };
+    }
+  };
 
-  const displayList = notificationsList.length > 0
-    ? notificationsList.map(n => ({
-        id: n._id || n.id,
-        type: n.type || "Notification",
-        title: n.title || "State Alert",
-        desc: n.message || n.desc || "",
-        date: n.createdAt ? new Date(n.createdAt).toLocaleDateString() : "Today",
-        icon: FaBell,
-        color: "bg-blue-100 text-blue-700 border-blue-200",
-      }))
-    : defaultNotifications;
+  const displayList = notificationsList.map((n) => {
+    const config = getNotificationConfig(n.type);
+    return {
+      id: n._id || n.id,
+      type: n.type || "DASHBOARD",
+      title: n.title || "Notification",
+      desc: n.message || n.desc || "",
+      link: n.link,
+      isRead: n.isRead || false,
+      date: n.createdAt ? new Date(n.createdAt).toLocaleDateString() : "Recently",
+      icon: config.icon,
+      color: config.color,
+    };
+  });
 
   const handleMarkRead = async (id) => {
     if (!token) return;
     try {
       await notificationService.markRead(id, token);
-      setNotificationsList(prev => prev.filter(item => (item._id || item.id) !== id));
+      setNotificationsList((prev) => prev.filter((item) => (item._id || item.id) !== id));
     } catch (e) {
       console.error("Mark read error:", e);
     }
@@ -198,7 +185,7 @@ export default function NotificationsPage() {
         <div className="p-8 text-center text-xs font-bold text-zinc-500 bg-white rounded-3xl border border-zinc-200">
           Loading alerts & notifications...
         </div>
-      ) : (
+      ) : displayList.length > 0 ? (
         <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 flex flex-col gap-4 shadow-xs">
           {displayList.map((n) => {
             const Icon = n.icon;
@@ -225,6 +212,18 @@ export default function NotificationsPage() {
               </div>
             );
           })}
+        </div>
+      ) : (
+        <div className="bg-white border border-zinc-200/90 rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-3 shadow-2xs">
+          <div className="w-12 h-12 rounded-2xl bg-zinc-100 text-zinc-400 flex items-center justify-center text-xl">
+            <FaBell className="w-5 h-5 text-zinc-400" />
+          </div>
+          <div className="flex flex-col items-center">
+            <h3 className="font-poppins font-bold text-sm text-zinc-900">No Notifications</h3>
+            <p className="text-xs font-inter text-zinc-500 max-w-xs mt-1">
+              You have no new alerts or announcements at this time.
+            </p>
+          </div>
         </div>
       )}
     </div>

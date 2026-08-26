@@ -87,25 +87,10 @@ export default function DashboardOverviewPage() {
     return <AdminDashboard token={token} />;
   }
 
-  // Sample Mock Submissions for Creator Dashboard matching Image 2
-  const creatorSubmissions = applicationsList.length > 0 ? applicationsList : [
-    {
-      _id: "sub-1",
-      title: "Bastar Dussehra – The World's Longest Festival",
-      category: "Tribal Heritage Creator",
-      submittedOn: "02 Aug 2025",
-      status: "Under Review",
-      image: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=300&q=80"
-    },
-    {
-      _id: "sub-2",
-      title: "Tribal Art – Our Identity, Our Pride",
-      category: "Tribal Heritage Creator",
-      submittedOn: "28 Jul 2025",
-      status: "Submitted",
-      image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=300&q=80"
-    }
-  ];
+  // Real creator submissions (empty array when user has 0 applications)
+  const creatorSubmissions = applicationsList;
+  const underReviewCount = creatorSubmissions.filter((s) => (s.status || "").toLowerCase().includes("review")).length;
+  const shortlistedCount = creatorSubmissions.filter((s) => (s.status || "").toLowerCase().includes("shortlist")).length;
 
   return (
     <div className="flex flex-col gap-6 text-left animate-page-enter w-full">
@@ -123,44 +108,71 @@ export default function DashboardOverviewPage() {
                 My Participation Overview
               </h2>
               <p className="text-xs font-inter text-zinc-500">
-                You are participating in the following category
+                {creatorSubmissions.length > 0
+                  ? "You are participating in the following category"
+                  : "Track your active participation & category status"}
               </p>
             </div>
 
             {/* Participation Banner Box */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/60 border border-amber-200/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              
-              <div className="flex items-center gap-4">
-                {/* Crown / Heritage Tile */}
-                <div className="w-16 h-16 rounded-2xl bg-amber-100/90 text-amber-700 flex items-center justify-center text-2xl shrink-0 border border-amber-200">
-                  <FaCrown className="w-8 h-8 text-amber-600" />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-poppins font-extrabold text-amber-700 uppercase tracking-widest">
-                      CULTURE
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-poppins font-bold text-[10px] flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" /> Active
-                    </span>
+            {creatorSubmissions.length > 0 ? (
+              <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/60 border border-amber-200/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                
+                <div className="flex items-center gap-4">
+                  {/* Crown / Heritage Tile */}
+                  <div className="w-16 h-16 rounded-2xl bg-amber-100/90 text-amber-700 flex items-center justify-center text-2xl shrink-0 border border-amber-200">
+                    <FaCrown className="w-8 h-8 text-amber-600" />
                   </div>
-                  <h3 className="font-poppins font-bold text-base text-zinc-950">
-                    Tribal Heritage Creator
-                  </h3>
-                  <p className="text-xs font-inter text-zinc-600 line-clamp-1 max-w-md">
-                    Videos or content showcasing the rich tribal heritage of Chhattisgarh.
-                  </p>
-                </div>
-              </div>
 
-              <Link
-                href="/dashboard?tab=participation"
-                className="px-4 py-2 rounded-xl border border-emerald-600 text-emerald-700 hover:bg-emerald-600 hover:text-white font-poppins font-bold text-xs transition-all cursor-pointer shrink-0 self-end sm:self-center"
-              >
-                View Details &rarr;
-              </Link>
-            </div>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-poppins font-extrabold text-amber-700 uppercase tracking-widest">
+                        CULTURE
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-poppins font-bold text-[10px] flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" /> Active
+                      </span>
+                    </div>
+                    <h3 className="font-poppins font-bold text-base text-zinc-950">
+                      {resolveCategoryName(creatorSubmissions[0])}
+                    </h3>
+                    <p className="text-xs font-inter text-zinc-600 line-clamp-1 max-w-md">
+                      {creatorSubmissions[0]?.workSummary || creatorSubmissions[0]?.title || "Official Creator Award Entry"}
+                    </p>
+                  </div>
+                </div>
+
+                <Link
+                  href="/dashboard/applications"
+                  className="px-4 py-2 rounded-xl border border-emerald-600 text-emerald-700 hover:bg-emerald-600 hover:text-white font-poppins font-bold text-xs transition-all cursor-pointer shrink-0 self-end sm:self-center"
+                >
+                  View Details &rarr;
+                </Link>
+              </div>
+            ) : (
+              <div className="p-4 sm:p-5 rounded-2xl bg-zinc-50 border border-zinc-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-100/80 text-amber-700 flex items-center justify-center text-xl shrink-0 border border-amber-200">
+                    <FaCrown className="w-6 h-6 text-amber-600" />
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <h3 className="font-poppins font-bold text-sm text-zinc-900">
+                      No Category Selected Yet
+                    </h3>
+                    <p className="text-xs font-inter text-zinc-500">
+                      Explore 25 award categories and select 1 of 2 scheme options to publish your Reel.
+                    </p>
+                  </div>
+                </div>
+
+                <Link
+                  href="/participate"
+                  className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-poppins font-bold text-xs transition-all cursor-pointer shrink-0 self-end sm:self-center shadow-2xs"
+                >
+                  Participate Now &rarr;
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Card 2: Your Progress (3 Metric Cards) */}
@@ -178,7 +190,7 @@ export default function DashboardOverviewPage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[11px] font-poppins font-bold text-zinc-500">Submissions</span>
-                  <span className="text-xl font-poppins font-extrabold text-zinc-950">2</span>
+                  <span className="text-xl font-poppins font-extrabold text-zinc-950">{creatorSubmissions.length}</span>
                   <span className="text-[10px] font-inter text-zinc-400">Total Submitted</span>
                 </div>
               </div>
@@ -190,7 +202,7 @@ export default function DashboardOverviewPage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[11px] font-poppins font-bold text-zinc-500">Under Review</span>
-                  <span className="text-xl font-poppins font-extrabold text-zinc-950">1</span>
+                  <span className="text-xl font-poppins font-extrabold text-zinc-950">{underReviewCount}</span>
                   <span className="text-[10px] font-inter text-zinc-400">Currently Under Review</span>
                 </div>
               </div>
@@ -202,8 +214,8 @@ export default function DashboardOverviewPage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[11px] font-poppins font-bold text-zinc-500">Shortlisted</span>
-                  <span className="text-xl font-poppins font-extrabold text-zinc-950">0</span>
-                  <span className="text-[10px] font-inter text-zinc-400">Congratulations!</span>
+                  <span className="text-xl font-poppins font-extrabold text-zinc-950">{shortlistedCount}</span>
+                  <span className="text-[10px] font-inter text-zinc-400">Official Selections</span>
                 </div>
               </div>
 
@@ -218,80 +230,102 @@ export default function DashboardOverviewPage() {
               </h3>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-zinc-150">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-zinc-50/80 border-b border-zinc-200 text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-wider">
-                    <th className="py-3 px-4">Submission Title</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Submitted On</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-center">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-150 text-xs font-inter">
-                  {creatorSubmissions.map((sub) => (
-                    <tr key={sub._id} className="hover:bg-zinc-50/80 transition-colors">
-                      
-                      {/* Title with Image Thumbnail */}
-                      <td className="py-3.5 px-4 font-poppins font-bold text-zinc-900">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={sub.image || "https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=300&q=80"}
-                            alt={sub.title}
-                            className="w-10 h-10 rounded-lg object-cover border border-zinc-200 shrink-0"
-                          />
-                          <span className="line-clamp-1 max-w-xs">{sub.title}</span>
-                        </div>
-                      </td>
-
-                      {/* Category Badge */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="px-2.5 py-0.5 rounded-md bg-amber-100/70 text-amber-800 font-poppins font-semibold text-[11px]">
-                          {resolveCategoryName(sub)}
-                        </span>
-                      </td>
-
-                      {/* Date */}
-                      <td className="py-3.5 px-4 text-zinc-500 font-mono whitespace-nowrap">
-                        {sub.submittedOn || "02 Aug 2025"}
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-poppins font-bold ${
-                          sub.status === "Under Review"
-                            ? "bg-indigo-100 text-indigo-700"
-                            : "bg-emerald-100 text-emerald-800"
-                        }`}>
-                          {sub.status}
-                        </span>
-                      </td>
-
-                      {/* Action */}
-                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        <button
-                          onClick={() => setSelectedSubmission(sub)}
-                          className="px-3 py-1 rounded-lg border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-poppins font-bold text-[11px] transition-colors cursor-pointer"
-                        >
-                          View
-                        </button>
-                      </td>
-
+            {creatorSubmissions.length > 0 ? (
+              <div className="overflow-x-auto rounded-xl border border-zinc-150">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-zinc-50/80 border-b border-zinc-200 text-[10px] font-poppins font-bold text-zinc-400 uppercase tracking-wider">
+                      <th className="py-3 px-4">Submission Title</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4">Submitted On</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4 text-center">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-150 text-xs font-inter">
+                    {creatorSubmissions.map((sub) => (
+                      <tr key={sub._id || sub.id} className="hover:bg-zinc-50/80 transition-colors">
+                        
+                        {/* Title with Image Thumbnail */}
+                        <td className="py-3.5 px-4 font-poppins font-bold text-zinc-900">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={sub.image || "https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=300&q=80"}
+                              alt={sub.title || "Submission"}
+                              className="w-10 h-10 rounded-lg object-cover border border-zinc-200 shrink-0"
+                            />
+                            <span className="line-clamp-1 max-w-xs">{sub.title || "Creator Reel Entry"}</span>
+                          </div>
+                        </td>
 
-            <div className="text-center pt-2">
-              <Link
-                href="/dashboard/applications"
-                className="text-xs font-poppins font-bold text-emerald-700 hover:underline inline-flex items-center gap-1"
-              >
-                <span>View All Submissions</span> &rarr;
-              </Link>
-            </div>
+                        {/* Category Badge */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <span className="px-2.5 py-0.5 rounded-md bg-amber-100/70 text-amber-800 font-poppins font-semibold text-[11px]">
+                            {resolveCategoryName(sub)}
+                          </span>
+                        </td>
+
+                        {/* Date */}
+                        <td className="py-3.5 px-4 text-zinc-500 font-mono whitespace-nowrap">
+                          {sub.submittedOn || sub.createdAt || "Recently"}
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-poppins font-bold ${
+                            sub.status === "Under Review"
+                              ? "bg-indigo-100 text-indigo-700"
+                              : "bg-emerald-100 text-emerald-800"
+                          }`}>
+                            {sub.status || "Submitted"}
+                          </span>
+                        </td>
+
+                        {/* Action */}
+                        <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                          <button
+                            onClick={() => setSelectedSubmission(sub)}
+                            className="px-3 py-1 rounded-lg border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-poppins font-bold text-[11px] transition-colors cursor-pointer"
+                          >
+                            View
+                          </button>
+                        </td>
+
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-10 px-4 text-center flex flex-col items-center justify-center gap-3 bg-zinc-50/60 rounded-2xl border border-dashed border-zinc-200">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl border border-emerald-200/80">
+                  <FaFileAlt className="w-5 h-5 text-emerald-700" />
+                </div>
+                <div className="flex flex-col items-center">
+                  <h4 className="font-poppins font-bold text-sm text-zinc-900">No Submissions Found</h4>
+                  <p className="text-xs font-inter text-zinc-500 max-w-sm mt-1">
+                    You haven't submitted any Reel entries yet. Select a category and publish your Reel link to apply!
+                  </p>
+                </div>
+                <Link
+                  href="/participate"
+                  className="mt-1 px-5 py-2 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white font-poppins font-bold text-xs shadow-2xs transition-all"
+                >
+                  Participate Now &rarr;
+                </Link>
+              </div>
+            )}
+
+            {creatorSubmissions.length > 0 && (
+              <div className="text-center pt-2">
+                <Link
+                  href="/dashboard/applications"
+                  className="text-xs font-poppins font-bold text-emerald-700 hover:underline inline-flex items-center gap-1"
+                >
+                  <span>View All Submissions</span> &rarr;
+                </Link>
+              </div>
+            )}
 
           </div>
 
@@ -309,7 +343,7 @@ export default function DashboardOverviewPage() {
                   Important Updates
                 </h3>
               </div>
-              <Link href="/dashboard/events" className="text-xs font-poppins font-bold text-emerald-700 hover:underline">
+              <Link href="/news" className="text-xs font-poppins font-bold text-emerald-700 hover:underline">
                 View All
               </Link>
             </div>
@@ -317,50 +351,50 @@ export default function DashboardOverviewPage() {
             <div className="flex flex-col gap-3.5">
               
               {/* Update 1 */}
-              <div className="p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-100 flex items-start gap-3 text-left">
-                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm shrink-0 mt-0.5">
-                  <FaCalendarAlt className="w-4 h-4" />
+              <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex items-start gap-3 text-left">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0 mt-0.5">
+                  <FaBullhorn className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <h4 className="font-poppins font-bold text-xs text-zinc-900">
-                    National Creators Award 2025
+                    State Creator Awards 2026 Live
                   </h4>
                   <p className="text-[11px] font-inter text-zinc-600 leading-relaxed">
-                    Registrations are now open. Participate and showcase your talent.
+                    Registrations & nominations are officially open across 25 award categories.
                   </p>
-                  <span className="text-[10px] font-mono text-zinc-400 mt-1">01 Aug 2025</span>
+                  <span className="text-[10px] font-mono text-zinc-400 mt-1">Live Phase</span>
                 </div>
               </div>
 
               {/* Update 2 */}
-              <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-100 flex items-start gap-3 text-left">
-                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-sm shrink-0 mt-0.5">
-                  <FaClock className="w-4 h-4" />
+              <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-100 flex items-start gap-3 text-left">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shrink-0 mt-0.5">
+                  <FaFileAlt className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <h4 className="font-poppins font-bold text-xs text-zinc-900">
-                    Last Date Extended!
+                    Official 2026 Guidelines PDF
                   </h4>
                   <p className="text-[11px] font-inter text-zinc-600 leading-relaxed">
-                    The last date for some categories has been extended. Check now.
+                    Download official rules & scheme options PDF directly from portal header.
                   </p>
-                  <span className="text-[10px] font-mono text-zinc-400 mt-1">30 Jul 2025</span>
+                  <span className="text-[10px] font-mono text-zinc-400 mt-1">Official Document</span>
                 </div>
               </div>
 
               {/* Update 3 */}
-              <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-100 flex items-start gap-3 text-left">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shrink-0 mt-0.5">
+              <div className="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex items-start gap-3 text-left">
+                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm shrink-0 mt-0.5">
                   <FaUsers className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <h4 className="font-poppins font-bold text-xs text-zinc-900">
-                    Webinar for Participants
+                    Organic Engagement Rules
                   </h4>
                   <p className="text-[11px] font-inter text-zinc-600 leading-relaxed">
-                    Join our webinar to know more about the award and submission guidelines.
+                    All Reels must be public. Paid promotion, Meta ads, and bots are prohibited.
                   </p>
-                  <span className="text-[10px] font-mono text-zinc-400 mt-1">25 Jul 2025</span>
+                  <span className="text-[10px] font-mono text-zinc-400 mt-1">Compliance Rule</span>
                 </div>
               </div>
 
