@@ -17,7 +17,9 @@ import {
   FaArrowLeft,
   FaCheckCircle,
   FaShieldAlt,
-  FaRedo
+  FaRedo,
+  FaInstagram,
+  FaVideo
 } from "react-icons/fa";
 import DownloadGuidelinesButton from "@/components/common/DownloadGuidelinesButton";
 
@@ -44,6 +46,10 @@ export default function RegisterPage() {
     role: "CREATOR",
     password: "",
     confirmPassword: "",
+    instagramLink: "",
+    videoLink: "",
+    portfolioUrl: "",
+    gender: "Prefer Not to Say",
     agreeTerms: true,
   });
 
@@ -164,7 +170,7 @@ export default function RegisterPage() {
 
     if (!captchaInput || cleanInput !== cleanCode) {
       setErrorMsg("Incorrect CAPTCHA entered! A new 6-character code has been generated. Please try again.");
-      refreshCaptcha(); // Galat Captcha par change/refresh ho jata hai
+      refreshCaptcha(); // Refresh Captcha on failed attempt
       return;
     }
 
@@ -176,9 +182,16 @@ export default function RegisterPage() {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
+      state: formData.state,
       district: formData.district,
       role: formData.role,
       password: formData.password,
+      instagramLink: formData.instagramLink,
+      instagramUrl: formData.instagramLink,
+      videoLink: formData.videoLink,
+      instagramReelUrl: formData.videoLink,
+      portfolioUrl: formData.portfolioUrl,
+      gender: formData.gender,
       captchaId: "OFFLINE_CAPTCHA_ID",
       captchaText: captchaCode,
       captchaToken: "OFFLINE_CAPTCHA_PASS_2026",
@@ -187,7 +200,7 @@ export default function RegisterPage() {
     const response = await authService.register(payload);
     setLoading(false);
 
-    if (response.success || response.status === 201) {
+    if (response.success || response.status === 201 || response.data) {
       setSuccessMsg("Registration successful! Redirecting to Website...");
 
       // Save tokens/user session with CREATOR role for instant user dashboard access
@@ -197,10 +210,28 @@ export default function RegisterPage() {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
+        state: formData.state,
         district: formData.district,
-        role: "CREATOR"
+        role: "CREATOR",
+        status: "Active",
+        instagramLink: formData.instagramLink,
+        instagramUrl: formData.instagramLink,
+        videoLink: formData.videoLink,
+        instagramReelUrl: formData.videoLink,
+        portfolioUrl: formData.portfolioUrl,
+        gender: formData.gender,
+        createdAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
       };
       const tokenObj = resultData?.accessToken || "creator-session-token";
+
+      // Also persist into registered_users array in localStorage for admin panel sync
+      try {
+        const existingRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
+        const filteredRegs = existingRegs.filter(u => u.email !== userObj.email);
+        localStorage.setItem("registered_users", JSON.stringify([userObj, ...filteredRegs]));
+      } catch (e) {
+        console.warn("Failed to update registered_users:", e);
+      }
 
       localStorage.setItem("accessToken", tokenObj);
       localStorage.setItem("user", JSON.stringify(userObj));
@@ -443,8 +474,46 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Row 3: Columns 2 & 3 - Interactive Security Captcha Box (Span 2 Columns) */}
-          <div className="md:col-span-2 flex flex-col justify-center gap-1.5 p-3 bg-zinc-50 border border-zinc-200 rounded-2xl">
+          {/* Row 3: Column 2 - Instagram Profile Link */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700 flex items-center justify-between">
+              <span>Instagram Link</span>
+              <span className="text-[9.5px] text-pink-600 font-normal lowercase">(profile)</span>
+            </label>
+            <div className="relative">
+              <FaInstagram className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pink-500 w-3.5 h-3.5" />
+              <input
+                type="url"
+                name="instagramLink"
+                value={formData.instagramLink}
+                onChange={handleChange}
+                placeholder="https://instagram.com/your_handle"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              />
+            </div>
+          </div>
+
+          {/* Row 3: Column 3 - Instagram Video / Reel Link */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700 flex items-center justify-between">
+              <span>Video Link</span>
+              <span className="text-[9.5px] text-purple-600 font-normal lowercase">(reel/video)</span>
+            </label>
+            <div className="relative">
+              <FaVideo className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-500 w-3.5 h-3.5" />
+              <input
+                type="url"
+                name="videoLink"
+                value={formData.videoLink}
+                onChange={handleChange}
+                placeholder="https://instagram.com/reel/..."
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              />
+            </div>
+          </div>
+
+          {/* Row 4: Full Width Security Captcha Box (Span 3 Columns) */}
+          <div className="md:col-span-3 flex flex-col justify-center gap-1.5 p-3 bg-zinc-50 border border-zinc-200 rounded-2xl">
             <div className="flex items-center justify-between">
               <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
                 <FaShieldAlt className="w-3.5 h-3.5 text-emerald-600" />

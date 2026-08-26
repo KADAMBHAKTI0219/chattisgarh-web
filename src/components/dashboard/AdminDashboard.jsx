@@ -31,7 +31,9 @@ import {
   FaMapMarkerAlt,
   FaBuilding,
   FaUser,
-  FaUserTie
+  FaUserTie,
+  FaInstagram,
+  FaVideo
 } from "react-icons/fa";
 import fetchApi from "@/services/client";
 import { categoryService } from "@/services/category";
@@ -97,7 +99,7 @@ export default function AdminDashboard({ token }) {
   const [viewingUser, setViewingUser] = useState(null);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  const [userForm, setUserForm] = useState({ name: "", email: "", phone: "", role: "CREATOR", district: "Raipur", status: "Active" });
+  const [userForm, setUserForm] = useState({ name: "", email: "", phone: "", role: "CREATOR", district: "Raipur", status: "Active", instagramUrl: "", videoLink: "" });
   const [userActionMsg, setUserActionMsg] = useState("");
 
   // News State Management
@@ -500,19 +502,33 @@ export default function AdminDashboard({ token }) {
 
       // 3. Fetch Registered Users dynamically
       try {
-        const usersRes = await userService.getAllUsers({}, authToken);
+        const usersRes = await userService.getAllUsers({}, authToken).catch(() => ({}));
         const usersData = usersRes?.data || usersRes?.users || (Array.isArray(usersRes) ? usersRes : []);
-        if (Array.isArray(usersData) && usersData.length > 0) {
-          setUsersList(usersData);
-        } else {
-          setUsersList([
-            { _id: "u1", name: "Bhakti Kadam", email: "bhumi@gmail.com", phone: "+91 9696969696", role: "CREATOR", district: "Raipur", status: "Active", createdAt: "01 Aug 2025" },
-            { _id: "u2", name: "State Governance Admin", email: "admin@cg.gov.in", phone: "+91 9876543210", role: "ADMIN", district: "Raipur", status: "Active", createdAt: "15 Jul 2025" },
-            { _id: "u3", name: "Rajesh Sharma", email: "rajesh@gmail.com", phone: "+91 9812345678", role: "JURY", district: "Bilaspur", status: "Active", createdAt: "20 Jul 2025" },
-            { _id: "u4", name: "Ananya Sahu", email: "ananya@gmail.com", phone: "+91 9765432109", role: "CREATOR", district: "Durg", status: "Active", createdAt: "02 Aug 2025" },
-            { _id: "u5", name: "Vikram Kumar", email: "vikram@gmail.com", phone: "+91 9988776655", role: "CREATOR", district: "Bastar", status: "Pending", createdAt: "05 Aug 2025" }
-          ]);
-        }
+        
+        let localRegistered = [];
+        try {
+          localRegistered = JSON.parse(localStorage.getItem("registered_users") || "[]");
+        } catch (e) {}
+
+        const mockDefaultUsers = [
+          { _id: "u1", name: "Bhakti Kadam", email: "bhumi@gmail.com", phone: "+91 9696969696", role: "CREATOR", district: "Raipur", status: "Active", instagramUrl: "https://instagram.com/bhaktikadam", videoLink: "https://instagram.com/reel/C123456789", createdAt: "01 Aug 2025" },
+          { _id: "u2", name: "State Governance Admin", email: "admin@cg.gov.in", phone: "+91 9876543210", role: "ADMIN", district: "Raipur", status: "Active", createdAt: "15 Jul 2025" },
+          { _id: "u3", name: "Rajesh Sharma", email: "rajesh@gmail.com", phone: "+91 9812345678", role: "JURY", district: "Bilaspur", status: "Active", createdAt: "20 Jul 2025" },
+          { _id: "u4", name: "Ananya Sahu", email: "ananya@gmail.com", phone: "+91 9765432109", role: "CREATOR", district: "Durg", status: "Active", instagramUrl: "https://instagram.com/ananya_cg", videoLink: "https://instagram.com/reel/C987654321", createdAt: "02 Aug 2025" },
+          { _id: "u5", name: "Vikram Kumar", email: "vikram@gmail.com", phone: "+91 9988776655", role: "CREATOR", district: "Bastar", status: "Pending", createdAt: "05 Aug 2025" }
+        ];
+
+        const rawList = [...localRegistered, ...(Array.isArray(usersData) && usersData.length > 0 ? usersData : mockDefaultUsers)];
+        
+        // Deduplicate by email or _id
+        const userMap = new Map();
+        rawList.forEach((u) => {
+          const key = u.email || u._id || u.id;
+          if (key && !userMap.has(key)) {
+            userMap.set(key, u);
+          }
+        });
+        setUsersList(Array.from(userMap.values()));
       } catch (err) {
         console.error("Failed to fetch Users list:", err);
       }
@@ -749,7 +765,9 @@ export default function AdminDashboard({ token }) {
         phone: u.phone || "",
         role: u.role || "CREATOR",
         district: u.district || "Raipur",
-        status: u.status || "Active"
+        status: u.status || "Active",
+        instagramUrl: u.instagramUrl || u.instagramLink || "",
+        videoLink: u.videoLink || u.videoUrl || ""
       });
     } else {
       setEditingUser(null);
@@ -760,7 +778,9 @@ export default function AdminDashboard({ token }) {
         phone: "",
         role: "CREATOR",
         district: "Raipur",
-        status: "Active"
+        status: "Active",
+        instagramUrl: "",
+        videoLink: ""
       });
     }
     setIsUserModalOpen(true);
@@ -2083,6 +2103,7 @@ export default function AdminDashboard({ token }) {
                   <th className="py-3.5 px-4">User Details</th>
                   <th className="py-3.5 px-4">Email & Phone</th>
                   <th className="py-3.5 px-4">Assigned Role</th>
+                  <th className="py-3.5 px-4">Instagram & Video Link</th>
                   <th className="py-3.5 px-4">District</th>
                   <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4 text-center">Actions</th>
@@ -2125,6 +2146,41 @@ export default function AdminDashboard({ token }) {
                         {u.role || "CREATOR"}
                       </span>
                     </td>
+                    <td className="py-3.5 px-4 text-zinc-600">
+                      <div className="flex flex-col gap-1">
+                        {u.instagramLink || u.instagramUrl ? (
+                          <a
+                            href={u.instagramLink || u.instagramUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-[10px] font-bold transition-colors w-fit truncate max-w-[140px]"
+                            title={u.instagramLink || u.instagramUrl}
+                          >
+                            <FaInstagram className="w-3 h-3 text-pink-600 shrink-0" />
+                            <span className="truncate">Insta Profile</span>
+                            <FaExternalLinkAlt className="w-2.5 h-2.5 shrink-0 ml-0.5 opacity-60" />
+                          </a>
+                        ) : (
+                          <span className="text-[10px] text-zinc-400 italic">No Insta Link</span>
+                        )}
+
+                        {u.videoLink || u.instagramReelUrl || u.videoUrl ? (
+                          <a
+                            href={u.videoLink || u.instagramReelUrl || u.videoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[10px] font-bold transition-colors w-fit truncate max-w-[140px]"
+                            title={u.videoLink || u.instagramReelUrl || u.videoUrl}
+                          >
+                            <FaVideo className="w-3 h-3 text-purple-600 shrink-0" />
+                            <span className="truncate">Video Link</span>
+                            <FaExternalLinkAlt className="w-2.5 h-2.5 shrink-0 ml-0.5 opacity-60" />
+                          </a>
+                        ) : (
+                          <span className="text-[10px] text-zinc-400 italic">No Video Link</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="py-3.5 px-4 text-zinc-600 font-medium">
                       {u.district || "Raipur"}
                     </td>
@@ -2141,14 +2197,14 @@ export default function AdminDashboard({ token }) {
                         <button
                           onClick={() => setViewingUser(u)}
                           className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer"
-                          title="View User Profile"
+                          title="View User Details"
                         >
                           <FaEye className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleOpenUserModal(u)}
                           className="p-1.5 rounded-lg text-zinc-500 hover:text-[#E6532B] hover:bg-orange-50 transition-colors cursor-pointer"
-                          title="Edit Role / Status"
+                          title="Edit Role / Links / Status"
                         >
                           <FaEdit className="w-3.5 h-3.5" />
                         </button>
@@ -2166,7 +2222,7 @@ export default function AdminDashboard({ token }) {
 
                 {paginatedData.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
+                    <td colSpan={8} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
                       No users found matching filter criteria.
                     </td>
                   </tr>
@@ -3392,6 +3448,68 @@ export default function AdminDashboard({ token }) {
                   <span className="font-semibold text-zinc-900">{viewingUser.district || "Raipur"}</span>
                 </div>
               </div>
+
+              {/* Instagram & Video Submission Links Card */}
+              <div className="bg-gradient-to-br from-pink-50 via-purple-50 to-orange-50 p-4 rounded-2xl border border-pink-200/80 flex flex-col gap-3 shadow-2xs">
+                <span className="text-[11px] font-montserrat font-extrabold text-pink-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-pink-200/60 pb-2">
+                  <FaInstagram className="w-4 h-4 text-pink-600" />
+                  <span>Instagram & Video Submission Links</span>
+                </span>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Instagram Profile Link */}
+                  <div className="bg-white p-3 rounded-xl border border-pink-100 flex flex-col gap-1 shadow-2xs">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">Instagram Link</span>
+                    {viewingUser.instagramLink || viewingUser.instagramUrl ? (
+                      <a
+                        href={viewingUser.instagramLink || viewingUser.instagramUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-bold text-xs text-pink-600 hover:text-pink-800 hover:underline truncate flex items-center justify-between group mt-0.5"
+                      >
+                        <span className="truncate">{viewingUser.instagramLink || viewingUser.instagramUrl}</span>
+                        <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-1.5 text-pink-400 group-hover:text-pink-600" />
+                      </a>
+                    ) : (
+                      <span className="text-zinc-400 text-xs italic mt-0.5">Not Provided</span>
+                    )}
+                  </div>
+
+                  {/* Video / Reel Link */}
+                  <div className="bg-white p-3 rounded-xl border border-pink-100 flex flex-col gap-1 shadow-2xs">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">Video / Reel Link</span>
+                    {viewingUser.videoLink || viewingUser.instagramReelUrl || viewingUser.videoUrl ? (
+                      <a
+                        href={viewingUser.videoLink || viewingUser.instagramReelUrl || viewingUser.videoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-bold text-xs text-purple-600 hover:text-purple-800 hover:underline truncate flex items-center justify-between group mt-0.5"
+                      >
+                        <span className="truncate">{viewingUser.videoLink || viewingUser.instagramReelUrl || viewingUser.videoUrl}</span>
+                        <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-1.5 text-purple-400 group-hover:text-purple-600" />
+                      </a>
+                    ) : (
+                      <span className="text-zinc-400 text-xs italic mt-0.5">Not Provided</span>
+                    )}
+                  </div>
+
+                  {/* Portfolio URL (if present) */}
+                  {viewingUser.portfolioUrl && (
+                    <div className="bg-white p-3 rounded-xl border border-pink-100 flex flex-col gap-1 shadow-2xs sm:col-span-2">
+                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide">Portfolio / Website Link</span>
+                      <a
+                        href={viewingUser.portfolioUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-bold text-xs text-blue-600 hover:text-blue-800 hover:underline truncate flex items-center justify-between group mt-0.5"
+                      >
+                        <span className="truncate">{viewingUser.portfolioUrl}</span>
+                        <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-1.5 text-blue-400 group-hover:text-blue-600" />
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-end border-t border-zinc-150 pt-4 mt-1">
@@ -3468,6 +3586,30 @@ export default function AdminDashboard({ token }) {
                     <option value="Pending">Pending</option>
                     <option value="Inactive">Inactive</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="font-montserrat font-bold text-zinc-700">Instagram Profile Link</label>
+                  <input
+                    type="url"
+                    value={userForm.instagramLink || userForm.instagramUrl || ""}
+                    onChange={(e) => setUserForm({ ...userForm, instagramLink: e.target.value, instagramUrl: e.target.value })}
+                    placeholder="https://instagram.com/..."
+                    className="px-3.5 py-2 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-xs"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="font-montserrat font-bold text-zinc-700">Video / Reel Link</label>
+                  <input
+                    type="url"
+                    value={userForm.videoLink || userForm.instagramReelUrl || userForm.videoUrl || ""}
+                    onChange={(e) => setUserForm({ ...userForm, videoLink: e.target.value, instagramReelUrl: e.target.value })}
+                    placeholder="https://instagram.com/reel/..."
+                    className="px-3.5 py-2 rounded-xl border border-zinc-300 bg-zinc-50 font-semibold text-xs"
+                  />
                 </div>
               </div>
 

@@ -4,7 +4,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { ParticipateButton } from "@/components/common/Button";
 
-const DESKTOP_HERO_IMAGE = "/assets/images/herosection.png";
+const DESKTOP_HERO_IMAGE = "/assets/images/herosection.jpeg";
 const MOBILE_HERO_IMAGE = "/assets/images/mob-hero.jpeg";
 
 export default function HeroSection() {
