@@ -24,7 +24,7 @@ function GalleryCard({ item, onClick }) {
 
         <Image
           src={item.image}
-          alt={item.title}
+          alt={item.title || "Gallery image"}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           quality={85}
@@ -34,18 +34,6 @@ function GalleryCard({ item, onClick }) {
           }`}
           loading="lazy"
         />
-
-        {/* Hover overlay showing Title & Tag over image */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-left">
-          {item.tag && (
-            <span className="text-[10px] font-poppins font-bold uppercase tracking-wider text-amber-400 mb-1">
-              {item.tag}
-            </span>
-          )}
-          <h3 className="text-white font-poppins font-bold text-xs sm:text-sm leading-snug line-clamp-2 drop-shadow-sm">
-            {item.title}
-          </h3>
-        </div>
       </div>
     </div>
   );
@@ -86,48 +74,49 @@ export default function GalleryPage() {
   }, []);
 
   const GALLERY_PHOTOS = [
-    { id: 1, title: "Bastar Tribal Heritage & Cultural Art", tag: "Tribal Culture", image: "/assets/images/gallery/bastar tribal 1.png", aspectRatio: "aspect-[3/4]" },
-    { id: 2, title: "State Creator & Influencer Awards Gala 2026", tag: "Award Ceremony", image: "/assets/images/gallery/02.png", aspectRatio: "aspect-[16/9]" },
-    { id: 3, title: "Digital Creators & Leadership Summit", tag: "Summit & Keynote", image: "/assets/images/gallery/03 .png", aspectRatio: "aspect-square" },
-    { id: 4, title: "Sirpur Ancient Sculptured Temple Reliefs", tag: "Heritage & Craft", image: "/assets/images/gallery/DSC01204.JPG", aspectRatio: "aspect-[4/5]" },
-    { id: 5, title: "Ancient Temple Sanctum Architecture", tag: "Heritage & Craft", image: "/assets/images/gallery/DSC01214.JPG", aspectRatio: "aspect-[3/4]" },
-    { id: 6, title: "Historic Bhoramdeo Temple Compound Ruins", tag: "Heritage & Craft", image: "/assets/images/gallery/DSC01233 copy.JPG", aspectRatio: "aspect-[16/9]" },
-    { id: 7, title: "7th-Century Laxman Temple — Sirpur", tag: "Heritage & Craft", image: "/assets/images/gallery/DSC01733.JPG", aspectRatio: "aspect-[4/3]" },
-    { id: 8, title: "Archaeological Heritage & Carved Pillar Motifs", tag: "Heritage & Craft", image: "/assets/images/gallery/DSC02108.JPG", aspectRatio: "aspect-square" },
-    { id: 9, title: "Ancient Shiva Shrine & Nandi Sculpture", tag: "Heritage & Craft", image: "/assets/images/gallery/DSC02119.JPG", aspectRatio: "aspect-[3/4]" },
-    { id: 10, title: "Chaturmukhi Shivling & Sacred Sculptures", tag: "Heritage & Craft", image: "/assets/images/gallery/DSC02344.JPG", aspectRatio: "aspect-[4/5]" },
-    { id: 11, title: "Dungal Lake Scenic Landmark & Promenade", tag: "Eco-Tourism", image: "/assets/images/gallery/G9eoIg0aYAYBlk4.jpg", aspectRatio: "aspect-[16/9]" },
-    { id: 12, title: "Dungal Waterfront Viewpoint & Pavilion", tag: "Eco-Tourism", image: "/assets/images/gallery/G9eoIitaYAcVhQN.jpg", aspectRatio: "aspect-[4/3]" },
-    { id: 13, title: "Digital Media & Innovation Forum Raipur", tag: "Summit & Keynote", image: "/assets/images/gallery/G9eoIivbAAAKiQ8.jpg", aspectRatio: "aspect-square" },
-    { id: 14, title: "Chhattisgarhi Culture & Eco Tourism Campaign", tag: "Eco-Tourism", image: "/assets/images/gallery/GuqpANDXoAA_BM5.jpg", aspectRatio: "aspect-[3/4]" },
-    { id: 15, title: "Official Felicitation of State Award Winners", tag: "Award Ceremony", image: "/assets/images/gallery/IMG_20260703_130421.jpg", aspectRatio: "aspect-[16/9]" },
-    { id: 16, title: "State Press Conference & Government Briefing", tag: "State Event", image: "/assets/images/gallery/IMG_20260703_132332.jpg", aspectRatio: "aspect-[4/3]" },
-    { id: 17, title: "Panthi & Raut Nacha Folk Dance Ensemble", tag: "Tribal Culture", image: "/assets/images/gallery/IMG_20260703_133508.jpg", aspectRatio: "aspect-[4/5]" },
-    { id: 18, title: "Distinguished Jury & State Guests Gathering", tag: "State Event", image: "/assets/images/gallery/IMG_20260703_134024.jpg", aspectRatio: "aspect-square" },
-    { id: 19, title: "Regional Influencer Networking Session", tag: "Summit & Keynote", image: "/assets/images/gallery/757656910_122296226312081376_9155510348415342518_n copy.jpg", aspectRatio: "aspect-[16/9]" },
-    { id: 20, title: "Youth Digital Storytellers & Content Creators", tag: "Summit & Keynote", image: "/assets/images/gallery/759164456_2069727690320603_2621193215795883287_n copy.jpg", aspectRatio: "aspect-[3/4]" },
-    { id: 21, title: "Chitrakote Waterfalls — Bastar Niagara of India", tag: "Eco-Tourism", image: "/assets/images/chattisgarh_fall.jpg", aspectRatio: "aspect-[4/3]" },
-    { id: 22, title: "Raipur Landmark & Cultural Heritage Center", tag: "Eco-Tourism", image: "/assets/images/raipur_landmark.jpg", aspectRatio: "aspect-[16/9]" },
-  ];
-
-  const GALLERY_VIDEOS = [
-    { id: 101, title: "Chitrakote Waterfalls 4K Drone Reel", tag: "Video Reel", image: "/assets/images/chattisgarh_fall.jpg", url: "https://youtu.be/sample1", aspectRatio: "aspect-[16/9]" },
-    { id: 102, title: "Sirpur Archaeological Heritage Documentary", tag: "Short Film", image: "/assets/images/raipur_landmark.jpg", url: "https://youtu.be/sample2", aspectRatio: "aspect-[4/3]" },
-    { id: 103, title: "Bastar Tribal Dance Highlights 2026", tag: "Folk Beat", image: "/assets/images/gallery/bastar tribal 1.png", url: "https://youtu.be/sample3", aspectRatio: "aspect-[3/4]" },
-    { id: 104, title: "State Creator Awards Grand Finale Gala", tag: "Award Highlights", image: "/assets/images/gallery/02.png", url: "https://youtu.be/sample4", aspectRatio: "aspect-[16/9]" },
+    { id: 1, image: "/assets/images/gallery/bastar tribal 1.png", aspectRatio: "aspect-[3/4]" },
+    { id: 2, image: "/assets/images/gallery/02.png", aspectRatio: "aspect-[16/9]" },
+    { id: 3, image: "/assets/images/gallery/03 .png", aspectRatio: "aspect-square" },
+    { id: 4, image: "/assets/images/gallery/1001299067.jpg", aspectRatio: "aspect-[4/5]" },
+    { id: 5, image: "/assets/images/gallery/757656910_122296226312081376_9155510348415342518_n copy.jpg", aspectRatio: "aspect-[16/9]" },
+    { id: 6, image: "/assets/images/gallery/DSC00008.JPG", aspectRatio: "aspect-[3/4]" },
+    { id: 7, image: "/assets/images/gallery/DSC00149.JPG", aspectRatio: "aspect-[4/3]" },
+    { id: 8, image: "/assets/images/gallery/DSC00580.JPG", aspectRatio: "aspect-[16/9]" },
+    { id: 9, image: "/assets/images/gallery/DSC00700.JPG", aspectRatio: "aspect-[4/5]" },
+    { id: 10, image: "/assets/images/gallery/DSC01733.JPG", aspectRatio: "aspect-[4/3]" },
+    { id: 11, image: "/assets/images/gallery/DSC02119.JPG", aspectRatio: "aspect-[3/4]" },
+    { id: 12, image: "/assets/images/gallery/DSC02344.JPG", aspectRatio: "aspect-[4/5]" },
+    { id: 13, image: "/assets/images/gallery/DSC02412.JPG", aspectRatio: "aspect-[16/9]" },
+    { id: 14, image: "/assets/images/gallery/G9eoIg0aYAYBlk4.jpg", aspectRatio: "aspect-[16/9]" },
+    { id: 15, image: "/assets/images/gallery/G9eoIitaYAcVhQN.jpg", aspectRatio: "aspect-[4/3]" },
+    { id: 16, image: "/assets/images/gallery/G9eoIivbAAAKiQ8.jpg", aspectRatio: "aspect-square" },
+    { id: 17, image: "/assets/images/gallery/GuqpANDXoAA_BM5.jpg", aspectRatio: "aspect-[3/4]" },
+    { id: 18, image: "/assets/images/gallery/IMG_20260416_090307.jpg", aspectRatio: "aspect-[4/5]" },
+    { id: 19, image: "/assets/images/gallery/IMG_20260703_130421.jpg", aspectRatio: "aspect-[16/9]" },
+    { id: 20, image: "/assets/images/gallery/IMG_20260703_133508.jpg", aspectRatio: "aspect-[4/5]" },
+    { id: 21, image: "/assets/images/gallery/IMG_20260703_134024.jpg", aspectRatio: "aspect-square" },
+    { id: 22, image: "/assets/images/gallery/IMG_4534.JPG", aspectRatio: "aspect-[3/4]" },
   ];
 
   const apiPhotos = albums.length > 0
     ? albums.map((a, idx) => ({
         id: a._id || a.id,
-        title: a.title,
-        tag: a.category || "State Album",
         image: a.coverImage || "/assets/images/gallery/02.png",
         aspectRatio: ASPECT_RATIOS[idx % ASPECT_RATIOS.length],
       }))
     : [];
 
-  const allMedia = [...GALLERY_PHOTOS, ...apiPhotos, ...GALLERY_VIDEOS];
+  const rawMedia = [...GALLERY_PHOTOS, ...apiPhotos];
+
+  // Remove recurring/duplicate photos so each image appears only once
+  const seenImages = new Set();
+  const allMedia = [];
+  for (const item of rawMedia) {
+    if (item.image && !seenImages.has(item.image)) {
+      seenImages.add(item.image);
+      allMedia.push(item);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
@@ -159,15 +148,15 @@ export default function GalleryPage() {
         </div>
       )}
 
-      {/* Responsive Lightbox Preview Modal */}
+      {/* Responsive Lightbox Preview Modal — Only Image */}
       {selectedMedia && (
         <div
           onClick={() => setSelectedMedia(null)}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-in fade-in"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-4xl w-full max-h-[90vh] bg-white border border-zinc-200 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col my-auto"
+            className="relative max-w-5xl w-full max-h-[90vh] bg-zinc-950 border border-zinc-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col my-auto"
           >
             <button
               onClick={() => setSelectedMedia(null)}
@@ -177,25 +166,14 @@ export default function GalleryPage() {
               <FaTimes className="w-4 h-4" />
             </button>
 
-            <div className="relative h-[55vh] sm:h-[65vh] max-h-[550px] w-full bg-zinc-950 flex items-center justify-center">
+            <div className="relative h-[75vh] sm:h-[80vh] max-h-[750px] w-full bg-zinc-950 flex items-center justify-center">
               <Image
                 src={selectedMedia.image}
-                alt={selectedMedia.title}
+                alt={selectedMedia.title || "Gallery image"}
                 fill
                 quality={90}
                 className="object-contain"
               />
-            </div>
-
-            <div className="p-4 sm:p-5 bg-white text-zinc-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-zinc-150 shrink-0">
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] sm:text-xs font-poppins font-bold uppercase tracking-wider text-[#C45A32]">
-                  {selectedMedia.tag}
-                </span>
-                <h3 className="font-poppins font-bold text-sm sm:text-base text-zinc-900 mt-0.5 leading-snug">
-                  {selectedMedia.title}
-                </h3>
-              </div>
             </div>
           </div>
         </div>
