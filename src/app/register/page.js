@@ -19,6 +19,7 @@ import {
   FaShieldAlt,
   FaRedo
 } from "react-icons/fa";
+import DownloadGuidelinesButton from "@/components/common/DownloadGuidelinesButton";
 
 // Generator for random 6-character Captcha Code
 const generateCaptchaCode = () => {
@@ -254,10 +255,13 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="flex flex-col text-left sm:text-right">
-            <span className="font-poppins font-extrabold text-xs text-[var(--primary)]">
-              हर एक स्क्रीन पर छाएगा छत्तीसगढ़
-            </span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex flex-col text-left sm:text-right">
+              <span className="font-poppins font-extrabold text-xs text-[var(--primary)]">
+                हर एक स्क्रीन पर छाएगा छत्तीसगढ़
+              </span>
+            </div>
+            <DownloadGuidelinesButton size="md" variant="primary" />
           </div>
         </div>
 

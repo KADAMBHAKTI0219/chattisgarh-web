@@ -29,7 +29,9 @@ import {
   FaNewspaper,
   FaExternalLinkAlt,
   FaMapMarkerAlt,
-  FaBuilding
+  FaBuilding,
+  FaUser,
+  FaUserTie
 } from "react-icons/fa";
 import fetchApi from "@/services/client";
 import { categoryService } from "@/services/category";
@@ -39,6 +41,7 @@ import { nominationService } from "@/services/nomination";
 import { userService } from "@/services/user";
 import { newsService, generateSlug } from "@/services/news";
 import { locationService } from "@/services/location";
+import { getEmbedInfo } from "@/components/common/VideoPreviewInput";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -402,25 +405,82 @@ export default function AdminDashboard({ token }) {
           const displayTitle = p.title || p.projectTitle || p.workSummary || (p.categories && p.categories[0]?.description) || `${displayName}'s Award Nomination`;
           const catTitle = p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (p.categories && p.categories[0]?.categoryTitle) || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "Creator Award Category"));
 
+          // Categories array matching categorySubmissionSchema / categoryItemSchema
+          const normalizedCategories = Array.isArray(p.categories) && p.categories.length > 0
+            ? p.categories.map((c) => ({
+                categoryId: c.categoryId || c.categoryTitle || catTitle,
+                categoryTitle: c.categoryTitle || catTitle,
+                description: c.description || p.workSummary || p.description || "",
+                bestStoryLink1: c.bestStoryLink1 || c.storyLinks?.bestStoryLink1 || p.bestStoryLink1 || p.contentUrl || "",
+                bestStoryLink2: c.bestStoryLink2 || c.storyLinks?.bestStoryLink2 || p.bestStoryLink2 || "",
+                bestStoryLink3: c.bestStoryLink3 || c.storyLinks?.bestStoryLink3 || p.bestStoryLink3 || "",
+                videoLink: c.videoLink || c.mainVideoLink || c.reelUrl || c.videoUrl || c.instagramReelUrl || p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || p.bestStoryLink1 || "",
+                status: c.status || "PENDING",
+                reviewRemarks: c.reviewRemarks || ""
+              }))
+            : [{
+                categoryId: catTitle,
+                categoryTitle: catTitle,
+                description: p.workSummary || p.description || "",
+                bestStoryLink1: p.bestStoryLink1 || p.contentUrl || "",
+                bestStoryLink2: p.bestStoryLink2 || "",
+                bestStoryLink3: p.bestStoryLink3 || "",
+                videoLink: p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || p.bestStoryLink1 || "",
+                status: "PENDING"
+              }];
+
+          // Social profiles array matching socialProfileSchema / socialPlatformSchema
+          const socialProfs = Array.isArray(p.socialProfiles) && p.socialProfiles.length > 0
+            ? p.socialProfiles
+            : [p.primaryPlatform, p.secondaryPlatform].filter(Boolean);
+
+          const primPlatform = p.primaryPlatform || socialProfs.find((s) => s?.isPrimary) || socialProfs[0] || null;
+          const secPlatform = p.secondaryPlatform || socialProfs.find((s) => s && !s.isPrimary) || socialProfs[1] || null;
+
           return {
             _id: p._id || p.id || `p-${idx}`,
+            raw: p,
             num: String(idx + 1).padStart(2, "0"),
-            applicationId: p.applicationId || p.applicationNo || p._id || `CG-2026-${1000 + idx}`,
+            applicationId: p.applicationId || p.applicationNo || p._id || `NCA-2026-${100000 + idx}`,
             name: displayName,
             title: displayTitle,
             category: catTitle || "Creator Award Category",
             district: p.district || (isSelf ? p.applicant?.district : p.nominee?.district) || "Raipur",
+            state: p.state || (isSelf ? p.applicant?.state : p.nominee?.state) || "Chhattisgarh",
             publicVotes: p.publicVotes || p.votesCount || p.votes || 0,
             status: (p.status || "SUBMITTED").toUpperCase(),
             createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Recently",
             phone: p.phone || (isSelf ? p.applicant?.phone : p.nominator?.phone || p.nominee?.phone) || "N/A",
             email: p.email || (isSelf ? p.applicant?.email : p.nominator?.email || p.nominee?.email) || "N/A",
             nominationType: p.nominationType || p.nominationAs || "SELF",
-            awardType: p.awardType || "National",
-            workSummary: p.workSummary || p.description || "",
-            bestStoryLink1: p.bestStoryLink1 || p.contentUrl || "",
-            bestStoryLink2: p.bestStoryLink2 || "",
-            bestStoryLink3: p.bestStoryLink3 || ""
+            awardType: p.awardType || (isSelf ? p.applicant?.awardType : p.nominee?.awardType) || "National",
+            applicant: p.applicant || {
+              fullName: displayName,
+              email: p.email || "N/A",
+              phone: p.phone || "N/A",
+              gender: p.gender || "Other",
+              age: p.age || "18-40",
+              state: p.state || "Chhattisgarh",
+              district: p.district || "Raipur",
+              nationality: p.nationality || "Indian"
+            },
+            nominator: p.nominator || null,
+            nominee: p.nominee || null,
+            categories: normalizedCategories,
+            workSummary: p.workSummary || p.description || normalizedCategories[0]?.description || "",
+            bestStoryLink1: p.bestStoryLink1 || p.contentUrl || normalizedCategories[0]?.bestStoryLink1 || "",
+            bestStoryLink2: p.bestStoryLink2 || normalizedCategories[0]?.bestStoryLink2 || "",
+            bestStoryLink3: p.bestStoryLink3 || normalizedCategories[0]?.bestStoryLink3 || "",
+            videoLink: p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || normalizedCategories[0]?.videoLink || "",
+            creatorProfile: p.creatorProfile || {
+              creatorStartYear: p.creatorStartYear || p.whenBecomeCreator || "2020",
+              bio: p.workSummary || ""
+            },
+            creatorStartYear: p.creatorStartYear || p.whenBecomeCreator || p.creatorProfile?.creatorStartYear || "2020",
+            socialProfiles: socialProfs,
+            primaryPlatform: primPlatform,
+            secondaryPlatform: secPlatform,
+            declaration: p.declaration !== undefined ? p.declaration : true
           };
         });
 
@@ -2972,7 +3032,7 @@ export default function AdminDashboard({ token }) {
       {/* ================= PARTICIPANT DETAILS VIEW MODAL ================= */}
       {selectedItem && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 flex flex-col gap-5 shadow-2xl border border-zinc-200 animate-scale-up max-h-[92vh] overflow-y-auto">
 
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
@@ -2984,7 +3044,7 @@ export default function AdminDashboard({ token }) {
                   <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider">
                     Application ID: {selectedItem.applicationId || selectedItem._id || "NCA-2026-ENTRY"}
                   </span>
-                  <h3 className="font-montserrat font-extrabold text-base text-zinc-950">
+                  <h3 className="font-montserrat font-extrabold text-base sm:text-lg text-zinc-950">
                     {selectedItem.name || selectedItem.title}
                   </h3>
                 </div>
@@ -2992,17 +3052,17 @@ export default function AdminDashboard({ token }) {
 
               <button
                 onClick={() => setSelectedItem(null)}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
               >
                 <FaTimes className="w-4 h-4" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="flex flex-col gap-4 text-xs font-montserrat">
+            <div className="flex flex-col gap-5 text-xs font-montserrat">
 
-              {/* Votes & Status Hero Banner */}
-              <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-2xl p-4 flex items-center justify-between shadow-md">
+              {/* Status & Scope Hero Banner */}
+              <div className="bg-gradient-to-r from-orange-500 via-amber-600 to-orange-600 text-white rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-montserrat font-bold uppercase tracking-widest text-orange-100">
                     STATUS & RECOGNITION
@@ -3011,156 +3071,237 @@ export default function AdminDashboard({ token }) {
                     {selectedItem.status || "SUBMITTED"}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-md font-montserrat font-bold text-xs">
-                    Scope: {selectedItem.awardType || "National"}
+                    Scope: {selectedItem.awardType || selectedItem.applicant?.awardType || "National"}
                   </span>
                   <span className="px-3 py-1 rounded-full bg-black/20 text-white backdrop-blur-md font-montserrat font-bold text-xs">
-                    Type: {selectedItem.nominationType === "THIRD_PARTY" || selectedItem.nominationAs === "THIRD_PARTY" ? "Nominator for Others" : "Self Nomination"}
+                    Type: {selectedItem.nominationType === "THIRD_PARTY" || selectedItem.nominationAs === "THIRD_PARTY" ? "Nominator (for Others)" : "Self Nomination"}
                   </span>
                 </div>
               </div>
 
-              {/* Nominator Information Box (If THIRD_PARTY) */}
-              {(selectedItem.nominationType === "THIRD_PARTY" || selectedItem.nominationAs === "THIRD_PARTY" || selectedItem.nominator) && (
-                <div className="bg-amber-50/70 border border-amber-200/90 p-4 rounded-2xl flex flex-col gap-2">
-                  <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">
-                    Nominator Information (Submitted for Candidate)
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    <div>
-                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Name</span>
-                      <span className="font-bold text-zinc-900">{selectedItem.nominator?.fullName || selectedItem.nominatorName || "Citizen Nominator"}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Nationality</span>
-                      <span className="font-bold text-zinc-900">{selectedItem.nominator?.nationality || "Indian"}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Contact</span>
-                      <span className="font-mono text-zinc-800">{selectedItem.nominator?.phone || selectedItem.nominator?.email || "Submitted"}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Data Grid: Candidate Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-
-                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Award Category</span>
-                  <span className="font-montserrat font-bold text-[#E6532B] text-xs">
-                    {selectedItem.category || "Creator Award Category"}
-                  </span>
-                </div>
-
-                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">District & State</span>
-                  <span className="font-montserrat font-bold text-zinc-900 text-xs">
-                    {selectedItem.district || "Raipur"}, {selectedItem.state || "Chhattisgarh"}
-                  </span>
-                </div>
-
-                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Mobile Phone</span>
-                  <span className="font-mono font-medium text-zinc-800 text-xs">
-                    {selectedItem.phone || "Not Provided"}
-                  </span>
-                </div>
-
-                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200 flex flex-col gap-0.5">
-                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase">Email Address</span>
-                  <span className="font-mono font-medium text-zinc-800 text-xs truncate">
-                    {selectedItem.email || "Not Provided"}
-                  </span>
-                </div>
-
-              </div>
-
-              {/* Work Narrative / Summary */}
-              <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-1.5">
-                <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
-                  Nomination Title & Work Summary
+              {/* SECTION 1: APPLICANT / CANDIDATE DEMOGRAPHICS */}
+              <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-3">
+                <span className="text-[11px] font-bold text-[#E6532B] uppercase tracking-wider flex items-center gap-1.5">
+                  <FaUser className="w-3.5 h-3.5" />
+                  <span>Applicant & Personal Demographics</span>
                 </span>
-                <p className="font-montserrat font-bold text-zinc-950 text-xs">
-                  {selectedItem.title}
-                </p>
-                {selectedItem.workSummary && (
-                  <p className="font-inter text-zinc-700 text-xs leading-relaxed pt-1 border-t border-zinc-200/80 whitespace-pre-line">
-                    {selectedItem.workSummary}
-                  </p>
-                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <div className="p-2.5 rounded-xl bg-white border border-zinc-200">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase block">Full Name</span>
+                    <span className="font-bold text-zinc-900 text-xs">{selectedItem.applicant?.fullName || selectedItem.name || "N/A"}</span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white border border-zinc-200">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase block">Email Address</span>
+                    <span className="font-mono text-zinc-800 text-xs truncate block">{selectedItem.applicant?.email || selectedItem.email || "N/A"}</span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white border border-zinc-200">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase block">Mobile Phone</span>
+                    <span className="font-mono text-zinc-800 text-xs">{selectedItem.applicant?.phone || selectedItem.phone || "N/A"}</span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white border border-zinc-200">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase block">Gender & Age</span>
+                    <span className="font-bold text-zinc-900 text-xs">
+                      {selectedItem.applicant?.gender || selectedItem.gender || "Other"} • {selectedItem.applicant?.age || selectedItem.age || "18-40"}
+                    </span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white border border-zinc-200">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase block">District & State</span>
+                    <span className="font-bold text-zinc-900 text-xs">
+                      {selectedItem.district || selectedItem.applicant?.district || "Raipur"}, {selectedItem.state || selectedItem.applicant?.state || "Chhattisgarh"}
+                    </span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white border border-zinc-200">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase block">Nationality</span>
+                    <span className="font-bold text-zinc-900 text-xs">{selectedItem.applicant?.nationality || selectedItem.nationality || "Indian"}</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Story Links Section */}
-              {(selectedItem.bestStoryLink1 || selectedItem.bestStoryLink2 || selectedItem.bestStoryLink3) && (
-                <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-2">
-                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
-                    Featured Story Content Links
+              {/* SECTION 2: NOMINATOR DETAILS (IF THIRD PARTY) */}
+              {(selectedItem.nominationType === "THIRD_PARTY" || selectedItem.nominationAs === "THIRD_PARTY" || selectedItem.nominator) && (
+                <div className="bg-amber-50/80 border border-amber-200/90 p-4 rounded-2xl flex flex-col gap-3">
+                  <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <FaUserTie className="w-3.5 h-3.5" />
+                    <span>Nominator Information (Filed for Candidate)</span>
                   </span>
-
-                  {selectedItem.bestStoryLink1 && (
-                    <a
-                      href={selectedItem.bestStoryLink1}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2.5 rounded-xl bg-white border border-zinc-200 text-[#E6532B] font-bold text-xs flex items-center justify-between hover:bg-orange-50 transition-colors"
-                    >
-                      <span className="truncate">Story Link 1: {selectedItem.bestStoryLink1}</span>
-                      <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-2" />
-                    </a>
-                  )}
-
-                  {selectedItem.bestStoryLink2 && (
-                    <a
-                      href={selectedItem.bestStoryLink2}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2.5 rounded-xl bg-white border border-zinc-200 text-[#E6532B] font-bold text-xs flex items-center justify-between hover:bg-orange-50 transition-colors"
-                    >
-                      <span className="truncate">Story Link 2: {selectedItem.bestStoryLink2}</span>
-                      <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-2" />
-                    </a>
-                  )}
-
-                  {selectedItem.bestStoryLink3 && (
-                    <a
-                      href={selectedItem.bestStoryLink3}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2.5 rounded-xl bg-white border border-zinc-200 text-[#E6532B] font-bold text-xs flex items-center justify-between hover:bg-orange-50 transition-colors"
-                    >
-                      <span className="truncate">Story Link 3: {selectedItem.bestStoryLink3}</span>
-                      <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-2" />
-                    </a>
-                  )}
-                </div>
-              )}
-
-              {/* Social Media Profiles */}
-              {(selectedItem.primaryPlatform || selectedItem.secondaryPlatform || (selectedItem.socialProfiles && selectedItem.socialProfiles.length > 0)) && (
-                <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-2">
-                  <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
-                    Social Media Profiles & Metrics
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {selectedItem.primaryPlatform && (
-                      <div className="p-3 rounded-xl bg-white border border-zinc-200 flex flex-col gap-1">
-                        <span className="text-[10px] font-bold text-emerald-700 uppercase">Primary: {selectedItem.primaryPlatform.platform || "Instagram"}</span>
-                        <span className="font-bold text-xs text-zinc-900 truncate">{selectedItem.primaryPlatform.profileUrl || "URL Provided"}</span>
-                        <span className="text-[11px] text-zinc-500 font-semibold">Followers: {selectedItem.primaryPlatform.followers || "N/A"}</span>
-                      </div>
-                    )}
-                    {selectedItem.secondaryPlatform && selectedItem.secondaryPlatform.profileUrl && (
-                      <div className="p-3 rounded-xl bg-white border border-zinc-200 flex flex-col gap-1">
-                        <span className="text-[10px] font-bold text-purple-700 uppercase">Secondary: {selectedItem.secondaryPlatform.platform || "YouTube"}</span>
-                        <span className="font-bold text-xs text-zinc-900 truncate">{selectedItem.secondaryPlatform.profileUrl}</span>
-                        <span className="text-[11px] text-zinc-500 font-semibold">Followers: {selectedItem.secondaryPlatform.followers || "N/A"}</span>
-                      </div>
-                    )}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="p-2.5 rounded-xl bg-white border border-amber-200">
+                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Name</span>
+                      <span className="font-bold text-zinc-900 text-xs">{selectedItem.nominator?.fullName || selectedItem.nominatorName || "N/A"}</span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white border border-amber-200">
+                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Nationality</span>
+                      <span className="font-bold text-zinc-900 text-xs">{selectedItem.nominator?.nationality || "Indian"}</span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white border border-amber-200">
+                      <span className="text-[10px] font-bold text-amber-700 uppercase block">Nominator Mobile / Email</span>
+                      <span className="font-mono text-zinc-800 text-xs truncate block">
+                        {selectedItem.nominator?.phone || selectedItem.nominator?.email || "Provided"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
+
+              {/* SECTION 3: SUBMITTED AWARD CATEGORIES & WORK STORY & LIVE VIDEO PREVIEWS */}
+              <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-4">
+                <span className="text-[11px] font-bold text-[#E6532B] uppercase tracking-wider flex items-center gap-1.5">
+                  <FaLayerGroup className="w-3.5 h-3.5" />
+                  <span>Submitted Award Categories & Featured Video Links</span>
+                </span>
+
+                {(selectedItem.categories && selectedItem.categories.length > 0 ? selectedItem.categories : [
+                  {
+                    categoryTitle: selectedItem.category,
+                    description: selectedItem.workSummary,
+                    bestStoryLink1: selectedItem.bestStoryLink1,
+                    bestStoryLink2: selectedItem.bestStoryLink2,
+                    bestStoryLink3: selectedItem.bestStoryLink3,
+                    videoLink: selectedItem.videoLink
+                  }
+                ]).map((cat, cIdx) => (
+                  <div key={cIdx} className="p-4 rounded-2xl bg-white border border-zinc-200 flex flex-col gap-3 shadow-2xs">
+                    <div className="flex items-center justify-between border-b border-zinc-150 pb-2">
+                      <span className="font-poppins font-extrabold text-xs text-[#E6532B] uppercase">
+                        Category {cIdx + 1}: {cat.categoryTitle || selectedItem.category}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold uppercase">
+                        {cat.status || "SUBMITTED"}
+                      </span>
+                    </div>
+
+                    {/* Work Description */}
+                    {cat.description && (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase">Work Description</span>
+                        <p className="text-zinc-700 text-xs leading-relaxed bg-zinc-50 p-3 rounded-xl border border-zinc-150 whitespace-pre-line">
+                          {cat.description}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Story Links List & Video Embed Previews */}
+                    <div className="flex flex-col gap-3 pt-1">
+                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                        Featured Story Content Videos
+                      </span>
+
+                      {[
+                        { label: "Best Story Link 1", url: cat.bestStoryLink1 || cat.storyLinks?.bestStoryLink1 || selectedItem.bestStoryLink1 },
+                        { label: "Best Story Link 2", url: cat.bestStoryLink2 || cat.storyLinks?.bestStoryLink2 || selectedItem.bestStoryLink2 },
+                        { label: "Best Story Link 3", url: cat.bestStoryLink3 || cat.storyLinks?.bestStoryLink3 || selectedItem.bestStoryLink3 },
+                        { label: "Direct Reel / Video URL", url: cat.videoLink || selectedItem.videoLink }
+                      ]
+                        .filter((st, i, arr) => st.url && arr.findIndex(x => x.url === st.url) === i)
+                        .map((story, sIdx) => {
+                          const embed = getEmbedInfo(story.url);
+                          return (
+                            <div key={sIdx} className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 flex flex-col gap-2">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-[11px] text-zinc-800">{story.label}:</span>
+                                <a
+                                  href={story.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="px-2.5 py-1 rounded-full bg-orange-100 hover:bg-orange-200 text-[#E6532B] font-bold text-[10px] uppercase flex items-center gap-1 transition-colors"
+                                >
+                                  <span>Open Link</span>
+                                  <FaExternalLinkAlt className="w-2.5 h-2.5" />
+                                </a>
+                              </div>
+
+                              <span className="font-mono text-[11px] text-zinc-600 truncate">{story.url}</span>
+
+                              {/* Embedded Video Preview Player */}
+                              {embed && embed.embedUrl && (
+                                <div className="mt-1 relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-zinc-800 shadow-md">
+                                  <iframe
+                                    src={embed.embedUrl}
+                                    title={`Preview ${story.label}`}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="w-full h-full border-0 rounded-xl"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* SECTION 4: CREATOR PROFILE & SOCIAL PLATFORMS */}
+              <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-200 flex flex-col gap-3">
+                <span className="text-[11px] font-bold text-[#E6532B] uppercase tracking-wider flex items-center gap-1.5">
+                  <FaStar className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Creator Profile & Channel Followers</span>
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3 rounded-xl bg-white border border-zinc-200 flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase">Creator Start Year</span>
+                    <span className="font-bold text-zinc-900 text-xs">
+                      {selectedItem.creatorStartYear || selectedItem.creatorProfile?.creatorStartYear || "2020"}
+                    </span>
+                  </div>
+
+                  {selectedItem.primaryPlatform && (
+                    <div className="p-3 rounded-xl bg-white border border-zinc-200 flex flex-col gap-1">
+                      <span className="text-[10px] font-bold text-emerald-700 uppercase">
+                        Primary Platform: {selectedItem.primaryPlatform.platform || "Instagram"}
+                      </span>
+                      <a
+                        href={selectedItem.primaryPlatform.profileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-bold text-xs text-zinc-900 truncate hover:text-[#E6532B] flex items-center justify-between"
+                      >
+                        <span className="truncate">{selectedItem.primaryPlatform.profileUrl || "Profile Link"}</span>
+                        <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-1" />
+                      </a>
+                      <span className="text-[11px] text-zinc-500 font-semibold">
+                        Followers: {selectedItem.primaryPlatform.followers || "N/A"}
+                      </span>
+                    </div>
+                  )}
+
+                  {selectedItem.secondaryPlatform && selectedItem.secondaryPlatform.profileUrl && (
+                    <div className="p-3 rounded-xl bg-white border border-zinc-200 flex flex-col gap-1 sm:col-span-2">
+                      <span className="text-[10px] font-bold text-purple-700 uppercase">
+                        Secondary Platform: {selectedItem.secondaryPlatform.platform || "YouTube"}
+                      </span>
+                      <a
+                        href={selectedItem.secondaryPlatform.profileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-bold text-xs text-zinc-900 truncate hover:text-[#E6532B] flex items-center justify-between"
+                      >
+                        <span className="truncate">{selectedItem.secondaryPlatform.profileUrl}</span>
+                        <FaExternalLinkAlt className="w-3 h-3 shrink-0 ml-1" />
+                      </a>
+                      <span className="text-[11px] text-zinc-500 font-semibold">
+                        Followers: {selectedItem.secondaryPlatform.followers || "N/A"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Audit Metadata */}
+              <div className="flex items-center justify-between p-3 bg-zinc-100 rounded-xl text-[10px] text-zinc-500 font-mono">
+                <span>Submitted On: {selectedItem.createdAt || "Recorded"}</span>
+                <span>Declaration Accepted: {selectedItem.declaration ? "✓ YES" : "NO"}</span>
+              </div>
 
             </div>
 

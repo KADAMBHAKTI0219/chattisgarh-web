@@ -26,6 +26,8 @@ import {
   FaShieldAlt,
   FaExclamationTriangle
 } from "react-icons/fa";
+import VideoPreviewInput from "@/components/common/VideoPreviewInput";
+import DownloadGuidelinesButton from "@/components/common/DownloadGuidelinesButton";
 
 const RECAPTCHA_SITE_KEY =
   process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ||
@@ -425,7 +427,7 @@ export default function ParticipateModal() {
       <div className="relative w-full max-w-md md:max-w-4xl lg:max-w-5xl bg-white border-2 border-zinc-200 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl z-10 overflow-y-auto max-h-[90vh]">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-zinc-200 pb-4 mb-6">
+        <div className="flex items-center justify-between border-b border-zinc-200 pb-4 mb-6 gap-3">
           <div>
             <span className="text-[11px] font-poppins font-extrabold uppercase text-[#C45A32] tracking-wider">
               Official State Nomination Portal 2026
@@ -434,12 +436,15 @@ export default function ParticipateModal() {
               {formData.nominationType === "SELF" ? "Self Nomination Form" : "Nominate A Creator"}
             </h2>
           </div>
-          <button
-            onClick={closeModal}
-            className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-600 transition-colors"
-          >
-            <FaTimes className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-3">
+            <DownloadGuidelinesButton size="sm" variant="amber" />
+            <button
+              onClick={closeModal}
+              className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-600 transition-colors shrink-0"
+            >
+              <FaTimes className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Wizard Progress Bar */}
@@ -761,28 +766,28 @@ export default function ParticipateModal() {
                   <span className="text-[10px] text-zinc-400 self-end">{sub.description.length} / 2000</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <input
-                    type="url"
-                    required
-                    placeholder="Best Story Link 1 (Mandatory) *"
+                <div className="grid grid-cols-1 gap-4 pt-1">
+                  <VideoPreviewInput
+                    label="Best Story Video Link 1"
                     value={sub.bestStoryLink1}
                     onChange={(e) => handleCategoryDetailChange(idx, "bestStoryLink1", e.target.value)}
-                    className="rounded-xl border border-zinc-300 p-2 text-xs font-semibold bg-white"
+                    placeholder="https://youtube.com/watch?v=... or https://instagram.com/reel/..."
+                    required
+                    error={errors[`link1_${idx}`]}
                   />
-                  <input
-                    type="url"
-                    placeholder="Best Story Link 2 (Optional)"
+
+                  <VideoPreviewInput
+                    label="Best Story Video Link 2 (Optional)"
                     value={sub.bestStoryLink2}
                     onChange={(e) => handleCategoryDetailChange(idx, "bestStoryLink2", e.target.value)}
-                    className="rounded-xl border border-zinc-300 p-2 text-xs font-semibold bg-white"
+                    placeholder="https://instagram.com/reel/... or https://youtube.com/shorts/..."
                   />
-                  <input
-                    type="url"
-                    placeholder="Best Story Link 3 (Optional)"
+
+                  <VideoPreviewInput
+                    label="Best Story Video Link 3 (Optional)"
                     value={sub.bestStoryLink3}
                     onChange={(e) => handleCategoryDetailChange(idx, "bestStoryLink3", e.target.value)}
-                    className="rounded-xl border border-zinc-300 p-2 text-xs font-semibold bg-white"
+                    placeholder="https://youtube.com/watch?v=... or video URL"
                   />
                 </div>
               </div>

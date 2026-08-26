@@ -27,6 +27,7 @@ import {
   FaCheck,
   FaSpinner
 } from "react-icons/fa";
+import VideoPreviewInput from "@/components/common/VideoPreviewInput";
 
 // Generates Creator Start Years (e.g. 2000 to Current Year)
 const CURRENT_YEAR = new Date().getFullYear();
@@ -555,9 +556,11 @@ function ParticipateForm() {
           <FaArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
           <span>Return to Home</span>
         </Link>
-        <span className="text-xs font-inter font-bold text-zinc-500 uppercase tracking-widest">
-          National Creator Award 2026 • Official Application Portal
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-inter font-bold text-zinc-500 uppercase tracking-widest hidden md:inline">
+            National Creator Award 2026 • Official Application Portal
+          </span>
+        </div>
       </div>
 
       {/* Hero Header */}
@@ -1115,54 +1118,36 @@ function ParticipateForm() {
                     {errors.workDescription && <span className="text-red-500 text-[10px] font-bold">{errors.workDescription}</span>}
                   </div>
 
-                  {/* Story Links */}
-                  <div className="grid grid-cols-1 gap-4 pt-2">
+                  {/* Story Links with Live Video Preview */}
+                  <div className="grid grid-cols-1 gap-5 pt-2">
                     {/* Story Link 1 */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                        Q9.2 Best Story Link 1 <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="url"
-                        name="bestStoryLink1"
-                        value={formData.bestStoryLink1}
-                        onChange={handleInputChange}
-                        placeholder="https://youtube.com/watch?v=example or https://instagram.com/p/example"
-                        className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.bestStoryLink1 ? "border-red-500 bg-red-50/20" : ""
-                          }`}
-                      />
-                      {errors.bestStoryLink1 && <span className="text-red-500 text-[10px] font-bold">{errors.bestStoryLink1}</span>}
-                    </div>
+                    <VideoPreviewInput
+                      label="Q9.2 Best Story Video Link 1"
+                      name="bestStoryLink1"
+                      value={formData.bestStoryLink1}
+                      onChange={handleInputChange}
+                      placeholder="https://youtube.com/watch?v=example or https://instagram.com/reel/example"
+                      required
+                      error={errors.bestStoryLink1}
+                    />
 
                     {/* Story Link 2 */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                        Q9.3 Best Story Link 2 (Optional)
-                      </label>
-                      <input
-                        type="url"
-                        name="bestStoryLink2"
-                        value={formData.bestStoryLink2}
-                        onChange={handleInputChange}
-                        placeholder="https://instagram.com/reel/example"
-                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                      />
-                    </div>
+                    <VideoPreviewInput
+                      label="Q9.3 Best Story Video Link 2 (Optional)"
+                      name="bestStoryLink2"
+                      value={formData.bestStoryLink2}
+                      onChange={handleInputChange}
+                      placeholder="https://instagram.com/reel/example or https://youtube.com/shorts/..."
+                    />
 
                     {/* Story Link 3 */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                        Q9.4 Best Story Link 3 (Optional)
-                      </label>
-                      <input
-                        type="url"
-                        name="bestStoryLink3"
-                        value={formData.bestStoryLink3}
-                        onChange={handleInputChange}
-                        placeholder="https://twitter.com/example/status/12345"
-                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                      />
-                    </div>
+                    <VideoPreviewInput
+                      label="Q9.4 Best Story Video Link 3 (Optional)"
+                      name="bestStoryLink3"
+                      value={formData.bestStoryLink3}
+                      onChange={handleInputChange}
+                      placeholder="https://youtube.com/watch?v=... or video URL"
+                    />
                   </div>
                 </div>
               </div>
