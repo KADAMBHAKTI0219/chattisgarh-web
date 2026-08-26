@@ -29,47 +29,10 @@ export default function DownloadGuidelinesButton({
       "bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-700",
   }[variant] || "bg-emerald-700 hover:bg-emerald-800 text-white";
 
-  const handleDownload = async (e) => {
-    // Detect iOS (iPhone / iPad / iPod)
-    const isIOS =
-      typeof navigator !== "undefined" &&
-      (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
-
-    if (isIOS) {
-      // On iOS Safari, synthetic click on blob: URL causes a 404 / WebKit error.
-      // Opening the PDF directly in a tab lets iOS Safari open its native PDF viewer cleanly.
-      window.open("/assets/Guidelines.pdf", "_blank");
-      return;
-    }
-
-    e.preventDefault();
-    const pdfUrl = "/assets/Guidelines.pdf";
-    const fileName = "State_Creator_Awards_2026_Guidelines.pdf";
-
-    try {
-      const response = await fetch(pdfUrl);
-      if (!response.ok) throw new Error("Network response was not ok");
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-    } catch (err) {
-      console.warn("Direct blob download failed, falling back to window.open", err);
-      window.open(pdfUrl, "_blank");
-    }
-  };
-
   return (
     <a
-      href="/assets/Guidelines.pdf"
+      href="/api/download-guidelines"
       download="State_Creator_Awards_2026_Guidelines.pdf"
-      onClick={handleDownload}
       title="Download Official State Creator Awards 2026 Guidelines PDF"
       className={`${baseClasses} ${sizeClasses} ${variantClasses} ${className}`}
     >
