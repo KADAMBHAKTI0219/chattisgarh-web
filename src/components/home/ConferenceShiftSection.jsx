@@ -4,49 +4,123 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import Heading from "@/components/common/Heading";
+import { galleryService } from "@/services/gallery";
 
-const GALLERY_CARDS = [
-  {
-    id: "mayali-nature-camp",
-    title: "Mayali Nature Camp",
-    image: "/assets/images/mayalinaturecamp.JPG",
-  },
-  {
-    id: "mahtari-sadan",
-    title: "Mahtari Sadan",
-    image: "/assets/images/mahtarisadan.JPG",
-  },
-  {
-    id: "madheshwar-pahar",
-    title: "Madheshwar Pahar",
-    image: "/assets/images/madheshwar.JPG",
-  },
-  {
-    id: "golden-island-korba",
-    title: "Golden Island Korba",
-    image: "/assets/images/goldenislandkorba.jpg",
-  },
-  {
-    id: "bhoramdev-temple",
-    title: "Bhoram Dev Temple",
-    image: "/assets/images/bhoramdevmandir.jpg",
-  },
+const STATIC_GALLERY_CARDS = [
+  { id: "bhoramdev-temple", title: "Bhoram Dev Temple", image: "/assets/images/bhoramdevmandir.jpg", objectPosition: "top center" },
+  { id: "madheshwar-pahar", title: "Madheshwar Pahar", image: "/assets/images/madheshwar.JPG", objectPosition: "top center" },
+  { id: "mayali-nature-camp", title: "Mayali Nature Camp", image: "/assets/images/mayalinaturecamp.JPG", objectPosition: "center" },
+  { id: "mahtari-sadan", title: "Mahtari Sadan", image: "/assets/images/mahtarisadan.JPG", objectPosition: "top center" },
+  { id: "golden-island-korba", title: "Golden Island Korba", image: "/assets/images/goldenislandkorba.jpg", objectPosition: "center" },
+  { id: "bastar-tribal-1", title: "Bastar Tribal Culture", image: "/assets/images/gallery/bastar tribal 1.png", objectPosition: "top center" },
+  { id: "gallery-02", title: "Chhattisgarh Heritage", image: "/assets/images/gallery/02.png", objectPosition: "center" },
+  { id: "gallery-03", title: "State Event Gala", image: "/assets/images/gallery/03 .png", objectPosition: "center" },
+  { id: "gallery-1001299067", title: "Cultural Event", image: "/assets/images/gallery/1001299067.jpg", objectPosition: "center" },
+  { id: "gallery-757656910", title: "Summit Highlights", image: "/assets/images/gallery/757656910_122296226312081376_9155510348415342518_n copy.jpg", objectPosition: "center" },
+  { id: "gallery-dsc00008", title: "Chhattisgarh Landscape", image: "/assets/images/gallery/DSC00008.JPG", objectPosition: "top center" },
+  { id: "gallery-dsc00149", title: "State Festival", image: "/assets/images/gallery/DSC00149.JPG", objectPosition: "top center" },
+  { id: "gallery-dsc00580", title: "Traditional Performance", image: "/assets/images/gallery/DSC00580.JPG", objectPosition: "top center" },
+  { id: "gallery-dsc00700", title: "Youth Creator Meet", image: "/assets/images/gallery/DSC00700.JPG", objectPosition: "center" },
+  { id: "gallery-dsc01733", title: "State Celebration", image: "/assets/images/gallery/DSC01733.JPG", objectPosition: "top center" },
+  { id: "gallery-dsc02119", title: "Indigenous Art", image: "/assets/images/gallery/DSC02119.JPG", objectPosition: "top center" },
+  { id: "gallery-dsc02344", title: "Award Night Moment", image: "/assets/images/gallery/DSC02344.JPG", objectPosition: "center" },
+  { id: "gallery-dsc02412", title: "Creator Community", image: "/assets/images/gallery/DSC02412.JPG", objectPosition: "center" },
+  { id: "gallery-g9eoig0ayayblk4", title: "Summit Gathering", image: "/assets/images/gallery/G9eoIg0aYAYBlk4.jpg", objectPosition: "center" },
+  { id: "gallery-g9eoiitayacvhqn", title: "State Excellence", image: "/assets/images/gallery/G9eoIitaYAcVhQN.jpg", objectPosition: "center" },
+  { id: "gallery-g9eoiivbaaakiq8", title: "Cultural Showcase", image: "/assets/images/gallery/G9eoIivbAAAKiQ8.jpg", objectPosition: "center" },
+  { id: "gallery-guqpandxoaa_bm5", title: "Chhattisgarh Pride", image: "/assets/images/gallery/GuqpANDXoAA_BM5.jpg", objectPosition: "top center" },
+  { id: "gallery-img-20260416", title: "State Initiative", image: "/assets/images/gallery/IMG_20260416_090307.jpg", objectPosition: "center" },
+  { id: "gallery-img-20260703-1", title: "Creator Awards", image: "/assets/images/gallery/IMG_20260703_130421.jpg", objectPosition: "center" },
+  { id: "gallery-img-20260703-3", title: "Heritage & Tourism", image: "/assets/images/gallery/IMG_20260703_134024.jpg", objectPosition: "center" },
+  { id: "gallery-img-4534", title: "Award Ceremony", image: "/assets/images/gallery/IMG_4534.JPG", objectPosition: "top center" },
+  { id: "event-1", title: "Grand Summit Stage", image: "/assets/images/event-1.jpg", objectPosition: "center" },
+  { id: "event-2", title: "State Influencers Meet", image: "/assets/images/event-2.jpg", objectPosition: "center" },
+  { id: "event-3", title: "Cultural Heritage Showcase", image: "/assets/images/event-3.jpg", objectPosition: "center" },
+  { id: "raipur-landmark", title: "Raipur Landmark", image: "/assets/images/raipur_landmark.jpg", objectPosition: "top center" },
+  { id: "chattisgarh-fall", title: "Chitrakote Waterfalls", image: "/assets/images/chattisgarh_fall.jpg", objectPosition: "center" },
 ];
+
+function SafeCardImage({ src, alt, objectPosition = "center", objectFit = "cover" }) {
+  const [currentSrc, setCurrentSrc] = useState(() => encodeURI(src || ""));
+  const [errorOccurred, setErrorOccurred] = useState(false);
+
+  useEffect(() => {
+    setCurrentSrc(encodeURI(src || ""));
+    setErrorOccurred(false);
+  }, [src]);
+
+  const handleError = () => {
+    if (!errorOccurred) {
+      setErrorOccurred(true);
+      setCurrentSrc("/assets/images/mayalinaturecamp.JPG");
+    }
+  };
+
+  return (
+    <Image
+      src={currentSrc}
+      alt={alt || "Chhattisgarh Gallery"}
+      fill
+      sizes="(max-width: 768px) 100vw, 50vw"
+      style={{
+        objectFit: objectFit,
+        objectPosition: objectPosition,
+      }}
+      className="transition-transform duration-700 ease-out group-hover:scale-105"
+      onError={handleError}
+      unoptimized
+    />
+  );
+}
 
 export default function ConferenceShiftSection() {
   const { t } = useLanguage();
+  const [galleryCards, setGalleryCards] = useState(STATIC_GALLERY_CARDS);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const cardContainerRef = useRef(null);
 
-  // Auto-cycle gallery cards every 4 seconds unless hovered
+  // Fetch dynamic albums from API and append if available
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    async function loadAlbums() {
+      try {
+        const res = await galleryService.getAlbums();
+        if (res?.success && res?.data) {
+          const list = Array.isArray(res.data) ? res.data : res.data.albums || [];
+          if (list.length > 0) {
+            const apiItems = list.map((a, idx) => ({
+              id: a._id || a.id || `api-album-${idx}`,
+              title: a.title || "Chhattisgarh Gallery",
+              image: a.coverImage || "/assets/images/gallery/02.png",
+            }));
+            setGalleryCards((prev) => {
+              const seen = new Set(prev.map((c) => c.image));
+              const combined = [...prev];
+              for (const item of apiItems) {
+                if (item.image && !seen.has(item.image)) {
+                  seen.add(item.image);
+                  combined.push(item);
+                }
+              }
+              return combined;
+            });
+          }
+        }
+      } catch (err) {
+        // Fallback silently to static gallery
+      }
+    }
+    loadAlbums();
+  }, []);
+
+  // Auto-cycle gallery cards every 2 seconds (2000ms) unless hovered
+  useEffect(() => {
+    if (!isAutoPlaying || galleryCards.length === 0) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % GALLERY_CARDS.length);
-    }, 4200);
+      setActiveIndex((prev) => (prev + 1) % galleryCards.length);
+    }, 2000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, galleryCards.length]);
 
   return (
     <section
@@ -86,35 +160,38 @@ export default function ConferenceShiftSection() {
       {/* Main 1400px Container with 100px Column Gap */}
       <div className="mx-auto w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-[90px] xl:gap-[100px] items-center">
 
-        {/* ================= LEFT SIDE: PREMIUM INTERACTIVE GALLERY STACK (Order 2 on Mobile, Order 1 on Desktop) ================= */}
-        <div className="lg:col-span-6 order-2 lg:order-1 flex flex-col items-center justify-center relative w-full min-h-[480px] sm:min-h-[580px] md:min-h-[640px]">
+        {/* ================= LEFT SIDE: PREMIUM INTERACTIVE GALLERY STACK (Square Aspect Ratio) ================= */}
+        <div className="lg:col-span-6 order-2 lg:order-1 flex flex-col items-center justify-center relative w-full py-4">
 
           {/* Blurred Mandala Backdrop */}
           <div className="absolute w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] rounded-full border border-[#D4A534]/20 bg-[radial-gradient(circle,rgba(212,165,52,0.15)_0%,transparent_70%)] blur-xl pointer-events-none -z-10" />
 
-          {/* Interactive Stack Container */}
+          {/* Interactive Stack Container - Square Aspect Ratio */}
           <div
             ref={cardContainerRef}
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
-            className="relative w-full max-w-[420px] sm:max-w-[480px] h-[440px] sm:h-[520px] flex items-center justify-center touch-pan-y"
+            className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[460px] aspect-square flex items-center justify-center touch-pan-y"
           >
-            {GALLERY_CARDS.map((card, idx) => {
-              const total = GALLERY_CARDS.length;
+            {galleryCards.map((card, idx) => {
+              const total = galleryCards.length;
               // Distance relative to active index
               const offset = (idx - activeIndex + total) % total;
               const isActive = offset === 0;
 
-              // Pre-calculated stack transforms for 5 overlapping cards
+              // Only render visible stack cards for performance
+              if (offset > 4) return null;
+
+              // Pre-calculated stack transforms for overlapping square cards
               let zIndex = total - offset;
-              let translateY = offset * 22; // stacked slightly downwards
-              let scale = 1 - offset * 0.055;
-              let opacity = offset > 3 ? 0 : 1 - offset * 0.18;
-              let rotate = (offset % 2 === 0 ? 1 : -1) * (offset * 3.5);
+              let translateY = offset * 18; // stacked slightly downwards
+              let scale = 1 - offset * 0.05;
+              let opacity = offset > 3 ? 0 : 1 - offset * 0.2;
+              let rotate = (offset % 2 === 0 ? 1 : -1) * (offset * 3);
 
               if (isActive) {
                 translateY = 0;
-                scale = 1.04;
+                scale = 1.03;
                 rotate = 0;
                 zIndex = 40;
                 opacity = 1;
@@ -122,43 +199,26 @@ export default function ConferenceShiftSection() {
 
               return (
                 <div
-                  key={card.id}
+                  key={`${card.id}-${idx}`}
                   onClick={() => setActiveIndex(idx)}
                   style={{
                     zIndex,
                     transform: `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
                     opacity,
                   }}
-                  className={`absolute w-full h-[400px] sm:h-[460px] rounded-[32px] overflow-hidden border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer group select-none ${isActive
-                    ? "border-[#D4A534] shadow-[0_25px_65px_rgba(33,89,61,0.22)] ring-1 ring-[#D4A534]/50"
-                    : "border-white/40 shadow-lg hover:border-[#C45A32]/60 hover:scale-[1.02]"
-                    }`}
+                  className={`absolute w-full aspect-square rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer group select-none ${
+                    isActive
+                      ? "border-[#D4A534] shadow-[0_25px_65px_rgba(33,89,61,0.22)] ring-1 ring-[#D4A534]/50"
+                      : "border-white/40 shadow-lg hover:border-[#C45A32]/60 hover:scale-[1.02]"
+                  }`}
                 >
-                  {/* High Quality Card Image */}
-                  <Image
+                  {/* High Quality Card Image - Square with Safe Loading & Custom Positioning */}
+                  <SafeCardImage
                     src={card.image}
-                    alt={t(card.title)}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                    alt={t(card.title || "Chhattisgarh Gallery")}
+                    objectPosition={card.objectPosition || "center"}
+                    objectFit={card.objectFit || "cover"}
                   />
-
-                  {/* Gradient Overlay for Text Readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent transition-opacity duration-300" />
-
-                  {/* Top Glass Badge */}
-                  <div className="absolute top-5 right-5 flex justify-end items-center z-10">
-                    <span className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white text-xs font-bold border border-white/20">
-                      0{idx + 1}
-                    </span>
-                  </div>
-
-                  {/* Bottom Text Content inside Card - Only Title (Name) */}
-                  <div className="absolute bottom-0 inset-x-0 p-6 sm:p-8 flex flex-col gap-1 z-10 text-left">
-                    <h3 className="text-xl sm:text-2xl font-poppins font-bold text-white tracking-tight leading-tight">
-                      {t(card.title)}
-                    </h3>
-                  </div>
 
                   {/* Interactive Hover Micro-glow */}
                   <div className="absolute inset-0 bg-[#C45A32]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -166,24 +226,9 @@ export default function ConferenceShiftSection() {
               );
             })}
           </div>
-
-          {/* Interactive Pagination Indicators Below Cards */}
-          <div className="flex items-center gap-2.5 mt-8 sm:mt-10 z-20">
-            {GALLERY_CARDS.map((card, idx) => (
-              <button
-                key={card.id}
-                onClick={() => setActiveIndex(idx)}
-                aria-label={`Show ${card.title}`}
-                className={`h-2 rounded-full transition-all duration-500 cursor-pointer ${idx === activeIndex
-                  ? "w-8 bg-[#C45A32] shadow-[0_0_12px_rgba(196,90,50,0.6)]"
-                  : "w-2 bg-[#21593D]/25 hover:bg-[#21593D]/50"
-                  }`}
-              />
-            ))}
-          </div>
         </div>
 
-        {/* ================= RIGHT SIDE: LUXURY EDITORIAL STORYTELLING (Order 1 on Mobile, Order 2 on Desktop) ================= */}
+        {/* ================= RIGHT SIDE: LUXURY EDITORIAL STORYTELLING ================= */}
         <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-start text-left relative z-10">
 
           {/* Reusable Heading Component with Badge, Title, and Highlight */}
@@ -195,7 +240,7 @@ export default function ConferenceShiftSection() {
             className="px-0 mx-0 text-left items-start"
           />
 
-          {/* Readable Story Content Blocks with Color Highlighted Text matching image */}
+          {/* Readable Story Content Blocks */}
           <div className="mt-6 flex flex-col gap-4 text-sm sm:text-base font-inter text-[#3d4a42] leading-relaxed">
 
             {/* Paragraph 1 */}
@@ -210,7 +255,7 @@ export default function ConferenceShiftSection() {
               )}
             </p>
 
-            {/* Subheading 1 - Formerly Dark Text, now colorful vibrant highlight banner with compact font size */}
+            {/* Subheading 1 */}
             <div className="animate-fade-up p-3 sm:p-3.5 rounded-xl bg-gradient-to-r from-[#C45A32]/10 via-[#D4A534]/15 to-transparent border-l-4 border-[#C45A32]">
               <h4 className="font-poppins font-bold text-sm sm:text-base text-[#C45A32] tracking-tight">
                 {t("No matter your platform, your creativity belongs here.")}
@@ -224,7 +269,7 @@ export default function ConferenceShiftSection() {
               )}
             </p>
 
-            {/* Subheading 2 - Formerly Dark Text, now colorful vibrant gradient highlight banner with compact font size */}
+            {/* Subheading 2 */}
             <div className="animate-fade-up p-3 sm:p-3.5 rounded-xl bg-gradient-to-r from-[#21593D]/10 via-[#D4A534]/15 to-transparent border-l-4 border-[#21593D]">
               <h4 className="font-poppins font-bold text-sm sm:text-base bg-gradient-to-r from-[#21593D] via-[#C45A32] to-[#D4A534] bg-clip-text text-transparent tracking-tight">
                 {t("Get recognized. Get celebrated. Represent Chhattisgarh with pride.")}
@@ -240,7 +285,7 @@ export default function ConferenceShiftSection() {
 
           </div>
 
-          {/* Premium Glass Quote Card with Golden Quotation Icon */}
+          {/* Premium Glass Quote Card */}
           <div className="mt-8 w-full relative bg-white/80 backdrop-blur-xl border-2 border-[#21593D]/25 rounded-[20px] p-5 sm:p-6 shadow-[0_12px_40px_rgba(33,89,61,0.08)] group hover:border-[#D4A534] hover:shadow-[0_16px_50px_rgba(212,165,52,0.2)] transition-all duration-500 overflow-hidden">
             {/* Top-Right Decorative Soft Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(212,165,52,0.18)_0%,transparent_70%)] pointer-events-none group-hover:scale-125 transition-transform duration-500" />
@@ -251,7 +296,7 @@ export default function ConferenceShiftSection() {
                 “
               </div>
 
-              {/* Quote Content with Colorized Text */}
+              {/* Quote Content */}
               <div className="flex flex-col gap-1">
                 <p className="font-poppins font-bold text-sm sm:text-base leading-snug italic text-[#21593D]">
                   <span className="bg-gradient-to-r from-[#21593D] via-[#C45A32] to-[#21593D] bg-clip-text text-transparent">
@@ -265,10 +310,7 @@ export default function ConferenceShiftSection() {
             </div>
           </div>
 
-
-
         </div>
-
 
       </div>
     </section>
