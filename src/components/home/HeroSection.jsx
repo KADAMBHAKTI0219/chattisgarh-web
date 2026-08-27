@@ -5,7 +5,7 @@ import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { ParticipateButton } from "@/components/common/Button";
 
 const DESKTOP_HERO_IMAGE = "/assets/images/herosection.png";
-const MOBILE_HERO_IMAGE = "/assets/images/mob-herosection.png";
+const MOBILE_HERO_IMAGE = "/assets/images/mob-herobanner.jpeg";
 
 export default function HeroSection() {
   const { openModal } = useParticipateModal();
@@ -45,7 +45,7 @@ export default function HeroSection() {
           <ParticipateButton
             onClick={openModal}
             size="lg"
-            className="px-2 sm:px-6 lg:px-8 py-2 sm:py-3.5 text-xs sm:text-base md:text-lg font-bold shadow-[0_8px_30px_rgba(193,91,61,0.5)] hover:shadow-[0_12px_40px_rgba(193,91,61,0.7)] hover:scale-105 transition-all duration-30"
+            className="px-1 sm:px-6 lg:px-8 py-1 sm:py-3.5 text-xs sm:text-base md:text-lg font-bold shadow-[0_8px_30px_rgba(193,91,61,0.5)] hover:shadow-[0_12px_40px_rgba(193,91,61,0.7)] hover:scale-105 transition-all duration-30"
           >
             {t("Participate Now")}
           </ParticipateButton>
