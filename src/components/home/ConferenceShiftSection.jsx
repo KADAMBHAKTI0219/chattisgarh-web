@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import Heading from "@/components/common/Heading";
 import { galleryService } from "@/services/gallery";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const STATIC_GALLERY_CARDS = [
   { id: "bhoramdev-temple", title: "Bhoram Dev Temple", image: "/assets/images/bhoramdevmandir.jpg", objectPosition: "top center" },
@@ -77,40 +76,6 @@ function SafeCardImage({ src, alt, objectPosition = "center", objectFit = "cover
 export default function ConferenceShiftSection() {
   const { t } = useLanguage();
   const [galleryCards, setGalleryCards] = useState(STATIC_GALLERY_CARDS);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const cardContainerRef = useRef(null);
-
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-
-  const handleNext = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % galleryCards.length);
-  }, [galleryCards.length]);
-
-  const handlePrev = useCallback(() => {
-    setActiveIndex((prev) => (prev - 1 + galleryCards.length) % galleryCards.length);
-  }, [galleryCards.length]);
-
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return;
-    const diff = touchStartX.current - touchEndX.current;
-    if (diff > 40) {
-      handleNext();
-    } else if (diff < -40) {
-      handlePrev();
-    }
-    touchStartX.current = 0;
-    touchEndX.current = 0;
-  };
 
   // Fetch dynamic albums from API and append if available
   useEffect(() => {
@@ -145,20 +110,29 @@ export default function ConferenceShiftSection() {
     loadAlbums();
   }, []);
 
-  // Auto-cycle gallery cards every 3 seconds unless paused/hovered
-  useEffect(() => {
-    if (!isAutoPlaying || galleryCards.length === 0) return;
-    const interval = setInterval(() => {
-      handleNext();
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, galleryCards.length, handleNext]);
-
   return (
     <section
       id="about-event"
       className="relative w-full bg-[#F8F4EA] text-[#1c2c23] py-8 md:py-12 lg:py-14 px-4 sm:px-6 md:px-10 lg:px-16 overflow-hidden touch-pan-y"
     >
+      {/* Inline styles for single-row horizontal marquee animation */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @keyframes marquee-h-left {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee-h-left {
+          display: flex;
+          width: max-content;
+          animation: marquee-h-left 90s linear infinite;
+          will-change: transform;
+        }
+        .animate-marquee-h-left:hover {
+          animation-play-state: paused;
+        }
+      ` }} />
+
       {/* Background Decorative Layer */}
       <div className="absolute inset-0 pointer-events-none -z-10">
         {/* Soft Radial Gold Sunlight Glow */}
@@ -189,105 +163,41 @@ export default function ConferenceShiftSection() {
         <div className="absolute top-1/3 right-[12%] w-2.5 h-2.5 rounded-full bg-[#21593D]/30 animate-pulse duration-700" />
       </div>
 
-      {/* Main 1400px Container with 100px Column Gap */}
+      {/* Main 1400px Container with Gap */}
       <div className="mx-auto w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-[90px] xl:gap-[100px] items-center">
 
-        {/* ================= LEFT SIDE: PREMIUM INTERACTIVE GALLERY STACK & CAROUSEL ================= */}
+        {/* ================= LEFT SIDE: SINGLE-ROW HORIZONTAL MARQUEE ================= */}
         <div className="lg:col-span-6 order-2 lg:order-1 flex flex-col items-center justify-center relative w-full py-4">
 
           {/* Blurred Mandala Backdrop */}
           <div className="absolute w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] rounded-full border border-[#D4A534]/20 bg-[radial-gradient(circle,rgba(212,165,52,0.15)_0%,transparent_70%)] blur-xl pointer-events-none -z-10" />
 
-          {/* Carousel Left / Right Controls */}
-          <button
-            onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-            aria-label="Previous Slide"
-            className="absolute left-0 sm:-left-3 lg:-left-6 top-[42%] -translate-y-1/2 z-50 w-11 h-11 rounded-full bg-white/90 text-[#21593D] hover:text-white hover:bg-[#C45A32] border border-[#D4A534]/60 shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group/btn"
-          >
-            <ChevronLeft className="w-6 h-6 transition-transform group-hover/btn:-translate-x-0.5" />
-          </button>
+          {/* Marquee Viewport Container (Clean without outer box/border) */}
+          <div className="relative w-full aspect-square h-[320px] md:h-[420px] flex items-center overflow-hidden">
 
-          <button
-            onClick={(e) => { e.stopPropagation(); handleNext(); }}
-            aria-label="Next Slide"
-            className="absolute right-0 sm:-right-3 lg:-right-6 top-[42%] -translate-y-1/2 z-50 w-11 h-11 rounded-full bg-white/90 text-[#21593D] hover:text-white hover:bg-[#C45A32] border border-[#D4A534]/60 shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group/btn"
-          >
-            <ChevronRight className="w-6 h-6 transition-transform group-hover/btn:translate-x-0.5" />
-          </button>
+            {/* Gradient Mask Left & Right */}
+            <div className="absolute inset-y-0 left-0 w-10 sm:w-14 bg-gradient-to-r from-[#F8F4EA] via-[#F8F4EA]/80 to-transparent z-20 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-10 sm:w-14 bg-gradient-to-l from-[#F8F4EA] via-[#F8F4EA]/80 to-transparent z-20 pointer-events-none" />
 
-          {/* Interactive Stack Container - Square Aspect Ratio */}
-          <div
-            ref={cardContainerRef}
-            onMouseEnter={() => setIsAutoPlaying(false)}
-            onMouseLeave={() => setIsAutoPlaying(true)}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            className="relative w-full max-w-[320px] sm:max-w-[400px] md:max-w-[450px] aspect-square flex items-center justify-center touch-pan-y"
-          >
-            {galleryCards.map((card, idx) => {
-              const total = galleryCards.length;
-              // Distance relative to active index
-              const offset = (idx - activeIndex + total) % total;
-              const isActive = offset === 0;
-              const isPrevExiting = offset === total - 1;
+            {/* Single Row Horizontal Marquee Track */}
+            <div className="overflow-hidden w-full h-full flex items-center">
+              <div className="animate-marquee-h-left flex gap-4 sm:gap-5 h-full items-center">
+                {[...galleryCards, ...galleryCards].map((card, idx) => (
+                  <div
+                    key={`single-row-${card.id}-${idx}`}
+                    className="relative h-full aspect-square rounded-[24px] sm:rounded-[28px] overflow-hidden border border-white/60 shadow-lg shrink-0 group hover:scale-[1.02] transition-all duration-300 cursor-pointer bg-stone-200"
+                  >
+                    <SafeCardImage
+                      src={card.image}
+                      alt={t(card.title || "Chhattisgarh Gallery")}
+                      objectPosition={card.objectPosition || "center"}
+                      objectFit={card.objectFit || "cover"}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
 
-              // Only render visible stack cards for performance & slide transition
-              if (offset > 3 && !isPrevExiting) return null;
-
-              // Smooth transition calculations
-              let zIndex = total - offset;
-              let translateX = offset * 14;
-              let translateY = offset * 14;
-              let scale = 1 - offset * 0.05;
-              let opacity = 1 - offset * 0.22;
-              let rotate = offset * 2.5;
-
-              if (isActive) {
-                translateX = 0;
-                translateY = 0;
-                scale = 1.02;
-                rotate = 0;
-                zIndex = 40;
-                opacity = 1;
-              } else if (isPrevExiting) {
-                // Card sliding out smoothly to the left
-                translateX = -120;
-                translateY = -10;
-                scale = 0.92;
-                rotate = -8;
-                zIndex = 45;
-                opacity = 0;
-              }
-
-              return (
-                <div
-                  key={`${card.id}-${idx}`}
-                  onClick={() => setActiveIndex(idx)}
-                  style={{
-                    zIndex,
-                    transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
-                    opacity,
-                  }}
-                  className={`absolute w-full aspect-square rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer group select-none ${
-                    isActive
-                      ? "border-[#D4A534] shadow-[0_25px_65px_rgba(33,89,61,0.22)] ring-1 ring-[#D4A534]/50"
-                      : "border-white/40 shadow-lg hover:border-[#C45A32]/60 hover:scale-[1.02]"
-                  }`}
-                >
-                  {/* High Quality Card Image */}
-                  <SafeCardImage
-                    src={card.image}
-                    alt={t(card.title || "Chhattisgarh Gallery")}
-                    objectPosition={card.objectPosition || "center"}
-                    objectFit={card.objectFit || "cover"}
-                  />
-
-                  {/* Interactive Hover Micro-glow */}
-                  <div className="absolute inset-0 bg-[#C45A32]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                </div>
-              );
-            })}
           </div>
         </div>
 
