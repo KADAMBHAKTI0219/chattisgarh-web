@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import Heading from "@/components/common/Heading";
 import { galleryService } from "@/services/gallery";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const STATIC_GALLERY_CARDS = [
   { id: "bhoramdev-temple", title: "Bhoram Dev Temple", image: "/assets/images/bhoramdevmandir.jpg", objectPosition: "top center" },
@@ -80,6 +81,37 @@ export default function ConferenceShiftSection() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const cardContainerRef = useRef(null);
 
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleNext = useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % galleryCards.length);
+  }, [galleryCards.length]);
+
+  const handlePrev = useCallback(() => {
+    setActiveIndex((prev) => (prev - 1 + galleryCards.length) % galleryCards.length);
+  }, [galleryCards.length]);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 40) {
+      handleNext();
+    } else if (diff < -40) {
+      handlePrev();
+    }
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
   // Fetch dynamic albums from API and append if available
   useEffect(() => {
     async function loadAlbums() {
@@ -113,14 +145,14 @@ export default function ConferenceShiftSection() {
     loadAlbums();
   }, []);
 
-  // Auto-cycle gallery cards every 2 seconds (2000ms) unless hovered
+  // Auto-cycle gallery cards every 3 seconds unless paused/hovered
   useEffect(() => {
     if (!isAutoPlaying || galleryCards.length === 0) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % galleryCards.length);
-    }, 2000);
+      handleNext();
+    }, 3000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying, galleryCards.length]);
+  }, [isAutoPlaying, galleryCards.length, handleNext]);
 
   return (
     <section
@@ -160,41 +192,72 @@ export default function ConferenceShiftSection() {
       {/* Main 1400px Container with 100px Column Gap */}
       <div className="mx-auto w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-[90px] xl:gap-[100px] items-center">
 
-        {/* ================= LEFT SIDE: PREMIUM INTERACTIVE GALLERY STACK (Square Aspect Ratio) ================= */}
+        {/* ================= LEFT SIDE: PREMIUM INTERACTIVE GALLERY STACK & CAROUSEL ================= */}
         <div className="lg:col-span-6 order-2 lg:order-1 flex flex-col items-center justify-center relative w-full py-4">
 
           {/* Blurred Mandala Backdrop */}
           <div className="absolute w-[360px] h-[360px] sm:w-[480px] sm:h-[480px] rounded-full border border-[#D4A534]/20 bg-[radial-gradient(circle,rgba(212,165,52,0.15)_0%,transparent_70%)] blur-xl pointer-events-none -z-10" />
+
+          {/* Carousel Left / Right Controls */}
+          <button
+            onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+            aria-label="Previous Slide"
+            className="absolute left-0 sm:-left-3 lg:-left-6 top-[42%] -translate-y-1/2 z-50 w-11 h-11 rounded-full bg-white/90 text-[#21593D] hover:text-white hover:bg-[#C45A32] border border-[#D4A534]/60 shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group/btn"
+          >
+            <ChevronLeft className="w-6 h-6 transition-transform group-hover/btn:-translate-x-0.5" />
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); handleNext(); }}
+            aria-label="Next Slide"
+            className="absolute right-0 sm:-right-3 lg:-right-6 top-[42%] -translate-y-1/2 z-50 w-11 h-11 rounded-full bg-white/90 text-[#21593D] hover:text-white hover:bg-[#C45A32] border border-[#D4A534]/60 shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group/btn"
+          >
+            <ChevronRight className="w-6 h-6 transition-transform group-hover/btn:translate-x-0.5" />
+          </button>
 
           {/* Interactive Stack Container - Square Aspect Ratio */}
           <div
             ref={cardContainerRef}
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
-            className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[460px] aspect-square flex items-center justify-center touch-pan-y"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="relative w-full max-w-[320px] sm:max-w-[400px] md:max-w-[450px] aspect-square flex items-center justify-center touch-pan-y"
           >
             {galleryCards.map((card, idx) => {
               const total = galleryCards.length;
               // Distance relative to active index
               const offset = (idx - activeIndex + total) % total;
               const isActive = offset === 0;
+              const isPrevExiting = offset === total - 1;
 
-              // Only render visible stack cards for performance
-              if (offset > 4) return null;
+              // Only render visible stack cards for performance & slide transition
+              if (offset > 3 && !isPrevExiting) return null;
 
-              // Pre-calculated stack transforms for overlapping square cards
+              // Smooth transition calculations
               let zIndex = total - offset;
-              let translateY = offset * 18; // stacked slightly downwards
+              let translateX = offset * 14;
+              let translateY = offset * 14;
               let scale = 1 - offset * 0.05;
-              let opacity = offset > 3 ? 0 : 1 - offset * 0.2;
-              let rotate = (offset % 2 === 0 ? 1 : -1) * (offset * 3);
+              let opacity = 1 - offset * 0.22;
+              let rotate = offset * 2.5;
 
               if (isActive) {
+                translateX = 0;
                 translateY = 0;
-                scale = 1.03;
+                scale = 1.02;
                 rotate = 0;
                 zIndex = 40;
                 opacity = 1;
+              } else if (isPrevExiting) {
+                // Card sliding out smoothly to the left
+                translateX = -120;
+                translateY = -10;
+                scale = 0.92;
+                rotate = -8;
+                zIndex = 45;
+                opacity = 0;
               }
 
               return (
@@ -203,16 +266,16 @@ export default function ConferenceShiftSection() {
                   onClick={() => setActiveIndex(idx)}
                   style={{
                     zIndex,
-                    transform: `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
+                    transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
                     opacity,
                   }}
-                  className={`absolute w-full aspect-square rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer group select-none ${
+                  className={`absolute w-full aspect-square rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer group select-none ${
                     isActive
                       ? "border-[#D4A534] shadow-[0_25px_65px_rgba(33,89,61,0.22)] ring-1 ring-[#D4A534]/50"
                       : "border-white/40 shadow-lg hover:border-[#C45A32]/60 hover:scale-[1.02]"
                   }`}
                 >
-                  {/* High Quality Card Image - Square with Safe Loading & Custom Positioning */}
+                  {/* High Quality Card Image */}
                   <SafeCardImage
                     src={card.image}
                     alt={t(card.title || "Chhattisgarh Gallery")}
