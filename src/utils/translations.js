@@ -644,9 +644,9 @@ export const CG_DICTIONARY = {
   "Every nomination goes through a fair and transparent evaluation process based on content quality, originality, creativity, impact, audience engagement, and relevance to Chhattisgarh. Selected categories may also include public voting as part of the final evaluation.":
     "सबो फ़ॉर्म के सही अउ पारदर्शी जांच करे जाही।",
   "Winners receive official government recognition, an award trophy, a certificate of excellence, and the opportunity to be celebrated among Chhattisgarh’s leading digital creators.":
-    "जीतइया मन ला सरकारी मान-सम्मान, ट्रॉफी, प्रमाण पत्र अउ बड़ मंच मिलही।",
+    "जीतइया मन ला सरकारी मान-सम्मान, ट्रॉफी, प्रमाण पत्र अउ बड़े मंच मिलही।",
   "The winners will be honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony in Raipur. The official date, venue, and event schedule will be announced on the website and official communication channels.":
-    "रायपुर मां होने वाला बड़ कार्यक्रम म जीतइया मन ला सम्मानित करे जाही।",
+    "रायपुर मां होने वाला बड़े कार्यक्रम म जीतइया मन ला सम्मानित करे जाही।",
 
   // Participate Modal & Form Labels
   "CHHATTISGARH STATE CREATOR & INFLUENCER AWARDS 2026": "छत्तीसगढ़ राज्य निर्माता एवं प्रभावशाली पुरस्कार 2026",

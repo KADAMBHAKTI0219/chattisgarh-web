@@ -18,7 +18,7 @@ const GOOGLE_LANG_MAP = {
 };
 
 const LANG_STORAGE_KEY = "site-lang";
-const CACHE_STORAGE_KEY = "google-translation-api-cache-v11";
+const CACHE_STORAGE_KEY = "google-translation-api-cache-v12";
 
 // Helper to validate translation results and reject API error messages
 const isValidTranslation = (trans, origText) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { FaFilePdf, FaDownload } from "react-icons/fa";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function DownloadGuidelinesButton({
   variant = "primary",
@@ -9,6 +10,17 @@ export default function DownloadGuidelinesButton({
   showText = true,
   customText = "Download Guidelines PDF"
 }) {
+  const { language } = useLanguage();
+  const isChhattisgarhi = language === "cg" || language === "hne";
+  const isHindi = language === "hi";
+
+  const downloadUrl = `/api/download-guidelines?lang=${language || "en"}`;
+  const downloadFileName = isChhattisgarhi
+    ? "Chhattisgarh_Content_Creator_Awards_2026_Guidelines_Chhattisgarhi.pdf"
+    : isHindi
+    ? "Chhattisgarh_Content_Creator_Awards_2026_Guidelines_Hindi.pdf"
+    : "State_Creator_Awards_2026_Guidelines.pdf";
+
   const baseClasses =
     "inline-flex items-center gap-2 font-poppins font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer shadow-sm hover:shadow-md active:scale-95";
 
@@ -31,8 +43,8 @@ export default function DownloadGuidelinesButton({
 
   return (
     <a
-      href="/api/download-guidelines"
-      download="State_Creator_Awards_2026_Guidelines.pdf"
+      href={downloadUrl}
+      download={downloadFileName}
       title="Download Official State Creator Awards 2026 Guidelines PDF"
       className={`${baseClasses} ${sizeClasses} ${variantClasses} ${className}`}
     >
