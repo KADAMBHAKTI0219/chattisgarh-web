@@ -636,7 +636,7 @@ export const CG_DICTIONARY = {
   "No. Registration for the Chhattisgarh State Creator & Influencer Awards is completely free. There are no application or participation charges at any stage.":
     "नहीं। नांव पंजीयन पूरी तरह से मुफ़्त हे, कोनो फ़ीस नइ लागय।",
   "Yes. You may submit your nomination in up to three award categories, provided your content meets the eligibility criteria for each category.":
-    "हौ। तैं अधिकतम तीन किसम म अपन नांव भेज सकथस।",
+    "हव, आप मन अधिकतम तीन श्रेणी म अपन नांव भेज सकथो।",
   "Every nomination goes through a fair and transparent evaluation process based on content quality, originality, creativity, impact, audience engagement, and relevance to Chhattisgarh. Selected categories may also include public voting as part of the final evaluation.":
     "सबो फ़ॉर्म के सही अउ पारदर्शी जांच करे जाही।",
   "Winners receive official government recognition, an award trophy, a certificate of excellence, and the opportunity to be celebrated among Chhattisgarh’s leading digital creators.":
