@@ -242,6 +242,13 @@ export default function ConferenceShiftSection() {
               )}
             </p>
 
+            {/* Paragraph 3.5 */}
+            <p className="animate-fade-up">
+              {t(
+                "Your single video, photo, story, or reel—has the power to change how the world thinks about Chhattisgarh."
+              )}
+            </p>
+
             {/* Subheading 2 */}
             <div className="animate-fade-up p-3 sm:p-3.5 rounded-xl bg-gradient-to-r from-[#21593D]/10 via-[#D4A534]/15 to-transparent border-l-4 border-[#21593D]">
               <h4 className="font-poppins font-bold text-sm sm:text-base bg-gradient-to-r from-[#21593D] via-[#C45A32] to-[#D4A534] bg-clip-text text-transparent tracking-tight">

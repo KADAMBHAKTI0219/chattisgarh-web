@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 
 export default function CategoryDetailModal({ category, isOpen, onClose, onNominate }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
           {/* Category Title in Banner */}
           <div className="absolute bottom-4 left-5 right-5 z-20">
             <h2 className="font-poppins font-extrabold text-lg sm:text-2xl lg:text-3xl text-white uppercase tracking-tight leading-tight drop-shadow-md">
-              {t(category.title)}
+              {language === "hi" && category.titleHi ? category.titleHi : language === "cg" && category.titleCg ? category.titleCg : t(category.title)}
             </h2>
           </div>
         </div>
@@ -124,10 +124,14 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
           <div className="flex flex-col gap-2 bg-zinc-50 border border-zinc-200/90 rounded-2xl p-4 sm:p-5">
             <div className="flex items-center gap-2 text-[var(--primary)] font-poppins font-bold text-xs uppercase tracking-wider">
               <FaAward className="w-4 h-4" />
-              <span>Category Overview</span>
+              <span>{t("Category Overview")}</span>
             </div>
             <p className="text-sm sm:text-base text-zinc-700 leading-relaxed font-medium">
-              {category.description || "Recognizing creators, influencers, and storytellers who bring out the best of Chhattisgarh's culture, technology, and social impact."}
+              {language === "hi" && (category.shortDescriptionHi || category.descriptionHi)
+                ? (category.shortDescriptionHi || category.descriptionHi)
+                : language === "cg" && (category.shortDescriptionCg || category.descriptionCg)
+                ? (category.shortDescriptionCg || category.descriptionCg)
+                : t(category.shortDescription || category.description || "Recognizing creators, influencers, and storytellers who bring out the best of Chhattisgarh's culture, technology, and social impact.")}
             </p>
           </div>
 
@@ -135,49 +139,53 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
           <div className="flex flex-col gap-2.5 bg-amber-500/10 border border-amber-400/30 rounded-2xl p-4 sm:p-5">
             <div className="flex items-center gap-2 text-amber-800 font-poppins font-bold text-xs uppercase tracking-wider">
               <FaLightbulb className="w-4 h-4 text-amber-600" />
-              <span>Submission Guidelines & Task Brief</span>
+              <span>{t("Submission Guidelines & Task Brief")}</span>
             </div>
             <p className="text-xs sm:text-sm text-zinc-800 font-semibold leading-relaxed">
-              {category.taskBrief || "Create and submit an original video, vlog, reel, or story highlighting local traditions, innovation, or community initiatives of Chhattisgarh."}
+              {language === "hi" && category.taskBriefHi
+                ? category.taskBriefHi
+                : language === "cg" && category.taskBriefCg
+                ? category.taskBriefCg
+                : t(category.taskBrief || "Create and submit an original video, vlog, reel, or story highlighting local traditions, innovation, or community initiatives of Chhattisgarh.")}
             </p>
           </div>
 
           {/* Evaluation Criteria Grid */}
           <div className="flex flex-col gap-3">
             <h4 className="font-poppins font-bold text-sm sm:text-base text-zinc-950 uppercase tracking-tight">
-              Jury Evaluation Criteria
+              {t("Jury Evaluation Criteria")}
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-zinc-200 shadow-xs">
                 <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
-                  <span className="font-bold text-xs text-zinc-900">Originality & Storytelling</span>
-                  <span className="text-[11px] text-zinc-500 font-medium">Unique perspective & narrative</span>
+                  <span className="font-bold text-xs text-zinc-900">{t("Originality & Storytelling")}</span>
+                  <span className="text-[11px] text-zinc-500 font-medium">{t("Unique perspective & narrative")}</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-zinc-200 shadow-xs">
                 <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
-                  <span className="font-bold text-xs text-zinc-900">Cultural & Regional Impact</span>
-                  <span className="text-[11px] text-zinc-500 font-medium">Promoting Chhattisgarh heritage</span>
+                  <span className="font-bold text-xs text-zinc-900">{t("Cultural & Regional Impact")}</span>
+                  <span className="text-[11px] text-zinc-500 font-medium">{t("Promoting Chhattisgarh heritage")}</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-zinc-200 shadow-xs">
                 <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
-                  <span className="font-bold text-xs text-zinc-900">Production Quality</span>
-                  <span className="text-[11px] text-zinc-500 font-medium">Audio, visual & editing clarity</span>
+                  <span className="font-bold text-xs text-zinc-900">{t("Production Quality")}</span>
+                  <span className="text-[11px] text-zinc-500 font-medium">{t("Audio, visual & editing clarity")}</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-zinc-200 shadow-xs">
                 <FaCheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
-                  <span className="font-bold text-xs text-zinc-900">Audience Appreciation</span>
-                  <span className="text-[11px] text-zinc-500 font-medium">Relevance & public engagement</span>
+                  <span className="font-bold text-xs text-zinc-900">{t("Audience Appreciation")}</span>
+                  <span className="text-[11px] text-zinc-500 font-medium">{t("Relevance & public engagement")}</span>
                 </div>
               </div>
             </div>
@@ -190,8 +198,8 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
                 <FaTrophy className="w-5 h-5" />
               </div>
               <div className="flex flex-col">
-                <span className="font-poppins font-bold text-xs sm:text-sm text-[#2E5C31]">Winner Rewards & Recognition</span>
-                <span className="text-[11px] sm:text-xs text-zinc-600 font-medium">Official State Award, Trophy & Cash Prize ({prizeText})</span>
+                <span className="font-poppins font-bold text-xs sm:text-sm text-[#2E5C31]">{t("Winner Rewards & Recognition")}</span>
+                <span className="text-[11px] sm:text-xs text-zinc-600 font-medium">{t("Official State Award, Trophy & Cash Prize")} ({prizeText})</span>
               </div>
             </div>
           </div>
@@ -204,7 +212,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
             onClick={onClose}
             className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-zinc-300 bg-white hover:bg-zinc-100 font-inter font-bold text-xs sm:text-sm text-zinc-700 transition-all cursor-pointer"
           >
-            Close Details
+            {t("Close Details")}
           </button>
 
           <button
@@ -216,7 +224,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
             }}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
           >
-            <span>Participate Now</span>
+            <span>{t("Participate Now")}</span>
             <FaArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

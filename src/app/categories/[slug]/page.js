@@ -127,7 +127,7 @@ export default function CategorySlugPage({ params }) {
                     className="inline-flex items-center gap-2 text-zinc-600 hover:text-[var(--primary)] font-inter font-bold text-xs sm:text-sm transition-colors group"
                 >
                     <FaArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
-                    <span>Back to Home</span>
+                    <span>{t("Back to Home")}</span>
                 </Link>
             </div>
 
@@ -194,7 +194,7 @@ export default function CategorySlugPage({ params }) {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search Categories..."
+                            placeholder={t("Search Categories...")}
                             className="w-full py-2.5 px-3 text-zinc-850 font-inter font-semibold text-xs sm:text-sm focus:outline-none placeholder-zinc-400 bg-transparent rounded-full"
                         />
                         {searchQuery && (
@@ -215,7 +215,7 @@ export default function CategorySlugPage({ params }) {
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-24 gap-3 text-zinc-400">
                         <FaSpinner className="w-8 h-8 animate-spin text-[var(--primary)]" />
-                        <p className="font-inter font-semibold text-sm">Loading Categories...</p>
+                        <p className="font-inter font-semibold text-sm">{t("Loading Categories...")}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4">
@@ -236,8 +236,6 @@ export default function CategorySlugPage({ params }) {
                                 {/* Dark Gradient Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
 
-
-
                                 {/* Content Overlay */}
                                 <div className="relative z-20 flex flex-col justify-end w-full">
                                     <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
@@ -251,7 +249,7 @@ export default function CategorySlugPage({ params }) {
 
                 {!isLoading && filteredCategories.length === 0 && (
                     <div className="text-zinc-500 font-inter font-bold text-base py-20 bg-white/60 border border-zinc-200 rounded-3xl text-center">
-                        No categories match your query.
+                        {t("No categories match your query.")}
                     </div>
                 )}
             </div>

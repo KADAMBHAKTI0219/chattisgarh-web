@@ -42,7 +42,7 @@ export default function AwardCategoriesSection() {
     loadApiCategories();
   }, []);
 
-  // Format categories cleanly
+  // Format categories cleanly from dynamic backend response
   const formattedCategories = apiCategories.map((cat, idx) => {
     const rawTier = cat.tier || cat.tierName || "General Tier";
     const tierNum = cat.tierNumber || null;
@@ -50,19 +50,26 @@ export default function AwardCategoriesSection() {
     const tierTitle = getTierTitle(rawTier, tierNum);
     const badgeColor = getTierColor(rawTier, tierNum);
 
+    const titleStr = cat.title || cat.name || cat.categoryName || "Award Category";
+    const shortDescStr = cat.shortDescription || cat.description || cat.brief || "";
+
     return {
-      id: cat._id || cat.slug || `cat-${idx}`,
+      id: cat._id || cat.id || cat.slug || `cat-${idx}`,
       categoryNumber: cat.categoryNumber || idx + 1,
       tierNumber: tierNum,
       tierSlug,
       tierTitle,
       badgeColor,
-      title: cat.title || cat.name || "Award Category",
+      title: titleStr,
+      titleHi: cat.titleHi || cat.title_hi || cat.nameHi || cat.name_hi,
+      titleCg: cat.titleCg || cat.title_cg || cat.nameCg || cat.name_cg,
       slug: cat.slug || "",
-      image: cat.image || "/assets/images/category-1.jpg",
-      shortDescription: cat.shortDescription || cat.description || "",
-      fullDescription: cat.fullDescription || "",
-      taskBrief: cat.taskBrief || "",
+      image: cat.image || cat.imageUrl || "/assets/images/category-1.jpg",
+      shortDescription: shortDescStr,
+      shortDescriptionHi: cat.shortDescriptionHi || cat.shortDescription_hi || cat.descriptionHi,
+      shortDescriptionCg: cat.shortDescriptionCg || cat.shortDescription_cg || cat.descriptionCg,
+      fullDescription: cat.fullDescription || cat.description || "",
+      taskBrief: cat.taskBrief || cat.guideline || "",
       hashtag: cat.hashtag || "",
       isFeatured: cat.isFeatured ?? false,
       isActive: cat.isActive ?? true
@@ -159,7 +166,7 @@ export default function AwardCategoriesSection() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search Categories..."
+            placeholder={t("Search Categories...")}
             className="w-full py-2 px-3 text-zinc-850 font-inter font-semibold text-xs sm:text-sm focus:outline-none placeholder-zinc-400 bg-transparent rounded-full"
           />
           {searchQuery && (
@@ -192,8 +199,6 @@ export default function AwardCategoriesSection() {
             {/* Dark Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
 
-
-
             {/* Title Overlay */}
             <div className="relative z-20 flex flex-col justify-end w-full">
               <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
@@ -206,7 +211,7 @@ export default function AwardCategoriesSection() {
 
       {filteredCategories.length === 0 && (
         <div className="text-zinc-500 font-inter font-bold text-base py-16 bg-white/60 border border-zinc-200 rounded-3xl text-center">
-          No categories match your search.
+          {t("No categories match your search.")}
         </div>
       )}
 

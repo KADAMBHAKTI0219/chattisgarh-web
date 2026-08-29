@@ -14,7 +14,7 @@ export default function TermsSection() {
       title: "WHO CAN APPLY?",
       content: (
         <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
-          Eligible participants with an active Instagram account can participate. Each participant must create an original Reel based on one of the approved competition topics and publish it on their own Instagram page. There is no limit on how many participants can choose the same topic or scheme.
+          {t("Eligible participants with an active Instagram account can participate. Each participant must create an original Reel based on one of the approved competition topics and publish it on their own Instagram page. There is no limit on how many participants can choose the same topic or scheme.")}
         </p>
       )
     },
@@ -23,7 +23,7 @@ export default function TermsSection() {
       title: "HOW ENTRIES ARE EVALUATED",
       content: (
         <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
-          Entries will be evaluated through a combination of <strong className="text-zinc-950 font-bold">jury evaluation, authentic Instagram engagement and public voting</strong>. The evaluation will consider the quality of the story, creativity, audience impact, visual execution, factual accuracy, editing and overall communication value of the Reel.
+          {t("Entries will be evaluated through a combination of jury evaluation, authentic Instagram engagement and public voting. The evaluation will consider the quality of the story, creativity, audience impact, visual execution, factual accuracy, editing and overall communication value of the Reel.")}
         </p>
       )
     },
@@ -32,7 +32,7 @@ export default function TermsSection() {
       title: "JURY & SELECTION PROCESS",
       content: (
         <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
-          A jury will review eligible submissions and assess their creative and storytelling quality. Audience engagement and public voting will also contribute to the selection process. The strongest entries, as determined by the official evaluation methodology, will be <strong className="text-zinc-950 font-bold">nominated for the next round</strong>. The final weightage and selection criteria will be as per the official competition rules.
+          {t("A jury will review eligible submissions and assess their creative and storytelling quality. Audience engagement and public voting will also contribute to the selection process. The strongest entries, as determined by the official evaluation methodology, will be nominated for the next round. The final weightage and selection criteria will be as per the official competition rules.")}
         </p>
       )
     },
@@ -41,7 +41,7 @@ export default function TermsSection() {
       title: "CODE OF CONDUCT & COMPLIANCE",
       content: (
         <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed">
-          All submissions must be original, relevant to the selected scheme or initiative, and factually accurate. Participants must not use <strong className="text-zinc-950 font-bold">Trial Reels, paid boosting, advertisements, purchased engagement, bots or any form of artificial engagement</strong> to influence their results. Organic sharing through normal social and personal networks is permitted. Any violation of the competition rules may result in disqualification.
+          {t("All submissions must be original, relevant to the selected scheme or initiative, and factually accurate. Participants must not use Trial Reels, paid boosting, advertisements, purchased engagement, bots or any form of artificial engagement to influence their results. Organic sharing through normal social and personal networks is permitted. Any violation of the competition rules may result in disqualification.")}
         </p>
       )
     }

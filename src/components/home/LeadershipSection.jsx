@@ -84,7 +84,7 @@ function VideoCard({ video }) {
               </div>
               <span className="flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1 text-[10px] sm:text-xs font-bold text-white backdrop-blur-md border border-white/20">
                 <FaYoutube className="h-3.5 w-3.5 text-red-500" />
-                <span>Watch Video</span>
+                <span>{t("Watch Video")}</span>
               </span>
             </div>
           </button>

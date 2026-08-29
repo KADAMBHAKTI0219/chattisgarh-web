@@ -1,4 +1,5 @@
-// Comprehensive Translation Dictionaries for Chhattisgarh State Creator & Influencer Awards Portal
+// Comprehensive Static Translation Dictionaries for Chhattisgarh State Creator & Influencer Awards Portal
+// Supports English (en), Hindi (hi), and Chhattisgarhi (cg)
 
 export const HINDI_DICTIONARY = {
   // Navigation & Branding
@@ -27,6 +28,7 @@ export const HINDI_DICTIONARY = {
   "Official Guidelines": "आधिकारिक दिशानिर्देश",
   "Government Of Chattisgarh": "छत्तीसगढ़ शासन",
   "Government of Chhattisgarh": "छत्तीसगढ़ शासन",
+  "Government Of Chhattisgarh": "छत्तीसगढ़ शासन",
   "Chhattisgarh State Creator & Influencer Awards": "छत्तीसगढ़ राज्य क्रिएटर एवं इन्फ्लुएंसर अवॉर्ड्स",
   "Digital State": "डिजिटल छत्तीसगढ़",
   "Digital Creators": "डिजिटल क्रिएटर्स",
@@ -48,9 +50,266 @@ export const HINDI_DICTIONARY = {
   "Every reel is a remarkable reality": "हर एक रील है एक अद्भुत यथार्थ",
   "When You Create, Chhattisgarh Shines": "जब आप रचते हैं, छत्तीसगढ़ चमकता है",
 
-  // Sections & Descriptions
-  "The Chhattisgarh State Creator & Influencer Awards is a flagship initiative by the Government of Chhattisgarh to celebrate creators who transform the state’s culture, heritage, tourism, innovation, and everyday stories into inspiring digital experiences for India and the world. Every piece of content that celebrates Chhattisgarh contributes to preserving its heritage while introducing its unique culture, traditions, and values to a wider audience.":
-    "छत्तीसगढ़ राज्य क्रिएटर एवं इन्फ्लुएंसर अवॉर्ड्स, छत्तीसगढ़ शासन की एक प्रमुख पहल है। इसका उद्देश्य उन रचनाकारों को सम्मानित करना है जो राज्य की संस्कृति, धरोहर, पर्यटन, नवाचार और जनजीवन की कहानियों को भारत और विश्व के समक्ष प्रेरणादायक डिजिटल अनुभवों के रूप में प्रस्तुत करते हैं। छत्तीसगढ़ की गौरवगाथा को दर्शाने वाला हर कंटेंट राज्य की विरासत को सहेजने के साथ-साथ इसकी समृद्ध परंपराओं को नई पहचान दिलाता है।",
+  // Conference / About Event Section
+  "Official State Platform": "आधिकारिक राज्य मंच",
+  "THE NEXT BIG": "अगली बड़ी",
+  "STORY STARTS HERE.": "कहानी यहाँ से शुरू होती है।",
+  "Every creator has the power to shape how the world sees Chhattisgarh.":
+    "दुनिया छत्तीसगढ़ को किस नज़रिए से देखती है, इसे आकार देने की शक्ति हर रचनाकार में है।",
+  "The Chhattisgarh State Creator & Influencer Awards is a prestigious Government initiative that celebrates creators whose content reflects the state’s culture, heritage, creativity, tourism, innovation, and everyday life. Every authentic story shared today becomes a part of Chhattisgarh’s digital legacy.":
+    "छत्तीसगढ़ राज्य क्रिएटर एवं इन्फ्लुएंसर अवॉर्ड्स एक प्रतिष्ठित शासकीय पहल है, जो उन क्रिएटर्स का सम्मान करती है जिनकी रचनाओं में राज्य की संस्कृति, धरोहर, सृजनशीलता, पर्यटन, नवाचार और जनजीवन की झलक मिलती है। आज साझा की गई हर प्रामाणिक कहानी छत्तीसगढ़ की डिजिटल विरासत का हिस्सा बनती है।",
+  "No matter your platform, your creativity belongs here.":
+    "मंच चाहे कोई भी हो, आपकी रचनात्मकता का असली मंच यही है।",
+  "Whether you’re a YouTuber, Instagram creator, filmmaker, photographer, blogger, educator, artist, gamer, podcaster, or storyteller, your work has the power to inspire audiences and showcase the true spirit of Chhattisgarh to India and the world.":
+    "चाहे आप यूट्यूबर हों, इंस्टाग्राम क्रिएटर, फ़िल्ममेकर, फ़ोटोग्राफ़र, ब्लॉगर, शिक्षक, कलाकार, गेमर, पॉडकास्टर या कहानीकार — आपके काम में दर्शकों को प्रेरित करने और भारत व दुनिया के सामने छत्तीसगढ़ की वास्तविक भावना को प्रस्तुत करने का सामर्थ्य है।",
+  "Your single video, photo, story, or reel—has the power to change how the world thinks about Chhattisgarh.":
+    "आपका एक वीडियो, एक फोटो, एक कहानी या एक रील—छत्तीसगढ़ के बारे में दुनिया की सोच को बदल सकता है।",
+  "Get recognized. Get celebrated. Represent Chhattisgarh with pride.":
+    "पहचान पाएं। सम्मान पाएं। गर्व के साथ छत्तीसगढ़ का प्रतिनिधित्व करें।",
+  "Receive official recognition, amplify your creative journey, and become part of a community that’s building the future of Chhattisgarh’s digital identity.":
+    "शासकीय पहचान प्राप्त करें, अपनी रचनात्मक यात्रा को नई ऊँचाइयों पर ले जाएँ और उस समुदाय का हिस्सा बनें जो छत्तीसगढ़ की डिजिटल पहचान के भविष्य का निर्माण कर रहा है।",
+  "“Because when your content inspires the nation, Chhattisgarh shines with you.”":
+    "“क्योंकि जब आपकी सामग्री देश को प्रेरित करती है, तब छत्तीसगढ़ आपके साथ चमकता है।”",
+  "Because when your content inspires the nation, Chhattisgarh shines with you.":
+    "क्योंकि जब आपकी सामग्री देश को प्रेरित करती है, तब छत्तीसगढ़ आपके साथ चमकता है।",
+
+  // Leadership & Video Section
+  "TRUST & CREATOR VISION": "विश्वास एवं क्रिएटर दृष्टिकोण",
+  "LEADERSHIP": "नेतृत्व",
+  "Messages": "संदेश",
+  "Watch official messages and creator interactions highlighting digital empowerment across India.":
+    "डिजिटल सशक्तिकरण को उजागर करने वाले आधिकारिक संदेश और क्रिएटर संवाद देखें।",
+  "Watch Video": "वीडियो देखें",
+  "Prime Minister": "प्रधानमंत्री",
+  "Chief Minister": "मुख्यमंत्री",
+  "Shri Vishnu Deo Sai": "श्री विष्णु देव साय",
+  "Narendra Modi": "नरेंद्र मोदी",
+  "PM Narendra Modi's YouTube Journey: 15 Years of Global Impact | YouTube Fanfest India 2023":
+    "प्रधानमंत्री नरेंद्र मोदी की यूट्यूब यात्रा: 15 वर्षों का वैश्विक प्रभाव | यूट्यूब फैनफ़ेस्ट 2023",
+  "Swachhata Se Swasthya: PM Modi & Ankit Baiyanpuria Lead Way to a Cleaner and Healthier Bharat":
+    "स्वच्छता से स्वास्थ्य: पीएम मोदी एवं अंकित बयानपुरिया का स्वच्छ भारत संदेश",
+
+  // Award Categories & Tiers
+  "AWARD CATEGORIES": "पुरस्कार श्रेणियां",
+  "39 CREATOR": "39 क्रिएटर",
+  "CATEGORIES ACROSS 11 TIERS": "श्रेणियां (11 स्तरों में)",
+  "Explore all 39 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.":
+    "शासन, तकनीक, संस्कृति और नवाचार के 11 प्रमुख स्तरों में विभाजित सभी 39 आधिकारिक राज्य पुरस्कार श्रेणियों का अवलोकन करें।",
+  "Search Categories...": "श्रेणियां खोजें...",
+  "No categories match your search.": "आपकी खोज से मेल खाती कोई श्रेणी नहीं मिली।",
+  "No categories match your query.": "आपकी खोज से मेल खाती कोई श्रेणी नहीं मिली।",
+  "All Categories": "सभी श्रेणियां",
+  "Culture & Heritage Tier": "संस्कृति एवं धरोहर स्तर",
+  "Tourism & Nature Tier": "पर्यटन एवं प्रकृति स्तर",
+  "Social Impact & Community Tier": "सामाजिक प्रभाव स्तर",
+  "Education & Skill Tier": "शिक्षा एवं कौशल स्तर",
+  "Tech & Gaming Tier": "तकनीक एवं गेमिंग स्तर",
+  "Arts & Entertainment Tier": "कला एवं मनोरंजन स्तर",
+  "Regional & Tribal Preservation Tier": "क्षेत्रीय एवं जनजातीय संरक्षण स्तर",
+  "Media & Visual Arts Tier": "मीडिया एवं दृश्य कला स्तर",
+  "Youth & Female Empowerment Tier": "युवा एवं महिला सशक्तिकरण स्तर",
+  "Rural & Local Economy Tier": "ग्रामीण एवं स्थानीय अर्थव्यवस्था स्तर",
+  "Special State Recognition Tier": "विशेष राज्य मान्यता स्तर",
+
+  "Nation Building & Governance": "राष्ट्र निर्माण एवं सुशासन",
+  "Technology & Innovation": "तकनीक एवं नवाचार",
+  "Education & Career": "शिक्षा एवं करियर",
+  "Health & Social Impact": "स्वास्थ्य एवं सामाजिक प्रभाव",
+  "Agriculture & Rural Development": "कृषि एवं ग्रामीण विकास",
+  "Sustainability & Environment": "सतत विकास एवं पर्यावरण",
+  "Culture, Heritage & Languages": "संस्कृति, धरोहर एवं भाषाएं",
+  "Media & Information": "मीडिया एवं सूचना",
+  "Creative & Entertainment": "सृजनशीलता एवं मनोरंजन",
+  "Lifestyle & Special Interest": "जीवनशैली एवं विशेष रुचि",
+  "Special Recognition": "विशेष मान्यता एवं सम्मान",
+  "CATEGORIES IN": "श्रेणियां:",
+  "Back to Home": "मुख्य पृष्ठ पर लौटें",
+  "Loading Categories...": "श्रेणियां लोड हो रही हैं...",
+
+  "Category Overview": "श्रेणी का विवरण",
+  "Submission Guidelines & Task Brief": "प्रविष्टि दिशानिर्देश एवं कार्य विवरण",
+  "Jury Evaluation Criteria": "जूरी मूल्यांकन मानदंड",
+  "Originality & Storytelling": "मौलिकता एवं कहानी कथन",
+  "Unique perspective & narrative": "अद्वितीय दृष्टिकोण एवं अभिव्यक्ति",
+  "Cultural & Regional Impact": "सांस्कृतिक एवं क्षेत्रीय प्रभाव",
+  "Promoting Chhattisgarh heritage": "छत्तीसगढ़ की विरासत को प्रोत्साहन",
+  "Production Quality": "उत्पादन गुणवत्ता",
+  "Audio, visual & editing clarity": "ध्वनि, दृश्य एवं संपादन स्पष्टता",
+  "Audience Appreciation": "दर्शकों की सराहना",
+  "Relevance & public engagement": "प्रासंगिकता एवं जन सहभागिता",
+  "Winner Rewards & Recognition": "विजेता पुरस्कार एवं सम्मान",
+  "Official State Award, Trophy & Cash Prize": "आधिकारिक राज्य पुरस्कार, ट्रॉफी एवं नकद राशि",
+  "Close Details": "विवरण बंद करें",
+
+  // 39 Award Category Titles
+  "Creator for Nation Building": "राष्ट्र निर्माण क्रिएटर",
+  "Governance, Public Policy & Civic Awareness Creator": "सुशासन, सार्वजनिक नीति एवं नागरिक जागरूकता क्रिएटर",
+  "Defence & Strategic Affairs Creator": "रक्षा एवं सामरिक मामले क्रिएटर",
+  "AI, Data & Emerging Technology Creator": "एआई, डेटा एवं उभरती तकनीक क्रिएटर",
+  "Digital Literacy & Civic Participation Creator": "डिजिटल साक्षरता एवं नागरिक सहभागिता क्रिएटर",
+  "Social Change Creator": "सामाजिक परिवर्तन क्रिएटर",
+  "Nari Shakti Creator": "नारी शक्ति क्रिएटर",
+  "Agriculture & Rural Development Creator": "कृषि एवं ग्रामीण विकास क्रिएटर",
+  "Education, Career Guidance & Skill Development Creator": "शिक्षा, करियर मार्गदर्शन एवं कौशल विकास क्रिएटर",
+  "Health, Fitness & Public Welfare Creator": "स्वास्थ्य, फिटनेस एवं जन कल्याण क्रिएटर",
+  "Startup, Entrepreneurship & Creator Economy Creator": "स्टार्टअप, उद्यमिता एवं क्रिएटर अर्थव्यवस्था क्रिएटर",
+  "Women in Technology Creator": "तकनीक में महिलाएं क्रिएटर",
+  "Developer & Coding Creator": "डेवलपर एवं कोडिंग क्रिएटर",
+  "Cyber Security & Digital Safety Creator": "साइबर सुरक्षा एवं डिजिटल सुरक्षा क्रिएटर",
+  "Robotics, AR/VR, Web3 & Innovation Creator": "रोबोटिक्स, एआर/वीआर, वेब3 एवं नवाचार क्रिएटर",
+  "Green Champion & Mission LiFE Creator": "ग्रीन चैंपियन एवं मिशन लाइफ क्रिएटर",
+  "Swachhta Ambassador": "स्वच्छता एंबेसडर",
+  "Storyteller Creator": "कहानीकार क्रिएटर",
+  "Creative Arts Creator": "रचनात्मक कला क्रिएटर",
+  "Indian Languages & Literature Creator": "भारतीय भाषाएं एवं साहित्य क्रिएटर",
+  "Podcast & Long-Form Content Creator": "पॉडकास्ट एवं विस्तृत सामग्री क्रिएटर",
+  "Comedy Creator": "कॉमेडी एवं हास्य क्रिएटर",
+  "Indian Heritage & Culture Creator": "भारतीय विरासत एवं संस्कृति क्रिएटर",
+  "Journalist, Media & News Creator": "पत्रकार, मीडिया एवं समाचार क्रिएटर",
+  "Heritage Fashion Creator": "धरोहर फैशन क्रिएटर",
+  "Visual FX & Cinematic Creator": "विज़ुअल एफएक्स एवं सिनेमाई क्रिएटर",
+  "Gaming Creator": "गेमिंग क्रिएटर",
+  "Micro/Nano Creator": "माइक्रो / नैनो क्रिएटर",
+  "Child Prodigy Creator": "बाल प्रतिभा क्रिएटर",
+  "Automotive & Mobility Creator": "ऑटोमोटिव एवं मोबिलिटी क्रिएटर",
+  "New India Champion": "न्यू इंडिया चैंपियन",
+  "Home & Lifestyle Creator": "होम एवं जीवनशैली क्रिएटर",
+  "Food Creator": "फूड एवं खान-पान क्रिएटर",
+  "Disruptor of the Year": "डिसरप्टर ऑफ द ईयर",
+  "International Creator": "अंतरराष्ट्रीय क्रिएटर",
+  "Celebrity Creator": "सेलिब्रिटी क्रिएटर",
+  "Fact-Checking & Legal Awareness Creator": "फैक्ट-चेकिंग एवं कानूनी जागरूकता क्रिएटर",
+  "Pets & Wildlife Creator": "पेट्स एवं वन्यजीव क्रिएटर",
+  "Travel Creator": "ट्रैवल एवं पर्यटन क्रिएटर",
+
+  // Gallery Captions & Landmarks
+  "Bhoram Dev Temple": "भोरमदेव मंदिर",
+  "Mahtari Sadan": "महतारी सदन",
+  "Chhattisgarh Heritage": "छत्तीसगढ़ विरासत",
+  "Madheshwar Pahar": "मधेश्वर पहाड़",
+  "Bastar Tribal Culture": "बस्तर जनजातीय संस्कृति",
+  "State Festival": "राज्य उत्सव",
+  "Summit Highlights": "शिखर सम्मेलन की झलकियां",
+  "Chhattisgarh Landscape": "छत्तीसगढ़ प्राकृतिक दृश्य",
+  "State Event Gala": "राज्य समारोह",
+  "Cultural Event": "सांस्कृतिक कार्यक्रम",
+  "Golden Island Korba": "गोल्डन आइलैंड कोरबा",
+  "State Celebration": "राज्य उत्सव",
+  "Traditional Performance": "पारंपरिक प्रस्तुति",
+  "Youth Creator Meet": "युवा क्रिएटर सम्मेलन",
+  "Mayali Nature Camp": "मयाली नेचर कैंप",
+  "Indigenous Art": "स्वदेशी कला",
+  "Award Night Moment": "पुरस्कार संध्या का क्षण",
+  "Creator Community": "क्रिएटर समुदाय",
+  "State Initiative": "राज्य शासकीय पहल",
+  "Summit Gathering": "शिखर सम्मेलन",
+  "State Excellence": "राज्य उत्कृष्टता",
+  "Cultural Showcase": "सांस्कृतिक प्रदर्शनी",
+  "Award Ceremony": "पुरस्कार समारोह",
+  "Heritage & Tourism": "धरोहर एवं पर्यटन",
+  "State Influencers Meet": "राज्य इन्फ्लुएंसर्स मीट",
+  "Cultural Heritage Showcase": "सांस्कृतिक धरोहर प्रदर्शनी",
+  "Chitrakote Waterfalls": "चित्रकूट जलप्रपात",
+  "Raipur Landmark": "रायपुर लैंडमार्क",
+  "Grand Summit Stage": "भव्य शिखर मंच",
+  "Creator Awards": "क्रिएटर अवॉर्ड्स",
+  "Chhattisgarh Pride": "छत्तीसगढ़ का गौरव",
+
+  // How To Apply / Timeline Section
+  "Process Timeline": "प्रक्रिया समयरेखा",
+  "HOW TO BE": "आवेदन कैसे",
+  "NOMINATED": "करें?",
+  "From Submission to State Recognition — Just Four Simple Steps. A transparent and creator-friendly journey designed to recognize the voices shaping the digital identity of Chhattisgarh.":
+    "प्रविष्टि से राज्य सम्मान तक — केवल चार सरल चरण। छत्तीसगढ़ की डिजिटल पहचान गढ़ने वाली आवाज़ों को सम्मानित करने वाली पारदर्शी यात्रा।",
+  "DIGITAL REGISTRATION": "डिजिटल पंजीकरण",
+  "Submit Your Nomination": "अपना नामांकन जमा करें",
+  "Complete the online application by sharing your creator profile, content links, preferred award category, and a brief summary of your creative work. It only takes a few minutes to begin your journey.":
+    "अपनी क्रिएटर प्रोफ़ाइल, कंटेंट लिंक, पसंदीदा श्रेणी और रचनात्मक कार्य का विवरण साझा करके ऑनलाइन आवेदन पूरा करें।",
+  "VERIFICATION & REVIEW": "सत्यापन एवं समीक्षा",
+  "Screening & Verification": "जांच एवं सत्यापन",
+  "Our expert review committee carefully verifies your submission, content authenticity, creator profile, and community compliance to ensure a fair and transparent selection process.":
+    "हमारी विशेषज्ञ समिति निष्पक्ष और पारदर्शी चयन सुनिश्चित करने के लिए आपकी प्रविष्टि और कंटेंट प्रामाणिकता का ध्यानपूर्वक सत्यापन करती है।",
+  "COMMUNITY CHOICE": "जनता की पसंद",
+  "Public Voting": "सार्वजनिक मतदान",
+  "For selected categories, shortlisted creators will be featured for public voting. Community support contributes to the final evaluation alongside the jury’s assessment.":
+    "चयनित श्रेणियों के लिए शार्टलिस्ट किए गए क्रिएटर्स को सार्वजनिक मतदान के लिए प्रस्तुत किया जाएगा।",
+  "AWARD CEREMONY": "पुरस्कार समारोह",
+  "Grand Recognition": "भव्य राज्य सम्मान",
+  "The winners will be officially honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony, receiving government recognition, prestigious trophies, and certificates in front of creators, dignitaries, and industry leaders.":
+    "विजेताओं को आधिकारिक राज्य पुरस्कार समारोह में शासकीय मान्यता, ट्रॉफी एवं प्रमाण पत्र से सम्मानित किया जाएगा।",
+
+  // Terms & Guidelines
+  "Official Rules & Compliance": "आधिकारिक नियम एवं अनुपालन",
+  "GUIDELINES &": "दिशानिर्देश एवं",
+  "ELIGIBILITY": "पात्रता",
+  "WHO CAN APPLY?": "कौन आवेदन कर सकता है?",
+  "HOW ENTRIES ARE EVALUATED": "प्रविष्टियों का मूल्यांकन कैसे होता है?",
+  "JURY & SELECTION PROCESS": "जूरी एवं चयन प्रक्रिया",
+  "CODE OF CONDUCT & COMPLIANCE": "आचार संहिता एवं अनुपालन",
+  "Eligible participants with an active Instagram account can participate. Each participant must create an original Reel based on one of the approved competition topics and publish it on their own Instagram page. There is no limit on how many participants can choose the same topic or scheme.":
+    "सक्रिय सोशल मीडिया अकाउंट वाले पात्र प्रतिभागी भाग ले सकते हैं। प्रत्येक प्रतिभागी को अनुमोदित विषयों में से किसी एक पर आधारित मूल कंटेंट बनाना होगा।",
+  "Entries will be evaluated through a combination of jury evaluation, authentic Instagram engagement and public voting. The evaluation will consider the quality of the story, creativity, audience impact, visual execution, factual accuracy, editing and overall communication value of the Reel.":
+    "प्रविष्टियों का मूल्यांकन जूरी मूल्यांकन, प्रामाणिक सहभागिता और सार्वजनिक मतदान के संयोजन द्वारा किया जाएगा। मूल्यांकन में कंटेंट की गुणवत्ता, सृजनशीलता और प्रभाव पर विचार किया जाएगा।",
+  "A jury will review eligible submissions and assess their creative and storytelling quality. Audience engagement and public voting will also contribute to the selection process. The strongest entries, as determined by the official evaluation methodology, will be nominated for the next round. The final weightage and selection criteria will be as per the official competition rules.":
+    "एक निष्पक्ष जूरी पात्र प्रविष्टियों की समीक्षा करेगी और उनकी रचनात्मकता का आकलन करेगी। सर्वोत्कृष्ट प्रविष्टियों को अगले चरण के लिए नामांकित किया जाएगा।",
+  "All submissions must be original, relevant to the selected scheme or initiative, and factually accurate. Participants must not use Trial Reels, paid boosting, advertisements, purchased engagement, bots or any form of artificial engagement to influence their results. Organic sharing through normal social and personal networks is permitted. Any violation of the competition rules may result in disqualification.":
+    "सभी प्रविष्टियां मूल, प्रासंगिक और तथ्यात्मक रूप से सही होनी चाहिए। कृत्रिम रूप से सहभागिता बढ़ाने या गलत जानकारी देने पर अयोग्यता हो सकती है।",
+
+  // FAQ Section
+  "FAQ": "सामान्य प्रश्न",
+  "Frequently Asked": "अक्सर पूछे जाने वाले",
+  "Questions": "प्रश्न",
+  "WHO CAN APPLY FOR THE AWARDS?": "पुरस्कारों के लिए कौन आवेदन कर सकता है?",
+  "CAN MINOR CREATORS APPLY?": "क्या नाबालिग क्रिएटर आवेदन कर सकते हैं?",
+  "IS THERE ANY REGISTRATION OR ENTRY FEE?": "क्या कोई पंजीकरण या प्रवेश शुल्क है?",
+  "CAN I APPLY FOR MULTIPLE CATEGORIES?": "क्या मैं एक से अधिक श्रेणियों के लिए आवेदन कर सकता हूँ?",
+  "HOW ARE THE WINNERS SELECTED?": "विजेताओं का चयन कैसे किया जाता है?",
+  "WHAT DO WINNERS RECEIVE?": "विजेताओं को क्या मिलता है?",
+  "WHEN AND WHERE WILL THE AWARD CEREMONY TAKE PLACE?": "पुरस्कार समारोह कब और कहाँ आयोजित होगा?",
+  "Any creator who produces original digital content related to Chhattisgarh may apply. Whether you’re a YouTuber, influencer, filmmaker, photographer, blogger, artist, educator, gamer, podcaster, or storyteller—if your content inspires, informs, or showcases the spirit of Chhattisgarh, you’re eligible to participate.":
+    "छत्तीसगढ़ से संबंधित मूल डिजिटल कंटेंट बनाने वाला कोई भी क्रिएटर आवेदन कर सकता है। यदि आपका कंटेंट छत्तीसगढ़ की भावना को दर्शाता है, तो आप पात्र हैं।",
+  "Yes. Creators below 18 years of age are welcome to participate. However, their registration, consent, and all further processes must be completed under the supervision and approval of a parent or legal guardian.":
+    "हाँ। 18 वर्ष से कम आयु के क्रिएटर अपने माता-पिता या कानूनी अभिभावक की देखरेख में भाग ले सकते हैं।",
+  "No. Registration for the Chhattisgarh State Creator & Influencer Awards is completely free. There are no application or participation charges at any stage.":
+    "नहीं। छत्तीसगढ़ राज्य क्रिएटर एवं इन्फ्लुएंसर अवॉर्ड्स के लिए पंजीकरण पूरी तरह से निःशुल्क है।",
+  "Yes. You may submit your nomination in up to three award categories, provided your content meets the eligibility criteria for each category.":
+    "हाँ। आप अधिकतम तीन पुरस्कार श्रेणियों में अपना नामांकन जमा कर सकते हैं।",
+  "Every nomination goes through a fair and transparent evaluation process based on content quality, originality, creativity, impact, audience engagement, and relevance to Chhattisgarh. Selected categories may also include public voting as part of the final evaluation.":
+    "प्रत्येक नामांकन कंटेंट की गुणवत्ता, मौलिकता, सृजनशीलता और छत्तीसगढ़ से प्रासंगिकता के आधार पर पारदर्शी प्रक्रिया से गुजरता है।",
+  "Winners receive official government recognition, an award trophy, a certificate of excellence, and the opportunity to be celebrated among Chhattisgarh’s leading digital creators.":
+    "विजेताओं को आधिकारिक शासकीय मान्यता, ट्रॉफी, उत्कृष्ट प्रमाण पत्र और राज्य के शीर्ष क्रिएटर्स के साथ मंच साझा करने का अवसर मिलता है।",
+  "The winners will be honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony in Raipur. The official date, venue, and event schedule will be announced on the website and official communication channels.":
+    "विजेताओं को रायपुर में आयोजित भव्य राज्य पुरस्कार समारोह में सम्मानित किया जाएगा। आधिकारिक तिथि और स्थान की घोषणा शीघ्र की जाएगी।",
+
+  // Participate Modal & Form Labels
+  "CHHATTISGARH STATE CREATOR & INFLUENCER AWARDS 2026": "छत्तीसगढ़ राज्य क्रिएटर एवं इन्फ्लुएंसर अवॉर्ड्स 2026",
+  "ENTER CREATOR AWARDS PORTAL": "क्रिएटर अवॉर्ड्स पोर्टल में प्रवेश करें",
+  "Complete official nomination in less than 2 minutes.": "2 मिनट से भी कम समय में आधिकारिक नामांकन पूरा करें।",
+  "Select Nomination Type": "नामांकन प्रकार का चयन करें",
+  "Nominate Myself (Self Entry)": "स्वयं का नामांकन करें",
+  "Nominate Someone Else": "किसी अन्य क्रिएटर का नामांकन करें",
+  "Select Primary Award Category": "प्राथमिक पुरस्कार श्रेणी चुनें",
+  "Choose Category...": "श्रेणी चुनें...",
+  "Tell Us About Yourself": "अपने बारे में बताएं",
+  "Tell Us About The Creator": "क्रिएटर के बारे में बताएं",
+  "Creator / Channel / Handle Name": "क्रिएटर / चैनल का नाम",
+  "Social Media Platform": "सोशल मीडिया प्लेटफॉर्म",
+  "Select Platform...": "प्लेटफ़ॉर्म चुनें...",
+  "Primary Channel / Profile Link (URL)": "प्रोफ़ाइल / चैनल लिंक (URL)",
+  "Best Content / Sample Video Link (URL)": "सर्वश्रेष्ठ वीडियो / कंटेंट लिंक (URL)",
+  "Why should this creator win? (Brief Summary)": "यह क्रिएटर क्यों जीतना चाहिए? (संक्षिप्त विवरण)",
+  "Mobile Number (WhatsApp Preferred)": "मोबाइल नंबर (व्हाट्सएप अनुशंसित)",
+  "District of Chhattisgarh": "छत्तीसगढ़ का जिला",
+  "Select District...": "जिला चुनें...",
+  "I confirm that all provided information is accurate and authentic.": "मैं पुष्टि करता हूँ कि दी गई सभी जानकारी सटीक और प्रामाणिक है।",
+  "SUBMIT OFFICIAL NOMINATION": "आधिकारिक नामांकन जमा करें",
+  "Submitting Nomination...": "नामांकन जमा किया जा रहा है...",
+  "NOMINATION SUBMITTED SUCCESSFULLY!": "नामांकन सफलतापूर्वक जमा हो गया!",
+  "Thank you for participating. Your nomination has been officially registered under Registration ID:":
+    "भाग लेने के लिए धन्यवाद। आपका नामांकन आधिकारिक रूप से पंजीकृत कर लिया गया है। पंजीकरण आईडी:",
+  "Download Nomination Receipt (PDF)": "नामांकन रसीद डाउनलोड करें (PDF)",
+  "Nominate Another Creator": "किसी अन्य क्रिएटर का नामांकन करें",
+  "Close Window": "विंडो बंद करें",
 
   // Heritage & About Sections
   "DISCOVER CHHATTISGARH": "छत्तीसगढ़ को जानें",
@@ -66,31 +325,6 @@ export const HINDI_DICTIONARY = {
   "CULTURAL CREATORS": "सांस्कृतिक क्रिएटर",
   "About Chhattisgarh": "छत्तीसगढ़ के बारे में",
   "About Us": "हमारे बारे में",
-
-  // Forms, Nomination & Auth
-  "Full Legal Name": "पूरा कानूनी नाम",
-  "Email Address": "ईमेल पता",
-  "Mobile Number": "मोबाइल नंबर",
-  "State Location": "राज्य",
-  "District Location": "जिला",
-  "Account Role / Type": "खाता प्रकार / भूमिका",
-  "Password": "पासवर्ड",
-  "Confirm Password": "पासवर्ड की पुष्टि करें",
-  "Security Captcha Verification": "सुरक्षा कैप्चा सत्यापन",
-  "Type 6 characters code": "6-अंकों का कोड दर्ज करें",
-  "Type 6-character code": "6-अक्षरों का कोड टाइप करें",
-  "Register Creator Account →": "क्रिएटर खाता पंजीकृत करें →",
-  "Creating Creator Account...": "खाता बनाया जा रहा है...",
-  "Already have an account?": "क्या आपके पास पहले से खाता है?",
-  "Sign In Here →": "यहाँ लॉगिन करें →",
-  "Nomination As": "नामांकन प्रकार",
-  "Self Nomination": "स्वयं का नामांकन",
-  "Nominate Creator": "अन्य क्रिएटर का नामांकन",
-  "Select Category": "श्रेणी का चयन करें",
-  "Work Description": "कार्य विवरण",
-  "Primary Social Media Link": "प्राथमिक सोशल मीडिया लिंक",
-  "Submit Entry": "प्रविष्टि जमा करें",
-  "Submitting...": "जमा हो रहा है...",
 
   // GIGW Utilities & Footer
   "GIGW Utilities": "जीआईजीडब्ल्यू सुविधाएं",
@@ -133,13 +367,13 @@ export const HINDI_DICTIONARY = {
 export const CG_DICTIONARY = {
   // Navigation & Branding in Chhattisgarhi
   "Home": "पहिली पाना",
-  "About": "हमर बारे मां",
-  "Categories": "इनाम के किसम",
+  "About": "हमर बारे मं",
+  "Categories": "श्रेणी",
   "News": "खबर अउ समाचार",
   "News & Press": "खबर अउ प्रेस",
-  "News & Updates": "खबर अउ अपडेट",
+  "News & Updates": "नवा अपडेट",
   "Media & Press": "मीडिया अउ प्रेस",
-  "Winners": "जीतइया मन",
+  "Winners": "विजेता",
   "Participate": "भाग लेव",
   "Participate Now": "अभी भाग लेव",
   "Login": "लॉगिन करव",
@@ -151,14 +385,15 @@ export const CG_DICTIONARY = {
   "Guidelines": "नियम-कायदा",
   "Contact": "बात-बात करव",
   "Contact Us": "हमर से बात करव",
-  "Gallery": "फोटो-वीडियो गैलरी",
+  "Gallery": "दीर्घा",
   "Explore Categories": "सबो किसम देखव",
-  "Download Guidelines": "नियम-कायदा डाउनलोड करव",
+  "Download Guidelines": "दिशा-निर्देश डाउनलोड करव",
   "Official Guidelines": "सरकारी नियम-कायदा",
   "Government Of Chattisgarh": "छत्तीसगढ़ सरकार",
   "Government of Chhattisgarh": "छत्तीसगढ़ सरकार",
-  "Chhattisgarh State Creator & Influencer Awards": "छत्तीसगढ़ राज्य क्रिएटर अउ इन्फ्लुएंसर अवॉर्ड्स",
-  "Digital State": "डिजिटल छत्तीसगढ़",
+  "Government Of Chhattisgarh": "छत्तीसगढ़ सरकार",
+  "Chhattisgarh State Creator & Influencer Awards": "छत्तीसगढ़ राज्य निर्माता एवं प्रभावशाली पुरस्कार",
+  "Digital State": "डिजिटल राज्य",
   "Digital Creators": "डिजिटल क्रिएटर मन",
   "Award Categories": "पुरस्कार के किसम मन",
   "Districts Covered": "सबो जिला मन",
@@ -167,7 +402,7 @@ export const CG_DICTIONARY = {
   "Official State Registration Portal": "सरकारी नांव पंजीयन पोर्टल",
   "Return to Main Portal": "मुख्य पोर्टल मां लवटव",
   "Navigation Menu": "नेविगेशन मेनू",
-  "Navigation": "नेविगेशन",
+  "Navigation": "मार्गदर्शन",
 
   // Hero & Highlights
   "OFFICIAL GOVERNMENT INITIATIVE": "आधिकारिक सरकारी पहल",
@@ -175,12 +410,269 @@ export const CG_DICTIONARY = {
   "Participate To Put": "भाग लेव अउ",
   "On The Global Map": "ला दुनिया के नक्शा मां लाओ",
   "Where Local Stories Earn Global Recognition": "जहाँ घर-गाँव के गोठ-बात ला दुनिया मान देथे",
-  "Every reel is a remarkable reality": "हर एक रील हे एक अद्भुत सच",
+  "Every reel is a remarkable reality": "हर एक स्क्रीन मं छाएगा छत्तीसगढ़",
   "When You Create, Chhattisgarh Shines": "जब तूंहू बनाथौ, छत्तीसगढ़ चमकथे",
 
-  // Sections & Descriptions
-  "The Chhattisgarh State Creator & Influencer Awards is a flagship initiative by the Government of Chhattisgarh to celebrate creators who transform the state’s culture, heritage, tourism, innovation, and everyday stories into inspiring digital experiences for India and the world. Every piece of content that celebrates Chhattisgarh contributes to preserving its heritage while introducing its unique culture, traditions, and values to a wider audience.":
-    "छत्तीसगढ़ राज्य क्रिएटर अउ इन्फ्लुएंसर अवॉर्ड्स छत्तीसगढ़ सरकार के एक बड़ पहल हे। एकर उद्देश्य उही क्रिएटर मन ला सम्मानित करना हे जे मन राज्य के संस्कृति, धरोहर, पर्यटन, अउ जनजीवन के गोठ ला दुनिया के आगे डिजिटल रूप मां रखथें।",
+  // Conference / About Event Section
+  "Official State Platform": "आधिकारिक राज्य मंच",
+  "THE NEXT BIG": "अगला बड़े",
+  "STORY STARTS HERE.": "कहानी इहीच ले शुरू होथे।",
+  "Every creator has the power to shape how the world sees Chhattisgarh.":
+    "दुनिया छत्तीसगढ़ ल कइसे देखथे, एला आकार देय के ताकत हर एक रचनाकार के हाथ मं हे।",
+  "The Chhattisgarh State Creator & Influencer Awards is a prestigious Government initiative that celebrates creators whose content reflects the state’s culture, heritage, creativity, tourism, innovation, and everyday life. Every authentic story shared today becomes a part of Chhattisgarh’s digital legacy.":
+    "छत्तीसगढ़ राज्य निर्माता एवं प्रभावशाली पुरस्कार एक प्रतिष्ठित सरकारी पहल आय, जेमे ओ रचनाकार मन के सम्मान अउ उत्सव मनाय जाथे, जेन मन अपन सामग्री के माध्यम ले छत्तीसगढ़ के संस्कृति, विरासत, रचनात्मकता, पर्यटन, नवाचार अउ रोजमर्रा के जिनगी ल दुनिया के सामने लाथें। आज आप मन जऊन सच्ची अउ मौलिक कहानी साझा करत हव, वो आने वाला समय मं छत्तीसगढ़ के डिजिटल विरासत के हिस्सा बन जाही।",
+  "No matter your platform, your creativity belongs here.":
+    "आपके मंच चाहे जऊन हो, आपकी रचनात्मकता इहीच हे।",
+  "Whether you’re a YouTuber, Instagram creator, filmmaker, photographer, blogger, educator, artist, gamer, podcaster, or storyteller, your work has the power to inspire audiences and showcase the true spirit of Chhattisgarh to India and the world.":
+    "आप यूट्यूबर, इंस्टाग्राम रचनाकार, फिल्म निर्माता, छायाचित्रकार, ब्लॉग लेखक, शिक्षक, कलाकार, खेल रचनाकार, पॉडकास्ट निर्माता या कहानीकार होव—आपके रचनात्मक काम मं दर्शक मन ल प्रेरित करे अउ भारत के संग-संग दुनिया ल छत्तीसगढ़ के असली पहचान अउ भावना दिखाय के ताकत हे।",
+  "Your single video, photo, story, or reel—has the power to change how the world thinks about Chhattisgarh.":
+    "आपके एक वीडियो, एक फोटो, एक कहानी या एक रील—छत्तीसगढ़ के बारे मं दुनिया के सोच ल बदल सकथे।",
+  "Get recognized. Get celebrated. Represent Chhattisgarh with pride.":
+    "पहचानव। जश्न मनावव। गर्व के संग छत्तीसगढ़ ल दुनिया के सामने रखव।",
+  "Receive official recognition, amplify your creative journey, and become part of a community that’s building the future of Chhattisgarh’s digital identity.":
+    "सरकारी स्तर मं आधिकारिक पहचान पावव, अपन रचनात्मक सफर ल आगू बढ़ावव अउ ओ रचनाकार समुदाय के हिस्सा बनव, जऊन छत्तीसगढ़ के डिजिटल पहचान के भविष्य ल गढ़त हे।",
+  "“Because when your content inspires the nation, Chhattisgarh shines with you.”":
+    "“काबर कि जब आपके सामग्री ले देश प्रेरित होथे, त छत्तीसगढ़ घलो आपके संग चमकथे।”",
+  "Because when your content inspires the nation, Chhattisgarh shines with you.":
+    "काबर कि जब आपके सामग्री ले देश प्रेरित होथे, त छत्तीसगढ़ घलो आपके संग चमकथे।",
+
+  // Leadership & Video Section
+  "TRUST & CREATOR VISION": "विश्वास अउ क्रिएटर दृष्टि",
+  "LEADERSHIP": "नेतृत्व",
+  "Messages": "संदेश मन",
+  "Watch official messages and creator interactions highlighting digital empowerment across India.":
+    "डिजिटल सशक्तिकरण ला देखाए वाला सरकारी संदेश अउ क्रिएटर गोठ-बात देखव।",
+  "Watch Video": "वीडियो देखव",
+  "Prime Minister": "प्रधानमंत्री",
+  "Chief Minister": "मुख्यमंत्री",
+  "Shri Vishnu Deo Sai": "श्री विष्णु देव साय",
+  "Narendra Modi": "नरेंद्र मोदी",
+  "PM Narendra Modi's YouTube Journey: 15 Years of Global Impact | YouTube Fanfest India 2023":
+    "प्रधानमंत्री नरेंद्र मोदी के यूट्यूब यात्रा: 15 साल के वैश्विक प्रभाव | यूट्यूब फैनफ़ेस्ट 2023",
+  "Swachhata Se Swasthya: PM Modi & Ankit Baiyanpuria Lead Way to a Cleaner and Healthier Bharat":
+    "स्वच्छता ले स्वास्थ्य: पीएम मोदी अउ अंकित बयानपुरिया के संदेश",
+
+  // Award Categories & Tiers
+  "AWARD CATEGORIES": "पुरस्कार के किसम मन",
+  "39 CREATOR": "39 क्रिएटर",
+  "CATEGORIES ACROSS 11 TIERS": "किसम (11 भाग मां)",
+  "Explore all 39 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.":
+    "सबो 39 सरकारी राज्य पुरस्कार के किसम मन ला देखव अउ समझव।",
+  "Search Categories...": "श्रेणी खोजव...",
+  "No categories match your search.": "तुंहर खोजे किसम नइ मिलिस।",
+  "No categories match your query.": "तुंहर खोजे किसम नइ मिलिस।",
+  "All Categories": "सबो श्रेणी मन",
+  "Culture & Heritage Tier": "संस्कृति अउ धरोहर",
+  "Tourism & Nature Tier": "पर्यटन अउ प्रकृति",
+  "Social Impact & Community Tier": "समाज सेवा अउ भलाई",
+  "Education & Skill Tier": "पढ़ाई अउ हुनर",
+  "Tech & Gaming Tier": "तकनीक अउ गेमिंग",
+  "Arts & Entertainment Tier": "कला अउ मनोरंजन",
+  "Regional & Tribal Preservation Tier": "जनजातीय अउ क्षेत्रीय संस्कृति",
+  "Media & Visual Arts Tier": "मीडिया अउ फोटो-वीडियो",
+  "Youth & Female Empowerment Tier": "युवा अउ नोनी मन के विकास",
+  "Rural & Local Economy Tier": "घर-गाँव अउ व्यापार",
+  "Special State Recognition Tier": "विशेष राज्य मान-सम्मान",
+
+  "Nation Building & Governance": "राष्ट्र निर्माण अउ सुशासन",
+  "Technology & Innovation": "तकनीक अउ नवाचार",
+  "Education & Career": "पढ़ाई अउ करियर",
+  "Health & Social Impact": "स्वास्थ्य अउ समाज सेवा",
+  "Agriculture & Rural Development": "खेती-किसानी अउ गाँव विकास",
+  "Sustainability & Environment": "पर्यावरण अउ रुख-राई",
+  "Culture, Heritage & Languages": "संस्कृति, धरोहर अउ बोली-भाषा",
+  "Media & Information": "मीडिया अउ जानकारी",
+  "Creative & Entertainment": "मनोरंजन अउ बनावट",
+  "Lifestyle & Special Interest": "रहना-सहना अउ रुचि",
+  "Special Recognition": "विशेष मान-सम्मान",
+  "CATEGORIES IN": "किसम मन:",
+  "Back to Home": "पहिली पाना मां लवटव",
+  "Loading Categories...": "श्रेणी मन लोड होवत हे...",
+
+  "Category Overview": "श्रेणी के जानकारी",
+  "Submission Guidelines & Task Brief": "नियम अउ कार्य विवरण",
+  "Jury Evaluation Criteria": "जूरी जांच के तरीका",
+  "Originality & Storytelling": "असली बनावट अउ गोठ-बात",
+  "Unique perspective & narrative": "नवा तरीका अउ सोच",
+  "Cultural & Regional Impact": "संस्कृति अउ क्षेत्र म असर",
+  "Promoting Chhattisgarh heritage": "छत्तीसगढ़ के नाम उंचा करना",
+  "Production Quality": "फोटो-वीडियो अउ आवाज के सफाई",
+  "Audio, visual & editing clarity": "आवाज अउ फोटो के सफाई",
+  "Audience Appreciation": "लोगन मन के पसंद",
+  "Relevance & public engagement": "जनता के जुड़ाव",
+  "Winner Rewards & Recognition": "जीतइया के मान-सम्मान",
+  "Official State Award, Trophy & Cash Prize": "सरकारी इनाम, ट्रॉफी अउ नकद राशि",
+  "Close Details": "विवरण बंद करव",
+
+  // 39 Award Category Titles
+  "Creator for Nation Building": "राष्ट्र निर्माण क्रिएटर",
+  "Governance, Public Policy & Civic Awareness Creator": "सुशासन अउ नागरिक जागरूकता क्रिएटर",
+  "Defence & Strategic Affairs Creator": "रक्षा अउ सुरक्षा क्रिएटर",
+  "AI, Data & Emerging Technology Creator": "एआई अउ नवा तकनीक क्रिएटर",
+  "Digital Literacy & Civic Participation Creator": "डिजिटल पढ़ाई अउ नागरिक भागीदारी क्रिएटर",
+  "Social Change Creator": "समाज बदलाव क्रिएटर",
+  "Nari Shakti Creator": "नारी शक्ति क्रिएटर",
+  "Agriculture & Rural Development Creator": "खेती-किसानी अउ गाँव विकास क्रिएटर",
+  "Education, Career Guidance & Skill Development Creator": "पढ़ाई, करियर अउ हुनर विकास क्रिएटर",
+  "Health, Fitness & Public Welfare Creator": "स्वास्थ्य अउ जन भलाई क्रिएटर",
+  "Startup, Entrepreneurship & Creator Economy Creator": "स्टार्टअप अउ व्यापार क्रिएटर",
+  "Women in Technology Creator": "तकनीक म नोनी-सियानी क्रिएटर",
+  "Developer & Coding Creator": "डेवलपर अउ कोडिंग क्रिएटर",
+  "Cyber Security & Digital Safety Creator": "साइबर सुरक्षा अउ डिजिटल सुरक्षा क्रिएटर",
+  "Robotics, AR/VR, Web3 & Innovation Creator": "रोबोटिक्स अउ नवाचार क्रिएटर",
+  "Green Champion & Mission LiFE Creator": "हरियर क्रांति अउ मिशन लाइफ क्रिएटर",
+  "Swachhta Ambassador": "सफाई एंबेसडर",
+  "Storyteller Creator": "किस्सा-कहानी सुनाए वाला क्रिएटर",
+  "Creative Arts Creator": "बनावट अउ कला क्रिएटर",
+  "Indian Languages & Literature Creator": "बोली-भाषा अउ साहित्य क्रिएटर",
+  "Podcast & Long-Form Content Creator": "पॉडकास्ट अउ बड़ कन्टेंट क्रिएटर",
+  "Comedy Creator": "हंसी-खुशी अउ कॉमेडी क्रिएटर",
+  "Indian Heritage & Culture Creator": "धरोहर अउ संस्कृति क्रिएटर",
+  "Journalist, Media & News Creator": "पत्रकार अउ खबर क्रिएटर",
+  "Heritage Fashion Creator": "धरोहर फैशन क्रिएटर",
+  "Visual FX & Cinematic Creator": "वीडियो एफएक्स अउ सिनेमा क्रिएटर",
+  "Gaming Creator": "गेमिंग क्रिएटर",
+  "Micro/Nano Creator": "माइक्रो / नैनो क्रिएटर",
+  "Child Prodigy Creator": "बाल प्रतिभा क्रिएटर",
+  "Automotive & Mobility Creator": "गाड़ी अउ मोबिलिटी क्रिएटर",
+  "New India Champion": "नवा भारत चैंपियन",
+  "Home & Lifestyle Creator": "घर अउ जीवनशैली क्रिएटर",
+  "Food Creator": "खान-पान अउ व्यंजन क्रिएटर",
+  "Disruptor of the Year": "डिसरप्टर ऑफ द ईयर",
+  "International Creator": "अंतरराष्ट्रीय क्रिएटर",
+  "Celebrity Creator": "सेलिब्रिटी क्रिएटर",
+  "Fact-Checking & Legal Awareness Creator": "सच्चाई जांच अउ कानूनी जानकारी क्रिएटर",
+  "Pets & Wildlife Creator": "जीव-जंतु अउ वन्यजीव क्रिएटर",
+  "Travel Creator": "घूमना-फिरना अउ पर्यटन क्रिएटर",
+
+  // Gallery Captions & Landmarks
+  "Bhoram Dev Temple": "भोरमदेव मंदिर",
+  "Mahtari Sadan": "महतारी सदन",
+  "Chhattisgarh Heritage": "छत्तीसगढ़ के धरोहर",
+  "Madheshwar Pahar": "मधेश्वर पहाड़",
+  "Bastar Tribal Culture": "बस्तर जनजातीय संस्कृति",
+  "State Festival": "राज्य के तिहार",
+  "Summit Highlights": "सम्मेलन के मुख्य बात",
+  "Chhattisgarh Landscape": "छत्तीसगढ़ के सुंदर नजारा",
+  "State Event Gala": "राज्य के बड़ कार्यक्रम",
+  "Cultural Event": "सांस्कृतिक कार्यक्रम",
+  "Golden Island Korba": "गोल्डन आइलैंड कोरबा",
+  "State Celebration": "राज्य के खुशी-उत्सव",
+  "Traditional Performance": "पारंपरिक नाच-गान",
+  "Youth Creator Meet": "युवा क्रिएटर सम्मेलन",
+  "Mayali Nature Camp": "मयाली नेचर कैंप",
+  "Indigenous Art": "घर-गाँव के कला",
+  "Award Night Moment": "इनाम बांटे के संझा",
+  "Creator Community": "क्रिएटर परिवार",
+  "State Initiative": "राज्य सरकार के पहल",
+  "Summit Gathering": "क्रिएटर मन के बैठक",
+  "State Excellence": "राज्य के नामी काम",
+  "Cultural Showcase": "सांस्कृतिक झलक",
+  "Award Ceremony": "पुरस्कार समारोह",
+  "Heritage & Tourism": "धरोहर अउ पर्यटन",
+  "State Influencers Meet": "राज्य इन्फ्लुएंसर्स मीट",
+  "Cultural Heritage Showcase": "सांस्कृतिक धरोहर के झलक",
+  "Chitrakote Waterfalls": "चित्रकूट झरना",
+  "Raipur Landmark": "रायपुर के मुख्य जगा",
+  "Grand Summit Stage": "बड़ कार्यक्रम के मंच",
+  "Creator Awards": "क्रिएटर अवॉर्ड्स",
+  "Chhattisgarh Pride": "छत्तीसगढ़ के अभिमान",
+
+  // How To Apply / Timeline Section
+  "Process Timeline": "काम के तरीका",
+  "HOW TO BE": "आवेदन कइसने",
+  "NOMINATED": "करव?",
+  "From Submission to State Recognition — Just Four Simple Steps. A transparent and creator-friendly journey designed to recognize the voices shaping the digital identity of Chhattisgarh.":
+    "नांव भेजे ले राज्य पुरस्कार पाए तक — सिर्फ चार आसान काम।",
+  "DIGITAL REGISTRATION": "नांव पंजीयन",
+  "Submit Your Nomination": "अपन नांव दर्ज करव",
+  "Complete the online application by sharing your creator profile, content links, preferred award category, and a brief summary of your creative work. It only takes a few minutes to begin your journey.":
+    "अपन प्रोफ़ाइल, वीडियो लिंक अउ जानकारी भरके ऑनलाइन फ़ॉर्म जमा करव।",
+  "VERIFICATION & REVIEW": "जांच अउ परख",
+  "Screening & Verification": "जांच अउ सत्यापन",
+  "Our expert review committee carefully verifies your submission, content authenticity, creator profile, and community compliance to ensure a fair and transparent selection process.":
+    "हमर टीम तुंहर काम अउ जानकारी के सही जांच करही।",
+  "COMMUNITY CHOICE": "लोगन मन के पसंद",
+  "Public Voting": "सार्वजनिक वोटिंग",
+  "For selected categories, shortlisted creators will be featured for public voting. Community support contributes to the final evaluation alongside the jury’s assessment.":
+    "चुने गे क्रिएटर मन बर लोगन मन से वोटिंग कराए जाही।",
+  "AWARD CEREMONY": "इनाम बांटे के दिन",
+  "Grand Recognition": "बड़ मान-सम्मान",
+  "The winners will be officially honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony, receiving government recognition, prestigious trophies, and certificates in front of creators, dignitaries, and industry leaders.":
+    "जीतइया क्रिएटर मन ला सरकारी मंच म ट्रॉफी अउ प्रमाणपत्र देके सम्मानित करे जाही।",
+
+  // Terms & Guidelines
+  "Official Rules & Compliance": "आधिकारिक नियम अउ अनुपालन",
+  "GUIDELINES &": "दिशा-निर्देश अउ",
+  "ELIGIBILITY": "पात्रता",
+  "WHO CAN APPLY?": "कोन-कोन भाग ले सकथें?",
+  "HOW ENTRIES ARE EVALUATED": "जांच कइसने होही?",
+  "JURY & SELECTION PROCESS": "चुनाव के तरीका",
+  "CODE OF CONDUCT & COMPLIANCE": "नियम अउ अनुशासन",
+  "Eligible participants with an active Instagram account can participate. Each participant must create an original Reel based on one of the approved competition topics and publish it on their own Instagram page. There is no limit on how many participants can choose the same topic or scheme.":
+    "जेन प्रतिभागी मन के सक्रिय इंस्टाग्राम खाता हे, वो मन प्रतियोगिता मं हिस्सा ले सकथें। हर प्रतिभागी ल प्रतियोगिता मं मंजूर किए गे एक विषय ऊपर अपन खुद के मौलिक रील बनाके अपन इंस्टाग्राम पेज मं प्रकाशित करना जरूरी हे। एके विषय या योजना ल कतको प्रतिभागी चुन सकथें। कोनो एक विषय ल चुने वाले प्रतिभागी के संख्या ऊपर कोनो सीमा नइ हे।",
+  "Entries will be evaluated through a combination of jury evaluation, authentic Instagram engagement and public voting. The evaluation will consider the quality of the story, creativity, audience impact, visual execution, factual accuracy, editing and overall communication value of the Reel.":
+    "कन्टेंट के गुण, बनावट अउ सच्चाई के आधार म सही चुनाव करे जाही।",
+  "A jury will review eligible submissions and assess their creative and storytelling quality. Audience engagement and public voting will also contribute to the selection process. The strongest entries, as determined by the official evaluation methodology, will be nominated for the next round. The final weightage and selection criteria will be as per the official competition rules.":
+    "सरकारी जूरी मन सबो प्रविष्टि मन के जांच करही अउ सबले बढ़िया काम ला चुनही।",
+  "All submissions must be original, relevant to the selected scheme or initiative, and factually accurate. Participants must not use Trial Reels, paid boosting, advertisements, purchased engagement, bots or any form of artificial engagement to influence their results. Organic sharing through normal social and personal networks is permitted. Any violation of the competition rules may result in disqualification.":
+    "सबो जानकारी अउ वीडियो असली होना चाहिए। गलत तरीका अपनाए म नांव रद्द करे जाही।",
+
+  // FAQ Section
+  "FAQ": "पूछे जाय वाले सवाल",
+  "Frequently Asked": "बार-बार पूछे जाय वाले",
+  "Questions": "सवाल",
+  "WHO CAN APPLY FOR THE AWARDS?": "पुरस्कार बर कोन आवेदन कर सकथे?",
+  "CAN MINOR CREATORS APPLY?": "का 18 साल ले छोटे क्रिएटर भाग ले सकथें?",
+  "IS THERE ANY REGISTRATION OR ENTRY FEE?": "का कोनो फ़ीस लागही?",
+  "CAN I APPLY FOR MULTIPLE CATEGORIES?": "का एक ले जादा श्रेणी म फ़ॉर्म भर सकथन?",
+  "HOW ARE THE WINNERS SELECTED?": "जीतइया मन के चुनाव कइसने होही?",
+  "WHAT DO WINNERS RECEIVE?": "जीतइया मन ला का-का मिलही?",
+  "WHEN AND WHERE WILL THE AWARD CEREMONY TAKE PLACE?": "पुरस्कार समारोह कब अउ कहां होही?",
+  "Any creator who produces original digital content related to Chhattisgarh may apply. Whether you’re a YouTuber, influencer, filmmaker, photographer, blogger, artist, educator, gamer, podcaster, or storyteller—if your content inspires, informs, or showcases the spirit of Chhattisgarh, you’re eligible to participate.":
+    "छत्तीसगढ़ से जुड़े वीडियो या कन्टेंट बनाए वाला सबो क्रिएटर मन भाग ले सकथें।",
+  "Yes. Creators below 18 years of age are welcome to participate. However, their registration, consent, and all further processes must be completed under the supervision and approval of a parent or legal guardian.":
+    "हौ, 18 साल ले कम उम्र के क्रिएटर मन अपन दाई-दादा के इजाजत ले भाग ले सकथें।",
+  "No. Registration for the Chhattisgarh State Creator & Influencer Awards is completely free. There are no application or participation charges at any stage.":
+    "नहीं। नांव पंजीयन पूरी तरह से मुफ़्त हे, कोनो फ़ीस नइ लागय।",
+  "Yes. You may submit your nomination in up to three award categories, provided your content meets the eligibility criteria for each category.":
+    "हौ। तैं अधिकतम तीन किसम म अपन नांव भेज सकथस।",
+  "Every nomination goes through a fair and transparent evaluation process based on content quality, originality, creativity, impact, audience engagement, and relevance to Chhattisgarh. Selected categories may also include public voting as part of the final evaluation.":
+    "सबो फ़ॉर्म के सही अउ पारदर्शी जांच करे जाही।",
+  "Winners receive official government recognition, an award trophy, a certificate of excellence, and the opportunity to be celebrated among Chhattisgarh’s leading digital creators.":
+    "जीतइया मन ला सरकारी मान-सम्मान, ट्रॉफी, प्रमाण पत्र अउ बड़ मंच मिलही।",
+  "The winners will be honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony in Raipur. The official date, venue, and event schedule will be announced on the website and official communication channels.":
+    "रायपुर मां होने वाला बड़ कार्यक्रम म जीतइया मन ला सम्मानित करे जाही।",
+
+  // Participate Modal & Form Labels
+  "CHHATTISGARH STATE CREATOR & INFLUENCER AWARDS 2026": "छत्तीसगढ़ राज्य निर्माता एवं प्रभावशाली पुरस्कार 2026",
+  "ENTER CREATOR AWARDS PORTAL": "क्रिएटर अवॉर्ड्स पोर्टल म आओ",
+  "Complete official nomination in less than 2 minutes.": "2 मिनट म अपन सरकारी फ़ॉर्म भरव।",
+  "Select Nomination Type": "नामांकन के किसम चुनव",
+  "Nominate Myself (Self Entry)": "अपन खुद के नाम भरव",
+  "Nominate Someone Else": "दूसरे क्रिएटर के नाम भरव",
+  "Select Primary Award Category": "मुख्य पुरस्कार श्रेणी चुनव",
+  "Choose Category...": "श्रेणी चुनव...",
+  "Tell Us About Yourself": "अपन बारे म बताव",
+  "Tell Us About The Creator": "क्रिएटर के बारे म बताव",
+  "Creator / Channel / Handle Name": "क्रिएटर या चैनल के नाम",
+  "Social Media Platform": "सोशल मीडिया प्लेटफॉर्म",
+  "Select Platform...": "प्लेटफॉर्म चुनव...",
+  "Primary Channel / Profile Link (URL)": "प्रोफ़ाइल या चैनल के लिंक (URL)",
+  "Best Content / Sample Video Link (URL)": "सबले बढ़िया वीडियो के लिंक (URL)",
+  "Why should this creator win? (Brief Summary)": "ए क्रिएटर ला इनाम काबर मिलना चाहिए? (छोटा सा बताव)",
+  "Mobile Number (WhatsApp Preferred)": "मोबाइल नंबर (व्हाट्सएप वाला)",
+  "District of Chhattisgarh": "छत्तीसगढ़ के जिला",
+  "Select District...": "जिला चुनव...",
+  "I confirm that all provided information is accurate and authentic.": "मैं पुष्टि करथंव कि सबो जानकारी सही अउ सच आय।",
+  "SUBMIT OFFICIAL NOMINATION": "सरकारी फ़ॉर्म जमा करव",
+  "Submitting Nomination...": "फ़ॉर्म जमा होवत हे...",
+  "NOMINATION SUBMITTED SUCCESSFULLY!": "फ़ॉर्म सफलता से जमा होगे!",
+  "Thank you for participating. Your nomination has been officially registered under Registration ID:":
+    "भाग ले बर धन्यवाद। तुंहर फ़ॉर्म जमा होगे हे। पंजीयन नंबर:",
+  "Download Nomination Receipt (PDF)": "नामांकन रसीद डाउनलोड करव (PDF)",
+  "Nominate Another Creator": "दूसरे क्रिएटर के फ़ॉर्म भरव",
+  "Close Window": "विंडो बंद करव",
 
   // Heritage & About Sections
   "DISCOVER CHHATTISGARH": "छत्तीसगढ़ ला जानव",
@@ -194,53 +686,28 @@ export const CG_DICTIONARY = {
   "WATERFALLS & NATURE": "झरना अउ प्रकृति",
   "ANCIENT HERITAGE": "पुराना धरोहर",
   "CULTURAL CREATORS": "संस्कृति क्रिएटर",
-  "About Chhattisgarh": "छत्तीसगढ़ के बारे मां",
-  "About Us": "हमर बारे मां",
-
-  // Forms, Nomination & Auth
-  "Full Legal Name": "पूरा सही नांव",
-  "Email Address": "ईमेल पता",
-  "Mobile Number": "मोबाइल नंबर",
-  "State Location": "राज्य",
-  "District Location": "जिला",
-  "Account Role / Type": "खाता किसम",
-  "Password": "पासवर्ड",
-  "Confirm Password": "पासवर्ड दोबारा लिखव",
-  "Security Captcha Verification": "सुरक्षा कोड जांचव",
-  "Type 6 characters code": "6-अक्षर कोड लिखव",
-  "Type 6-character code": "6-अक्षर कोड लिखव",
-  "Register Creator Account →": "क्रिएटर खाता बनाव →",
-  "Creating Creator Account...": "खाता बनाए जात हे...",
-  "Already have an account?": "क्या आपके पास पहले से खाता है?",
-  "Sign In Here →": "इहां लॉगिन करव →",
-  "Nomination As": "नामांकन किसम",
-  "Self Nomination": "अपन खुद के नामांकन",
-  "Nominate Creator": "दूसरे क्रिएटर के नामांकन",
-  "Select Category": "किसम चुनव",
-  "Work Description": "कार्य विवरण",
-  "Primary Social Media Link": "सोशल मीडिया लिंक",
-  "Submit Entry": "प्रविष्टि जमा करव",
-  "Submitting...": "जमा होवत हे...",
+  "About Chhattisgarh": "छत्तीसगढ़ के बारे में",
+  "About Us": "हमर बारे मं",
 
   // GIGW Utilities & Footer
-  "GIGW Utilities": "जीआईजीडब्ल्यू सुविधाएं",
-  "Privacy Policy": "गोपनीयता नियम",
-  "Accessibility Statement": "सुगम्यता विवरण",
-  "Hyperlinking Policy": "हाइपरलिंक नियम",
-  "Copyright Policy": "कॉपीराइट नियम",
-  "Right to Information (RTI)": "सूचना के अधिकार (RTI)",
+  "GIGW Utilities": "जीआईजीडब्ल्यू उपयोगिता",
+  "Privacy Policy": "गोपनीयता नीति",
+  "Accessibility Statement": "अभिगम्यता विवरण",
+  "Hyperlinking Policy": "हाइपरलिंक नीति",
+  "Copyright Policy": "कॉपीराइट नीति",
+  "Right to Information (RTI)": "सूचना के अधिकार (आरटीआई)",
   "Grievance Redressal": "शिकायत निवारण",
-  "Sitemap": "साइटमैप",
-  "Support Desk": "सहायता केंद्र",
-  "Helpline": "हेल्पलाइन नंबर",
+  "Sitemap": "साइट मानचित्र",
+  "Support Desk": "सहायता डेस्क",
+  "Helpline": "हेल्पलाइन",
   "Email": "ईमेल",
-  "Office Hours": "कार्यालय समय",
-  "Connect With Us": "हमर से जुड़व",
-  "Scan QR to Visit Website": "वेबसाइट देखे बर QR स्कैन करव",
+  "Office Hours": "कार्यालय के समय",
+  "Connect With Us": "हमर संग जुड़व",
+  "Scan QR to Visit Website": "वेबसाइट मं जाए बर क्यूआर कोड स्कैन करव",
   "Content owned, updated and maintained by the Creator Awards Cell, Directorate of Culture & Tourism. Designed, developed and hosted by State Informatics Centre (SIC).":
-    "संस्कृति अउ पर्यटन विभाग द्वारा संचालित। स्टेट इंफॉर्मेटिक्स सेंटर (SIC) द्वारा तैयार करे गिस।",
+    "सामग्री के स्वामित्व, अपडेट अउ रख-रखाव रचनाकार पुरस्कार प्रकोष्ठ, संस्कृति एवं पर्यटन निदेशालय द्वारा करे जाथे। वेबसाइट के अभिकल्प, विकास अउ मेजबानी राज्य सूचना विज्ञान केंद्र (एसआईसी) द्वारा करे गे हे।",
   "© 2026 Directorate of Culture & Tourism. All rights reserved.":
-    "© 2026 संस्कृति अउ पर्यटन विभाग। सब अधिकार सुरक्षित हे।",
+    "©️ 2026 संस्कृति एवं पर्यटन निदेशालय। सर्वाधिकार सुरक्षित।",
   "BACK TO TOP": "ऊपर जाव",
 
   // Buttons & UI Controls
@@ -259,4 +726,3 @@ export const CG_DICTIONARY = {
   "Upload Profile Picture": "फोटो लगाव",
   "Change Photo": "फोटो बदलव",
 };
-

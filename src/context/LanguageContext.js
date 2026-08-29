@@ -11,14 +11,31 @@ export const SUPPORTED_LANGUAGES = [
   { code: "cg", label: "छत्तीसगढ़ी" },
 ];
 
-const MS_LANG_MAP = {
+const GOOGLE_LANG_MAP = {
   en: "en",
   hi: "hi",
-  cg: "hne", // Official Microsoft Azure / Bing Translator ISO code for Chhattisgarhi (hne)
+  cg: "hi", // Use Hindi ISO for Google Translate API fallback
 };
 
 const LANG_STORAGE_KEY = "site-lang";
-const CACHE_STORAGE_KEY = "ms-translation-api-cache-v3";
+const CACHE_STORAGE_KEY = "google-translation-api-cache-v8";
+
+// Helper to validate translation results and reject API error messages
+const isValidTranslation = (trans, origText) => {
+  if (!trans || typeof trans !== "string") return false;
+  if (trans.trim() === origText.trim()) return false;
+  const upper = trans.toUpperCase();
+  if (
+    upper.includes("INVALID") ||
+    upper.includes("WARNING") ||
+    upper.includes("LANGPAIR") ||
+    upper.includes("EXAMPLE:") ||
+    upper.includes("IS AN INVALID")
+  ) {
+    return false;
+  }
+  return true;
+};
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState("en");
@@ -35,68 +52,91 @@ export function LanguageProvider({ children }) {
     try {
       const savedCache = localStorage.getItem(CACHE_STORAGE_KEY);
       if (savedCache) {
-        setTranslationCache(JSON.parse(savedCache));
+        const parsed = JSON.parse(savedCache);
+        const cleaned = {};
+        for (const [k, v] of Object.entries(parsed)) {
+          const origText = k.split(":").slice(1).join(":");
+          if (isValidTranslation(v, origText)) {
+            cleaned[k] = v;
+          }
+        }
+        setTranslationCache(cleaned);
       }
     } catch (e) {
-      console.warn("Failed to load Microsoft translation cache", e);
+      console.warn("Failed to load Google translation cache", e);
     }
   }, []);
 
-  // Microsoft Translator API fetcher with Azure key support and free fallback
-  const fetchMicrosoftTranslation = useCallback(async (text, targetLang) => {
+  // Google Translate API fetcher with API key support and free GTX client fallback
+  const fetchGoogleTranslation = useCallback(async (text, targetLang) => {
     const cacheKey = `${targetLang}:${text}`;
     if (pendingRequests.current.has(cacheKey)) return;
 
     pendingRequests.current.add(cacheKey);
 
     try {
-      const apiKey = process.env.NEXT_PUBLIC_MICROSOFT_TRANSLATOR_KEY;
-      const apiRegion = process.env.NEXT_PUBLIC_MICROSOFT_TRANSLATOR_REGION || "global";
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_TRANSLATE_KEY;
       let translatedText = "";
 
       if (apiKey) {
-        // Official Microsoft Azure Translator REST API v3.0 (Supports 'hne' and 'cg')
+        // Official Google Cloud Translation API v2
         const res = await fetch(
-          `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=en&to=${targetLang}`,
+          `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
           {
             method: "POST",
             headers: {
-              "Ocp-Apim-Subscription-Key": apiKey,
-              "Ocp-Apim-Subscription-Region": apiRegion,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify([{ Text: text }]),
+            body: JSON.stringify({
+              q: text,
+              target: targetLang,
+              source: "en",
+              format: "text",
+            }),
           }
         );
-        const data = await res.json();
-        translatedText = data?.[0]?.translations?.[0]?.text;
+        if (res.ok) {
+          const contentType = res.headers.get("content-type") || "";
+          if (contentType.includes("json")) {
+            const data = await res.json();
+            translatedText = data?.data?.translations?.[0]?.translatedText;
+          }
+        }
       } else {
-        // Try Microsoft Chhattisgarhi ISO code 'hne' first, then 'cg', then 'hi'
-        let res = await fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}&de=ms-translator@cg.gov.in`
+        // Free Google Translate client fallback (gtx)
+        const primaryLang = (targetLang === "cg" || targetLang === "hne") ? "hne" : targetLang;
+        const res = await fetch(
+          `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${primaryLang}&dt=t&q=${encodeURIComponent(text)}`
         );
-        let data = await res.json();
-        translatedText = data?.responseData?.translatedText;
-
-        if (!translatedText || translatedText.includes("WARNING") || translatedText === text) {
-          const fallbackRes = await fetch(
-            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|cg&de=ms-translator@cg.gov.in`
-          );
-          const fallbackData = await fallbackRes.json();
-          translatedText = fallbackData?.responseData?.translatedText;
+        if (res.ok) {
+          const contentType = res.headers.get("content-type") || "";
+          if (contentType.includes("json") || contentType.includes("javascript")) {
+            const data = await res.json();
+            if (Array.isArray(data?.[0])) {
+              translatedText = data[0].map((item) => item?.[0] || "").join("");
+            }
+          }
         }
 
-        if (!translatedText || translatedText.includes("WARNING") || translatedText === text) {
+        // Fallback to Hindi if Chhattisgarhi code returns unmodified text or fails
+        if (!isValidTranslation(translatedText, text) && (targetLang === "cg" || targetLang === "hne")) {
           const fallbackRes = await fetch(
-            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|hi&de=ms-translator@cg.gov.in`
+            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=hi&dt=t&q=${encodeURIComponent(text)}`
           );
-          const fallbackData = await fallbackRes.json();
-          translatedText = fallbackData?.responseData?.translatedText;
+          if (fallbackRes.ok) {
+            const contentType = fallbackRes.headers.get("content-type") || "";
+            if (contentType.includes("json") || contentType.includes("javascript")) {
+              const fallbackData = await fallbackRes.json();
+              if (Array.isArray(fallbackData?.[0])) {
+                translatedText = fallbackData[0].map((item) => item?.[0] || "").join("");
+              }
+            }
+          }
         }
       }
 
-      // Store in memory & localStorage cache
-      if (translatedText && translatedText !== text && !translatedText.includes("WARNING")) {
+      // Validate translation before caching
+      if (isValidTranslation(translatedText, text)) {
         setTranslationCache((prev) => {
           const updated = { ...prev, [cacheKey]: translatedText };
           try {
@@ -108,7 +148,7 @@ export function LanguageProvider({ children }) {
         });
       }
     } catch (err) {
-      console.warn(`Microsoft Translator failed for "${text}":`, err.message);
+      // Silently swallow fetch or network errors for non-essential translations
     } finally {
       pendingRequests.current.delete(cacheKey);
     }
@@ -142,21 +182,21 @@ export function LanguageProvider({ children }) {
         if (HINDI_DICTIONARY[text]) return HINDI_DICTIONARY[text];
       }
 
-      // 4. Microsoft Translation Cache Lookup
-      const targetLang = MS_LANG_MAP[language] || "hi";
+      // 4. Google Translation Cache Lookup
+      const targetLang = GOOGLE_LANG_MAP[language] || "hi";
       const cacheKey = `${targetLang}:${text}`;
 
-      if (translationCache[cacheKey]) {
+      if (translationCache[cacheKey] && isValidTranslation(translationCache[cacheKey], text)) {
         return translationCache[cacheKey];
       }
 
-      // 5. Trigger non-blocking Microsoft online fetch for uncached strings
-      fetchMicrosoftTranslation(text, targetLang);
+      // 5. Trigger non-blocking Google online fetch for uncached strings
+      fetchGoogleTranslation(text, targetLang);
 
       // Return original text as fallback while fetching
       return text;
     },
-    [language, translationCache, fetchMicrosoftTranslation]
+    [language, translationCache, fetchGoogleTranslation]
   );
 
   return (
