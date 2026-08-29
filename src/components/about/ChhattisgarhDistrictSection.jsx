@@ -21,11 +21,11 @@ export default function ChhattisgarhDistrictSection() {
       image: "/assets/images/raipur_landmark.jpg",
       highlights: ["Mahanadi River Basin", "Digital Hubs", "State Museum"],
     },
-    Sirpur: {
-      title: "Sirpur — 7th-Century Temple Complex",
-      desc: "Sacred archaeological town featuring Laxman Temple, Buddhist monasteries, and Jain stupas dating back over 1400 years.",
+    Durg: {
+      title: "Durg — Hub of Education, Industry & Culture",
+      desc: "Home to landmark heritage sites, rich folk performances like Pandavani and Raut Nacha, and pivotal industrial & educational hubs of Chhattisgarh.",
       image: "/assets/images/event-3.jpg",
-      highlights: ["Laxman Brick Temple", "Archaeological Excavations", "Heritage Circuit"],
+      highlights: ["Maitri Bagh", "Folk Traditions", "Industrial Heritage"],
     },
     Kondagaon: {
       title: "Kondagaon — Crafts Capital of Chhattisgarh",

@@ -21,7 +21,7 @@ export default function CreatorProfilePage() {
     district: user?.district || "Raipur",
     state: user?.state || "Chhattisgarh",
     bio: user?.bio || "",
-    avatar: user?.avatar || "",
+    avatar: user?.avatar || user?.profileImage || "",
     youtube: "",
     instagram: "",
     facebook: "",
@@ -43,7 +43,7 @@ export default function CreatorProfilePage() {
         district: user.district || "Raipur",
         state: user.state || "Chhattisgarh",
         bio: user.bio || "",
-        avatar: user.avatar || "",
+        avatar: user.avatar || user.profileImage || "",
         youtube: getSocialUrl("youtube"),
         instagram: getSocialUrl("instagram"),
         facebook: getSocialUrl("facebook"),
@@ -57,26 +57,56 @@ export default function CreatorProfilePage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle Profile Picture Image Upload
-  const handleAvatarChange = (e) => {
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+  // Handle Profile Picture Image Upload directly via Multipart API
+  const handleAvatarChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      setErrorMsg("Image size should be less than 5 MB");
+    if (file.size > 10 * 1024 * 1024) {
+      setErrorMsg("Image size should be less than 10 MB");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
-      const base64Url = uploadEvent.target?.result;
-      if (base64Url) {
-        setFormData((prev) => ({ ...prev, avatar: base64Url }));
-        setSuccessMsg("Profile picture preview loaded! Click 'Save Profile' to save.");
-        setTimeout(() => setSuccessMsg(""), 3000);
+    setUploadingAvatar(true);
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    // Show immediate local preview
+    const previewUrl = URL.createObjectURL(file);
+    setFormData((prev) => ({ ...prev, avatar: previewUrl }));
+
+    try {
+      if (token) {
+        const uploadData = new FormData();
+        uploadData.append("profileImage", file, file.name || "avatar.jpg");
+
+        const res = await userService.uploadProfileImage(uploadData, token);
+
+        if (res.success && res.data) {
+          const uploadedUrl =
+            res.data.profileImage ||
+            res.data.avatar ||
+            res.data.url ||
+            res.data.user?.profileImage ||
+            res.data.user?.avatar ||
+            previewUrl;
+
+          setFormData((prev) => ({ ...prev, avatar: uploadedUrl }));
+          updateUser({ avatar: uploadedUrl, profileImage: uploadedUrl });
+          setSuccessMsg("Profile picture uploaded and saved successfully!");
+          if (token) await refreshUser();
+        } else {
+          setErrorMsg(res.message || "Failed to upload profile picture.");
+        }
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error("Avatar upload error:", err);
+      setErrorMsg("Failed to upload profile picture. Please try again.");
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const handleSave = async () => {
@@ -85,9 +115,9 @@ export default function CreatorProfilePage() {
     setErrorMsg("");
 
     try {
-      // 1. Update basic profile info + Avatar
+      // 1. Update basic profile info
       if (token) {
-        await userService.updateProfile(
+        const profileRes = await userService.updateProfile(
           {
             name: formData.name,
             phone: formData.phone,
@@ -95,9 +125,15 @@ export default function CreatorProfilePage() {
             state: formData.state,
             bio: formData.bio,
             avatar: formData.avatar,
+            profileImage: formData.avatar,
           },
           token
         );
+
+        if (!profileRes.success) {
+          setErrorMsg(profileRes.message || "Failed to update profile.");
+          return;
+        }
       }
 
       // 2. Update Social Links
@@ -120,9 +156,10 @@ export default function CreatorProfilePage() {
         state: formData.state,
         bio: formData.bio,
         avatar: formData.avatar,
+        profileImage: formData.avatar,
       });
 
-      setSuccessMsg("Profile picture & personal details updated successfully!");
+      setSuccessMsg("Personal details updated successfully!");
       setIsEditing(false);
       if (token) await refreshUser();
     } catch (err) {
@@ -224,11 +261,12 @@ export default function CreatorProfilePage() {
 
           <button
             type="button"
+            disabled={uploadingAvatar}
             onClick={() => fileInputRef.current?.click()}
-            className="text-xs font-poppins font-bold text-[#C45A32] hover:underline inline-flex items-center gap-1.5 cursor-pointer"
+            className="text-xs font-poppins font-bold text-[#C45A32] hover:underline inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             <FaCamera className="w-3.5 h-3.5" />
-            <span>Upload Profile Picture</span>
+            <span>{uploadingAvatar ? "Uploading Picture..." : "Upload Profile Picture"}</span>
           </button>
 
           <div className="flex flex-col gap-1">

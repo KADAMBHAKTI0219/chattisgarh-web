@@ -22,13 +22,20 @@ export async function fetchApi(endpoint, options = {}) {
     }
   }
 
+  const isFormData =
+    typeof FormData !== "undefined" &&
+    (body instanceof FormData || body?.constructor?.name === "FormData");
+
   const reqHeaders = { ...headers };
 
-  if (!(body instanceof FormData)) {
+  if (isFormData) {
+    delete reqHeaders["Content-Type"];
+    delete reqHeaders["content-type"];
+  } else if (!reqHeaders["Content-Type"] && !reqHeaders["content-type"]) {
     reqHeaders["Content-Type"] = "application/json";
   }
 
-  const effectiveToken =
+  let rawToken =
     token ||
     (typeof window !== "undefined"
       ? localStorage.getItem("accessToken") ||
@@ -38,8 +45,15 @@ export async function fetchApi(endpoint, options = {}) {
         localStorage.getItem("cg_auth_token")
       : null);
 
-  if (effectiveToken) {
-    reqHeaders["Authorization"] = `Bearer ${effectiveToken}`;
+  const isValidToken =
+    rawToken &&
+    typeof rawToken === "string" &&
+    rawToken !== "undefined" &&
+    rawToken !== "null" &&
+    rawToken.trim() !== "";
+
+  if (isValidToken) {
+    reqHeaders["Authorization"] = `Bearer ${rawToken.trim()}`;
   }
 
   const config = {
@@ -81,9 +95,16 @@ export async function fetchApi(endpoint, options = {}) {
     }
 
     if (!response.ok) {
+      if (response.status === 401 && typeof window !== "undefined") {
+        // Clear invalid or expired tokens on 401
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+
       return {
         success: false,
-        message: data.message || `Request failed with status ${response.status}`,
+        message: data.message || `Authentication failed (${response.status})`,
         errors: data.errors || null,
         status: response.status,
       };

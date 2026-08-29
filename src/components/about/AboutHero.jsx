@@ -12,7 +12,7 @@ export default function AboutHero() {
   const stats = [
     { value: "500+", label: t("Digital Creators") },
     { value: "18+", label: t("Award Categories") },
-    { value: "36", label: t("Districts Covered") },
+    { value: "33", label: t("Districts Covered") },
     { value: "100%", label: t("Government Initiative") },
   ];
 

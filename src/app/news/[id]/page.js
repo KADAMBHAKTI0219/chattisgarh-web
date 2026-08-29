@@ -240,7 +240,7 @@ const knownFallbackArticles = {
     isFeatured: true,
     tags: ["Press Release", "Official", "Culture"],
     summary: "RAIPUR — The Department of Culture & Tourism, Government of Chhattisgarh today officially announced the commencement of online digital registrations for the inaugural Chhattisgarh State Creator & Influencer Awards 2026.",
-    content: `Designed as a flagship state initiative, the portal invites creators across all 36 districts—ranging from travel bloggers, filmmakers, folk musicians, tribal storytellers, Dhokra artisans, to tech educators—to submit their digital content portfolios for official state evaluation. Winners across 25 categories will be felicitated by Honorable Chief Minister during the Grand State Gala at Science College Auditorium, Raipur in September 2026.
+    content: `Designed as a flagship state initiative, the portal invites creators across all 33 districts—ranging from travel bloggers, filmmakers, folk musicians, tribal storytellers, Dhokra artisans, to tech educators—to submit their digital content portfolios for official state evaluation. Winners across 25 categories will be felicitated by Honorable Chief Minister during the Grand State Gala at Science College Auditorium, Raipur in September 2026.
 
 The nomination portal enables creators to submit video links, social media channels, and creative portfolios. Submissions are categorized into 4 core tiers: Culture & Tourism, Tech & Media, Social Impact & Welfare, and Arts & Heritage.
 
@@ -290,8 +290,8 @@ The jury evaluation phase will take place following the close of nominations, le
     status: "PUBLISHED",
     isFeatured: true,
     tags: ["Press Release", "Official", "Culture"],
-    summary: "RAIPUR — The Department of Culture & Tourism, Government of Chhattisgarh officially invites digital storytellers across 36 districts to submit entries.",
-    content: "Designed as a flagship state initiative, the portal invites creators across all 36 districts to submit their digital content portfolios for official state evaluation.",
+    summary: "RAIPUR — The Department of Culture & Tourism, Government of Chhattisgarh officially invites digital storytellers across 33 districts to submit entries.",
+    content: "Designed as a flagship state initiative, the portal invites creators across all 33 districts to submit their digital content portfolios for official state evaluation.",
     seo: { keywords: ["Registration", "State Awards", "Raipur"] }
   }
 };
@@ -317,7 +317,7 @@ function getDynamicArticleFallback(slugOrId) {
     summary: `Official state report and details regarding ${formattedTitle}. Highlighting cultural developments, tourism, and creator achievements in Chhattisgarh.`,
     content: `This article presents official details regarding ${formattedTitle}. 
 
-The Department of Culture & Tourism, Government of Chhattisgarh continues to support digital creators and storytellers preserving local traditions, heritage, tourism, and innovation across all 36 districts.
+The Department of Culture & Tourism, Government of Chhattisgarh continues to support digital creators and storytellers preserving local traditions, heritage, tourism, and innovation across all 33 districts.
 
 Stay tuned for official updates, state gazette releases, and creator spotlight announcements on this portal.`,
     seo: { keywords: ["Chhattisgarh", formattedTitle, "State Feature"] }

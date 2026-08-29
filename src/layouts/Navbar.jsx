@@ -71,7 +71,7 @@ export default function Navbar() {
               className="h-7 sm:h-12 w-auto rounded-[3px] object-contain shrink-0 p-0.5"
             />
             <span className="font-inter font-bold uppercase tracking-wider text-zinc-900 text-[10px] sm:text-xs">
-              {t("Government Of Chattisgarh")}
+              {t("Government Of Chhattisgarh")}
             </span>
           </div>
 
@@ -166,8 +166,8 @@ export default function Navbar() {
                   className="flex h-9 w-9 xs:h-10 xs:w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border-2 border-[#2E5C31]/40 bg-emerald-50 text-[#2E5C31] shadow-md hover:border-[#C15B3D] hover:bg-[#C15B3D] hover:text-white active:scale-95 transition-all duration-300 cursor-pointer shrink-0 relative"
                   title={`${user?.name || "User Profile"} - Account Menu`}
                 >
-                  {user?.avatar ? (
-                    <img src={user.avatar} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                  {user?.avatar || user?.profileImage ? (
+                    <img src={user.avatar || user.profileImage} alt="Profile" className="w-full h-full rounded-full object-cover" />
                   ) : (
                     <span className="font-poppins font-bold text-[11px] xs:text-xs">
                       {(user?.name || "U").substring(0, 2).toUpperCase()}
@@ -189,8 +189,8 @@ export default function Navbar() {
 
                       {/* Profile Header */}
                       <div className="p-4 bg-gradient-to-br from-emerald-50 via-zinc-50 to-orange-50/50 border-b border-zinc-150 flex items-center gap-3">
-                        {user?.avatar ? (
-                          <img src={user.avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-emerald-300 shrink-0" />
+                        {user?.avatar || user?.profileImage ? (
+                          <img src={user.avatar || user.profileImage} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-emerald-300 shrink-0" />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-[#2E5C31] text-amber-300 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-600">
                             {(user?.name || "U").substring(0, 2).toUpperCase()}

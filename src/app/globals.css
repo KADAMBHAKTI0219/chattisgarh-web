@@ -486,3 +486,48 @@ button {
 .animate-tribal-pulse {
   animation: tribalPulse 2s ease-in-out infinite;
 }
+
+/* ==========================================================
+   Google Translate UI Cleanup & Custom Branding Integration
+========================================================== */
+
+/* Prevent body from shifting down when Google Translate loads */
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+/* Hide Google Translate intrusive top frame/banner */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+/* Hide Google Translate hover tooltips and balloon popups */
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Remove text hover background highlights added by Google Translate */
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Hide default Google Translate gadget container */
+.goog-te-gadget {
+  display: none !important;
+  color: transparent !important;
+}
+
+.goog-te-combo {
+  display: none !important;
+}

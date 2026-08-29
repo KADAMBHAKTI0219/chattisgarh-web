@@ -24,7 +24,9 @@ export function AuthProvider({ children }) {
           setToken(storedToken);
           if (storedUser) {
             try {
-              setUser(JSON.parse(storedUser));
+              const parsed = JSON.parse(storedUser);
+              const img = parsed.avatar || parsed.profileImage || "";
+              setUser({ ...parsed, avatar: img, profileImage: img });
             } catch (e) {
               console.error("Failed to parse stored user json:", e);
             }
@@ -32,12 +34,20 @@ export function AuthProvider({ children }) {
           // Fetch latest profile from backend to ensure state validity
           const res = await userService.getProfile(storedToken);
           if (res.success && res.data) {
-            const freshUser = res.data;
-            setUser(freshUser);
-            localStorage.setItem("user", JSON.stringify(freshUser));
+            const freshUser = res.data.user || res.data.data || res.data;
+            const img =
+              freshUser.avatar ||
+              freshUser.profileImage ||
+              freshUser.image ||
+              (storedUser ? JSON.parse(storedUser)?.avatar || JSON.parse(storedUser)?.profileImage : "") ||
+              "";
+            const normUser = { ...freshUser, avatar: img, profileImage: img };
+            setUser(normUser);
+            localStorage.setItem("user", JSON.stringify(normUser));
           } else if (res.status === 401) {
             // Token expired or invalid
             localStorage.removeItem("accessToken");
+            localStorage.removeItem("token");
             localStorage.removeItem("user");
             setToken(null);
             setUser(null);
@@ -58,10 +68,12 @@ export function AuthProvider({ children }) {
     const res = await authService.login(email, password);
     if (res.success && res.data) {
       const { accessToken, user: loggedUser } = res.data;
+      const img = loggedUser?.avatar || loggedUser?.profileImage || "";
+      const normUser = { ...loggedUser, avatar: img, profileImage: img };
       setToken(accessToken);
-      setUser(loggedUser);
+      setUser(normUser);
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("user", JSON.stringify(loggedUser));
+      localStorage.setItem("user", JSON.stringify(normUser));
 
       // Redirect Admin / Super Admin / Moderator / Jury / Creator to /dashboard
       const roleUpper = String(loggedUser?.role || "").toUpperCase();
@@ -94,7 +106,8 @@ export function AuthProvider({ children }) {
   // Update user state locally & sync with storage
   const updateUser = (updatedUser) => {
     setUser((prev) => {
-      const newObj = { ...prev, ...updatedUser };
+      const img = updatedUser.avatar || updatedUser.profileImage || prev?.avatar || prev?.profileImage || "";
+      const newObj = { ...prev, ...updatedUser, avatar: img, profileImage: img };
       localStorage.setItem("user", JSON.stringify(newObj));
       return newObj;
     });
@@ -105,8 +118,10 @@ export function AuthProvider({ children }) {
     if (!token) return;
     const res = await userService.getProfile(token);
     if (res.success && res.data) {
-      setUser(res.data);
-      localStorage.setItem("user", JSON.stringify(res.data));
+      const img = res.data.avatar || res.data.profileImage || user?.avatar || "";
+      const normUser = { ...res.data, avatar: img, profileImage: img };
+      setUser(normUser);
+      localStorage.setItem("user", JSON.stringify(normUser));
     }
   };
 

@@ -4,8 +4,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
 import { ParticipateButton } from "@/components/common/Button";
 
-const DESKTOP_HERO_IMAGE = "/assets/images/herosection.png";
-const MOBILE_HERO_IMAGE = "/assets/images/mob-herobanner.jpeg";
+const DESKTOP_HERO_IMAGE = "/assets/images/web.png";
+const MOBILE_HERO_IMAGE = "/assets/images/mobile.png";
 
 export default function HeroSection() {
   const { openModal } = useParticipateModal();
@@ -41,7 +41,7 @@ export default function HeroSection() {
         />
 
         {/* Overlay Participate CTA Button at the bottom of hero image */}
-        <div className="absolute bottom-[42%] lg:bottom-[16%] xl:bottom-[20%] z-10 flex items-center justify-center ">
+        <div className="absolute bottom-[43.5%] lg:bottom-[16%] xl:bottom-[20%] z-10 flex items-center justify-center ">
           <ParticipateButton
             onClick={openModal}
             size="lg"
