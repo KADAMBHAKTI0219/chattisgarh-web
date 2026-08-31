@@ -118,7 +118,7 @@ export default function AwardCategoriesSection() {
 
       {/* Dynamic Tier Filter Tabs & Search Bar */}
       <div className="w-full mb-8 flex flex-col md:flex-row items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-3.5 sm:p-4 rounded-3xl border border-zinc-200/90 shadow-sm">
-        
+
         {/* Dynamic Filter Tabs */}
         <div className="flex items-center gap-2 w-full md:w-auto min-w-0">
           <button
@@ -137,11 +137,10 @@ export default function AwardCategoriesSection() {
               <button
                 key={tab.slug}
                 onClick={() => setActiveTier(tab.slug)}
-                className={`shrink-0 px-4 py-2 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${
-                  activeTier === tab.slug
-                    ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
-                    : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
-                }`}
+                className={`shrink-0 px-4 py-2 rounded-full font-inter font-bold text-xs sm:text-sm transition-all duration-300 border cursor-pointer select-none ${activeTier === tab.slug
+                  ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-[1.02]"
+                  : "bg-white text-zinc-700 border-zinc-200/90 hover:border-zinc-400 hover:bg-zinc-50"
+                  }`}
               >
                 {t(tab.title)} ({tab.count})
               </button>
@@ -197,7 +196,7 @@ export default function AwardCategoriesSection() {
             />
 
             {/* Dark Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent group-hover:from-black/70 group-hover:via-black/30 transition-all duration-300 z-10" />
 
             {/* Title Overlay */}
             <div className="relative z-20 flex flex-col justify-end w-full">

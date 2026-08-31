@@ -18,7 +18,6 @@ export default function Footer() {
     });
   };
 
-  const ownedText = "Content owned, updated and maintained by the Creator Awards Cell, Directorate of Culture & Tourism. Designed, developed and hosted by State Informatics Centre (SIC).";
   const copyrightText = "© 2026 Directorate of Culture & Tourism. All rights reserved.";
   const backToTopText = "BACK TO TOP";
 
@@ -43,33 +42,8 @@ export default function Footer() {
 
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-6 pt-12 pb-8 md:pt-16 xl:pt-20 xl:pb-12 relative z-10">
         
-        {/* Top Section: 5 Columns Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-zinc-300/60">
-          
-          {/* Column 1: Logo & Department Attribution */}
-          <div className="flex flex-col items-start gap-4 col-span-1 sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3">
-              <img 
-                src="/assets/images/chattisgarh-logo.webp" 
-                alt="Chhattisgarh Logo" 
-                className="w-14 h-14 xl:w-16 xl:h-16 object-contain"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
-              <div className="flex flex-col">
-                <span className="font-poppins font-extrabold tracking-wide uppercase text-sm xl:text-base text-[var(--primary)]">
-                  {t("Digital State")}
-                </span>
-                <span className="font-poppins font-bold text-xs text-[var(--secondary)]">
-                  छत्तीसगढ़ सबले बढ़िया
-                </span>
-              </div>
-            </div>
-            <p className="text-zinc-700 font-medium text-xs sm:text-sm leading-relaxed max-w-sm">
-              {t(ownedText)}
-            </p>
-          </div>
+        {/* Top Section: 4 Columns Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-zinc-300/60">
 
           {/* Column 2: Navigation Links */}
           <div className="flex flex-col gap-4">

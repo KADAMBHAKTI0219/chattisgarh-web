@@ -234,7 +234,7 @@ export default function CategorySlugPage({ params }) {
                                 />
 
                                 {/* Dark Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25 group-hover:from-black/98 group-hover:via-black/75 transition-all duration-300 z-10" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent group-hover:from-black/85 group-hover:via-black/45 transition-all duration-300 z-10" />
 
                                 {/* Content Overlay */}
                                 <div className="relative z-20 flex flex-col justify-end w-full">

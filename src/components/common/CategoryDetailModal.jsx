@@ -83,7 +83,7 @@ export default function CategoryDetailModal({ category, isOpen, onClose, onNomin
             alt={category.title}
             className="w-full h-full object-cover opacity-90 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
 
           {/* Close Button */}
           <button
