@@ -198,6 +198,7 @@ export default function AwardCategoriesSection() {
             {/* Dark Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent group-hover:from-black/70 group-hover:via-black/30 transition-all duration-300 z-10" />
 
+
             {/* Title Overlay */}
             <div className="relative z-20 flex flex-col justify-end w-full">
               <h3 className="font-poppins font-bold text-[11px] xs:text-xs sm:text-xs md:text-sm uppercase !text-white tracking-tight leading-tight line-clamp-3 group-hover:!text-amber-200 transition-colors duration-300">
