@@ -68,6 +68,8 @@ export default function Navbar() {
               alt="Government of Chhattisgarh Emblem"
               width={120}
               height={36}
+              priority
+              loading="eager"
               className="h-7 sm:h-12 w-auto rounded-[3px] object-contain shrink-0 p-0.5"
             />
             <span className="font-inter font-bold uppercase tracking-wider text-zinc-900 text-[10px] sm:text-xs">
@@ -119,6 +121,7 @@ export default function Navbar() {
                 width={260}
                 height={75}
                 priority
+                loading="eager"
                 className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-10 xs:h-12 sm:h-16 lg:h-20 scale-95" : "h-11 xs:h-13 sm:h-16 lg:h-20 scale-100"
                   } group-hover:scale-[1.02]`}
               />

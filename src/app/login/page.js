@@ -86,6 +86,8 @@ export default function LoginPage() {
             alt="Government of Chhattisgarh Logo"
             width={200}
             height={60}
+            priority
+            loading="eager"
             className="h-12 w-auto object-contain"
           />
           <div className="flex flex-col items-center">

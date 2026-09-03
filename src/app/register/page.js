@@ -294,6 +294,8 @@ export default function RegisterPage() {
               alt="Government of Chhattisgarh Logo"
               width={180}
               height={55}
+              priority
+              loading="eager"
               className="h-11 sm:h-12 w-auto object-contain shrink-0"
             />
             <div className="flex flex-col text-left border-l-2 border-[#C15B3D]/30 pl-3">

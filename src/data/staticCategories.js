@@ -267,7 +267,7 @@ export const staticCategories = [
     taskBrief: "Publish clear, structured educational lectures, exam preparation tips, career roadmaps, or vocational skills training.",
     hashtag: "#EduCreator",
     icon: "FaGraduationCap",
-    image: "/assets/images/category/category-11.png",
+    image: "/assets/images/category/category-11.jpg",
     prizeTier: "FLAGSHIP",
     cashPrizeMin: 500000,
     cashPrizeMax: 1000000,
