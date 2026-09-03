@@ -74,25 +74,39 @@ export default function RegisterPage() {
     fetchLocations();
   }, []);
 
+  // Helper to normalize state names for matching (e.g. "Chattisgarh" vs "Chhattisgarh")
+  const normalizeStateName = (name) => {
+    if (!name) return "";
+    const s = name.trim().toLowerCase();
+    if (s.includes("chattisgarh") || s.includes("chhattisgarh") || s === "cg") {
+      return "chhattisgarh";
+    }
+    return s;
+  };
+
   // Available States List - SSR matched initial state, updated dynamically from Backend API on client mount
   const availableStates = useMemo(() => {
     if (Array.isArray(apiLocations) && apiLocations.length > 0) {
-      return Array.from(new Set(apiLocations.map((l) => l.stateName))).sort();
+      const states = apiLocations.map((l) => l.stateName);
+      return Array.from(new Set(states)).sort();
     }
     return formData.state ? [formData.state] : ["Chhattisgarh"];
   }, [apiLocations, formData.state]);
 
   // Available Districts / Cities List for Selected State - SSR matched initial district, updated dynamically
   const availableDistricts = useMemo(() => {
-    if (Array.isArray(apiLocations) && apiLocations.length > 0 && formData.state) {
-      const selectedState = formData.state.trim().toLowerCase();
-      const locObj = apiLocations.find(
-        (l) => l.stateName.toLowerCase() === selectedState
-      );
-      if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
-        return locObj.cities
-          .filter((c) => c.isActive !== false)
-          .map((c) => c.cityName || c);
+    if (formData.state) {
+      const normState = normalizeStateName(formData.state);
+      if (Array.isArray(apiLocations) && apiLocations.length > 0) {
+        const locObj = apiLocations.find(
+          (l) => normalizeStateName(l.stateName) === normState || l.stateName.toLowerCase() === formData.state.trim().toLowerCase()
+        );
+        if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
+          const validCities = locObj.cities
+            .filter((c) => c.isActive !== false)
+            .map((c) => c.cityName || c);
+          if (validCities.length > 0) return validCities;
+        }
       }
     }
     return formData.district ? [formData.district] : ["Raipur"];
@@ -100,24 +114,29 @@ export default function RegisterPage() {
 
   // Sync state & district to first available backend state on API load
   useEffect(() => {
-    if (apiLocations.length > 0 && availableStates.length > 0) {
+    if (availableStates.length > 0 && formData.state) {
       if (!availableStates.includes(formData.state)) {
-        setFormData((prev) => ({ ...prev, state: availableStates[0] }));
+        const matched = availableStates.find((st) => normalizeStateName(st) === normalizeStateName(formData.state));
+        if (matched) {
+          setFormData((prev) => ({ ...prev, state: matched }));
+        } else {
+          setFormData((prev) => ({ ...prev, state: availableStates[0] }));
+        }
       }
     }
   }, [apiLocations, availableStates]);
 
   // Auto-sync selected district when selected state changes
   useEffect(() => {
-    if (apiLocations.length > 0 && availableDistricts.length > 0) {
-      if (!availableDistricts.includes(formData.district)) {
+    if (availableDistricts.length > 0) {
+      if (!formData.district || !availableDistricts.includes(formData.district)) {
         setFormData((prev) => ({
           ...prev,
           district: availableDistricts[0],
         }));
       }
     }
-  }, [apiLocations, availableDistricts]);
+  }, [availableDistricts]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -246,7 +265,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F0] bg-tribal-watermark font-sans text-zinc-950 px-4 sm:px-6 md:px-8 py-6 md:py-8 flex flex-col items-center justify-center relative overflow-hidden animate-page-enter">
-      
+
       {/* Background Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] pointer-events-none opacity-[0.015] -z-10">
         <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill sizes="(max-width: 768px) 100vw, 700px" className="object-contain" />
@@ -265,7 +284,7 @@ export default function RegisterPage() {
 
       {/* 3-Column Wide Horizontal Card (No Page Scroll - Fits 1 Screen) */}
       <div className="w-full max-w-6xl bg-white border border-zinc-200/90 rounded-3xl p-5 sm:p-7 shadow-xl flex flex-col gap-4 text-left relative z-10">
-        
+
         {/* Header Banner */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-150 pb-4">
           <div className="flex items-center gap-3.5">
@@ -312,7 +331,7 @@ export default function RegisterPage() {
 
         {/* 3-Column Compact Form Grid */}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          
+
           {/* Row 1: Column 1 - Full Legal Name */}
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
@@ -488,7 +507,7 @@ export default function RegisterPage() {
               {/* Visual Captcha Display Box */}
               <div className="relative flex items-center justify-between px-3.5 py-2 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-950 text-white rounded-xl border border-zinc-300 shadow-inner select-none overflow-hidden w-full sm:w-auto shrink-0">
                 <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:6px_6px]" />
-                
+
                 <div className="flex items-center gap-1.5 relative z-10 font-mono font-black text-lg tracking-widest italic select-none">
                   {captchaCode.split("").map((char, index) => (
                     <span
@@ -532,7 +551,7 @@ export default function RegisterPage() {
 
           {/* Row 4: Full Width Actions & Guidelines */}
           <div className="md:col-span-3 border-t border-zinc-150 pt-3 mt-1 flex flex-col sm:flex-row items-center justify-between gap-3">
-            
+
             {/* Terms Checkbox */}
             <label className="flex items-center gap-2 text-xs text-zinc-600 font-medium cursor-pointer">
               <input

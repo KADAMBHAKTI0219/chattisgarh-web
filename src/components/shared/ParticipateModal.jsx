@@ -9,6 +9,7 @@ import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
 import { recaptchaService } from "@/services/recaptcha";
+import { locationService } from "@/services/location";
 import { staticCategories } from "@/data/staticCategories";
 import {
   FaUser,
@@ -487,18 +488,18 @@ export default function ParticipateModal() {
 
       try {
         res = await applicationService.createApplication(payload);
-      } catch (e) {}
+      } catch (e) { }
 
       if (!res?.success) {
         try {
           res = await nominationService.createNomination(payload);
-        } catch (e) {}
+        } catch (e) { }
       }
 
       if (!res?.success) {
         try {
           res = await participantService.registerParticipant(payload);
-        } catch (e) {}
+        } catch (e) { }
       }
 
       const generatedId = res?.nomination?.applicationId || res?.data?.applicationId || res?.data?._id || `NCA-2026-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -563,7 +564,7 @@ export default function ParticipateModal() {
       <div onClick={closeModal} className="fixed inset-0 bg-black/80 backdrop-blur-md z-0" />
 
       <div className="relative w-full max-w-md md:max-w-4xl lg:max-w-5xl bg-white border-2 border-zinc-200 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl z-10 overflow-y-auto max-h-[90vh]">
-        
+
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-zinc-200 pb-4 mb-6 gap-3">
           <div>
@@ -599,22 +600,20 @@ export default function ParticipateModal() {
                 onClick={() => {
                   if (st.num < currentStep) setCurrentStep(st.num);
                 }}
-                className={`flex-1 flex items-center gap-2 text-xs font-poppins font-bold uppercase transition-all cursor-pointer ${
-                  st.num === currentStep
+                className={`flex-1 flex items-center gap-2 text-xs font-poppins font-bold uppercase transition-all cursor-pointer ${st.num === currentStep
                     ? "text-[#C45A32] border-b-2 border-[#C45A32] pb-1"
                     : st.num < currentStep
-                    ? "text-emerald-700"
-                    : "text-zinc-300 pointer-events-none"
-                }`}
+                      ? "text-emerald-700"
+                      : "text-zinc-300 pointer-events-none"
+                  }`}
               >
                 <span
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${
-                    st.num === currentStep
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${st.num === currentStep
                       ? "bg-[#C45A32] text-white"
                       : st.num < currentStep
-                      ? "bg-emerald-600 text-white"
-                      : "bg-zinc-200 text-zinc-500"
-                  }`}
+                        ? "bg-emerald-600 text-white"
+                        : "bg-zinc-200 text-zinc-500"
+                    }`}
                 >
                   {st.num}
                 </span>
@@ -627,9 +626,8 @@ export default function ParticipateModal() {
         {/* Toast Notification Alert */}
         {noticeMsg && (
           <div
-            className={`p-3.5 mb-6 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-2xs ${
-              noticeMsg.type === "error" ? "bg-rose-50 border-rose-200 text-rose-800" : "bg-emerald-50 border-emerald-200 text-emerald-800"
-            }`}
+            className={`p-3.5 mb-6 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-2xs ${noticeMsg.type === "error" ? "bg-rose-50 border-rose-200 text-rose-800" : "bg-emerald-50 border-emerald-200 text-emerald-800"
+              }`}
           >
             <span>{noticeMsg.text}</span>
             <button onClick={() => setNoticeMsg(null)}><FaTimes className="w-3.5 h-3.5" /></button>
@@ -870,9 +868,8 @@ export default function ParticipateModal() {
                       key={idx}
                       type="button"
                       onClick={() => handleToggleCategory(catTitle)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-poppins font-bold uppercase border transition-all ${
-                        isSelected ? "bg-[#C45A32] text-white border-[#C45A32]" : "bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-100"
-                      }`}
+                      className={`px-3 py-1.5 rounded-full text-xs font-poppins font-bold uppercase border transition-all ${isSelected ? "bg-[#C45A32] text-white border-[#C45A32]" : "bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-100"
+                        }`}
                     >
                       {isSelected ? "✓ " : "+ "}{catTitle}
                     </button>

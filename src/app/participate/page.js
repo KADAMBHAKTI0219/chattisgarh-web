@@ -29,6 +29,7 @@ import {
   FaSpinner
 } from "react-icons/fa";
 import VideoPreviewInput from "@/components/common/VideoPreviewInput";
+import { CG_DISTRICTS_33 } from "@/utils/constants";
 
 // Generates Creator Start Years (e.g. 2000 to Current Year)
 const CURRENT_YEAR = new Date().getFullYear();
@@ -52,16 +53,17 @@ function ParticipateForm() {
   const [categoriesList, setCategoriesList] = useState([]);
   const [apiLocations, setApiLocations] = useState([]);
 
-  // Fetch Public Locations (States with nested Cities) from Backend API
+  // Fetch Public Locations (States with nested Cities) dynamically from Backend API
   useEffect(() => {
     async function fetchLocations() {
       try {
         const res = await locationService.getPublicLocations();
-        if (res?.locations && Array.isArray(res.locations) && res.locations.length > 0) {
-          setApiLocations(res.locations);
+        const locList = res?.locations || res?.data || (Array.isArray(res) ? res : []);
+        if (Array.isArray(locList) && locList.length > 0) {
+          setApiLocations(locList);
         }
       } catch (err) {
-        console.warn("Using default static states & districts lists:", err);
+        console.warn("Failed to fetch locations from backend API:", err);
       }
     }
     fetchLocations();
@@ -120,48 +122,89 @@ function ParticipateForm() {
 
   const [errors, setErrors] = useState({});
 
-  // Dynamic Cascading States List from Backend API - SSR matched initial state, updated on client API load
+  // Helper to normalize state names for matching (e.g. "Chattisgarh" vs "Chhattisgarh")
+  const normalizeStateName = (name) => {
+    if (!name) return "";
+    const s = name.trim().toLowerCase();
+    if (s.includes("chattisgarh") || s.includes("chhattisgarh") || s === "cg") {
+      return "chhattisgarh";
+    }
+    return s;
+  };
+
+  // Dynamic Cascading States List from Backend API with full fallback
   const availableStates = useMemo(() => {
     if (Array.isArray(apiLocations) && apiLocations.length > 0) {
-      return Array.from(new Set(apiLocations.map((loc) => loc.stateName))).sort();
+      const states = apiLocations.map((loc) => loc.stateName);
+      return Array.from(new Set(states)).sort();
     }
-    const initialSt = formData.state || "Chhattisgarh";
-    return [initialSt];
-  }, [apiLocations, formData.state]);
+    return [
+      "Chhattisgarh",
+      "Andhra Pradesh",
+      "Assam",
+      "Bihar",
+      "Delhi",
+      "Gujarat",
+      "Haryana",
+      "Karnataka",
+      "Kerala",
+      "Madhya Pradesh",
+      "Maharashtra",
+      "Odisha",
+      "Punjab",
+      "Rajasthan",
+      "Tamil Nadu",
+      "Telangana",
+      "Uttar Pradesh",
+      "West Bengal",
+      "Other"
+    ];
+  }, [apiLocations]);
 
   // Currently Active Selected State
   const activeSelectedState = formData.nominationAs === "SELF" ? formData.state : formData.creatorState;
 
-  // Dynamic Cascading Cities / Districts List for Selected State from Backend API
+  // Dynamic Cascading Cities / Districts List for Selected State from Backend API with CG_DISTRICTS_33 fallback
   const availableDistricts = useMemo(() => {
-    if (Array.isArray(apiLocations) && apiLocations.length > 0 && activeSelectedState) {
-      const targetState = activeSelectedState.trim().toLowerCase();
-      const locObj = apiLocations.find(
-        (l) => l.stateName.toLowerCase() === targetState
-      );
-      if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
-        return locObj.cities
-          .filter((c) => c.isActive !== false)
-          .map((c) => c.cityName || c);
+    if (activeSelectedState) {
+      const targetNorm = normalizeStateName(activeSelectedState);
+      if (Array.isArray(apiLocations) && apiLocations.length > 0) {
+        const locObj = apiLocations.find(
+          (l) => normalizeStateName(l.stateName) === targetNorm || l.stateName.toLowerCase() === activeSelectedState.trim().toLowerCase()
+        );
+        if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
+          const validCities = locObj.cities
+            .filter((c) => c.isActive !== false)
+            .map((c) => c.cityName || c);
+          if (validCities.length > 0) return validCities;
+        }
+      }
+      if (targetNorm === "chhattisgarh") {
+        return CG_DISTRICTS_33;
       }
     }
-    const initialDist = formData.nominationAs === "SELF" ? (formData.district || "Raipur") : (formData.creatorDistrict || "Raipur");
-    return [initialDist];
-  }, [apiLocations, activeSelectedState, formData.district, formData.creatorDistrict, formData.nominationAs]);
+    return CG_DISTRICTS_33;
+  }, [apiLocations, activeSelectedState]);
 
   // Sync initial state to first available backend state on initial load
   useEffect(() => {
-    if (availableStates.length > 0) {
-      if (!formData.state || !availableStates.includes(formData.state)) {
-        setFormData((prev) => ({ ...prev, state: availableStates[0] }));
+    if (availableStates.length > 0 && formData.state) {
+      if (!availableStates.includes(formData.state)) {
+        const matched = availableStates.find((st) => normalizeStateName(st) === normalizeStateName(formData.state));
+        if (matched) {
+          setFormData((prev) => ({ ...prev, state: matched }));
+        }
       }
-      if (!formData.creatorState || !availableStates.includes(formData.creatorState)) {
-        setFormData((prev) => ({ ...prev, creatorState: availableStates[0] }));
+      if (formData.creatorState && !availableStates.includes(formData.creatorState)) {
+        const matched = availableStates.find((st) => normalizeStateName(st) === normalizeStateName(formData.creatorState));
+        if (matched) {
+          setFormData((prev) => ({ ...prev, creatorState: matched }));
+        }
       }
     }
-  }, [availableStates]);
+  }, [apiLocations, availableStates]);
 
-  // Auto-sync selected district when active state changes
+  // Auto-sync selected district when active state or availableDistricts changes
   useEffect(() => {
     if (availableDistricts.length > 0) {
       if (formData.nominationAs === "SELF") {
@@ -571,7 +614,7 @@ function ParticipateForm() {
         console.error("Submission error:", err);
         const fallbackId = `NCA-2026-${Math.floor(100000 + Math.random() * 900000)}`;
         setSubmittedAppId(fallbackId);
-        
+
         const fallbackRecord = {
           ...payload,
           _id: fallbackId,
@@ -595,7 +638,7 @@ function ParticipateForm() {
               localStorage.removeItem(key);
               localStorage.setItem(key, JSON.stringify([newRecord]));
             }
-          } catch (e) {}
+          } catch (e) { }
         };
 
         safeSaveLocalStorage("submitted_nominations", fallbackRecord);
@@ -701,10 +744,10 @@ function ParticipateForm() {
                     <div key={step.num} className="flex flex-col items-center text-center gap-2 group">
                       <div
                         className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-300 ${isActive
-                            ? "bg-[var(--primary)] text-white shadow-md scale-105"
-                            : isCompleted
-                              ? "bg-emerald-600 text-white"
-                              : "bg-zinc-100 text-zinc-400 border border-zinc-200"
+                          ? "bg-[var(--primary)] text-white shadow-md scale-105"
+                          : isCompleted
+                            ? "bg-emerald-600 text-white"
+                            : "bg-zinc-100 text-zinc-400 border border-zinc-200"
                           }`}
                       >
                         {isCompleted ? <FaCheckCircle className="w-4 h-4 sm:w-5 sm:h-5" /> : <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
@@ -732,8 +775,8 @@ function ParticipateForm() {
                     <label
                       onClick={() => setFormData((prev) => ({ ...prev, nominationAs: "SELF" }))}
                       className={`p-4 rounded-xl border-2 cursor-pointer flex items-center gap-3 transition-all ${formData.nominationAs === "SELF"
-                          ? "border-[var(--primary)] bg-amber-50/50 text-[var(--primary)] shadow-xs"
-                          : "border-zinc-200 bg-white hover:border-zinc-300"
+                        ? "border-[var(--primary)] bg-amber-50/50 text-[var(--primary)] shadow-xs"
+                        : "border-zinc-200 bg-white hover:border-zinc-300"
                         }`}
                     >
                       <input
@@ -753,8 +796,8 @@ function ParticipateForm() {
                     <label
                       onClick={() => setFormData((prev) => ({ ...prev, nominationAs: "THIRD_PARTY" }))}
                       className={`p-4 rounded-xl border-2 cursor-pointer flex items-center gap-3 transition-all ${formData.nominationAs === "THIRD_PARTY"
-                          ? "border-[var(--primary)] bg-amber-50/50 text-[var(--primary)] shadow-xs"
-                          : "border-zinc-200 bg-white hover:border-zinc-300"
+                        ? "border-[var(--primary)] bg-amber-50/50 text-[var(--primary)] shadow-xs"
+                        : "border-zinc-200 bg-white hover:border-zinc-300"
                         }`}
                     >
                       <input
