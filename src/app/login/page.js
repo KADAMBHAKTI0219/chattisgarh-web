@@ -146,6 +146,7 @@ export default function LoginPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
+                autoComplete="current-password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your account password"

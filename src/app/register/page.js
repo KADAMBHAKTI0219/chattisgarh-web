@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth";
-import { locationService } from "@/services/location";
+import locationService, { locationService as locServiceNamed } from "@/services/location";
 import {
   FaUser,
   FaEnvelope,
@@ -22,6 +22,7 @@ import {
   FaVideo
 } from "react-icons/fa";
 import DownloadGuidelinesButton from "@/components/common/DownloadGuidelinesButton";
+import { CG_DISTRICTS_33 } from "@/utils/constants";
 
 // Generator for random 6-character Captcha Code
 const generateCaptchaCode = () => {
@@ -62,7 +63,9 @@ export default function RegisterPage() {
   useEffect(() => {
     async function fetchLocations() {
       try {
-        const res = await locationService.getPublicLocations();
+        const activeService = locationService || locServiceNamed || null;
+        if (!activeService || typeof activeService.getPublicLocations !== "function") return;
+        const res = await activeService.getPublicLocations();
         const locList = res?.locations || res?.data || (Array.isArray(res) ? res : []);
         if (Array.isArray(locList) && locList.length > 0) {
           setApiLocations(locList);
@@ -84,7 +87,7 @@ export default function RegisterPage() {
     return s;
   };
 
-  // Available States List - SSR matched initial state, updated dynamically from Backend API on client mount
+  // Available States List - 100% Dynamically fetched from Backend API
   const availableStates = useMemo(() => {
     if (Array.isArray(apiLocations) && apiLocations.length > 0) {
       const states = apiLocations.map((l) => l.stateName);
@@ -93,20 +96,18 @@ export default function RegisterPage() {
     return formData.state ? [formData.state] : ["Chhattisgarh"];
   }, [apiLocations, formData.state]);
 
-  // Available Districts / Cities List for Selected State - SSR matched initial district, updated dynamically
+  // Available Districts / Cities List for Selected State - 100% Dynamically fetched from Backend API
   const availableDistricts = useMemo(() => {
-    if (formData.state) {
+    if (formData.state && Array.isArray(apiLocations) && apiLocations.length > 0) {
       const normState = normalizeStateName(formData.state);
-      if (Array.isArray(apiLocations) && apiLocations.length > 0) {
-        const locObj = apiLocations.find(
-          (l) => normalizeStateName(l.stateName) === normState || l.stateName.toLowerCase() === formData.state.trim().toLowerCase()
-        );
-        if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
-          const validCities = locObj.cities
-            .filter((c) => c.isActive !== false)
-            .map((c) => c.cityName || c);
-          if (validCities.length > 0) return validCities;
-        }
+      const locObj = apiLocations.find(
+        (l) => normalizeStateName(l.stateName) === normState || l.stateName.toLowerCase() === formData.state.trim().toLowerCase()
+      );
+      if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
+        const validCities = locObj.cities
+          .filter((c) => c.isActive !== false)
+          .map((c) => c.cityName || c);
+        if (validCities.length > 0) return validCities;
       }
     }
     return formData.district ? [formData.district] : ["Raipur"];
@@ -458,6 +459,7 @@ export default function RegisterPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Min 6 characters"
@@ -484,6 +486,7 @@ export default function RegisterPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 name="confirmPassword"
+                autoComplete="new-password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Repeat password"

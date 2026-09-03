@@ -3,11 +3,16 @@ import fetchApi from "./client";
 export const locationService = {
   // 1. Get Public Locations (Active States with active Cities)
   async getPublicLocations() {
-    const res = await fetchApi("/locations", { method: "GET" });
-    if (res.success && res.data) {
-      return { ...res, locations: Array.isArray(res.data) ? res.data : [] };
+    try {
+      const res = await fetchApi("/locations", { method: "GET" });
+      if (res && res.success && res.data) {
+        return { ...res, locations: Array.isArray(res.data) ? res.data : [] };
+      }
+      return { ...res, locations: Array.isArray(res) ? res : [] };
+    } catch (e) {
+      console.warn("getPublicLocations error:", e);
+      return { success: false, locations: [] };
     }
-    return { ...res, locations: Array.isArray(res) ? res : [] };
   },
 
   // 2. Admin: Get All Locations with search filter

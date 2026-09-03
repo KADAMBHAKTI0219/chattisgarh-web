@@ -44,11 +44,12 @@ export function AuthProvider({ children }) {
             const normUser = { ...freshUser, avatar: img, profileImage: img };
             setUser(normUser);
             localStorage.setItem("user", JSON.stringify(normUser));
-          } else if (res.status === 401) {
-            // Token expired or invalid
+          } else {
+            // Token expired, invalid or revoked (401 / error)
             localStorage.removeItem("accessToken");
             localStorage.removeItem("token");
             localStorage.removeItem("user");
+            localStorage.removeItem("adminToken");
             setToken(null);
             setUser(null);
           }

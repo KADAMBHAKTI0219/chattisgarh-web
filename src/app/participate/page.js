@@ -10,7 +10,7 @@ import { categoryService } from "@/services/category";
 import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
-import { locationService } from "@/services/location";
+import locationService, { locationService as locServiceNamed } from "@/services/location";
 import Heading from "@/components/common/Heading";
 import {
   FaUser,
@@ -57,7 +57,9 @@ function ParticipateForm() {
   useEffect(() => {
     async function fetchLocations() {
       try {
-        const res = await locationService.getPublicLocations();
+        const activeService = locationService || locServiceNamed || null;
+        if (!activeService || typeof activeService.getPublicLocations !== "function") return;
+        const res = await activeService.getPublicLocations();
         const locList = res?.locations || res?.data || (Array.isArray(res) ? res : []);
         if (Array.isArray(locList) && locList.length > 0) {
           setApiLocations(locList);
@@ -132,59 +134,36 @@ function ParticipateForm() {
     return s;
   };
 
-  // Dynamic Cascading States List from Backend API with full fallback
+  // Dynamic Cascading States List - 100% Dynamically fetched from Backend API
   const availableStates = useMemo(() => {
     if (Array.isArray(apiLocations) && apiLocations.length > 0) {
       const states = apiLocations.map((loc) => loc.stateName);
       return Array.from(new Set(states)).sort();
     }
-    return [
-      "Chhattisgarh",
-      "Andhra Pradesh",
-      "Assam",
-      "Bihar",
-      "Delhi",
-      "Gujarat",
-      "Haryana",
-      "Karnataka",
-      "Kerala",
-      "Madhya Pradesh",
-      "Maharashtra",
-      "Odisha",
-      "Punjab",
-      "Rajasthan",
-      "Tamil Nadu",
-      "Telangana",
-      "Uttar Pradesh",
-      "West Bengal",
-      "Other"
-    ];
-  }, [apiLocations]);
+    const initialSt = formData.state || "Chhattisgarh";
+    return [initialSt];
+  }, [apiLocations, formData.state]);
 
   // Currently Active Selected State
   const activeSelectedState = formData.nominationAs === "SELF" ? formData.state : formData.creatorState;
 
-  // Dynamic Cascading Cities / Districts List for Selected State from Backend API with CG_DISTRICTS_33 fallback
+  // Dynamic Cascading Cities / Districts List for Selected State - 100% Dynamically fetched from Backend API
   const availableDistricts = useMemo(() => {
-    if (activeSelectedState) {
+    if (activeSelectedState && Array.isArray(apiLocations) && apiLocations.length > 0) {
       const targetNorm = normalizeStateName(activeSelectedState);
-      if (Array.isArray(apiLocations) && apiLocations.length > 0) {
-        const locObj = apiLocations.find(
-          (l) => normalizeStateName(l.stateName) === targetNorm || l.stateName.toLowerCase() === activeSelectedState.trim().toLowerCase()
-        );
-        if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
-          const validCities = locObj.cities
-            .filter((c) => c.isActive !== false)
-            .map((c) => c.cityName || c);
-          if (validCities.length > 0) return validCities;
-        }
-      }
-      if (targetNorm === "chhattisgarh") {
-        return CG_DISTRICTS_33;
+      const locObj = apiLocations.find(
+        (l) => normalizeStateName(l.stateName) === targetNorm || l.stateName.toLowerCase() === activeSelectedState.trim().toLowerCase()
+      );
+      if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
+        const validCities = locObj.cities
+          .filter((c) => c.isActive !== false)
+          .map((c) => c.cityName || c);
+        if (validCities.length > 0) return validCities;
       }
     }
-    return CG_DISTRICTS_33;
-  }, [apiLocations, activeSelectedState]);
+    const initialDist = formData.nominationAs === "SELF" ? (formData.district || "Raipur") : (formData.creatorDistrict || "Raipur");
+    return [initialDist];
+  }, [apiLocations, activeSelectedState, formData.district, formData.creatorDistrict, formData.nominationAs]);
 
   // Sync initial state to first available backend state on initial load
   useEffect(() => {

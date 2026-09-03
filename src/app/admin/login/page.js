@@ -209,6 +209,7 @@ export default function AdminLoginPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
+                autoComplete="current-password"
                 required
                 value={formData.password}
                 onChange={handleChange}

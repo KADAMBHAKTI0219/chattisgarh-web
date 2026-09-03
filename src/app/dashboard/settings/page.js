@@ -316,6 +316,7 @@ export default function DashboardSettingsPage() {
                 <label className="text-[11px] font-bold uppercase text-zinc-700">Current Password</label>
                 <input
                   type="password"
+                  autoComplete="current-password"
                   required
                   value={passwords.currentPassword}
                   onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
@@ -328,6 +329,7 @@ export default function DashboardSettingsPage() {
                 <label className="text-[11px] font-bold uppercase text-zinc-700">New Password</label>
                 <input
                   type="password"
+                  autoComplete="new-password"
                   required
                   value={passwords.newPassword}
                   onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
@@ -340,6 +342,7 @@ export default function DashboardSettingsPage() {
                 <label className="text-[11px] font-bold uppercase text-zinc-700">Confirm New Password</label>
                 <input
                   type="password"
+                  autoComplete="new-password"
                   required
                   value={passwords.confirmPassword}
                   onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}

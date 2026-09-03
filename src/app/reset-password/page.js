@@ -114,6 +114,7 @@ function ResetPasswordForm() {
             <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
             <input
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Min 6 characters"
@@ -138,6 +139,7 @@ function ResetPasswordForm() {
             <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
             <input
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repeat new password"

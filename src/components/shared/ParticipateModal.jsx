@@ -9,7 +9,7 @@ import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
 import { recaptchaService } from "@/services/recaptcha";
-import { locationService } from "@/services/location";
+import locationService, { locationService as locServiceNamed } from "@/services/location";
 import { staticCategories } from "@/data/staticCategories";
 import {
   FaUser,
@@ -47,7 +47,9 @@ export default function ParticipateModal() {
   useEffect(() => {
     async function fetchLocations() {
       try {
-        const res = await locationService.getPublicLocations();
+        const activeService = locationService || locServiceNamed || null;
+        if (!activeService || typeof activeService.getPublicLocations !== "function") return;
+        const res = await activeService.getPublicLocations();
         const locList = res?.locations || res?.data || (Array.isArray(res) ? res : []);
         if (Array.isArray(locList) && locList.length > 0) {
           setApiLocations(locList);
@@ -154,20 +156,36 @@ export default function ParticipateModal() {
   const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState({});
 
-  // State List - strictly 100% from Backend API
+  // Normalize state names to handle spelling variations like "Chattisgarh" vs "Chhattisgarh"
+  const normalizeStateName = (name) => {
+    if (!name) return "";
+    const s = name.trim().toLowerCase();
+    if (s.includes("chattisgarh") || s.includes("chhattisgarh") || s === "cg") {
+      return "chhattisgarh";
+    }
+    return s;
+  };
+
+  // State List - 100% Dynamic from Backend API
   const indianStates = Array.isArray(apiLocations) && apiLocations.length > 0
-    ? apiLocations.map((l) => l.stateName).sort()
-    : [];
+    ? Array.from(new Set(apiLocations.map((l) => l.stateName))).sort()
+    : [formData.applicant?.state || "Chhattisgarh"];
 
-  // District/City List - strictly 100% from Backend API for selected state
-  const selectedApplicantState = (formData.applicant?.state || "").trim().toLowerCase();
-  const matchedLocationObj = Array.isArray(apiLocations)
-    ? apiLocations.find((l) => l.stateName.toLowerCase() === selectedApplicantState)
-    : null;
+  // Dynamic Cities / Districts for given state from Backend API
+  const getDistrictsForState = (stateName) => {
+    const norm = normalizeStateName(stateName || "");
+    if (Array.isArray(apiLocations) && apiLocations.length > 0) {
+      const matched = apiLocations.find((l) => normalizeStateName(l.stateName) === norm || l.stateName.toLowerCase() === (stateName || "").trim().toLowerCase());
+      if (matched && Array.isArray(matched.cities) && matched.cities.length > 0) {
+        const cList = matched.cities.filter((c) => c.isActive !== false).map((c) => c.cityName || c);
+        if (cList.length > 0) return cList;
+      }
+    }
+    return ["Raipur"];
+  };
 
-  const cgDistricts = matchedLocationObj && Array.isArray(matchedLocationObj.cities)
-    ? matchedLocationObj.cities.filter((c) => c.isActive !== false).map((c) => c.cityName || c)
-    : [];
+  const applicantDistricts = getDistrictsForState(formData.applicant?.state);
+  const nomineeDistricts = getDistrictsForState(formData.nominee?.state);
 
   useEffect(() => {
     setMounted(true);
