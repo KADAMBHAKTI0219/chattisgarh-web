@@ -1,13 +1,27 @@
 // Central Base API Client for Government Web Frontend
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const REMOTE_BACKEND_URL = "https://government-web-backend.onrender.com/api/v1";
+const LOCAL_BACKEND_URL = "http://localhost:5000/api/v1";
 
-/**
- * Universal Fetch Client with token authorization, FormData handling & error formatting
- */
-export async function fetchApi(endpoint, options = {}) {
-  const { method = "GET", body = null, token = null, params = null, headers = {} } = options;
+function resolveApiBaseUrl() {
+  let envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!envUrl || envUrl.trim() === "") {
+    return REMOTE_BACKEND_URL;
+  }
+  let trimmed = envUrl.trim().replace(/\/+$/, "");
+  if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
+    if (!trimmed.startsWith("/")) {
+      trimmed = "/" + trimmed;
+    }
+  }
+  return trimmed;
+}
 
-  let url = `${API_BASE_URL}${endpoint}`;
+const PRIMARY_API_BASE_URL = resolveApiBaseUrl();
+
+function buildUrl(baseUrl, endpoint, params) {
+  let base = baseUrl.replace(/\/+$/, "");
+  let ep = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  let fullUrl = `${base}${ep}`;
 
   if (params && Object.keys(params).length > 0) {
     const query = new URLSearchParams();
@@ -18,9 +32,17 @@ export async function fetchApi(endpoint, options = {}) {
     });
     const queryString = query.toString();
     if (queryString) {
-      url += (url.includes("?") ? "&" : "?") + queryString;
+      fullUrl += (fullUrl.includes("?") ? "&" : "?") + queryString;
     }
   }
+  return fullUrl;
+}
+
+/**
+ * Universal Fetch Client with token authorization, FormData handling, 404 fallback & error formatting
+ */
+export async function fetchApi(endpoint, options = {}) {
+  const { method = "GET", body = null, token = null, params = null, headers = {} } = options;
 
   const isFormData =
     typeof FormData !== "undefined" &&
@@ -62,66 +84,72 @@ export async function fetchApi(endpoint, options = {}) {
     ...(body ? { body: body instanceof FormData ? body : JSON.stringify(body) } : {}),
   };
 
-  try {
-    let response;
+  const candidateBases = [PRIMARY_API_BASE_URL];
+  if (!candidateBases.includes(REMOTE_BACKEND_URL)) {
+    candidateBases.push(REMOTE_BACKEND_URL);
+  }
+  if (!candidateBases.includes(LOCAL_BACKEND_URL)) {
+    candidateBases.push(LOCAL_BACKEND_URL);
+  }
+
+  let lastResponse = null;
+  let lastError = null;
+
+  for (let i = 0; i < candidateBases.length; i++) {
+    const currentBase = candidateBases[i];
+    const targetUrl = buildUrl(currentBase, endpoint, params);
+
     try {
-      response = await fetch(url, config);
-    } catch (primaryErr) {
-      const localBase = "http://localhost:5000/api/v1";
-      if (API_BASE_URL !== localBase) {
-        let localUrl = `${localBase}${endpoint}`;
-        if (params && Object.keys(params).length > 0) {
-          const query = new URLSearchParams();
-          Object.entries(params).forEach(([key, value]) => {
-            if (value !== undefined && value !== null && value !== "") {
-              query.append(key, value);
-            }
-          });
-          const queryString = query.toString();
-          if (queryString) {
-            localUrl += (localUrl.includes("?") ? "&" : "?") + queryString;
-          }
-        }
-        response = await fetch(localUrl, config);
-      } else {
-        throw primaryErr;
-      }
-    }
-    const contentType = response.headers.get("content-type");
-    let data = {};
+      const response = await fetch(targetUrl, config);
+      const contentType = response.headers.get("content-type");
+      let data = {};
 
-    if (contentType && contentType.includes("application/json")) {
-      data = await response.json();
-    }
-
-    if (!response.ok) {
-      if (response.status === 401 && typeof window !== "undefined") {
-        // Clear invalid or expired tokens on 401
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json().catch(() => ({}));
       }
 
-      return {
+      if (response.ok) {
+        return {
+          success: true,
+          message: data.message || "Operation successful",
+          data: data.data !== undefined ? data.data : data,
+        };
+      }
+
+      lastResponse = {
         success: false,
-        message: data.message || `Authentication failed (${response.status})`,
+        message: data.message || `Request failed with status ${response.status}`,
         errors: data.errors || null,
         status: response.status,
       };
-    }
 
-    return {
-      success: true,
-      message: data.message || "Operation successful",
-      data: data.data || data,
-    };
-  } catch (error) {
-    console.warn(`API client error at ${endpoint}:`, error.message);
-    return {
-      success: false,
-      message: error.message || "Network connection error. Please check your backend server.",
-    };
+      if (response.status === 401 && typeof window !== "undefined") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        return lastResponse;
+      }
+
+      // If status 404 occurs on relative/local route, attempt next candidate base URL
+      if (response.status === 404 && i < candidateBases.length - 1) {
+        console.warn(`404 at ${targetUrl}, trying fallback base ${candidateBases[i + 1]}`);
+        continue;
+      }
+
+      return lastResponse;
+    } catch (err) {
+      lastError = err;
+      console.warn(`Network connection error attempting ${targetUrl}:`, err.message);
+    }
   }
+
+  return (
+    lastResponse || {
+      success: false,
+      message: lastError?.message || "Network connection error. Please check your backend server.",
+    }
+  );
 }
 
 export default fetchApi;
+

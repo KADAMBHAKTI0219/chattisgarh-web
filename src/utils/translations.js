@@ -279,7 +279,7 @@ export const HINDI_DICTIONARY = {
   "Every nomination goes through a fair and transparent evaluation process based on content quality, originality, creativity, impact, audience engagement, and relevance to Chhattisgarh. Selected categories may also include public voting as part of the final evaluation.":
     "प्रत्येक नामांकन कंटेंट की गुणवत्ता, मौलिकता, सृजनशीलता और छत्तीसगढ़ से प्रासंगिकता के आधार पर पारदर्शी प्रक्रिया से गुजरता है।",
   "Winners receive official government recognition, an award trophy, a certificate of excellence, and the opportunity to be celebrated among Chhattisgarh’s leading digital creators.":
-    "विजेताओं को आधिकारिक शासकीय मान्यता, ट्रॉफी, उत्कृष्ट प्रमाण पत्र और राज्य के शीर्ष क्रिएटर्स के साथ मंच साझा करने का अवसर मिलता है।",
+    "विजेताओं को आधिकारिक शासकीय मान्यता, ट्रॉफी, उत्कृष्टता प्रमाण पत्र और राज्य के शीर्ष क्रिएटर्स के साथ मंच साझा करने का अवसर मिलता है।",
   "The winners will be honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony in Raipur. The official date, venue, and event schedule will be announced on the website and official communication channels.":
     "विजेताओं को रायपुर में आयोजित भव्य राज्य पुरस्कार समारोह में सम्मानित किया जाएगा। आधिकारिक तिथि और स्थान की घोषणा शीघ्र की जाएगी।",
 
@@ -299,7 +299,7 @@ export const HINDI_DICTIONARY = {
   "Select Platform...": "प्लेटफ़ॉर्म चुनें...",
   "Primary Channel / Profile Link (URL)": "प्रोफ़ाइल / चैनल लिंक (URL)",
   "Best Content / Sample Video Link (URL)": "सर्वश्रेष्ठ वीडियो / कंटेंट लिंक (URL)",
-  "Why should this creator win? (Brief Summary)": "यह क्रिएटर क्यों जीतना चाहिए? (संक्षिप्त विवरण)",
+  "Why should this creator win? (Brief Summary)": "इस क्रिएटर को क्यों जीतना चाहिए? (संक्षिप्त विवरण)",
   "Mobile Number (WhatsApp Preferred)": "मोबाइल नंबर (व्हाट्सएप अनुशंसित)",
   "District of Chhattisgarh": "छत्तीसगढ़ का जिला",
   "Select District...": "जिला चुनें...",
@@ -386,7 +386,7 @@ export const CG_DICTIONARY = {
   "My Profile": "मोर प्रोफाइल",
   "Guidelines": "नियम-कायदा",
   "Contact": "बात-बात करव",
-  "Contact Us": "हमर से बात करव",
+  "Contact Us": "हमर ले बात करव",
   "Gallery": "दीर्घा",
   "Explore Categories": "सबो किसम देखव",
   "Download Guidelines": "दिशा-निर्देश डाउनलोड करव",
@@ -402,7 +402,7 @@ export const CG_DICTIONARY = {
   "Directorate of Culture & Tourism": "संस्कृति अउ पर्यटन विभाग",
   "State Creator Awards 2026": "राज्य क्रिएटर अवॉर्ड्स 2026",
   "Official State Registration Portal": "सरकारी नांव पंजीयन पोर्टल",
-  "Return to Main Portal": "मुख्य पोर्टल मां लवटव",
+  "Return to Main Portal": "मुख्य पोर्टल मं लवटव",
   "Navigation Menu": "नेविगेशन मेनू",
   "Navigation": "मार्गदर्शन",
 
@@ -417,28 +417,28 @@ export const CG_DICTIONARY = {
 
   // Conference / About Event Section
   "Official State Platform": "आधिकारिक राज्य मंच",
-  "THE NEXT BIG": "अगला बड़े",
-  "STORY STARTS HERE.": "कहानी इहीच ले शुरू होथे।",
+  "THE NEXT BIG": "नवा कहानी के",
+  "STORY STARTS HERE.": "सुरुआत इहें ले होथे।",
   "Every creator has the power to shape how the world sees Chhattisgarh.":
     "दुनिया छत्तीसगढ़ ल कइसे देखथे, एला आकार देय के ताकत हर एक रचनाकार के हाथ मं हे।",
   "The Chhattisgarh State Creator & Influencer Awards is a prestigious Government initiative that celebrates creators whose content reflects the state’s culture, heritage, creativity, tourism, innovation, and everyday life. Every authentic story shared today becomes a part of Chhattisgarh’s digital legacy.":
-    "छत्तीसगढ़ राज्य निर्माता एवं प्रभावशाली पुरस्कार एक प्रतिष्ठित सरकारी पहल आय, जेमे ओ रचनाकार मन के सम्मान अउ उत्सव मनाय जाथे, जेन मन अपन सामग्री के माध्यम ले छत्तीसगढ़ के संस्कृति, विरासत, रचनात्मकता, पर्यटन, नवाचार अउ रोजमर्रा के जिनगी ल दुनिया के सामने लाथें। आज आप मन जऊन सच्ची अउ मौलिक कहानी साझा करत हव, वो आने वाला समय मं छत्तीसगढ़ के डिजिटल विरासत के हिस्सा बन जाही।",
+    "छत्तीसगढ़ राज्य निर्माता एवं प्रभावशाली पुरस्कार एक प्रतिष्ठित शासकीय पहल आय, जेमा वो रचनाकार मन के मान-सम्मान करथे, जेन मन अपन काम के माध्यम ले छत्तीसगढ़ के संस्कृति, धरोहर, रचनात्मकता, पर्यटन, नवाचार अउ रोज-दिन के जिनगी ल दुनिया आगू लानथें। आज आप मन जऊन सांच अउ असल कहानी बाँटत हव, वो आगू के दिन मं छत्तीसगढ़ के डिजिटल धरोहर के अंग बन जाही।",
   "The Chhattisgarh State Creator & Influencer Awards is a flagship initiative by the Government of Chhattisgarh to celebrate creators who transform the state’s culture, heritage, tourism, innovation, and everyday stories into inspiring digital experiences for India and the world. Every piece of content that celebrates Chhattisgarh contributes to preserving its heritage while introducing its unique culture, traditions, and values to a wider audience.":
-    "छत्तीसगढ़ राज्य निर्माता अउ प्रभावशाली पुरस्कार छत्तीसगढ़ सरकार के ओर ले शुरू करे गे एक बड़े पहल आय, जेन ओ रचनाकार मन ला सम्मानित करथे जेन राज्य के संस्कृति, विरासत, पर्यटन, नवाचार अउ रोजमर्रा के कहिनी मन ला भारत अउ दुनिया बर प्रेरक डिजिटल अनुभव मां बदलथें। छत्तीसगढ़ के जश्न मनाने वाला सामग्री के हर एक हिस्सा एकर अनूठी संस्कृति, परंपरा अउ मूल्य मन ला व्यापक दर्शक मन के आघू म पेश करत हुए एकर विरासत ला संरक्षित करे मां योगदान देथे।",
+    "छत्तीसगढ़ राज्य निर्माता अउ प्रभावशाली पुरस्कार छत्तीसगढ़ सरकार के ओर ले शुरू करे गे एक बड़े पहल आय, जेन ओ रचनाकार मन ला सम्मानित करथे जेन राज्य के संस्कृति, धरोहर, पर्यटन, नवाचार अउ रोज-दिन के कहिनी मन ला भारत अउ दुनिया बर प्रेरक डिजिटल अनुभव मं बदलथें। छत्तीसगढ़ बर बने हर एक काम अउ कहिनी एकर अनूठी संस्कृति, परंपरा अउ मूल्य मन ला व्यापक दर्शक मन के आघू मं पेश करत हुए एकर धरोहर ला संरक्षित करे मं योगदान देथे।",
   "No matter your platform, your creativity belongs here.":
-    "आपके मंच चाहे जऊन हो, आपकी रचनात्मकता इहीच हे।",
+    "तुंहर मंच चाहे जऊन हो, तुंहर रचनात्मकता इहीच हे।",
   "Whether you’re a YouTuber, Instagram creator, filmmaker, photographer, blogger, educator, artist, gamer, podcaster, or storyteller, your work has the power to inspire audiences and showcase the true spirit of Chhattisgarh to India and the world.":
-    "आप यूट्यूबर, इंस्टाग्राम रचनाकार, फिल्म निर्माता, छायाचित्रकार, ब्लॉग लेखक, शिक्षक, कलाकार, खेल रचनाकार, पॉडकास्ट निर्माता या कहानीकार होव—आपके रचनात्मक काम मं दर्शक मन ल प्रेरित करे अउ भारत के संग-संग दुनिया ल छत्तीसगढ़ के असली पहचान अउ भावना दिखाय के ताकत हे।",
+    "तुमन यूट्यूबर, इंस्टाग्राम क्रिएटर, फिल्म निर्माता, छायाचित्रकार, ब्लॉगर, शिक्षक, कलाकार, गेमर, पॉडकास्ट निर्माता या कहानीकार होव—तुंहर रचनात्मक काम मं दर्शक मन ल प्रेरित करे अउ भारत के संग-संग दुनिया ल छत्तीसगढ़ के असली पहचान अउ भावना देखाए के ताकत हे।",
   "Your single video, photo, story, or reel—has the power to change how the world thinks about Chhattisgarh.":
-    "आपके एक वीडियो, एक फोटो, एक कहानी या एक रील—छत्तीसगढ़ के बारे मं दुनिया के सोच ल बदल सकथे।",
+    "आपके एकठन वीडियो, एकठन फोटो, एकठन कहानी या एकठन रील—छत्तीसगढ़ बर दुनिया के सोच ल बदल सकथे।",
   "Get recognized. Get celebrated. Represent Chhattisgarh with pride.":
-    "पहचानव। जश्न मनावव। गर्व के संग छत्तीसगढ़ ल दुनिया के सामने रखव।",
+    "पहचान पावव। सम्मान पावव। गर्व के संग छत्तीसगढ़ के नाव दुनिया भर मं बढ़ावव।",
   "Receive official recognition, amplify your creative journey, and become part of a community that’s building the future of Chhattisgarh’s digital identity.":
     "सरकारी स्तर मं आधिकारिक पहचान पावव, अपन रचनात्मक सफर ल आगू बढ़ावव अउ ओ रचनाकार समुदाय के हिस्सा बनव, जऊन छत्तीसगढ़ के डिजिटल पहचान के भविष्य ल गढ़त हे।",
   "“Because when your content inspires the nation, Chhattisgarh shines with you.”":
-    "“काबर कि जब आपके सामग्री ले देश प्रेरित होथे, त छत्तीसगढ़ घलो आपके संग चमकथे।”",
+    "“काबर कि जब तुंहर काम ले देश प्रेरित होथे, त छत्तीसगढ़ घलो तुंहर संग चमकथे।”",
   "Because when your content inspires the nation, Chhattisgarh shines with you.":
-    "काबर कि जब आपके सामग्री ले देश प्रेरित होथे, त छत्तीसगढ़ घलो आपके संग चमकथे।",
+    "काबर कि जब तुंहर काम ले देश प्रेरित होथे, त छत्तीसगढ़ घलो तुंहर संग चमकथे।",
 
   // Leadership & Video Section
   "TRUST & CREATOR VISION": "विश्वास अउ क्रिएटर दृष्टि",
@@ -490,7 +490,7 @@ export const CG_DICTIONARY = {
   "Lifestyle & Special Interest": "रहना-सहना अउ रुचि",
   "Special Recognition": "विशेष मान-सम्मान",
   "CATEGORIES IN": "किसम मन:",
-  "Back to Home": "पहिली पाना मां लवटव",
+  "Back to Home": "पहिली पाना मं लवटव",
   "Loading Categories...": "श्रेणी मन लोड होवत हे...",
 
   "Category Overview": "श्रेणी के जानकारी",
@@ -646,12 +646,12 @@ export const CG_DICTIONARY = {
   "Winners receive official government recognition, an award trophy, a certificate of excellence, and the opportunity to be celebrated among Chhattisgarh’s leading digital creators.":
     "जीतइया मन ला सरकारी मान-सम्मान, ट्रॉफी, प्रमाण पत्र अउ बड़े मंच मिलही।",
   "The winners will be honoured at the Chhattisgarh State Creator & Influencer Awards Ceremony in Raipur. The official date, venue, and event schedule will be announced on the website and official communication channels.":
-    "रायपुर मां होने वाला बड़े कार्यक्रम म जीतइया मन ला सम्मानित करे जाही।",
+    "रायपुर मं होने वाला बड़े कार्यक्रम मं जीतइया मन ला सम्मानित करे जाही।",
 
   // Participate Modal & Form Labels
   "CHHATTISGARH STATE CREATOR & INFLUENCER AWARDS 2026": "छत्तीसगढ़ राज्य निर्माता एवं प्रभावशाली पुरस्कार 2026",
-  "ENTER CREATOR AWARDS PORTAL": "क्रिएटर अवॉर्ड्स पोर्टल म आओ",
-  "Complete official nomination in less than 2 minutes.": "2 मिनट म अपन सरकारी फ़ॉर्म भरव।",
+  "ENTER CREATOR AWARDS PORTAL": "क्रिएटर अवॉर्ड्स पोर्टल मं आवव",
+  "Complete official nomination in less than 2 minutes.": "2 मिनट मं अपन सरकारी फ़ॉर्म भरव।",
   "Select Nomination Type": "नामांकन के किसम चुनव",
   "Nominate Myself (Self Entry)": "अपन खुद के नाम भरव",
   "Nominate Someone Else": "दूसरे क्रिएटर के नाम भरव",

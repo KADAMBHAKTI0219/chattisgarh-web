@@ -26,10 +26,33 @@ export default function CategorySlugPage({ params }) {
     const { t } = useLanguage();
     const { openModal } = useParticipateModal();
     const [searchQuery, setSearchQuery] = useState("");
-    const [apiCategories] = useState(staticCategories);
+    const [apiCategories, setApiCategories] = useState(staticCategories);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedDetailCategory, setSelectedDetailCategory] = useState(null);
     const tabsRef = useRef(null);
+
+    // Fetch backend categories dynamically from API on mount
+    useEffect(() => {
+        async function fetchCategories() {
+            setIsLoading(true);
+            try {
+                const res = await categoryService.getCategories({ isActive: true });
+                const list = (res?.categories && Array.isArray(res.categories) && res.categories.length > 0)
+                    ? res.categories
+                    : ((res?.data && Array.isArray(res.data) && res.data.length > 0)
+                        ? res.data
+                        : null);
+                if (Array.isArray(list) && list.length > 0) {
+                    setApiCategories(list);
+                }
+            } catch (err) {
+                console.warn("Failed to fetch dynamic categories for category page:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchCategories();
+    }, []);
 
     // Format category objects
     const allCategoriesList = apiCategories.map((cat, idx) => {

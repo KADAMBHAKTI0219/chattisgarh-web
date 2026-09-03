@@ -15,9 +15,29 @@ export default function AwardCategoriesSection() {
   const { openModal } = useParticipateModal();
   const [activeTier, setActiveTier] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoriesList] = useState(staticCategories);
+  const [categoriesList, setCategoriesList] = useState(staticCategories);
   const [selectedDetailCategory, setSelectedDetailCategory] = useState(null);
   const tabsRef = useRef(null);
+
+  // Fetch backend categories dynamically from API on mount
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await categoryService.getCategories({ isActive: true });
+        const list = (res?.categories && Array.isArray(res.categories) && res.categories.length > 0)
+          ? res.categories
+          : ((res?.data && Array.isArray(res.data) && res.data.length > 0)
+            ? res.data
+            : null);
+        if (Array.isArray(list) && list.length > 0) {
+          setCategoriesList(list);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch dynamic categories for homepage:", err);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   // Format categories cleanly
   const formattedCategories = categoriesList.map((cat, idx) => {

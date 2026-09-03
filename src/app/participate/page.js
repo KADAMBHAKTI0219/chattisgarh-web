@@ -29,6 +29,7 @@ import {
   FaSpinner
 } from "react-icons/fa";
 import VideoPreviewInput from "@/components/common/VideoPreviewInput";
+import { staticCategories } from "@/data/staticCategories";
 import { CG_DISTRICTS_33 } from "@/utils/constants";
 
 // Generates Creator Start Years (e.g. 2000 to Current Year)
@@ -216,9 +217,11 @@ function ParticipateForm() {
     const fetchCats = async () => {
       try {
         const res = await categoryService.getCategories({ isActive: true });
-        const list = res?.success && Array.isArray(res.data)
-          ? res.data
-          : (Array.isArray(res?.categories) ? res.categories : fallbackCategories);
+        const list = (res?.categories && Array.isArray(res.categories) && res.categories.length > 0)
+          ? res.categories
+          : ((res?.data && Array.isArray(res.data) && res.data.length > 0)
+            ? res.data
+            : staticCategories);
 
         setCategoriesList(list);
 
@@ -247,12 +250,12 @@ function ParticipateForm() {
           }));
         }
       } catch (e) {
-        console.error("Failed to load categories, using static fallback:", e);
-        setCategoriesList(fallbackCategories);
-        if (!formData.selectedCategory && fallbackCategories.length > 0) {
+        console.warn("Failed to load categories, using static fallback:", e);
+        setCategoriesList(staticCategories);
+        if (!formData.selectedCategory && staticCategories.length > 0) {
           setFormData((prev) => ({
             ...prev,
-            selectedCategory: fallbackCategories[0].slug
+            selectedCategory: staticCategories[0].slug || staticCategories[0].title
           }));
         }
       }
@@ -366,7 +369,7 @@ function ParticipateForm() {
 
         const selectedCatObj = categoriesList.find(
           (c) => c._id === formData.selectedCategory || c.slug === formData.selectedCategory || c.title === formData.selectedCategory
-        ) || fallbackCategories.find(
+        ) || staticCategories.find(
           (f) => f.slug === formData.selectedCategory || f.title === formData.selectedCategory
         );
 
