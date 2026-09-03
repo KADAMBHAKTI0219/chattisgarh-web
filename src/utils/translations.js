@@ -420,7 +420,7 @@ export const CG_DICTIONARY = {
   "THE NEXT BIG": "नवा कहानी के",
   "STORY STARTS HERE.": "सुरुआत इहें ले होथे।",
   "Every creator has the power to shape how the world sees Chhattisgarh.":
-    "दुनिया छत्तीसगढ़ ल कोन नज़र ले देखथे, एला गढ़े के ताकत हर एक रचनाकार करा हे।",
+    "दुनिया छत्तीसगढ़ ल कोन नज़र ले देखथे, एला गढ़े के काम हर एक रचनाकार कर सकत हे।",
   "The Chhattisgarh State Creator & Influencer Awards is a prestigious Government initiative that celebrates creators whose content reflects the state’s culture, heritage, creativity, tourism, innovation, and everyday life. Every authentic story shared today becomes a part of Chhattisgarh’s digital legacy.":
     "छत्तीसगढ़ राज्य निर्माता एवं प्रभावशाली पुरस्कार एक प्रतिष्ठित शासकीय पहल आय, जेमा वो रचनाकार मन के मान-सम्मान करथे, जेन मन अपन काम के माध्यम ले छत्तीसगढ़ के संस्कृति, धरोहर, रचनात्मकता, पर्यटन, नवाचार अउ रोज-दिन के जिनगी ल दुनिया आगू लानथें। आज आप मन जऊन सांच अउ असल कहानी बाँटत हव, वो आगू के दिन मं छत्तीसगढ़ के डिजिटल धरोहर के अंग बन जाही।",
   "The Chhattisgarh State Creator & Influencer Awards is a flagship initiative by the Government of Chhattisgarh to celebrate creators who transform the state’s culture, heritage, tourism, innovation, and everyday stories into inspiring digital experiences for India and the world. Every piece of content that celebrates Chhattisgarh contributes to preserving its heritage while introducing its unique culture, traditions, and values to a wider audience.":
