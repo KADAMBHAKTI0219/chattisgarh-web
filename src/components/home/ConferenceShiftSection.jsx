@@ -7,69 +7,65 @@ import Heading from "@/components/common/Heading";
 import { galleryService } from "@/services/gallery";
 
 const STATIC_GALLERY_CARDS = [
-  { id: "bhoramdev-temple", title: "Bhoram Dev Temple", image: "/assets/images/bhoramdevmandir.jpg", objectPosition: "top center" },
-  { id: "madheshwar-pahar", title: "Madheshwar Pahar", image: "/assets/images/madheshwar.JPG", objectPosition: "top center" },
-  { id: "mayali-nature-camp", title: "Mayali Nature Camp", image: "/assets/images/mayalinaturecamp.JPG", objectPosition: "center" },
-  { id: "mahtari-sadan", title: "Mahtari Sadan", image: "/assets/images/mahtarisadan.JPG", objectPosition: "top center" },
-  { id: "golden-island-korba", title: "Golden Island Korba", image: "/assets/images/goldenislandkorba.jpg", objectPosition: "center" },
-  { id: "bastar-tribal-1", title: "Bastar Tribal Culture", image: "/assets/images/gallery/bastar tribal 1.png", objectPosition: "top center" },
-  { id: "gallery-02", title: "Chhattisgarh Heritage", image: "/assets/images/gallery/02.png", objectPosition: "center" },
-  { id: "gallery-03", title: "State Event Gala", image: "/assets/images/gallery/03 .png", objectPosition: "center" },
-  { id: "gallery-1001299067", title: "Cultural Event", image: "/assets/images/gallery/1001299067.jpg", objectPosition: "center" },
-  { id: "gallery-757656910", title: "Summit Highlights", image: "/assets/images/gallery/757656910_122296226312081376_9155510348415342518_n copy.jpg", objectPosition: "center" },
-  { id: "gallery-dsc00008", title: "Chhattisgarh Landscape", image: "/assets/images/gallery/DSC00008.JPG", objectPosition: "top center" },
-  { id: "gallery-dsc00149", title: "State Festival", image: "/assets/images/gallery/DSC00149.JPG", objectPosition: "top center" },
-  { id: "gallery-dsc00580", title: "Traditional Performance", image: "/assets/images/gallery/DSC00580.JPG", objectPosition: "top center" },
-  { id: "gallery-dsc00700", title: "Youth Creator Meet", image: "/assets/images/gallery/DSC00700.JPG", objectPosition: "center" },
-  { id: "gallery-dsc01733", title: "State Celebration", image: "/assets/images/gallery/DSC01733.JPG", objectPosition: "top center" },
-  { id: "gallery-dsc02119", title: "Indigenous Art", image: "/assets/images/gallery/DSC02119.JPG", objectPosition: "top center" },
-  { id: "gallery-dsc02344", title: "Award Night Moment", image: "/assets/images/gallery/DSC02344.JPG", objectPosition: "center" },
-  { id: "gallery-dsc02412", title: "Creator Community", image: "/assets/images/gallery/DSC02412.JPG", objectPosition: "center" },
-  { id: "gallery-g9eoig0ayayblk4", title: "Summit Gathering", image: "/assets/images/gallery/G9eoIg0aYAYBlk4.jpg", objectPosition: "center" },
-  { id: "gallery-g9eoiitayacvhqn", title: "State Excellence", image: "/assets/images/gallery/G9eoIitaYAcVhQN.jpg", objectPosition: "center" },
-  { id: "gallery-g9eoiivbaaakiq8", title: "Cultural Showcase", image: "/assets/images/gallery/G9eoIivbAAAKiQ8.jpg", objectPosition: "center" },
-  { id: "gallery-guqpandxoaa_bm5", title: "Chhattisgarh Pride", image: "/assets/images/gallery/GuqpANDXoAA_BM5.jpg", objectPosition: "top center" },
-  { id: "gallery-img-20260416", title: "State Initiative", image: "/assets/images/gallery/IMG_20260416_090307.jpg", objectPosition: "center" },
-  { id: "gallery-img-20260703-1", title: "Creator Awards", image: "/assets/images/gallery/IMG_20260703_130421.jpg", objectPosition: "center" },
-  { id: "gallery-img-20260703-3", title: "Heritage & Tourism", image: "/assets/images/gallery/IMG_20260703_134024.jpg", objectPosition: "center" },
-  { id: "gallery-img-4534", title: "Award Ceremony", image: "/assets/images/gallery/IMG_4534.JPG", objectPosition: "top center" },
   { id: "event-1", title: "Grand Summit Stage", image: "/assets/images/event-1.jpg", objectPosition: "center" },
   { id: "event-2", title: "State Influencers Meet", image: "/assets/images/event-2.jpg", objectPosition: "center" },
   { id: "event-3", title: "Cultural Heritage Showcase", image: "/assets/images/event-3.jpg", objectPosition: "center" },
-  { id: "raipur-landmark", title: "Raipur Landmark", image: "/assets/images/raipur_landmark.jpg", objectPosition: "top center" },
+  { id: "bhoramdev-temple", title: "Bhoram Dev Temple", image: "/assets/images/bhoramdevmandir.jpg", objectPosition: "top center" },
+  { id: "event-4", title: "Digital Innovators Forum", image: "/assets/images/event-4.jpg", objectPosition: "center" },
+  { id: "event-5", title: "Creator Awards Night", image: "/assets/images/event-5.jpg", objectPosition: "center" },
   { id: "chattisgarh-fall", title: "Chitrakote Waterfalls", image: "/assets/images/chattisgarh_fall.jpg", objectPosition: "center" },
+  { id: "event-6", title: "Youth Creator Conclave", image: "/assets/images/event-6.jpg", objectPosition: "center" },
+  { id: "about-2", title: "State Cultural Heritage", image: "/assets/images/about-2.webp", objectPosition: "center" },
+  { id: "event-7", title: "State Excellence Gala", image: "/assets/images/event-7.jpg", objectPosition: "center" },
+  { id: "raipur-landmark", title: "Raipur Landmark", image: "/assets/images/raipur_landmark.jpg", objectPosition: "top center" },
+  { id: "event-8", title: "Indigenous Arts & Media", image: "/assets/images/event-8.jpg", objectPosition: "center" },
+  { id: "about-4", title: "Chhattisgarh Tradition", image: "/assets/images/about-4.webp", objectPosition: "center" },
+  { id: "gallery-g9eoig0ayayblk4", title: "Summit Gathering", image: "/assets/images/gallery/G9eoIg0aYAYBlk4.jpg", objectPosition: "center" },
+  { id: "gallery-757656910", title: "Summit Highlights", image: "/assets/images/gallery/757656910_122296226312081376_9155510348415342518_n copy.jpg", objectPosition: "center" },
 ];
 
 function SafeCardImage({ src, alt, objectPosition = "center", objectFit = "cover" }) {
   const [currentSrc, setCurrentSrc] = useState(() => encodeURI(src || ""));
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     setCurrentSrc(encodeURI(src || ""));
     setErrorOccurred(false);
+    setIsLoaded(false);
   }, [src]);
 
   const handleError = () => {
     if (!errorOccurred) {
       setErrorOccurred(true);
-      setCurrentSrc("/assets/images/mayalinaturecamp.JPG");
+      setCurrentSrc("/assets/images/event-1.jpg");
     }
   };
 
   return (
-    <Image
-      src={currentSrc}
-      alt={alt || "Chhattisgarh Gallery"}
-      fill
-      sizes="(max-width: 768px) 100vw, 50vw"
-      style={{
-        objectFit: objectFit,
-        objectPosition: objectPosition,
-      }}
-      className="transition-transform duration-700 ease-out group-hover:scale-105"
-      onError={handleError}
-      unoptimized
-    />
+    <>
+      {/* Skeleton loader overlay until image finishes downloading */}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-stone-300 animate-pulse z-10" />
+      )}
+      <Image
+        src={currentSrc}
+        alt={alt || "Chhattisgarh Gallery"}
+        fill
+        sizes="(max-width: 640px) 220px, 320px"
+        quality={75}
+        loading="lazy"
+        style={{
+          objectFit: objectFit,
+          objectPosition: objectPosition,
+        }}
+        className={`transition-all duration-500 ease-out group-hover:scale-105 ${
+          isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
+        onLoad={() => setIsLoaded(true)}
+        onError={handleError}
+      />
+    </>
   );
 }
 

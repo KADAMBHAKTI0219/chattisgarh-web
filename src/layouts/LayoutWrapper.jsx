@@ -6,6 +6,7 @@ import Image from "next/image";
 import Navbar from "@/layouts/Navbar";
 import Footer from "@/layouts/Footer";
 import ParticipateModal from "@/components/shared/ParticipateModal";
+import Preloader from "@/components/common/Preloader";
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
@@ -25,6 +26,7 @@ export default function LayoutWrapper({ children }) {
   if (hideHeaderFooter) {
     return (
       <div id="main-content-wrapper" className="min-h-screen bg-[#F8F6F0] w-full">
+        <Preloader />
         <main id="main-content" className="min-h-screen w-full">
           {children}
         </main>
@@ -34,6 +36,7 @@ export default function LayoutWrapper({ children }) {
 
   return (
     <div id="main-content-wrapper" className="min-h-screen bg-[#FAF7F0] bg-tribal-watermark flex flex-col w-full max-w-[100vw] [overflow-x:clip] relative">
+      <Preloader />
       {/* Subtle giant Chhattisgarh Map logo watermark */}
       <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none select-none opacity-[0.012] -z-10">
         <Image
