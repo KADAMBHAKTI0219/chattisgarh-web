@@ -47,10 +47,10 @@ export default function AdminLoginPage() {
 
     try {
       const response = await login(formData.email, formData.password);
-      
+
       if (response.success || response.status === 200) {
         setSuccessMsg("Admin Authentication Verified! Opening Admin Dashboard...");
-        
+
         // Ensure Admin Role in session storage
         const userObj = response.data?.user || response.data?.data?.user || {
           _id: `admin-${Date.now()}`,
@@ -59,7 +59,7 @@ export default function AdminLoginPage() {
           role: "SUPER_ADMIN"
         };
         const tokenObj = response.data?.accessToken || response.data?.data?.accessToken || "admin-session-token-2026";
-        
+
         // Enforce Admin role if logging through admin portal
         const adminEnforcedUser = {
           ...userObj,
@@ -114,7 +114,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-4 py-8 md:py-12 flex flex-col items-center justify-center relative overflow-hidden animate-page-enter">
-      
+
       {/* Background Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-[0.02] -z-10">
         <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill className="object-contain" />
@@ -133,7 +133,7 @@ export default function AdminLoginPage() {
 
       {/* Admin Login Card Container */}
       <div className="w-full max-w-md max-w-[calc(100vw-32px)] bg-white border border-zinc-200/90 rounded-3xl p-5 sm:p-8 shadow-md flex flex-col gap-6 text-left relative overflow-hidden">
-        
+
         {/* Top Decorative Border */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#21593D] via-[#E6532B] to-[#21593D]"></div>
 
@@ -173,7 +173,7 @@ export default function AdminLoginPage() {
 
         {/* Admin Login Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
-          
+
           {/* Email Field */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-poppins font-bold text-zinc-700 uppercase tracking-wider flex items-center justify-between">

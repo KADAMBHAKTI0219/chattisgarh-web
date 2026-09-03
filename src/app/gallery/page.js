@@ -93,9 +93,8 @@ function GalleryCard({ item, onClick }) {
             objectFit: "cover",
             objectPosition: item.objectPosition || "center",
           }}
-          className={`transition-all duration-500 group-hover:scale-105 ${
-            isLoaded ? "opacity-100" : "opacity-0"
-          }`}
+          className={`transition-all duration-500 group-hover:scale-105 ${isLoaded ? "opacity-100" : "opacity-0"
+            }`}
           loading="lazy"
           unoptimized
         />
@@ -144,12 +143,12 @@ export default function GalleryPage() {
 
   const apiPhotos = albums.length > 0
     ? albums.map((a, idx) => ({
-        id: a._id || a.id || `api-photo-${idx}`,
-        title: a.title || "Chhattisgarh Album",
-        image: a.coverImage || "/assets/images/gallery/02.png",
-        category: a.category || "Creator Summit",
-        aspectRatio: ASPECT_RATIOS[idx % ASPECT_RATIOS.length],
-      }))
+      id: a._id || a.id || `api-photo-${idx}`,
+      title: a.title || "Chhattisgarh Album",
+      image: a.coverImage || "/assets/images/gallery/02.png",
+      category: a.category || "Creator Summit",
+      aspectRatio: ASPECT_RATIOS[idx % ASPECT_RATIOS.length],
+    }))
     : [];
 
   const rawMedia = [...ALL_GALLERY_PHOTOS, ...apiPhotos];
@@ -201,7 +200,7 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-8 relative overflow-x-hidden animate-page-enter">
-      
+
       {/* Header */}
       <div className="w-full max-w-7xl mx-auto text-center flex flex-col items-center">
         <Heading
@@ -218,11 +217,10 @@ export default function GalleryPage() {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-poppins font-semibold transition-all duration-300 cursor-pointer ${
-              selectedCategory === cat
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-poppins font-semibold transition-all duration-300 cursor-pointer ${selectedCategory === cat
                 ? "bg-[#C45A32] text-white shadow-md shadow-[#C45A32]/30 scale-105"
                 : "bg-white border border-zinc-200 text-zinc-700 hover:border-[#C45A32]/60 hover:text-[#C45A32]"
-            }`}
+              }`}
           >
             {t(cat)}
           </button>

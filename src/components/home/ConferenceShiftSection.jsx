@@ -59,9 +59,8 @@ function SafeCardImage({ src, alt, objectPosition = "center", objectFit = "cover
           objectFit: objectFit,
           objectPosition: objectPosition,
         }}
-        className={`transition-all duration-500 ease-out group-hover:scale-105 ${
-          isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
-        }`}
+        className={`transition-all duration-500 ease-out group-hover:scale-105 ${isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          }`}
         onLoad={() => setIsLoaded(true)}
         onError={handleError}
       />
