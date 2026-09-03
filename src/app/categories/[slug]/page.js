@@ -9,6 +9,7 @@ import { categoryService } from "@/services/api";
 import Heading from "@/components/common/Heading";
 import CategoryDetailModal from "@/components/common/CategoryDetailModal";
 import { extractDynamicTiers, getTierSlug, getTierColor, getTierTitle } from "@/utils/tierUtils";
+import { staticCategories } from "@/data/staticCategories";
 import {
     FaChevronLeft,
     FaChevronRight,
@@ -25,38 +26,10 @@ export default function CategorySlugPage({ params }) {
     const { t } = useLanguage();
     const { openModal } = useParticipateModal();
     const [searchQuery, setSearchQuery] = useState("");
-    const [apiCategories, setApiCategories] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [apiCategories] = useState(staticCategories);
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedDetailCategory, setSelectedDetailCategory] = useState(null);
     const tabsRef = useRef(null);
-
-    // Fetch Categories from Backend API on mount
-    useEffect(() => {
-        let isMounted = true;
-        async function loadCategories() {
-            try {
-                setIsLoading(true);
-                const res = await categoryService.getCategories({ isActive: true });
-                if (isMounted) {
-                    let list = [];
-                    if (res?.categories && Array.isArray(res.categories) && res.categories.length > 0) {
-                        list = res.categories;
-                    } else if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-                        list = res.data;
-                    } else if (res?.data?.categories && Array.isArray(res.data.categories) && res.data.categories.length > 0) {
-                        list = res.data.categories;
-                    }
-                    setApiCategories(list);
-                }
-            } catch (err) {
-                console.warn("Failed to load categories from API:", err);
-            } finally {
-                if (isMounted) setIsLoading(false);
-            }
-        }
-        loadCategories();
-        return () => { isMounted = false; };
-    }, []);
 
     // Format category objects
     const allCategoriesList = apiCategories.map((cat, idx) => {

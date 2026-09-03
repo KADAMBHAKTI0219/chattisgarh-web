@@ -9,7 +9,7 @@ import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
 import { recaptchaService } from "@/services/recaptcha";
-import { locationService } from "@/services/location";
+import { staticCategories } from "@/data/staticCategories";
 import {
   FaUser,
   FaEnvelope,
@@ -172,16 +172,25 @@ export default function ParticipateModal() {
     setMounted(true);
   }, []);
 
-  // Fetch Categories from Backend API on mount
+  // Fetch Categories dynamically from Backend API on mount
   useEffect(() => {
     async function loadCategories() {
       try {
         const res = await categoryService.getCategories({ isActive: true });
-        if (res.success && Array.isArray(res.categories) && res.categories.length > 0) {
-          setApiCategories(res.categories);
+        let list = [];
+        if (res?.categories && Array.isArray(res.categories) && res.categories.length > 0) {
+          list = res.categories;
+        } else if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+          list = res.data;
+        }
+        if (list.length > 0) {
+          setApiCategories(list);
+        } else {
+          setApiCategories(staticCategories);
         }
       } catch (err) {
         console.warn("Failed to load categories in ParticipateModal:", err);
+        setApiCategories(staticCategories);
       }
     }
     loadCategories();

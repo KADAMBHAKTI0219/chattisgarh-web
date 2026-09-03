@@ -7,6 +7,7 @@ import Heading from "@/components/common/Heading";
 import CategoryDetailModal from "@/components/common/CategoryDetailModal";
 import { categoryService } from "@/services/api";
 import { extractDynamicTiers, getTierSlug, getTierColor, getTierTitle } from "@/utils/tierUtils";
+import { staticCategories } from "@/data/staticCategories";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 export default function AwardCategoriesSection() {
@@ -14,36 +15,12 @@ export default function AwardCategoriesSection() {
   const { openModal } = useParticipateModal();
   const [activeTier, setActiveTier] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [apiCategories, setApiCategories] = useState([]);
+  const [categoriesList] = useState(staticCategories);
   const [selectedDetailCategory, setSelectedDetailCategory] = useState(null);
   const tabsRef = useRef(null);
 
-  // Fetch Categories from Backend API on mount
-  useEffect(() => {
-    async function loadApiCategories() {
-      try {
-        const res = await categoryService.getCategories({ isActive: true });
-        let fetchedList = [];
-        if (res?.categories && Array.isArray(res.categories) && res.categories.length > 0) {
-          fetchedList = res.categories;
-        } else if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-          fetchedList = res.data;
-        } else if (res?.data?.categories && Array.isArray(res.data.categories) && res.data.categories.length > 0) {
-          fetchedList = res.data.categories;
-        }
-
-        if (fetchedList.length > 0) {
-          setApiCategories(fetchedList);
-        }
-      } catch (err) {
-        console.warn("Error loading categories from API:", err);
-      }
-    }
-    loadApiCategories();
-  }, []);
-
-  // Format categories cleanly from dynamic backend response
-  const formattedCategories = apiCategories.map((cat, idx) => {
+  // Format categories cleanly
+  const formattedCategories = categoriesList.map((cat, idx) => {
     const rawTier = cat.tier || cat.tierName || "General Tier";
     const tierNum = cat.tierNumber || null;
     const tierSlug = getTierSlug(rawTier, tierNum);
