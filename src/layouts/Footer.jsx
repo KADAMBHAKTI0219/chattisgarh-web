@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { PhoneCall, Mail, Clock, ArrowUp, QrCode } from "lucide-react";
+import { Mail, Clock, ArrowUp, QrCode } from "lucide-react";
 import { FaYoutube, FaInstagram, FaFacebookF, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useLanguage } from "@/context/LanguageContext";
@@ -140,25 +140,13 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Support & Helpline Desk */}
+          {/* Column 4: Support Desk */}
           <div className="flex flex-col gap-4">
             <h4 className="font-poppins font-bold text-xs xl:text-sm uppercase tracking-widest text-[var(--secondary)] flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
               {t("Support Desk")}
             </h4>
             <ul className="flex flex-col gap-3.5 text-zinc-700 font-semibold text-sm xl:text-base">
-              <li>
-                <div className="text-zinc-900 font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5">
-                  <PhoneCall className="w-3.5 h-3.5 text-[var(--secondary)]" />
-                  {t("Helpline")}
-                </div>
-                <a 
-                  href="tel:+917712510123" 
-                  className="text-[var(--primary)] hover:text-[var(--primary-hover)] font-extrabold mt-0.5 text-base xl:text-lg block transition-colors duration-200"
-                >
-                  +91-771-2510123
-                </a>
-              </li>
               <li>
                 <div className="text-zinc-900 font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-[var(--secondary)]" />
@@ -219,6 +207,7 @@ export default function Footer() {
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(SITE_URL)}&color=2E5C31&margin=2`}
                   alt="Website QR Code"
+                  loading="lazy"
                   className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
               </a>

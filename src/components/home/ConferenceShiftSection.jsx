@@ -148,6 +148,7 @@ export default function ConferenceShiftSection() {
             src="/assets/images/logoChattisgarh.png"
             alt="State Map Watermark"
             fill
+            sizes="900px"
             className="object-contain"
           />
         </div>
@@ -265,23 +266,15 @@ export default function ConferenceShiftSection() {
             {/* Top-Right Decorative Soft Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[radial-gradient(circle,rgba(212,165,52,0.18)_0%,transparent_70%)] pointer-events-none group-hover:scale-125 transition-transform duration-500" />
 
-            <div className="flex items-start gap-4 relative z-10">
-              {/* Golden Quotation Icon */}
-              <div className="w-10 h-10 rounded-xl bg-[#D4A534]/15 border border-[#D4A534]/40 flex items-center justify-center text-[#D4A534] font-serif text-2xl font-bold shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
-                “
-              </div>
-
-              {/* Quote Content */}
-              <div className="flex flex-col gap-1">
-                <p className="font-poppins font-bold text-sm sm:text-base leading-snug italic text-[#21593D]">
-                  <span className="bg-gradient-to-r from-[#21593D] via-[#C45A32] to-[#21593D] bg-clip-text text-transparent">
-                    {t("“Because when your content inspires the nation, Chhattisgarh shines with you.”")}
-                  </span>
-                </p>
-                <span className="font-poppins font-bold text-[11px] uppercase tracking-widest text-[#C45A32] mt-0.5">
-                  — {t("Government of Chhattisgarh")}
+            <div className="flex flex-col gap-1 relative z-10">
+              <p className="font-poppins font-bold text-sm sm:text-base leading-snug italic text-[#21593D]">
+                <span className="bg-gradient-to-r from-[#21593D] via-[#C45A32] to-[#21593D] bg-clip-text text-transparent">
+                  {t("“Because when your content inspires the nation, Chhattisgarh shines with you.”")}
                 </span>
-              </div>
+              </p>
+              <span className="font-poppins font-bold text-[11px] uppercase tracking-widest text-[#C45A32] mt-0.5">
+                — {t("Government of Chhattisgarh")}
+              </span>
             </div>
           </div>
 

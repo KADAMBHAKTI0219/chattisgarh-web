@@ -117,7 +117,7 @@ export default function AdminLoginPage() {
 
       {/* Background Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-[0.02] -z-10">
-        <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill className="object-contain" />
+        <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill sizes="600px" className="object-contain" />
       </div>
 
       {/* Top Header Navigation */}

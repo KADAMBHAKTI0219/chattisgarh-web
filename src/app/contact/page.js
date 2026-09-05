@@ -151,33 +151,11 @@ export default function ContactPage() {
         />
       </div>
 
-      {/* 3. Official Contact Info Cards (3 Columns) */}
+      {/* 3. Official Contact Info Cards (2 Columns) */}
       <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          {/* Card 1: Helpline Phone */}
-          <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 flex flex-col items-start gap-4 shadow-sm hover:shadow-md hover:border-[var(--primary)] transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-[#C45A32]/10 text-[#C45A32] flex items-center justify-center font-bold text-xl shrink-0">
-              <FaPhoneAlt className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-400">
-                Official Helpline
-              </span>
-              <h3 className="text-lg font-poppins font-bold text-zinc-950 mt-1">
-                Toll-Free & Support
-              </h3>
-              <p className="text-xs text-zinc-500 font-medium mt-1">
-                Monday to Saturday (9:00 AM - 6:00 PM IST)
-              </p>
-            </div>
-            <div className="flex flex-col gap-1 mt-2 text-sm font-inter font-bold text-[#C45A32]">
-              <a href="tel:+917712234567" className="hover:underline">+91 (0771) 2234567</a>
-              <a href="tel:+919876543210" className="hover:underline">+91 98765 43210</a>
-            </div>
-          </div>
-
-          {/* Card 2: Email Support */}
+          {/* Card 1: Email Support */}
           <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 flex flex-col items-start gap-4 shadow-sm hover:shadow-md hover:border-[var(--secondary)] transition-all">
             <div className="w-12 h-12 rounded-2xl bg-[#21593D]/10 text-[#21593D] flex items-center justify-center font-bold text-xl shrink-0">
               <FaEnvelope className="w-5 h-5" />
@@ -203,7 +181,7 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Card 3: Secretariat Headquarters */}
+          {/* Card 2: Secretariat Headquarters */}
           <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 flex flex-col items-start gap-4 shadow-sm hover:shadow-md hover:border-[#D4A534] transition-all">
             <div className="w-12 h-12 rounded-2xl bg-[#D4A534]/15 text-[#D4A534] flex items-center justify-center font-bold text-xl shrink-0">
               <FaMapMarkerAlt className="w-5 h-5" />
@@ -546,9 +524,6 @@ export default function ContactPage() {
                 <span className="text-zinc-950 font-bold">Government of Chhattisgarh</span>
                 <a href="mailto:support@chhattisgarhcreators.gov.in" className="text-[#21593D] hover:underline flex items-center gap-1.5 mt-0.5">
                   <FaEnvelope className="w-3 h-3" /> support@chhattisgarhcreators.gov.in
-                </a>
-                <a href="tel:+917712234567" className="text-[#C45A32] hover:underline flex items-center gap-1.5">
-                  <FaPhoneAlt className="w-3 h-3" /> +91 (0771) 2234567
                 </a>
               </div>
             </div>

@@ -18,27 +18,19 @@ export default function HeroSection() {
     >
       {/* Hero Banner Container */}
       <div className="relative w-full max-w-full overflow-hidden flex items-center justify-center">
-        {/* Hero Background Image — Desktop */}
-        <img
-          src={DESKTOP_HERO_IMAGE}
-          alt="Chhattisgarh State Creator & Influencer Awards 2026 Banner"
-          className="hidden lg:block w-full h-auto max-w-full object-contain select-none shrink-0 z-0 border-0 outline-none transform-gpu"
-          decoding="async"
-          loading="eager"
-          fetchPriority="high"
-          draggable={false}
-        />
-
-        {/* Hero Background Image — Mobile */}
-        <img
-          src={MOBILE_HERO_IMAGE}
-          alt="Hero Background Banner"
-          className="block lg:hidden w-full h-auto max-w-full object-contain select-none shrink-0 z-0 border-0 outline-none transform-gpu"
-          decoding="async"
-          loading="eager"
-          fetchPriority="high"
-          draggable={false}
-        />
+        {/* Responsive Hero Banner Picture */}
+        <picture className="w-full h-auto max-w-full flex items-center justify-center">
+          <source media="(min-width: 1024px)" srcSet={DESKTOP_HERO_IMAGE} />
+          <img
+            src={MOBILE_HERO_IMAGE}
+            alt="Chhattisgarh State Creator & Influencer Awards 2026 Banner"
+            className="w-full h-auto max-w-full object-contain select-none shrink-0 z-0 border-0 outline-none transform-gpu"
+            decoding="async"
+            loading="eager"
+            fetchPriority="high"
+            draggable={false}
+          />
+        </picture>
 
         {/* Overlay Participate CTA Button at the bottom of hero image */}
         <div className="absolute bottom-[46%] lg:bottom-[16%] xl:bottom-[20%] z-10 flex items-center justify-center ">

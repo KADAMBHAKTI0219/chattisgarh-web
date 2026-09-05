@@ -295,6 +295,7 @@ export default function GalleryPage() {
                 src={encodeURI(filteredMedia[selectedMediaIndex].image)}
                 alt={filteredMedia[selectedMediaIndex].title || "Gallery image"}
                 fill
+                sizes="100vw"
                 quality={90}
                 className="object-contain"
                 unoptimized
