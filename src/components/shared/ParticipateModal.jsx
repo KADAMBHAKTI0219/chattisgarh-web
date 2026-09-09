@@ -9,6 +9,7 @@ import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
 import { recaptchaService } from "@/services/recaptcha";
+import locationService, { locationService as locServiceNamed } from "@/services/location";
 import { staticCategories } from "@/data/staticCategories";
 import { CG_DISTRICTS_33 } from "@/utils/constants";
 import {
