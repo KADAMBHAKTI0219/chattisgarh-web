@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Mail, Clock, ArrowUp, QrCode } from "lucide-react";
+import { Mail, Clock, ArrowUp, QrCode, Phone } from "lucide-react";
 import { FaYoutube, FaInstagram, FaFacebookF, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useLanguage } from "@/context/LanguageContext";
@@ -149,14 +149,26 @@ export default function Footer() {
             <ul className="flex flex-col gap-3.5 text-zinc-700 font-semibold text-sm xl:text-base">
               <li>
                 <div className="text-zinc-900 font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-[var(--secondary)]" />
+                  {t("Helpline Number")}
+                </div>
+                <a 
+                  href="tel:18004105353" 
+                  className="text-zinc-800 hover:text-[var(--primary)] font-bold mt-0.5 text-sm xl:text-base break-words block transition-colors duration-200"
+                >
+                  1800 410 5353
+                </a>
+              </li>
+              <li>
+                <div className="text-zinc-900 font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-[var(--secondary)]" />
                   {t("Email")}
                 </div>
                 <a 
-                  href="mailto:support-creatorawards@cg.gov.in" 
+                  href="mailto:supportdeskcg@gmail.com" 
                   className="text-zinc-800 hover:text-[var(--primary)] font-bold mt-0.5 text-sm xl:text-base break-words block transition-colors duration-200"
                 >
-                  support-creatorawards@cg.gov.in
+                  supportdeskcg@gmail.com
                 </a>
               </li>
               <li>

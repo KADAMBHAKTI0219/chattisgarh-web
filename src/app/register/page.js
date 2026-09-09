@@ -96,7 +96,7 @@ export default function RegisterPage() {
     return formData.state ? [formData.state] : ["Chhattisgarh"];
   }, [apiLocations, formData.state]);
 
-  // Available Districts / Cities List for Selected State - 100% Dynamically fetched from Backend API
+  // Available Districts / Cities List for Selected State - Static fallback to 33 CG districts
   const availableDistricts = useMemo(() => {
     if (formData.state && Array.isArray(apiLocations) && apiLocations.length > 0) {
       const normState = normalizeStateName(formData.state);
@@ -110,8 +110,8 @@ export default function RegisterPage() {
         if (validCities.length > 0) return validCities;
       }
     }
-    return formData.district ? [formData.district] : ["Raipur"];
-  }, [apiLocations, formData.state, formData.district]);
+    return CG_DISTRICTS_33;
+  }, [apiLocations, formData.state]);
 
   // Sync state & district to first available backend state on API load
   useEffect(() => {

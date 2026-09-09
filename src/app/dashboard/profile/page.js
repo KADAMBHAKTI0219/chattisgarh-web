@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { userService } from "@/services/user";
 import { creatorService } from "@/services/creator";
+import { CG_DISTRICTS_33 } from "@/utils/constants";
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe, FaYoutube, FaInstagram, FaFacebook, FaAward, FaEdit, FaSave, FaCheckCircle, FaCamera, FaTrashAlt } from "react-icons/fa";
 
 export default function CreatorProfilePage() {
@@ -334,13 +335,16 @@ export default function CreatorProfilePage() {
             <div className="flex flex-col gap-1">
               <span className="text-xs font-inter font-bold text-zinc-500 uppercase tracking-wider">District Location</span>
               {isEditing ? (
-                <input
-                  type="text"
+                <select
                   name="district"
                   value={formData.district}
                   onChange={handleChange}
-                  className="rounded-xl border border-zinc-300 px-3 py-2 text-xs font-semibold"
-                />
+                  className="rounded-xl border border-zinc-300 px-3 py-2 text-xs font-semibold bg-white"
+                >
+                  {CG_DISTRICTS_33.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
               ) : (
                 <span className="text-sm font-semibold text-zinc-900">{formData.district}</span>
               )}

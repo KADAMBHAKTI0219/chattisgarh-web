@@ -9,8 +9,8 @@ import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
 import { recaptchaService } from "@/services/recaptcha";
-import locationService, { locationService as locServiceNamed } from "@/services/location";
 import { staticCategories } from "@/data/staticCategories";
+import { CG_DISTRICTS_33 } from "@/utils/constants";
 import {
   FaUser,
   FaEnvelope,
@@ -171,7 +171,7 @@ export default function ParticipateModal() {
     ? Array.from(new Set(apiLocations.map((l) => l.stateName))).sort()
     : [formData.applicant?.state || "Chhattisgarh"];
 
-  // Dynamic Cities / Districts for given state from Backend API
+  // Dynamic Cities / Districts for given state from Backend API or static fallback
   const getDistrictsForState = (stateName) => {
     const norm = normalizeStateName(stateName || "");
     if (Array.isArray(apiLocations) && apiLocations.length > 0) {
@@ -181,7 +181,7 @@ export default function ParticipateModal() {
         if (cList.length > 0) return cList;
       }
     }
-    return ["Raipur"];
+    return CG_DISTRICTS_33;
   };
 
   const applicantDistricts = getDistrictsForState(formData.applicant?.state);
@@ -787,7 +787,7 @@ export default function ParticipateModal() {
                         onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, district: e.target.value } })}
                         className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
                       >
-                        {cgDistricts.map((d, i) => <option key={i} value={d}>{d}</option>)}
+                        {applicantDistricts.map((d, i) => <option key={i} value={d}>{d}</option>)}
                       </select>
                     </div>
                   </>
@@ -847,7 +847,7 @@ export default function ParticipateModal() {
                       onChange={(e) => setFormData({ ...formData, nominee: { ...formData.nominee, district: e.target.value } })}
                       className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
                     >
-                      {cgDistricts.map((d, i) => <option key={i} value={d}>{d}</option>)}
+                      {nomineeDistricts.map((d, i) => <option key={i} value={d}>{d}</option>)}
                     </select>
                   </div>
                 </div>

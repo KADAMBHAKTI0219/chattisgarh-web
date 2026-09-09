@@ -468,11 +468,11 @@ export default function DashboardOverviewPage() {
             </div>
 
             <a
-              href="mailto:support@cgawards.gov.in"
+              href="mailto:supportdeskcg@gmail.com"
               className="mt-1 px-5 py-2.5 rounded-full border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-poppins font-bold text-xs transition-colors inline-flex items-center gap-2 cursor-pointer"
             >
               <FaHeadset className="w-3.5 h-3.5" />
-              <span>Contact Support</span>
+              <span>Contact Support (supportdeskcg@gmail.com)</span>
             </a>
           </div>
 

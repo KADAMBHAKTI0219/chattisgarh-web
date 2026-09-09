@@ -171,10 +171,6 @@ export default function ConferenceShiftSection() {
           {/* Marquee Viewport Container (Clean without outer box/border) */}
           <div className="relative w-full aspect-square h-[320px] md:h-[420px] flex items-center overflow-hidden">
 
-            {/* Gradient Mask Left & Right */}
-            <div className="absolute inset-y-0 left-0 w-10 sm:w-14 bg-gradient-to-r from-[#F8F4EA] via-[#F8F4EA]/80 to-transparent z-20 pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-10 sm:w-14 bg-gradient-to-l from-[#F8F4EA] via-[#F8F4EA]/80 to-transparent z-20 pointer-events-none" />
-
             {/* Single Row Horizontal Marquee Track */}
             <div className="overflow-hidden w-full h-full flex items-center">
               <div className="animate-marquee-h-left flex gap-4 sm:gap-5 h-full items-center">

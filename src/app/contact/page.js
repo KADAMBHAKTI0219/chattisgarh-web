@@ -151,9 +151,9 @@ export default function ContactPage() {
         />
       </div>
 
-      {/* 3. Official Contact Info Cards (2 Columns) */}
+      {/* 3. Official Contact Info Cards (3 Columns) */}
       <div className="w-full max-w-7xl xl:max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {/* Card 1: Email Support */}
           <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 flex flex-col items-start gap-4 shadow-sm hover:shadow-md hover:border-[var(--secondary)] transition-all">
@@ -172,16 +172,36 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="flex flex-col gap-1 mt-2 text-sm font-inter font-bold text-[#21593D]">
-              <a href="mailto:support@chhattisgarhcreators.gov.in" className="hover:underline">
-                support@chhattisgarhcreators.gov.in
-              </a>
-              <a href="mailto:info@cgawards.in" className="hover:underline">
-                info@cgawards.in
+              <a href="mailto:supportdeskcg@gmail.com" className="hover:underline break-all">
+                supportdeskcg@gmail.com
               </a>
             </div>
           </div>
 
-          {/* Card 2: Secretariat Headquarters */}
+          {/* Card 2: Toll-Free Helpline */}
+          <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 flex flex-col items-start gap-4 shadow-sm hover:shadow-md hover:border-[#C45A32] transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-[#C45A32]/10 text-[#C45A32] flex items-center justify-center font-bold text-xl shrink-0">
+              <FaPhoneAlt className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-400">
+                Helpline Desk
+              </span>
+              <h3 className="text-lg font-poppins font-bold text-zinc-950 mt-1">
+                Toll-Free Helpline
+              </h3>
+              <p className="text-xs text-zinc-500 font-medium mt-1">
+                Mon-Sat (10:00 AM - 5:30 PM)
+              </p>
+            </div>
+            <div className="flex flex-col gap-1 mt-2 text-base font-inter font-extrabold text-[#C45A32]">
+              <a href="tel:18004105353" className="hover:underline tracking-wide">
+                1800 410 5353
+              </a>
+            </div>
+          </div>
+
+          {/* Card 3: Secretariat Headquarters */}
           <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-8 flex flex-col items-start gap-4 shadow-sm hover:shadow-md hover:border-[#D4A534] transition-all">
             <div className="w-12 h-12 rounded-2xl bg-[#D4A534]/15 text-[#D4A534] flex items-center justify-center font-bold text-xl shrink-0">
               <FaMapMarkerAlt className="w-5 h-5" />
@@ -398,6 +418,14 @@ export default function ContactPage() {
               <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed">
                 If you encounter any difficulty while submitting your creator nomination, our official helpline is available to guide you step-by-step.
               </p>
+              <div className="flex flex-col gap-1 text-sm font-poppins font-bold text-amber-300">
+                <a href="tel:18004105353" className="hover:underline flex items-center gap-2">
+                  <FaPhoneAlt className="w-3.5 h-3.5" /> Helpline: 1800 410 5353
+                </a>
+                <a href="mailto:supportdeskcg@gmail.com" className="hover:underline flex items-center gap-2 text-xs text-zinc-100">
+                  <FaEnvelope className="w-3.5 h-3.5" /> supportdeskcg@gmail.com
+                </a>
+              </div>
               <button
                 onClick={openModal}
                 className="self-start px-6 py-3 rounded-full bg-amber-400 hover:bg-amber-300 text-zinc-950 font-poppins font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer mt-2"
@@ -522,8 +550,11 @@ export default function ContactPage() {
               </span>
               <div className="flex flex-col gap-1 text-xs font-inter font-semibold text-zinc-800">
                 <span className="text-zinc-950 font-bold">Government of Chhattisgarh</span>
-                <a href="mailto:support@chhattisgarhcreators.gov.in" className="text-[#21593D] hover:underline flex items-center gap-1.5 mt-0.5">
-                  <FaEnvelope className="w-3 h-3" /> support@chhattisgarhcreators.gov.in
+                <a href="tel:18004105353" className="text-[#C45A32] hover:underline flex items-center gap-1.5 font-bold">
+                  <FaPhoneAlt className="w-3 h-3" /> 1800 410 5353
+                </a>
+                <a href="mailto:supportdeskcg@gmail.com" className="text-[#21593D] hover:underline flex items-center gap-1.5 mt-0.5">
+                  <FaEnvelope className="w-3 h-3" /> supportdeskcg@gmail.com
                 </a>
               </div>
             </div>

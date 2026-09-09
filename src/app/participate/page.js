@@ -148,7 +148,7 @@ function ParticipateForm() {
   // Currently Active Selected State
   const activeSelectedState = formData.nominationAs === "SELF" ? formData.state : formData.creatorState;
 
-  // Dynamic Cascading Cities / Districts List for Selected State - 100% Dynamically fetched from Backend API
+  // Dynamic Cascading Cities / Districts List for Selected State - Static fallback to 33 CG districts
   const availableDistricts = useMemo(() => {
     if (activeSelectedState && Array.isArray(apiLocations) && apiLocations.length > 0) {
       const targetNorm = normalizeStateName(activeSelectedState);
@@ -162,9 +162,8 @@ function ParticipateForm() {
         if (validCities.length > 0) return validCities;
       }
     }
-    const initialDist = formData.nominationAs === "SELF" ? (formData.district || "Raipur") : (formData.creatorDistrict || "Raipur");
-    return [initialDist];
-  }, [apiLocations, activeSelectedState, formData.district, formData.creatorDistrict, formData.nominationAs]);
+    return CG_DISTRICTS_33;
+  }, [apiLocations, activeSelectedState]);
 
   // Sync initial state to first available backend state on initial load
   useEffect(() => {

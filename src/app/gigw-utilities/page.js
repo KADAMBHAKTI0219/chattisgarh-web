@@ -258,7 +258,8 @@ export default function GigwUtilitiesPage() {
             <div className="p-5 rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col gap-2">
               <span className="text-xs font-poppins font-bold text-zinc-950 uppercase">Appellate Nodal Officer</span>
               <span className="text-xs text-zinc-700 font-inter font-medium">Directorate of Culture & Information Technology</span>
-              <span className="text-xs text-[#C45A32] font-bold">Email: support-creatorawards@cg.gov.in</span>
+              <span className="text-xs text-[#C45A32] font-bold">Helpline: 1800 410 5353</span>
+              <span className="text-xs text-[#21593D] font-bold">Email: supportdeskcg@gmail.com</span>
             </div>
           </div>
         )}
