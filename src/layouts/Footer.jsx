@@ -9,7 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
   const { t } = useLanguage();
-  const SITE_URL = "https://chattisgarh-web.vercel.app/";
+  const SITE_URL = "https://innovatecg.in/";
 
   const handleScrollTop = () => {
     window.scrollTo({
@@ -41,7 +41,7 @@ export default function Footer() {
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[var(--secondary)]/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-6 pt-12 pb-8 md:pt-16 xl:pt-20 xl:pb-12 relative z-10">
-        
+
         {/* Top Section: 4 Columns Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-zinc-300/60">
 
@@ -152,8 +152,8 @@ export default function Footer() {
                   <Phone className="w-3.5 h-3.5 text-[var(--secondary)]" />
                   {t("Helpline Number")}
                 </div>
-                <a 
-                  href="tel:18004105353" 
+                <a
+                  href="tel:18004105353"
                   className="text-zinc-800 hover:text-[var(--primary)] font-bold mt-0.5 text-sm xl:text-base break-words block transition-colors duration-200"
                 >
                   1800 410 5353
@@ -164,8 +164,8 @@ export default function Footer() {
                   <Mail className="w-3.5 h-3.5 text-[var(--secondary)]" />
                   {t("Email")}
                 </div>
-                <a 
-                  href="mailto:supportdeskcg@gmail.com" 
+                <a
+                  href="mailto:supportdeskcg@gmail.com"
                   className="text-zinc-800 hover:text-[var(--primary)] font-bold mt-0.5 text-sm xl:text-base break-words block transition-colors duration-200"
                 >
                   supportdeskcg@gmail.com
@@ -187,15 +187,15 @@ export default function Footer() {
               <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
               {t("Connect With Us")}
             </h4>
-            
+
             {/* Social Icons row */}
             <div className="flex gap-2.5">
               {socialLinks.map((soc, i) => {
                 const IconComponent = soc.icon;
                 return (
-                  <a 
+                  <a
                     key={i}
-                    href={soc.link} 
+                    href={soc.link}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-white border border-zinc-200 text-[var(--secondary)] hover:bg-[var(--secondary)] hover:text-white hover:border-[var(--secondary)] flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:-translate-y-0.5 shadow-sm"
@@ -238,7 +238,7 @@ export default function Footer() {
             {t(copyrightText)}
           </p>
 
-          <button 
+          <button
             onClick={handleScrollTop}
             className="rounded-full border border-zinc-200 bg-white hover:border-[var(--primary)] hover:text-[var(--primary)] px-5 py-2.5 font-extrabold text-zinc-900 text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer select-none flex items-center gap-2 group"
           >
