@@ -84,12 +84,14 @@ export async function fetchApi(endpoint, options = {}) {
     ...(body ? { body: body instanceof FormData ? body : JSON.stringify(body) } : {}),
   };
 
+  const isClientInBrowser = typeof window !== "undefined";
+  const isLocalHost = isClientInBrowser && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
   const candidateBases = [PRIMARY_API_BASE_URL];
-  if (!candidateBases.includes(REMOTE_BACKEND_URL)) {
-    candidateBases.push(REMOTE_BACKEND_URL);
-  }
-  if (!candidateBases.includes(LOCAL_BACKEND_URL)) {
-    candidateBases.push(LOCAL_BACKEND_URL);
+  if (isLocalHost) {
+    if (!candidateBases.includes(LOCAL_BACKEND_URL)) {
+      candidateBases.push(LOCAL_BACKEND_URL);
+    }
   }
 
   let lastResponse = null;
@@ -123,29 +125,28 @@ export async function fetchApi(endpoint, options = {}) {
         status: response.status,
       };
 
-      if (response.status === 401 && typeof window !== "undefined") {
+      if (response.status === 401 && isClientInBrowser) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         return lastResponse;
       }
 
-      // If status 404 occurs on relative/local route, attempt next candidate base URL
+      // If status 404 occurs on local environment, attempt next candidate base URL
       if (response.status === 404 && i < candidateBases.length - 1) {
-        console.warn(`404 at ${targetUrl}, trying fallback base ${candidateBases[i + 1]}`);
         continue;
       }
 
       return lastResponse;
     } catch (err) {
       lastError = err;
-      console.warn(`Network connection error attempting ${targetUrl}:`, err.message);
     }
   }
 
   return (
     lastResponse || {
       success: false,
+      isNetworkError: true,
       message: lastError?.message || "Network connection error. Please check your backend server.",
     }
   );
