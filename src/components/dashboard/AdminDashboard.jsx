@@ -910,25 +910,53 @@ export default function AdminDashboard({ token }) {
     if (!confirm(`Are you sure you want to delete user account "${nameStr}"?`)) return;
 
     const targetId = uId || uEmail;
+    const normEmail = uEmail ? String(uEmail).toLowerCase().trim() : "";
+    const normName = uName ? String(uName).toLowerCase().trim() : "";
+
     try {
       // 1. Optimistic UI removal from both state lists
-      setUsersList((prev) => prev.filter((u) => u._id !== uId && u.id !== uId && u.email !== uEmail));
-      setParticipantsList((prev) => prev.filter((p) => p._id !== uId && p.id !== uId && p.email !== uEmail));
+      setUsersList((prev) =>
+        prev.filter((u) => {
+          const matchId = u._id === uId || u.id === uId;
+          const matchEmail = normEmail && u.email && String(u.email).toLowerCase().trim() === normEmail;
+          const matchName = normName && u.name && String(u.name).toLowerCase().trim() === normName;
+          return !matchId && !matchEmail && !matchName;
+        })
+      );
+
+      setParticipants((prev) =>
+        prev.filter((p) => {
+          const matchId = p._id === uId || p.id === uId || p.applicationId === uId;
+          const matchEmail = normEmail && p.email && String(p.email).toLowerCase().trim() === normEmail;
+          const matchName = normName && p.name && String(p.name).toLowerCase().trim() === normName;
+          return !matchId && !matchEmail && !matchName;
+        })
+      );
 
       // 2. Remove from localStorage storage keys if present
       try {
+        const filterFn = (item) => {
+          const matchId = item._id === uId || item.id === uId || item.applicationId === uId;
+          const matchEmail = normEmail && item.email && String(item.email).toLowerCase().trim() === normEmail;
+          return !matchId && !matchEmail;
+        };
+
         const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
-        const filteredRegs = storedRegs.filter((u) => u._id !== uId && u.id !== uId && u.email !== uEmail);
-        localStorage.setItem("registered_users", JSON.stringify(filteredRegs));
+        localStorage.setItem("registered_users", JSON.stringify(storedRegs.filter(filterFn)));
 
         const storedParts = JSON.parse(localStorage.getItem("all_participants") || "[]");
-        const filteredParts = storedParts.filter((p) => p._id !== uId && p.id !== uId && p.email !== uEmail);
-        localStorage.setItem("all_participants", JSON.stringify(filteredParts));
+        localStorage.setItem("all_participants", JSON.stringify(storedParts.filter(filterFn)));
+
+        const storedNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+        localStorage.setItem("submitted_nominations", JSON.stringify(storedNoms.filter(filterFn)));
       } catch (e) {}
 
-      // 3. Call Backend DELETE API safely (handles User & Participant endpoints automatically)
+      // 3. Call Backend DELETE APIs (UserService + ParticipantService)
       if (targetId) {
         await userService.deleteUser(targetId, authToken).catch(() => {});
+        if (normEmail) {
+          await participantService.deleteParticipant(normEmail, authToken).catch(() => {});
+        }
       }
     } catch (err) {
       console.error("Delete User Error:", err);
@@ -1207,17 +1235,60 @@ export default function AdminDashboard({ token }) {
   };
 
   // Delete Participant Action
-  const handleDeleteParticipant = async (pId, pName) => {
+  const handleDeleteParticipant = async (pId, pName, pAppId = "", pEmail = "") => {
     if (!pId) return;
     const nameStr = pName || "this participant";
     if (!confirm(`Are you sure you want to delete participant "${nameStr}"?`)) return;
 
+    const normEmail = pEmail ? String(pEmail).toLowerCase().trim() : "";
+    const normName = pName ? String(pName).toLowerCase().trim() : "";
+
     try {
-      setParticipants((prev) => prev.filter((p) => p._id !== pId && p.id !== pId && p.applicationId !== pId));
-      await participantService.deleteParticipant(pId, authToken);
+      // 1. Optimistic removal from BOTH UI state lists
+      setParticipants((prev) =>
+        prev.filter((p) => {
+          const matchId = p._id === pId || p.id === pId || p.applicationId === pId || (pAppId && p.applicationId === pAppId);
+          const matchEmail = normEmail && p.email && String(p.email).toLowerCase().trim() === normEmail;
+          const matchName = normName && p.name && String(p.name).toLowerCase().trim() === normName;
+          return !matchId && !matchEmail && !matchName;
+        })
+      );
+
+      setUsersList((prev) =>
+        prev.filter((u) => {
+          const matchId = u._id === pId || u.id === pId || (pAppId && u.applicationId === pAppId);
+          const matchEmail = normEmail && u.email && String(u.email).toLowerCase().trim() === normEmail;
+          const matchName = normName && u.name && String(u.name).toLowerCase().trim() === normName;
+          return !matchId && !matchEmail && !matchName;
+        })
+      );
+
+      // 2. Clear from all localStorage storage keys
+      try {
+        const filterFn = (item) => {
+          const matchId = item._id === pId || item.id === pId || item.applicationId === pId || (pAppId && item.applicationId === pAppId);
+          const matchEmail = normEmail && item.email && String(item.email).toLowerCase().trim() === normEmail;
+          return !matchId && !matchEmail;
+        };
+
+        const storedNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+        localStorage.setItem("submitted_nominations", JSON.stringify(storedNoms.filter(filterFn)));
+
+        const storedParts = JSON.parse(localStorage.getItem("all_participants") || "[]");
+        localStorage.setItem("all_participants", JSON.stringify(storedParts.filter(filterFn)));
+
+        const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
+        localStorage.setItem("registered_users", JSON.stringify(storedRegs.filter(filterFn)));
+      } catch (e) {}
+
+      // 3. Call backend participant & user services safely
+      await participantService.deleteParticipant(pId, authToken).catch(() => {});
+      await userService.deleteUser(pId, authToken).catch(() => {});
+      if (normEmail) {
+        await userService.deleteUser(normEmail, authToken).catch(() => {});
+      }
     } catch (err) {
       console.error("Delete Participant Error:", err);
-      setParticipants((prev) => prev.filter((p) => p._id !== pId && p.id !== pId && p.applicationId !== pId));
     }
   };
 
@@ -2180,7 +2251,7 @@ export default function AdminDashboard({ token }) {
                         </button>
 
                         <button
-                          onClick={() => handleDeleteParticipant(p._id || p.id, p.name)}
+                          onClick={() => handleDeleteParticipant(p.raw?._id || p._id || p.id, p.name, p.applicationId, p.email)}
                           className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
                           title="Delete Participant"
                         >
