@@ -7,7 +7,7 @@ import { FaPlay, FaShareAlt, FaClock, FaYoutube } from "react-icons/fa";
 
 const videos = [
   {
-    id: "K9Lji9NWMF8",
+    id: "zqwgKRdO0us",
     title: "PM Narendra Modi Presents National Creators Award 2024 at Bharat Mandapam, New Delhi",
     channel: "Narendra Modi",
     initials: "NM",
@@ -15,6 +15,7 @@ const videos = [
   }
 ];
 
+// https://www.youtube.com/watch?v=zqwgKRdO0us
 function VideoCard({ video }) {
   const [playing, setPlaying] = useState(false);
   const { t } = useLanguage();

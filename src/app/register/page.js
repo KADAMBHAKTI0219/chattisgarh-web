@@ -235,14 +235,16 @@ export default function RegisterPage() {
 
       // Save tokens/user session with CREATOR role for instant user dashboard access
       const resultData = response.data || response;
-      const userObj = resultData?.user || {
-        _id: `u-${Date.now()}`,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        state: formData.state,
-        district: formData.district,
-        role: "CREATOR",
+      const rawUser = resultData?.user || {};
+      const userObj = {
+        _id: rawUser._id || rawUser.id || `u-${Date.now()}`,
+        name: rawUser.name || rawUser.fullName || formData.name,
+        fullName: rawUser.fullName || rawUser.name || formData.name,
+        email: rawUser.email || formData.email,
+        phone: rawUser.phone || formData.phone,
+        state: rawUser.state || formData.state,
+        district: rawUser.district || formData.district,
+        role: (rawUser.role || formData.role || "CREATOR").toUpperCase(),
         status: "Active",
         instagramLink: formData.instagramLink,
         instagramUrl: formData.instagramLink,
@@ -276,6 +278,7 @@ export default function RegisterPage() {
       const userObj = {
         _id: `u-${Date.now()}`,
         name: formData.name,
+        fullName: formData.name,
         email: formData.email,
         phone: formData.phone,
         state: formData.state,

@@ -525,11 +525,12 @@ export default function AdminDashboard({ token }) {
         // Also convert participants to user entries if not already present
         const participantUserEntries = (fetchedPartsList || []).map((p) => ({
           _id: p._id || p.id,
-          name: p.name,
-          email: p.email !== "N/A" ? p.email : "",
-          phone: p.phone !== "N/A" ? p.phone : "",
+          name: p.name || p.fullName || (p.applicant?.fullName),
+          fullName: p.name || p.fullName || (p.applicant?.fullName),
+          email: p.email !== "N/A" ? p.email : (p.applicant?.email !== "N/A" ? p.applicant?.email : ""),
+          phone: p.phone !== "N/A" ? p.phone : (p.applicant?.phone !== "N/A" ? p.applicant?.phone : ""),
           role: "CREATOR",
-          district: p.district || "Raipur",
+          district: p.district || p.applicant?.district || "Raipur",
           status: p.status === "REJECTED" ? "Inactive" : "Active",
           createdAt: p.createdAt || "Recently"
         })).filter((u) => u.name || u.email);
@@ -540,14 +541,32 @@ export default function AdminDashboard({ token }) {
           ...participantUserEntries
         ];
 
-        // Deduplicate by email or _id
+        // Deduplicate & normalize users list so every created/registered user appears
         const userMap = new Map();
-        rawList.forEach((u) => {
-          const key = (u.email || u._id || u.id || "").toLowerCase().trim();
+        rawList.forEach((u, idx) => {
+          const emailKey = u.email ? String(u.email).toLowerCase().trim() : null;
+          const idKey = u._id || u.id;
+          const key = emailKey || (idKey ? String(idKey) : null);
           if (key && !userMap.has(key)) {
-            userMap.set(key, u);
+            const displayName = u.name || u.fullName || u.applicant?.fullName || u.nominee?.fullName || (u.email ? u.email.split("@")[0] : "Registered User");
+            const normalized = {
+              ...u,
+              _id: u._id || u.id || `u-${idx}`,
+              name: displayName,
+              fullName: u.fullName || displayName,
+              email: u.email || u.applicant?.email || "",
+              phone: u.phone || u.mobile || u.mobileNumber || "N/A",
+              role: (u.role || u.userRole || "CREATOR").toUpperCase(),
+              district: u.district || u.state || "Raipur",
+              state: u.state || "Chhattisgarh",
+              status: (u.status || (u.isActive === false ? "Inactive" : "Active")).toString().toUpperCase() === "INACTIVE" ? "Inactive" : "Active",
+              avatar: u.avatar || u.profileImage || u.image || "",
+              createdAt: u.createdAt ? (typeof u.createdAt === "string" && u.createdAt.includes("T") ? new Date(u.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : u.createdAt) : "Recently",
+            };
+            userMap.set(key, normalized);
           }
         });
+
         setUsersList(Array.from(userMap.values()));
       } catch (err) {
         console.error("Failed to fetch Users list:", err);
@@ -817,22 +836,62 @@ export default function AdminDashboard({ token }) {
     e.preventDefault();
     setUserActionMsg("Saving user details...");
     try {
+      const formattedUser = {
+        ...userForm,
+        name: userForm.name || "New Creator",
+        email: (userForm.email || "").trim(),
+        phone: userForm.phone || "N/A",
+        role: (userForm.role || "CREATOR").toUpperCase(),
+        district: userForm.district || "Raipur",
+        status: userForm.status || "Active",
+      };
+
       if (editingUser) {
+        const targetId = editingUser._id || editingUser.id || userForm._id;
         setUsersList((prev) =>
           prev.map((u) =>
-            (u._id === userForm._id || u.id === userForm._id)
-              ? { ...u, ...userForm }
+            (u._id === targetId || u.id === targetId || u.email === formattedUser.email)
+              ? { ...u, ...formattedUser }
               : u
           )
         );
+
+        try {
+          const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
+          const updatedRegs = storedRegs.map((u) =>
+            (u._id === targetId || u.id === targetId || u.email === formattedUser.email)
+              ? { ...u, ...formattedUser }
+              : u
+          );
+          localStorage.setItem("registered_users", JSON.stringify(updatedRegs));
+        } catch (e) {}
+
         setUserActionMsg("User account updated successfully!");
       } else {
         const newUser = {
-          ...userForm,
+          ...formattedUser,
           _id: `u-${Date.now()}`,
           createdAt: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
         };
         setUsersList((prev) => [newUser, ...prev]);
+
+        try {
+          const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
+          const filteredRegs = storedRegs.filter((u) => u.email !== newUser.email);
+          localStorage.setItem("registered_users", JSON.stringify([newUser, ...filteredRegs]));
+        } catch (e) {}
+
+        try {
+          authService.register({
+            name: newUser.name,
+            email: newUser.email,
+            phone: newUser.phone,
+            password: "User@123456",
+            role: newUser.role,
+            district: newUser.district,
+          }).catch(() => {});
+        } catch (e) {}
+
         setUserActionMsg("New user created successfully!");
       }
 
