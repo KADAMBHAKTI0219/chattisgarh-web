@@ -81,13 +81,19 @@ export default function DashboardOverviewPage() {
             }
           }
 
-          // 3. Merge with local submissions saved in localStorage
+          // 3. Merge with local submissions saved in localStorage ONLY if user is authenticated
           let localApps = [];
-          try {
-            const nomLocal = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
-            const appLocal = JSON.parse(localStorage.getItem("user_applications") || "[]");
-            localApps = [...nomLocal, ...appLocal];
-          } catch (e) {}
+          if (token && user?.email) {
+            try {
+              const nomLocal = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+              const appLocal = JSON.parse(localStorage.getItem("user_applications") || "[]");
+              const userEmailClean = user.email.toLowerCase().trim();
+              localApps = [...nomLocal, ...appLocal].filter((item) => {
+                const itemEmail = (item.email || item.applicant?.email || item.nominator?.email || item.nominee?.email || "").toLowerCase().trim();
+                return !itemEmail || itemEmail === userEmailClean;
+              });
+            } catch (e) {}
+          }
 
           const combined = [...localApps, ...apiApps];
 

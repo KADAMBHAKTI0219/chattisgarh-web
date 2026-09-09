@@ -37,41 +37,75 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, token, logout, isAdmin, isJury, isSuperAdmin } = useAuth();
+  const { user, token, loading, logout, isAdmin, isJury, isSuperAdmin } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
+  // Auth Guard: Redirect unauthenticated visitors to /login
+  useEffect(() => {
+    if (!loading && !token && !user) {
+      router.push("/login");
+    }
+  }, [loading, token, user, router]);
+
   useEffect(() => {
     const fetchNotificationCount = async () => {
-      if (!token) {
-        setUnreadNotificationsCount(0);
-        return;
-      }
-      try {
-        const res = await notificationService.getUserNotifications(token);
-        if (res.success && res.data) {
-          const list = Array.isArray(res.data) ? res.data : res.data.notifications || [];
-          setUnreadNotificationsCount(list.length);
-        } else {
-          setUnreadNotificationsCount(0);
+      let apiCount = 0;
+      if (token && token !== "creator-session-token") {
+        try {
+          const res = await notificationService.getUserNotifications(token);
+          if (res && res.success && res.data) {
+            const payload = res.data?.data ?? res.data;
+            const list = Array.isArray(payload) ? payload : payload?.notifications || payload?.data || [];
+            apiCount = list.length;
+          }
+        } catch (err) {
+          apiCount = 0;
         }
-      } catch (err) {
-        setUnreadNotificationsCount(0);
       }
+      
+      let localBroadcastCount = 0;
+      let dismissedCount = 0;
+      if (typeof window !== "undefined") {
+        try {
+          const localBroadcasts = JSON.parse(localStorage.getItem("broadcast_announcements") || "[]");
+          const dismissedIds = JSON.parse(localStorage.getItem("dismissed_notifications") || "[]");
+          localBroadcastCount = localBroadcasts.filter((b) => !dismissedIds.includes(String(b._id))).length;
+          dismissedCount = dismissedIds.filter((id) => id.startsWith("default-announcement-")).length;
+        } catch (e) {}
+      }
+
+      const totalCount = Math.max(0, apiCount + localBroadcastCount + Math.max(0, 3 - dismissedCount));
+      setUnreadNotificationsCount(totalCount);
     };
     fetchNotificationCount();
   }, [token]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center font-montserrat">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-bold text-zinc-600">Loading Dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!token && !user) {
+    return null;
+  }
+
   const currentTab = searchParams.get("tab") || "overview";
 
-  const userName = user?.name || (isAdmin ? "System Administrator" : "Kadam Bhakti");
+  const userName = user?.name || user?.fullName || (isAdmin ? "System Administrator" : "Creator");
   const userInitials = userName
     .split(" ")
     .filter(Boolean)
     .map((n) => n[0])
     .join("")
     .substring(0, 2)
-    .toUpperCase() || "KB";
+    .toUpperCase() || "CR";
 
   const userRoleLabel = isSuperAdmin
     ? "Super Admin"

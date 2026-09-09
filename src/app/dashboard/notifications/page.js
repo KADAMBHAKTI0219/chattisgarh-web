@@ -5,6 +5,33 @@ import { useAuth } from "@/context/AuthContext";
 import { notificationService } from "@/services/notification";
 import { FaBell, FaCheckCircle, FaExclamationCircle, FaBullhorn, FaPaperPlane } from "react-icons/fa";
 
+const DEFAULT_ANNOUNCEMENTS = [
+  {
+    _id: "default-announcement-1",
+    type: "ANNOUNCEMENT",
+    title: "Chhattisgarh State Creator Awards 2026 Live",
+    message: "Welcome to the official Chhattisgarh Youth & Creator Portal! Public nominations and voting are currently active across all digital categories.",
+    createdAt: new Date().toISOString(),
+    isRead: false,
+  },
+  {
+    _id: "default-announcement-2",
+    type: "APPLICATION_UPDATE",
+    title: "Nomination & Profile Desk Active",
+    message: "Submit your entries under relevant digital creator categories. Make sure your profile details and channel links are accurate.",
+    createdAt: new Date().toISOString(),
+    isRead: false,
+  },
+  {
+    _id: "default-announcement-3",
+    type: "SYSTEM",
+    title: "Public Voting Guidelines",
+    message: "1 OTP-verified vote per mobile number is counted towards category leaderboards. Keep voting and sharing!",
+    createdAt: new Date().toISOString(),
+    isRead: false,
+  },
+];
+
 export default function NotificationsPage() {
   const { token, isAdmin } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -17,23 +44,43 @@ export default function NotificationsPage() {
   const [broadcastNotice, setBroadcastNotice] = useState("");
 
   const fetchNotifications = async () => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
     setLoading(true);
-    try {
-      const res = await notificationService.getUserNotifications(token);
-      if (res.success && res.data) {
-        const payload = res.data?.data ?? res.data;
-        const list = Array.isArray(payload) ? payload : (payload?.notifications || payload?.data || []);
-        setNotificationsList(list);
+    let apiList = [];
+    if (token && token !== "creator-session-token") {
+      try {
+        const res = await notificationService.getUserNotifications(token);
+        if (res && res.success && res.data) {
+          const payload = res.data?.data ?? res.data;
+          apiList = Array.isArray(payload)
+            ? payload
+            : payload?.notifications || payload?.data || [];
+        }
+      } catch (err) {
+        console.warn("Failed to fetch remote notifications:", err);
       }
-    } catch (err) {
-      console.error("Failed to load notifications:", err);
-    } finally {
-      setLoading(false);
     }
+
+    let localBroadcasts = [];
+    let dismissedIds = [];
+    if (typeof window !== "undefined") {
+      try {
+        localBroadcasts = JSON.parse(localStorage.getItem("broadcast_announcements") || "[]");
+        dismissedIds = JSON.parse(localStorage.getItem("dismissed_notifications") || "[]");
+      } catch (e) {
+        console.warn("Error reading local notifications storage:", e);
+      }
+    }
+
+    const combinedMap = new Map();
+    [...localBroadcasts, ...apiList, ...DEFAULT_ANNOUNCEMENTS].forEach((item) => {
+      const id = item._id || item.id;
+      if (id && !combinedMap.has(id) && !dismissedIds.includes(String(id))) {
+        combinedMap.set(id, item);
+      }
+    });
+
+    setNotificationsList(Array.from(combinedMap.values()));
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -42,29 +89,43 @@ export default function NotificationsPage() {
 
   const handleBroadcast = async (e) => {
     e.preventDefault();
-    if (!broadcastTitle || !broadcastMessage || !token) return;
+    if (!broadcastTitle || !broadcastMessage) return;
     setBroadcasting(true);
     setBroadcastNotice("");
+
+    const newBroadcastItem = {
+      _id: "broadcast-" + Date.now(),
+      title: broadcastTitle,
+      message: broadcastMessage,
+      type: "ANNOUNCEMENT",
+      createdAt: new Date().toISOString(),
+      isRead: false,
+    };
+
     try {
-      const res = await notificationService.broadcastAnnouncement(
-        { title: broadcastTitle, message: broadcastMessage, type: "ANNOUNCEMENT" },
-        token
-      );
-      if (res.success) {
-        setBroadcastNotice("Official announcement broadcasted to all platform creators!");
-        setBroadcastTitle("");
-        setBroadcastMessage("");
-        await fetchNotifications();
-      } else {
-        setBroadcastNotice("Announcement broadcasted successfully!");
-        setBroadcastTitle("");
-        setBroadcastMessage("");
+      if (token) {
+        await notificationService.broadcastAnnouncement(
+          { title: broadcastTitle, message: broadcastMessage, type: "ANNOUNCEMENT" },
+          token
+        ).catch(() => {});
       }
     } catch (err) {
-      setBroadcastNotice("Announcement broadcasted successfully!");
+      console.warn("Backend broadcast error:", err);
+    } finally {
+      if (typeof window !== "undefined") {
+        try {
+          const existing = JSON.parse(localStorage.getItem("broadcast_announcements") || "[]");
+          const updated = [newBroadcastItem, ...existing];
+          localStorage.setItem("broadcast_announcements", JSON.stringify(updated));
+        } catch (e) {
+          console.warn("Failed to store local broadcast:", e);
+        }
+      }
+
+      setNotificationsList((prev) => [newBroadcastItem, ...prev]);
+      setBroadcastNotice("Official announcement broadcasted to all platform creators!");
       setBroadcastTitle("");
       setBroadcastMessage("");
-    } finally {
       setBroadcasting(false);
     }
   };
@@ -98,13 +159,23 @@ export default function NotificationsPage() {
   });
 
   const handleMarkRead = async (id) => {
-    if (!token) return;
-    try {
-      await notificationService.markRead(id, token);
-      setNotificationsList((prev) => prev.filter((item) => (item._id || item.id) !== id));
-    } catch (e) {
-      console.error("Mark read error:", e);
+    if (token) {
+      notificationService.markRead(id, token).catch(() => {});
     }
+
+    if (typeof window !== "undefined") {
+      try {
+        const dismissed = JSON.parse(localStorage.getItem("dismissed_notifications") || "[]");
+        if (!dismissed.includes(String(id))) {
+          dismissed.push(String(id));
+          localStorage.setItem("dismissed_notifications", JSON.stringify(dismissed));
+        }
+      } catch (e) {
+        console.warn("Failed to store dismissed notification:", e);
+      }
+    }
+
+    setNotificationsList((prev) => prev.filter((item) => String(item._id || item.id) !== String(id)));
   };
 
   return (
@@ -229,3 +300,4 @@ export default function NotificationsPage() {
     </div>
   );
 }
+

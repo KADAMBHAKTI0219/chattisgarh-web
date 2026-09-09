@@ -31,27 +31,29 @@ export function AuthProvider({ children }) {
               console.error("Failed to parse stored user json:", e);
             }
           }
-          // Fetch latest profile from backend to ensure state validity
-          const res = await userService.getProfile(storedToken);
-          if (res.success && res.data) {
-            const freshUser = res.data.user || res.data.data || res.data;
-            const img =
-              freshUser.avatar ||
-              freshUser.profileImage ||
-              freshUser.image ||
-              (storedUser ? JSON.parse(storedUser)?.avatar || JSON.parse(storedUser)?.profileImage : "") ||
-              "";
-            const normUser = { ...freshUser, avatar: img, profileImage: img };
-            setUser(normUser);
-            localStorage.setItem("user", JSON.stringify(normUser));
-          } else {
-            // Token expired, invalid or revoked (401 / error)
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            localStorage.removeItem("adminToken");
-            setToken(null);
-            setUser(null);
+          // Fetch latest profile from backend if storedToken is a valid remote JWT format
+          if (storedToken !== "creator-session-token" && typeof storedToken === "string" && storedToken.split(".").length === 3) {
+            const res = await userService.getProfile(storedToken).catch(() => null);
+            if (res && res.success && res.data) {
+              const freshUser = res.data.user || res.data.data || res.data;
+              const img =
+                freshUser.avatar ||
+                freshUser.profileImage ||
+                freshUser.image ||
+                (storedUser ? JSON.parse(storedUser)?.avatar || JSON.parse(storedUser)?.profileImage : "") ||
+                "";
+              const normUser = { ...freshUser, avatar: img, profileImage: img };
+              setUser(normUser);
+              localStorage.setItem("user", JSON.stringify(normUser));
+            } else if (res && res.status === 401) {
+              // Token expired, invalid or revoked (401)
+              localStorage.removeItem("accessToken");
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              localStorage.removeItem("adminToken");
+              setToken(null);
+              setUser(null);
+            }
           }
         }
       } catch (err) {
@@ -129,12 +131,18 @@ export function AuthProvider({ children }) {
   // Logout handler
   const logout = async () => {
     if (token) {
-      await authService.logout(token);
+      await authService.logout(token).catch(() => {});
     }
     setToken(null);
     setUser(null);
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("submitted_nominations");
+      localStorage.removeItem("user_applications");
+    }
     router.push("/login");
   };
 

@@ -132,11 +132,6 @@ export async function fetchApi(endpoint, options = {}) {
         return lastResponse;
       }
 
-      // If status 404 occurs on local environment, attempt next candidate base URL
-      if (response.status === 404 && i < candidateBases.length - 1) {
-        continue;
-      }
-
       return lastResponse;
     } catch (err) {
       lastError = err;

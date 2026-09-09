@@ -846,9 +846,34 @@ export default function AdminDashboard({ token }) {
   };
 
   // Delete User Action
-  const handleDeleteUser = async (uId, uName) => {
-    if (!confirm(`Are you sure you want to delete user account "${uName}"?`)) return;
-    setUsersList((prev) => prev.filter((u) => u._id !== uId && u.id !== uId));
+  const handleDeleteUser = async (uId, uName, uEmail) => {
+    const nameStr = uName || "this user account";
+    if (!confirm(`Are you sure you want to delete user account "${nameStr}"?`)) return;
+
+    const targetId = uId || uEmail;
+    try {
+      // 1. Optimistic UI removal from both state lists
+      setUsersList((prev) => prev.filter((u) => u._id !== uId && u.id !== uId && u.email !== uEmail));
+      setParticipantsList((prev) => prev.filter((p) => p._id !== uId && p.id !== uId && p.email !== uEmail));
+
+      // 2. Remove from localStorage storage keys if present
+      try {
+        const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
+        const filteredRegs = storedRegs.filter((u) => u._id !== uId && u.id !== uId && u.email !== uEmail);
+        localStorage.setItem("registered_users", JSON.stringify(filteredRegs));
+
+        const storedParts = JSON.parse(localStorage.getItem("all_participants") || "[]");
+        const filteredParts = storedParts.filter((p) => p._id !== uId && p.id !== uId && p.email !== uEmail);
+        localStorage.setItem("all_participants", JSON.stringify(filteredParts));
+      } catch (e) {}
+
+      // 3. Call Backend DELETE API safely (handles User & Participant endpoints automatically)
+      if (targetId) {
+        await userService.deleteUser(targetId, authToken).catch(() => {});
+      }
+    } catch (err) {
+      console.error("Delete User Error:", err);
+    }
   };
 
   // Handle Seed Default Locations
@@ -1062,11 +1087,11 @@ export default function AdminDashboard({ token }) {
   });
 
   const leadingCandidate = useMemo(() => {
-    if (participants.length === 0) return { name: "Bhakti Kadam", votes: 8940 };
+    if (participants.length === 0) return { name: "N/A", votes: 0 };
     const sorted = [...participants].sort((a, b) => Number(b.publicVotes || 0) - Number(a.publicVotes || 0));
     return {
-      name: sorted[0]?.name || "Bhakti Kadam",
-      votes: Number(sorted[0]?.publicVotes || 8940)
+      name: sorted[0]?.name || "N/A",
+      votes: Number(sorted[0]?.publicVotes || 0)
     };
   }, [participants]);
 
@@ -2200,8 +2225,8 @@ export default function AdminDashboard({ token }) {
                           <FaEdit className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          onClick={() => handleDeleteUser(u._id, u.name)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                          onClick={() => handleDeleteUser(u._id || u.id, u.name, u.email)}
+                          className="p-1.5 rounded-lg text-zinc-[#E6532B] hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                           title="Delete User"
                         >
                           <FaTrash className="w-3.5 h-3.5" />
@@ -2258,10 +2283,10 @@ export default function AdminDashboard({ token }) {
 
                     <span
                       className={`absolute bottom-3 left-3 px-2.5 py-0.5 rounded-md font-montserrat font-bold text-[9px] uppercase tracking-wider ${news.status === "DRAFT"
-                          ? "bg-amber-100 text-amber-800"
-                          : news.status === "SCHEDULED"
-                            ? "bg-sky-100 text-sky-800"
-                            : "bg-emerald-100 text-emerald-800"
+                        ? "bg-amber-100 text-amber-800"
+                        : news.status === "SCHEDULED"
+                          ? "bg-sky-100 text-sky-800"
+                          : "bg-emerald-100 text-emerald-800"
                         }`}
                     >
                       {news.status || "PUBLISHED"}
