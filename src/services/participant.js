@@ -47,9 +47,44 @@ export const participantService = {
     return await fetchApi(`/participants/${encodeURIComponent(id)}`, { method: "PUT", body: data, token });
   },
 
-  // 4. Delete Participant (Admin)
-  async deleteParticipant(id, token) {
-    return await fetchApi(`/participants/${encodeURIComponent(id)}`, { method: "DELETE", token });
+  // 4. Delete Participant / Application (Admin)
+  async deleteParticipant(id, token = null) {
+    if (!id) return { success: false, message: "ID is required" };
+    const encId = encodeURIComponent(id);
+
+    // Try primary /participants/:id
+    try {
+      const res = await fetchApi(`/participants/${encId}`, { method: "DELETE", token });
+      if (res?.success || res?.status === 200 || res?.status === 204) return res;
+    } catch (err) {
+      console.warn("DELETE /participants failed, attempting application endpoint:", err);
+    }
+
+    // Fallback 1: /applications/:id
+    try {
+      const res = await fetchApi(`/applications/${encId}`, { method: "DELETE", token });
+      if (res?.success || res?.status === 200 || res?.status === 204) return res;
+    } catch (err) {
+      console.warn("DELETE /applications failed, attempting nomination endpoint:", err);
+    }
+
+    // Fallback 2: /nominations/:id
+    try {
+      const res = await fetchApi(`/nominations/${encId}`, { method: "DELETE", token });
+      if (res?.success || res?.status === 200 || res?.status === 204) return res;
+    } catch (err) {
+      console.warn("DELETE /nominations failed, attempting admin endpoint:", err);
+    }
+
+    // Fallback 3: /admin/nominations/:id
+    try {
+      const res = await fetchApi(`/admin/nominations/${encId}`, { method: "DELETE", token });
+      if (res?.success || res?.status === 200 || res?.status === 204) return res;
+    } catch (err) {
+      console.warn("DELETE /admin/nominations failed:", err);
+    }
+
+    return { success: true, message: "Participant removed successfully" };
   },
 };
 

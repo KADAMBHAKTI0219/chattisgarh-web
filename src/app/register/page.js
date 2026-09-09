@@ -43,15 +43,15 @@ export default function RegisterPage() {
     email: "",
     phone: "",
     state: "Chhattisgarh",
-    district: "Raipur",
+    district: "",
     role: "CREATOR",
     password: "",
     confirmPassword: "",
     instagramLink: "",
     videoLink: "",
     portfolioUrl: "",
-    gender: "Prefer Not to Say",
-    agreeTerms: true,
+    gender: "",
+    agreeTerms: false,
   });
 
   const [mounted, setMounted] = useState(false);
@@ -129,11 +129,11 @@ export default function RegisterPage() {
 
   // Auto-sync selected district when selected state changes
   useEffect(() => {
-    if (availableDistricts.length > 0) {
-      if (!formData.district || !availableDistricts.includes(formData.district)) {
+    if (availableDistricts.length > 0 && formData.district) {
+      if (!availableDistricts.includes(formData.district)) {
         setFormData((prev) => ({
           ...prev,
-          district: availableDistricts[0],
+          district: "",
         }));
       }
     }
@@ -361,7 +361,6 @@ export default function RegisterPage() {
                 हर एक स्क्रीन पर छाएगा छत्तीसगढ़
               </span>
             </div>
-            <DownloadGuidelinesButton size="md" variant="primary" />
           </div>
         </div>
 
@@ -476,6 +475,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
+                <option value="">Select District</option>
                 {availableDistricts.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}

@@ -152,9 +152,7 @@ export default function AdminDashboard({ token }) {
     if (tabFromUrl === "participants" || tabFromUrl === "nominations") return "PARTICIPANTS";
     if (tabFromUrl === "users") return "USERS";
     if (tabFromUrl === "news") return "NEWS";
-    if (tabFromUrl === "categories") return "CATEGORIES";
-    if (tabFromUrl === "locations" || tabFromUrl === "cities") return "LOCATIONS";
-    return "CATEGORIES"; // Default overview view
+    return "VOTES"; // Default overview view (hiding Categories and Locations)
   }, [tabFromUrl]);
 
   // Show stats cards ONLY on main Dashboard tab
@@ -369,6 +367,7 @@ export default function AdminDashboard({ token }) {
       setCategories(processedCategories);
 
       // 2. Fetch Participants & Nominations dynamically from all backend services & localStorage
+      let fetchedPartsList = [];
       try {
         const adminNomsRes = await fetchApi("/admin/nominations", { method: "GET", token: authToken }).catch(() => ({}));
         const partsRes = await participantService.getParticipants({}, authToken).catch(() => ({}));
@@ -495,14 +494,15 @@ export default function AdminDashboard({ token }) {
           }
         });
 
-        setParticipants(Array.from(uniqueMap.values()));
+        fetchedPartsList = Array.from(uniqueMap.values());
+        setParticipants(fetchedPartsList);
       } catch (err) {
         console.error("Failed to fetch participant metrics:", err);
       }
 
       // 3. Fetch Registered Users dynamically
       try {
-        const usersRes = await userService.getAllUsers({}, authToken).catch(() => ({}));
+        const usersRes = await userService.getAllUsers({ limit: 1000 }, authToken).catch(() => ({}));
 
         let usersData = [];
         if (Array.isArray(usersRes)) {
@@ -522,25 +522,28 @@ export default function AdminDashboard({ token }) {
           localRegistered = JSON.parse(localStorage.getItem("registered_users") || "[]");
         } catch (e) { }
 
-        const mockDefaultUsers = [
-          { _id: "u1", name: "Bhakti Kadam", email: "bhumi@gmail.com", phone: "+91 9696969696", role: "CREATOR", district: "Raipur", status: "Active", createdAt: "01 Aug 2025" },
-          { _id: "u2", name: "State Governance Admin", email: "admin@cg.gov.in", phone: "+91 9876543210", role: "ADMIN", district: "Raipur", status: "Active", createdAt: "15 Jul 2025" },
-          { _id: "u3", name: "Rajesh Sharma", email: "rajesh@gmail.com", phone: "+91 9812345678", role: "JURY", district: "Bilaspur", status: "Active", createdAt: "20 Jul 2025" },
-          { _id: "u4", name: "Ananya Sahu", email: "ananya@gmail.com", phone: "+91 9765432109", role: "CREATOR", district: "Durg", status: "Active", createdAt: "02 Aug 2025" },
-          { _id: "u5", name: "Vikram Kumar", email: "vikram@gmail.com", phone: "+91 9988776655", role: "CREATOR", district: "Bastar", status: "Pending", createdAt: "05 Aug 2025" }
-        ];
+        // Also convert participants to user entries if not already present
+        const participantUserEntries = (fetchedPartsList || []).map((p) => ({
+          _id: p._id || p.id,
+          name: p.name,
+          email: p.email !== "N/A" ? p.email : "",
+          phone: p.phone !== "N/A" ? p.phone : "",
+          role: "CREATOR",
+          district: p.district || "Raipur",
+          status: p.status === "REJECTED" ? "Inactive" : "Active",
+          createdAt: p.createdAt || "Recently"
+        })).filter((u) => u.name || u.email);
 
         const rawList = [
           ...localRegistered,
-          ...(Array.isArray(usersData) && usersData.length > 0
-            ? usersData
-            : (localRegistered.length > 0 ? [] : mockDefaultUsers))
+          ...(Array.isArray(usersData) ? usersData : []),
+          ...participantUserEntries
         ];
 
         // Deduplicate by email or _id
         const userMap = new Map();
         rawList.forEach((u) => {
-          const key = u.email || u._id || u.id;
+          const key = (u.email || u._id || u.id || "").toLowerCase().trim();
           if (key && !userMap.has(key)) {
             userMap.set(key, u);
           }
@@ -1121,14 +1124,16 @@ export default function AdminDashboard({ token }) {
 
   // Delete Participant Action
   const handleDeleteParticipant = async (pId, pName) => {
-    if (!confirm(`Are you sure you want to delete participant "${pName}"?`)) return;
+    if (!pId) return;
+    const nameStr = pName || "this participant";
+    if (!confirm(`Are you sure you want to delete participant "${nameStr}"?`)) return;
 
     try {
-      setParticipants((prev) => prev.filter((p) => p._id !== pId && p.id !== pId));
+      setParticipants((prev) => prev.filter((p) => p._id !== pId && p.id !== pId && p.applicationId !== pId));
       await participantService.deleteParticipant(pId, authToken);
     } catch (err) {
       console.error("Delete Participant Error:", err);
-      setParticipants((prev) => prev.filter((p) => p._id !== pId && p.id !== pId));
+      setParticipants((prev) => prev.filter((p) => p._id !== pId && p.id !== pId && p.applicationId !== pId));
     }
   };
 
@@ -1364,13 +1369,11 @@ export default function AdminDashboard({ token }) {
 
   // Dynamic Pagination Logic (6 Items Per Page)
   const activeDataset = useMemo(() => {
-    if (activeTab === "CATEGORIES") return filteredCategories;
     if (activeTab === "VOTES" || activeTab === "PARTICIPANTS") return filteredParticipants;
     if (activeTab === "USERS") return filteredUsers;
     if (activeTab === "NEWS") return filteredNews;
-    if (activeTab === "LOCATIONS") return filteredLocations;
-    return filteredCategories;
-  }, [activeTab, filteredCategories, filteredParticipants, filteredUsers, filteredNews, filteredLocations]);
+    return filteredParticipants;
+  }, [activeTab, filteredParticipants, filteredUsers, filteredNews]);
   const totalPages = Math.max(1, Math.ceil(activeDataset.length / ITEMS_PER_PAGE));
 
   const paginatedData = useMemo(() => {
@@ -1447,21 +1450,21 @@ export default function AdminDashboard({ token }) {
       {showStats && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
-          {/* Card 1: TOTAL CATEGORIES */}
+          {/* Card 1: REGISTERED USERS */}
           <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-xs transition-all">
             <div className="flex flex-col">
               <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-widest">
-                TOTAL CATEGORIES
+                REGISTERED USERS
               </span>
               <span className="text-3xl font-montserrat font-extrabold text-zinc-900 mt-1">
-                {loading ? "..." : categories.length}
+                {loading ? "..." : usersList.length}
               </span>
               <span className="text-[11px] font-montserrat font-medium text-zinc-500 mt-1">
-                Active voting domains
+                Platform accounts & roles
               </span>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-orange-100/70 text-[#E6532B] flex items-center justify-center text-xl shrink-0">
-              <FaThList className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-purple-100/70 text-purple-600 flex items-center justify-center text-xl shrink-0">
+              <FaUsers className="w-5 h-5" />
             </div>
           </div>
 
@@ -2446,19 +2449,54 @@ export default function AdminDashboard({ token }) {
               <FaChevronLeft className="w-3 h-3" />
             </button>
 
-            {/* Page Number Buttons */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => setCurrentPage(pageNum)}
-                className={`w-8 h-8 rounded-lg font-montserrat text-xs font-bold transition-all cursor-pointer ${currentPage === pageNum
-                  ? "bg-[#E6532B] text-white shadow-2xs"
-                  : "border border-zinc-200 text-zinc-700 hover:bg-zinc-100"
-                  }`}
-              >
-                {pageNum}
-              </button>
-            ))}
+            {/* Page Number Buttons - Max 3 visible numbers around active page */}
+            {(() => {
+              const pageNumbers = [];
+              if (totalPages <= 5) {
+                for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+              } else {
+                let start = Math.max(1, currentPage - 1);
+                let end = Math.min(totalPages, currentPage + 1);
+                if (currentPage === 1) end = Math.min(totalPages, 3);
+                if (currentPage === totalPages) start = Math.max(1, totalPages - 2);
+
+                if (start > 1) {
+                  pageNumbers.push(1);
+                  if (start > 2) pageNumbers.push("ellipsis-start");
+                }
+
+                for (let i = start; i <= end; i++) {
+                  pageNumbers.push(i);
+                }
+
+                if (end < totalPages) {
+                  if (end < totalPages - 1) pageNumbers.push("ellipsis-end");
+                  pageNumbers.push(totalPages);
+                }
+              }
+
+              return pageNumbers.map((item, idx) => {
+                if (typeof item === "string") {
+                  return (
+                    <span key={`${item}-${idx}`} className="px-1 text-zinc-400 font-bold text-xs select-none">
+                      ...
+                    </span>
+                  );
+                }
+                return (
+                  <button
+                    key={item}
+                    onClick={() => setCurrentPage(item)}
+                    className={`w-8 h-8 rounded-lg font-montserrat text-xs font-bold transition-all cursor-pointer ${currentPage === item
+                      ? "bg-[#E6532B] text-white shadow-2xs"
+                      : "border border-zinc-200 text-zinc-700 hover:bg-zinc-100"
+                      }`}
+                  >
+                    {item}
+                  </button>
+                );
+              });
+            })()}
 
             {/* Next Page */}
             <button

@@ -59,7 +59,7 @@ export default function TermsSection() {
       id="terms"
       className="border border-zinc-200 bg-white p-6 sm:p-10 md:p-12 xl:p-16 rounded-2xl shadow-sm z-10 w-[95%] max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto flex flex-col gap-8 scroll-mt-24 my-6 md:my-10 lg:my-12 text-left"
     >
-      {/* Header and Download Button */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-6">
         <Heading
           badge={t("Official Rules & Compliance")}
@@ -67,14 +67,6 @@ export default function TermsSection() {
           highlightText={t("ELIGIBILITY")}
           align="left"
           className="px-0 mx-0"
-        />
-
-        {/* Downloadable Official Guidelines Button */}
-        <DownloadGuidelinesButton
-          size="lg"
-          variant="amber"
-          customText={`${t("Download Guidelines")} (PDF)`}
-          className="self-start sm:self-center"
         />
       </div>
 

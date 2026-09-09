@@ -84,12 +84,10 @@ export default function DashboardLayout({ children }) {
   // Sidebar links configuration (Admin vs Creator) - Only showing dynamic badge if notifications exist
   const adminMenuLinks = [
     { name: "Dashboard", href: "/dashboard", tabKey: "overview", icon: FaTachometerAlt },
-    { name: "Categories", href: "/dashboard?tab=categories", tabKey: "categories", icon: FaThList },
     { name: "Public Votes", href: "/dashboard?tab=votes", tabKey: "votes", icon: FaVoteYea },
     { name: "Participants", href: "/dashboard?tab=participants", tabKey: "participants", icon: FaUsers },
     { name: "Users", href: "/dashboard?tab=users", tabKey: "users", icon: FaUserCircle },
     { name: "News & Press", href: "/dashboard?tab=news", tabKey: "news", icon: FaNewspaper },
-    { name: "Locations & Cities", href: "/dashboard?tab=locations", tabKey: "locations", icon: FaMapMarkerAlt },
     { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: unreadNotificationsCount > 0 ? String(unreadNotificationsCount) : null },
     { name: "Reports", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
     { name: "Settings", href: "/dashboard/settings", tabKey: "settings", icon: FaCog },

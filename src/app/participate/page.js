@@ -78,29 +78,29 @@ function ParticipateForm() {
     nominationAs: "SELF", // 'SELF' (Applicant) or 'THIRD_PARTY' (Nominator for Others)
 
     // --- IF SELF NOMINATION ---
-    fullName: user?.name || "",
-    awardCategoryAppliedFor: "National", // 'National' or 'International'
-    mobileNumber: user?.phone || "",
-    emailId: user?.email || "",
-    gender: "Male", // 'Male', 'Female', 'Other'
-    age: "18-40", // '18-40', 'Above 40'
+    fullName: "",
+    awardCategoryAppliedFor: "", // 'National' or 'International'
+    mobileNumber: "",
+    emailId: "",
+    gender: "", // 'Male', 'Female', 'Other'
+    age: "", // '18-40', 'Above 40'
     state: "Chhattisgarh",
-    district: user?.district || "Raipur",
+    district: "",
 
     // --- IF NOMINATOR (FOR OTHERS) ---
     nominatorFullName: "",
-    nominatorNationality: "Indian", // 'Indian' or 'Non-Indian'
+    nominatorNationality: "", // 'Indian' or 'Non-Indian'
     nominatorMobile: "",
     nominatorEmail: "",
 
     creatorFullName: "",
-    creatorAwardCategoryAppliedFor: "National", // 'National' or 'International'
+    creatorAwardCategoryAppliedFor: "", // 'National' or 'International'
     creatorMobileNumber: "",
     creatorEmailId: "",
-    creatorGender: "Male",
-    creatorAge: "18-40",
+    creatorGender: "",
+    creatorAge: "",
     creatorState: "Chhattisgarh",
-    creatorDistrict: "Raipur",
+    creatorDistrict: "",
 
     // --- NOMINATION CATEGORY & STORY LINKS ---
     selectedCategory: "",
@@ -110,13 +110,13 @@ function ParticipateForm() {
     bestStoryLink3: "", // Optional
 
     // --- CREATOR PROFILE & PLATFORMS ---
-    creatorStartYear: "2020", // Mandatory for Self, Optional for Nominator
-    primaryPlatform: "Instagram", // 'Instagram', 'YouTube', 'Facebook', 'Twitter', 'LinkedIn'
+    creatorStartYear: "", // Mandatory for Self, Optional for Nominator
+    primaryPlatform: "", // 'Instagram', 'YouTube', 'Facebook', 'Twitter', 'LinkedIn'
     primaryProfileUrl: "",
     primaryFollowers: "",
 
     hasSecondaryPlatform: false,
-    secondaryPlatform: "YouTube",
+    secondaryPlatform: "",
     secondaryProfileUrl: "",
     secondaryFollowers: "",
 
@@ -187,29 +187,16 @@ function ParticipateForm() {
   useEffect(() => {
     if (availableDistricts.length > 0) {
       if (formData.nominationAs === "SELF") {
-        if (!formData.district || !availableDistricts.includes(formData.district)) {
-          setFormData((prev) => ({ ...prev, district: availableDistricts[0] }));
+        if (formData.district && !availableDistricts.includes(formData.district)) {
+          setFormData((prev) => ({ ...prev, district: "" }));
         }
       } else {
-        if (!formData.creatorDistrict || !availableDistricts.includes(formData.creatorDistrict)) {
-          setFormData((prev) => ({ ...prev, creatorDistrict: availableDistricts[0] }));
+        if (formData.creatorDistrict && !availableDistricts.includes(formData.creatorDistrict)) {
+          setFormData((prev) => ({ ...prev, creatorDistrict: "" }));
         }
       }
     }
   }, [availableDistricts, activeSelectedState]);
-
-  // Sync logged in user details if available
-  useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        fullName: prev.fullName || user.name || "",
-        emailId: prev.emailId || user.email || "",
-        mobileNumber: prev.mobileNumber || user.phone || "",
-        district: prev.district || user.district || "Raipur",
-      }));
-    }
-  }, [user]);
 
   // Load Categories from Backend API or static fallback
   useEffect(() => {
@@ -833,6 +820,7 @@ function ParticipateForm() {
                           onChange={handleInputChange}
                           className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                         >
+                          <option value="">Select Scope</option>
                           <option value="National">National (India)</option>
                           <option value="International">International</option>
                         </select>
@@ -911,6 +899,7 @@ function ParticipateForm() {
                           onChange={handleInputChange}
                           className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                         >
+                          <option value="">Select Nationality</option>
                           <option value="Indian">Indian</option>
                           <option value="Non-Indian">Non-Indian</option>
                         </select>
@@ -997,6 +986,7 @@ function ParticipateForm() {
                         onChange={handleInputChange}
                         className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                       >
+                        <option value="">Select Scope</option>
                         <option value="National">National (India)</option>
                         <option value="International">International</option>
                       </select>
@@ -1044,6 +1034,7 @@ function ParticipateForm() {
                       onChange={handleInputChange}
                       className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                     >
+                      <option value="">Select Gender</option>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                       <option value="Other">Other</option>
@@ -1061,6 +1052,7 @@ function ParticipateForm() {
                       onChange={handleInputChange}
                       className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                     >
+                      <option value="">Select Age Bracket</option>
                       <option value="18-40">18-40 Years</option>
                       <option value="Above 40">Above 40 Years</option>
                     </select>
@@ -1099,6 +1091,7 @@ function ParticipateForm() {
                       className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.district ? "border-red-500 bg-red-50/20" : ""
                         }`}
                     >
+                      <option value="">Select District</option>
                       {availableDistricts.map((dist) => (
                         <option key={dist} value={dist}>
                           {dist}
@@ -1276,6 +1269,7 @@ function ParticipateForm() {
                       onChange={handleInputChange}
                       className="w-full sm:w-1/2 rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                     >
+                      <option value="">Select Year</option>
                       {CREATOR_YEARS.map((yr) => (
                         <option key={yr} value={yr}>
                           {yr}
@@ -1302,6 +1296,7 @@ function ParticipateForm() {
                           onChange={handleInputChange}
                           className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none"
                         >
+                          <option value="">Select Platform</option>
                           <option value="Instagram">Instagram</option>
                           <option value="YouTube">YouTube</option>
                           <option value="Facebook">Facebook</option>
@@ -1378,6 +1373,7 @@ function ParticipateForm() {
                               onChange={handleInputChange}
                               className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none"
                             >
+                              <option value="">Select Platform</option>
                               <option value="YouTube">YouTube</option>
                               <option value="Instagram">Instagram</option>
                               <option value="Facebook">Facebook</option>

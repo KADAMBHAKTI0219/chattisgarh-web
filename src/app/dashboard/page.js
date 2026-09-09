@@ -424,12 +424,12 @@ export default function DashboardOverviewPage() {
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <h4 className="font-poppins font-bold text-xs text-zinc-900">
-                    Official 2026 Guidelines PDF
+                    Official 2026 Participation Rules
                   </h4>
                   <p className="text-[11px] font-inter text-zinc-600 leading-relaxed">
-                    Download official rules & scheme options PDF directly from portal header.
+                    View official rules & scheme guidelines directly on the portal.
                   </p>
-                  <span className="text-[10px] font-mono text-zinc-400 mt-1">Official Document</span>
+                  <span className="text-[10px] font-mono text-zinc-400 mt-1">Official Notice</span>
                 </div>
               </div>
 

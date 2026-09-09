@@ -90,10 +90,10 @@ export default function ParticipateModal() {
       fullName: "",
       email: "",
       phone: "",
-      gender: "Male",
-      age: "18-40",
+      gender: "",
+      age: "",
       state: "Chhattisgarh",
-      district: "Raipur",
+      district: "",
       nationality: "Indian",
     },
 
@@ -111,10 +111,10 @@ export default function ParticipateModal() {
       awardType: "National",
       phone: "",
       email: "",
-      gender: "Male",
-      age: "18-40",
+      gender: "",
+      age: "",
       state: "Chhattisgarh",
-      district: "Raipur",
+      district: "",
     },
 
     // Q9: Categories (Max 1 to 3 categories)
@@ -132,13 +132,13 @@ export default function ParticipateModal() {
 
     // Q10 - Q12: Creator Profile
     creatorProfile: {
-      creatorStartYear: "2020",
+      creatorStartYear: "",
       bio: "",
     },
 
     // Q11: Primary Platform (Highest followers)
     primaryPlatform: {
-      platform: "Instagram",
+      platform: "",
       profileUrl: "",
       followers: "",
     },
@@ -146,12 +146,12 @@ export default function ParticipateModal() {
     // Q12: Secondary Platform (Optional - Second Highest followers)
     hasSecondaryPlatform: false,
     secondaryPlatform: {
-      platform: "YouTube",
+      platform: "",
       profileUrl: "",
       followers: "",
     },
 
-    declaration: true,
+    declaration: false,
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -595,7 +595,6 @@ export default function ParticipateModal() {
             </h2>
           </div>
           <div className="flex items-center gap-3">
-            <DownloadGuidelinesButton size="sm" variant="amber" />
             <button
               onClick={closeModal}
               className="w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-600 transition-colors shrink-0"

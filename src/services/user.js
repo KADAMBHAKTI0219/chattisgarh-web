@@ -27,7 +27,9 @@ export const userService = {
     let authToken = token;
     if (typeof paramsOrToken === "string") {
       authToken = paramsOrToken;
-      params = {};
+      params = { limit: 1000 };
+    } else {
+      params = { limit: 1000, ...params };
     }
 
     // Try /users/all
