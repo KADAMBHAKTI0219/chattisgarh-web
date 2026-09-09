@@ -392,6 +392,7 @@ export default function RegisterPage() {
               <input
                 type="text"
                 name="name"
+                autoComplete="name"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="e.g. Ramesh Kumar Sahu"
@@ -411,6 +412,7 @@ export default function RegisterPage() {
               <input
                 type="email"
                 name="email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="name@example.com"
@@ -430,6 +432,7 @@ export default function RegisterPage() {
               <input
                 type="tel"
                 name="phone"
+                autoComplete="tel"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="10-digit mobile"
