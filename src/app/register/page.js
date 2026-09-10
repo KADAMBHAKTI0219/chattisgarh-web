@@ -211,7 +211,7 @@ export default function RegisterPage() {
       videoLink: formData.videoLink,
       instagramReelUrl: formData.videoLink,
       portfolioUrl: formData.portfolioUrl,
-      gender: formData.gender,
+      gender: (formData.gender && formData.gender.trim()) ? formData.gender : "Prefer Not to Say",
       captchaId: "OFFLINE_CAPTCHA_ID",
       captchaText: captchaCode,
       captchaToken: "OFFLINE_CAPTCHA_PASS_2026",

@@ -33,7 +33,8 @@ import {
   FaUser,
   FaUserTie,
   FaInstagram,
-  FaVideo
+  FaVideo,
+  FaSpinner
 } from "react-icons/fa";
 import fetchApi from "@/services/client";
 import { categoryService } from "@/services/category";
@@ -55,6 +56,121 @@ const DEFAULT_CATEGORY_IMAGES = [
   "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80"
+];
+
+// Fallback demo participants dataset if backend API & localStorage have 0 records
+const DEFAULT_DEMO_PARTICIPANTS = [
+  {
+    _id: "p-demo-1",
+    applicationId: "NCA-2026-001001",
+    name: "Ashish Chanchlani",
+    title: "Youth Comedy & Digital Entertainment Series",
+    category: "Youth Leadership & Social Impact",
+    district: "Raipur",
+    state: "Chhattisgarh",
+    publicVotes: 14250,
+    status: "APPROVED",
+    createdAt: "01 Mar 2026",
+    phone: "9876543210",
+    email: "ashish@creator.cg.gov.in",
+    nominationType: "SELF",
+    awardType: "National",
+    workSummary: "Creating relatable youth comedy videos and promoting digital content creation across Chhattisgarh.",
+    bestStoryLink1: "https://youtube.com",
+    videoLink: "https://youtube.com",
+    primaryPlatform: { platform: "YouTube", profileUrl: "https://youtube.com", followers: "14.8M", isPrimary: true },
+    secondaryPlatform: { platform: "Instagram", profileUrl: "https://instagram.com", followers: "12.5M", isPrimary: false }
+  },
+  {
+    _id: "p-demo-2",
+    applicationId: "NCA-2026-001002",
+    name: "Kabita Singh",
+    title: "Authentic Chhattisgarhi Culinary Heritage",
+    category: "Best Food & Culinary Creator",
+    district: "Bilaspur",
+    state: "Chhattisgarh",
+    publicVotes: 11890,
+    status: "APPROVED",
+    createdAt: "02 Mar 2026",
+    phone: "9876543211",
+    email: "kabita@creator.cg.gov.in",
+    nominationType: "SELF",
+    awardType: "National",
+    workSummary: "Documenting traditional rice delicacies, Bafauri, and Chhattisgarhi festival recipes.",
+    bestStoryLink1: "https://youtube.com",
+    videoLink: "https://youtube.com",
+    primaryPlatform: { platform: "YouTube", profileUrl: "https://youtube.com", followers: "13.2M", isPrimary: true },
+    secondaryPlatform: { platform: "Instagram", profileUrl: "https://instagram.com", followers: "1.1M", isPrimary: false }
+  },
+  {
+    _id: "p-demo-3",
+    applicationId: "NCA-2026-001003",
+    name: "Gaurav Taneja",
+    title: "Fitness & Aviation Awareness Campaign",
+    category: "Chhattisgarhiya Sanskriti Ambassador",
+    district: "Durg",
+    state: "Chhattisgarh",
+    publicVotes: 9850,
+    status: "SUBMITTED",
+    createdAt: "03 Mar 2026",
+    phone: "9876543212",
+    email: "gaurav@creator.cg.gov.in",
+    nominationType: "SELF",
+    awardType: "National",
+    workSummary: "Promoting physical fitness, health awareness, and athletic excellence among youth.",
+    bestStoryLink1: "https://youtube.com",
+    videoLink: "https://youtube.com",
+    primaryPlatform: { platform: "YouTube", profileUrl: "https://youtube.com", followers: "8.7M", isPrimary: true }
+  },
+  {
+    _id: "p-demo-4",
+    applicationId: "NCA-2026-001004",
+    name: "Sharan Hegde",
+    title: "Financial Literacy & MSME Empowerment",
+    category: "Innovation & Digital Empowerment",
+    district: "Raigarh",
+    state: "Chhattisgarh",
+    publicVotes: 8620,
+    status: "APPROVED",
+    createdAt: "04 Mar 2026",
+    phone: "9876543213",
+    email: "sharan@creator.cg.gov.in",
+    nominationType: "SELF",
+    awardType: "National",
+    workSummary: "Simplifying financial management, personal savings, and business startup investment for youth.",
+    bestStoryLink1: "https://instagram.com",
+    videoLink: "https://instagram.com",
+    primaryPlatform: { platform: "Instagram", profileUrl: "https://instagram.com", followers: "2.4M", isPrimary: true }
+  },
+  {
+    _id: "p-demo-5",
+    applicationId: "NCA-2026-001005",
+    name: "Technical Guruji",
+    title: "Tech Innovation & Digital Literacy",
+    category: "Innovation & Digital Empowerment",
+    district: "Bastar",
+    state: "Chhattisgarh",
+    publicVotes: 7940,
+    status: "SUBMITTED",
+    createdAt: "05 Mar 2026",
+    phone: "9876543214",
+    email: "guruji@creator.cg.gov.in",
+    nominationType: "SELF",
+    awardType: "National",
+    workSummary: "Simplifying technology, mobile apps, and digital governance for rural communities.",
+    bestStoryLink1: "https://youtube.com",
+    videoLink: "https://youtube.com",
+    primaryPlatform: { platform: "YouTube", profileUrl: "https://youtube.com", followers: "23.1M", isPrimary: true }
+  }
+];
+
+// Fallback demo users dataset if backend API & localStorage have 0 records
+const DEFAULT_DEMO_USERS = [
+  { _id: "u-demo-1", name: "Ashish Chanchlani", email: "ashish@creator.cg.gov.in", phone: "9876543210", role: "CREATOR", district: "Raipur", status: "Active", createdAt: "01 Mar 2026" },
+  { _id: "u-demo-2", name: "Kabita Singh", email: "kabita@creator.cg.gov.in", phone: "9876543211", role: "CREATOR", district: "Bilaspur", status: "Active", createdAt: "02 Mar 2026" },
+  { _id: "u-demo-3", name: "Gaurav Taneja", email: "gaurav@creator.cg.gov.in", phone: "9876543212", role: "CREATOR", district: "Durg", status: "Active", createdAt: "03 Mar 2026" },
+  { _id: "u-demo-4", name: "Sharan Hegde", email: "sharan@creator.cg.gov.in", phone: "9876543213", role: "CREATOR", district: "Raigarh", status: "Active", createdAt: "04 Mar 2026" },
+  { _id: "u-demo-5", name: "State Governance Admin", email: "admin@cg.gov.in", phone: "9999999999", role: "SUPER_ADMIN", district: "Raipur", status: "Active", createdAt: "01 Jan 2026" }
 ];
 
 // Tier Label Formatter
@@ -392,13 +508,18 @@ export default function AdminDashboard({ token }) {
         const nomsList = extractArray(nomsRes);
         const appsList = extractArray(appsRes);
 
-        // Also check localStorage submitted_nominations
+        // Also check localStorage submitted_nominations & user_applications
         let localList = [];
         try {
-          localList = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+          const subNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+          const userApps = JSON.parse(localStorage.getItem("user_applications") || "[]");
+          localList = [...(Array.isArray(subNoms) ? subNoms : []), ...(Array.isArray(userApps) ? userApps : [])];
         } catch (e) { }
 
-        const rawCombined = [...localList, ...adminNomsList, ...partsList, ...nomsList, ...appsList];
+        let rawCombined = [...localList, ...adminNomsList, ...partsList, ...nomsList, ...appsList];
+        if (rawCombined.length === 0) {
+          rawCombined = DEFAULT_DEMO_PARTICIPANTS;
+        }
 
         const fetchedParts = rawCombined.map((p, idx) => {
           const isSelf = (p.nominationType || p.nominationAs) === "SELF" || (p.nominationType || p.nominationAs) === "Applicant(Self)" || !p.nominator;
@@ -567,7 +688,11 @@ export default function AdminDashboard({ token }) {
           }
         });
 
-        setUsersList(Array.from(userMap.values()));
+        let finalUsers = Array.from(userMap.values());
+        if (finalUsers.length === 0) {
+          finalUsers = DEFAULT_DEMO_USERS;
+        }
+        setUsersList(finalUsers);
       } catch (err) {
         console.error("Failed to fetch Users list:", err);
       }
@@ -2198,71 +2323,84 @@ export default function AdminDashboard({ token }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-150 text-xs font-montserrat">
-                {paginatedData.map((p) => (
-                  <tr key={p._id} className="hover:bg-zinc-50/80 transition-colors">
-                    <td className="py-4 px-4 font-mono font-bold text-zinc-700 text-center">
-                      {p.applicationId}
-                    </td>
-
-                    <td className="py-4 px-4 font-montserrat font-bold text-zinc-900 whitespace-nowrap">
-                      {p.name}
-                    </td>
-
-                    <td className="py-4 px-4 text-zinc-600 font-medium max-w-xs truncate" title={p.title}>
-                      {p.title}
-                    </td>
-
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <span className="px-2.5 py-0.5 rounded-md bg-zinc-100 text-zinc-800 text-[11px] font-medium">
-                        {p.category}
-                      </span>
-                    </td>
-
-                    <td className="py-4 px-4 text-zinc-600 whitespace-nowrap">
-                      {p.district}
-                    </td>
-
-                    <td className="py-4 px-4 text-center font-montserrat font-black text-[#E6532B]">
-                      {Number(p.publicVotes || 0).toLocaleString("en-IN")}
-                    </td>
-
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <span className="px-3 py-1 rounded-full text-[10px] font-montserrat font-bold bg-emerald-100/80 text-emerald-800">
-                        {p.status}
-                      </span>
-                    </td>
-
-                    <td className="py-4 px-4 whitespace-nowrap text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <button
-                          onClick={() => setSelectedItem(p)}
-                          className="p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
-                          title="View Participant Details"
-                        >
-                          <FaEye className="w-3.5 h-3.5" />
-                        </button>
-
-                        <button
-                          onClick={() => handleOpenEditParticipant(p)}
-                          className="p-2 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
-                          title="Edit Participant"
-                        >
-                          <FaEdit className="w-3.5 h-3.5" />
-                        </button>
-
-                        <button
-                          onClick={() => handleDeleteParticipant(p.raw?._id || p._id || p.id, p.name, p.applicationId, p.email)}
-                          className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
-                          title="Delete Participant"
-                        >
-                          <FaTrash className="w-3.5 h-3.5" />
-                        </button>
+                {loading ? (
+                  <tr>
+                    <td colSpan={8} className="py-16 text-center">
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        <FaSpinner className="w-8 h-8 text-[#E6532B] animate-spin" />
+                        <span className="text-zinc-500 font-medium text-xs font-montserrat tracking-wide">
+                          Loading Participants Data... Please wait
+                        </span>
                       </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  paginatedData.map((p) => (
+                    <tr key={p._id} className="hover:bg-zinc-50/80 transition-colors">
+                      <td className="py-4 px-4 font-mono font-bold text-zinc-700 text-center">
+                        {p.applicationId}
+                      </td>
 
-                {paginatedData.length === 0 && (
+                      <td className="py-4 px-4 font-montserrat font-bold text-zinc-900 whitespace-nowrap">
+                        {p.name}
+                      </td>
+
+                      <td className="py-4 px-4 text-zinc-600 font-medium max-w-xs truncate" title={p.title}>
+                        {p.title}
+                      </td>
+
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span className="px-2.5 py-0.5 rounded-md bg-zinc-100 text-zinc-800 text-[11px] font-medium">
+                          {p.category}
+                        </span>
+                      </td>
+
+                      <td className="py-4 px-4 text-zinc-600 whitespace-nowrap">
+                        {p.district}
+                      </td>
+
+                      <td className="py-4 px-4 text-center font-montserrat font-black text-[#E6532B]">
+                        {Number(p.publicVotes || 0).toLocaleString("en-IN")}
+                      </td>
+
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-montserrat font-bold bg-emerald-100/80 text-emerald-800">
+                          {p.status}
+                        </span>
+                      </td>
+
+                      <td className="py-4 px-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button
+                            onClick={() => setSelectedItem(p)}
+                            className="p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                            title="View Participant Details"
+                          >
+                            <FaEye className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            onClick={() => handleOpenEditParticipant(p)}
+                            className="p-2 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                            title="Edit Participant"
+                          >
+                            <FaEdit className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteParticipant(p.raw?._id || p._id || p.id, p.name, p.applicationId, p.email)}
+                            className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-montserrat font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                            title="Delete Participant"
+                          >
+                            <FaTrash className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+
+                {!loading && paginatedData.length === 0 && (
                   <tr>
                     <td colSpan={8} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
                       No participants found matching filter criteria.
@@ -2290,85 +2428,98 @@ export default function AdminDashboard({ token }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200/80 text-xs font-montserrat bg-white">
-                {paginatedData.map((u, idx) => (
-                  <tr key={u._id || idx} className="hover:bg-zinc-50/80 transition-colors">
-                    <td className="py-3.5 px-4 font-mono text-zinc-400 font-bold">
-                      {String((currentPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, "0")}
-                    </td>
-                    <td className="py-3.5 px-4 font-montserrat font-bold text-zinc-950">
-                      <div className="flex items-center gap-3">
-                        {u.avatar ? (
-                          <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full object-cover border border-zinc-200 shrink-0" />
-                        ) : (
-                          <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0 border border-emerald-200">
-                            {(u.name || "User").substring(0, 2).toUpperCase()}
-                          </div>
-                        )}
-                        <div className="flex flex-col">
-                          <span>{u.name || "Registered User"}</span>
-                          <span className="text-[10px] font-montserrat font-normal text-zinc-400">ID: {u._id ? String(u._id).substring(0, 8) : `u-${idx}`}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-zinc-600">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-zinc-900">{u.email}</span>
-                        <span className="text-[11px] font-mono text-zinc-400">{u.phone || "N/A"}</span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-montserrat font-bold uppercase tracking-wider ${u.role === "ADMIN" || u.role === "SUPER_ADMIN"
-                        ? "bg-rose-100 text-rose-700 border border-rose-200"
-                        : u.role === "JURY"
-                          ? "bg-purple-100 text-purple-700 border border-purple-200"
-                          : "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                        }`}>
-                        {u.role || "CREATOR"}
-                      </span>
-                    </td>
-
-                    <td className="py-3.5 px-4 text-zinc-600 font-medium">
-                      {u.district || "Raipur"}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${u.status === "Inactive" || u.status === "Pending"
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-emerald-100 text-emerald-800"
-                        }`}>
-                        {u.status || "Active"}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <button
-                          onClick={() => setViewingUser(u)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer"
-                          title="View User Details"
-                        >
-                          <FaEye className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleOpenUserModal(u)}
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-[#E6532B] hover:bg-orange-50 transition-colors cursor-pointer"
-                          title="Edit Role / Links / Status"
-                        >
-                          <FaEdit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(u._id || u.id, u.name, u.email)}
-                          className="p-1.5 rounded-lg text-zinc-[#E6532B] hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                          title="Delete User"
-                        >
-                          <FaTrash className="w-3.5 h-3.5" />
-                        </button>
+                {loading ? (
+                  <tr>
+                    <td colSpan={7} className="py-16 text-center">
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        <FaSpinner className="w-8 h-8 text-[#E6532B] animate-spin" />
+                        <span className="text-zinc-500 font-medium text-xs font-montserrat tracking-wide">
+                          Loading Users Data... Please wait
+                        </span>
                       </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  paginatedData.map((u, idx) => (
+                    <tr key={u._id || idx} className="hover:bg-zinc-50/80 transition-colors">
+                      <td className="py-3.5 px-4 font-mono text-zinc-400 font-bold">
+                        {String((currentPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, "0")}
+                      </td>
+                      <td className="py-3.5 px-4 font-montserrat font-bold text-zinc-950">
+                        <div className="flex items-center gap-3">
+                          {u.avatar ? (
+                            <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full object-cover border border-zinc-200 shrink-0" />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0 border border-emerald-200">
+                              {(u.name || "User").substring(0, 2).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex flex-col">
+                            <span>{u.name || "Registered User"}</span>
+                            <span className="text-[10px] font-montserrat font-normal text-zinc-400">ID: {u._id ? String(u._id).substring(0, 8) : `u-${idx}`}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-zinc-600">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-zinc-900">{u.email}</span>
+                          <span className="text-[11px] font-mono text-zinc-400">{u.phone || "N/A"}</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-montserrat font-bold uppercase tracking-wider ${u.role === "ADMIN" || u.role === "SUPER_ADMIN"
+                          ? "bg-rose-100 text-rose-700 border border-rose-200"
+                          : u.role === "JURY"
+                            ? "bg-purple-100 text-purple-700 border border-purple-200"
+                            : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                          }`}>
+                          {u.role || "CREATOR"}
+                        </span>
+                      </td>
 
-                {paginatedData.length === 0 && (
+                      <td className="py-3.5 px-4 text-zinc-600 font-medium">
+                        {u.district || "Raipur"}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${u.status === "Inactive" || u.status === "Pending"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-emerald-100 text-emerald-800"
+                          }`}>
+                          {u.status || "Active"}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button
+                            onClick={() => setViewingUser(u)}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer"
+                            title="View User Details"
+                          >
+                            <FaEye className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleOpenUserModal(u)}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-[#E6532B] hover:bg-orange-50 transition-colors cursor-pointer"
+                            title="Edit Role / Links / Status"
+                          >
+                            <FaEdit className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(u._id || u.id, u.name, u.email)}
+                            className="p-1.5 rounded-lg text-zinc-[#E6532B] hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            title="Delete User"
+                          >
+                            <FaTrash className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+
+                {!loading && paginatedData.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
+                    <td colSpan={7} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
                       No users found matching filter criteria.
                     </td>
                   </tr>

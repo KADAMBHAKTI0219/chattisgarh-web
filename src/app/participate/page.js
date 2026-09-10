@@ -79,28 +79,28 @@ function ParticipateForm() {
 
     // --- IF SELF NOMINATION ---
     fullName: "",
-    awardCategoryAppliedFor: "", // 'National' or 'International'
+    awardCategoryAppliedFor: "National", // 'National' or 'International'
     mobileNumber: "",
     emailId: "",
     gender: "", // 'Male', 'Female', 'Other'
     age: "", // '18-40', 'Above 40'
     state: "Chhattisgarh",
-    district: "",
+    district: "Raipur",
 
     // --- IF NOMINATOR (FOR OTHERS) ---
     nominatorFullName: "",
-    nominatorNationality: "", // 'Indian' or 'Non-Indian'
+    nominatorNationality: "Indian", // 'Indian' or 'Non-Indian'
     nominatorMobile: "",
     nominatorEmail: "",
 
     creatorFullName: "",
-    creatorAwardCategoryAppliedFor: "", // 'National' or 'International'
+    creatorAwardCategoryAppliedFor: "National", // 'National' or 'International'
     creatorMobileNumber: "",
     creatorEmailId: "",
     creatorGender: "",
     creatorAge: "",
     creatorState: "Chhattisgarh",
-    creatorDistrict: "",
+    creatorDistrict: "Raipur",
 
     // --- NOMINATION CATEGORY & STORY LINKS ---
     selectedCategory: "",
@@ -187,12 +187,12 @@ function ParticipateForm() {
   useEffect(() => {
     if (availableDistricts.length > 0) {
       if (formData.nominationAs === "SELF") {
-        if (formData.district && !availableDistricts.includes(formData.district)) {
-          setFormData((prev) => ({ ...prev, district: "" }));
+        if (!formData.district || !availableDistricts.includes(formData.district)) {
+          setFormData((prev) => ({ ...prev, district: availableDistricts[0] || "Raipur" }));
         }
       } else {
-        if (formData.creatorDistrict && !availableDistricts.includes(formData.creatorDistrict)) {
-          setFormData((prev) => ({ ...prev, creatorDistrict: "" }));
+        if (!formData.creatorDistrict || !availableDistricts.includes(formData.creatorDistrict)) {
+          setFormData((prev) => ({ ...prev, creatorDistrict: availableDistricts[0] || "Raipur" }));
         }
       }
     }
@@ -286,17 +286,17 @@ function ParticipateForm() {
     if (step === 1) {
       if (isSelf) {
         if (!formData.fullName.trim()) newErrors.fullName = "Full Name is required";
-        if (formData.awardCategoryAppliedFor === "National") {
+        const scope = formData.awardCategoryAppliedFor || "National";
+        if (scope === "National") {
           if (!formData.mobileNumber.trim()) newErrors.mobileNumber = "Mobile Number is required for National applications";
-          if (!formData.state) newErrors.state = "State is required";
-          if (!formData.district) newErrors.district = "District is required";
         } else {
           if (!formData.emailId.trim()) newErrors.emailId = "Email ID is required for International applications";
         }
       } else {
         // THIRD_PARTY (Nominator for Others)
         if (!formData.nominatorFullName.trim()) newErrors.nominatorFullName = "Nominator Full Name is required";
-        if (formData.nominatorNationality === "Indian") {
+        const nomNat = formData.nominatorNationality || "Indian";
+        if (nomNat === "Indian") {
           if (!formData.nominatorMobile.trim()) newErrors.nominatorMobile = "Nominator Mobile Number is required";
         } else {
           if (!formData.nominatorEmail.trim()) newErrors.nominatorEmail = "Nominator Email ID is required";
@@ -307,6 +307,12 @@ function ParticipateForm() {
     if (step === 2) {
       if (!isSelf) {
         if (!formData.creatorFullName.trim()) newErrors.creatorFullName = "Creator Full Name is required";
+      } else {
+        const scope = formData.awardCategoryAppliedFor || "National";
+        if (scope === "National") {
+          if (!formData.state) newErrors.state = "State is required";
+          if (!formData.district) newErrors.district = "District is required";
+        }
       }
     }
 
@@ -400,7 +406,7 @@ function ParticipateForm() {
           fullName: isSelf ? formData.fullName : formData.creatorFullName,
           phone: isSelf ? formData.mobileNumber : (formData.creatorMobileNumber || "9999999999"),
           email: isSelf ? formData.emailId : (formData.creatorEmailId || ""),
-          gender: isSelf ? formData.gender : formData.creatorGender,
+          gender: (isSelf ? formData.gender : formData.creatorGender) || "Other",
           age: isSelf ? formData.age : formData.creatorAge,
           state: isSelf ? formData.state : formData.creatorState,
           district: isSelf ? formData.district : formData.creatorDistrict,
@@ -437,7 +443,7 @@ function ParticipateForm() {
             fullName: isSelf ? formData.fullName : formData.creatorFullName,
             email: isSelf ? formData.emailId : (formData.creatorEmailId || ""),
             phone: isSelf ? formData.mobileNumber : (formData.creatorMobileNumber || "9999999999"),
-            gender: isSelf ? formData.gender : formData.creatorGender,
+            gender: (isSelf ? formData.gender : formData.creatorGender) || "Other",
             age: isSelf ? formData.age : formData.creatorAge,
             state: isSelf ? formData.state : formData.creatorState,
             district: isSelf ? formData.district : formData.creatorDistrict,
@@ -458,7 +464,7 @@ function ParticipateForm() {
             fullName: formData.creatorFullName,
             email: formData.creatorEmailId,
             phone: formData.creatorMobileNumber,
-            gender: formData.creatorGender,
+            gender: formData.creatorGender || "Other",
             age: formData.creatorAge,
             state: formData.creatorState,
             district: formData.creatorDistrict

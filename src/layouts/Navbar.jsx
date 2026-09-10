@@ -115,19 +115,22 @@ export default function Navbar() {
               <div className="absolute -inset-3 bg-[radial-gradient(circle_at_center,rgba(193,91,61,0.18)_0%,transparent_70%)] blur-lg pointer-events-none -z-10 opacity-75 group-hover:opacity-100 transition-opacity" />
 
               {/* Chhattisgarh State Emblem Logo */}
-              <Image
-                src="/assets/images/logoChattisgarh.png"
-                alt="Government of Chhattisgarh Logo"
-                width={260}
-                height={75}
-                priority
-                loading="eager"
-                className={`w-auto object-contain transition-all duration-300 shrink-0 ${isScrolled ? "h-10 xs:h-12 sm:h-16 lg:h-20 scale-95" : "h-11 xs:h-13 sm:h-16 lg:h-20 scale-100"
-                  } group-hover:scale-[1.02]`}
-              />
+              <div className="relative shrink-0 flex items-center justify-center">
+                <Image
+                  src="/assets/images/image.png"
+                  alt="Government of Chhattisgarh Logo"
+                  width={100}
+                  height={100}
+                  priority
+                  loading="eager"
+                  className={`w-auto aspect-square rounded-full object-contain drop-shadow-[0_2px_10px_rgba(193,91,61,0.2)] transition-all duration-300 shrink-0 ${
+                    isScrolled ? "h-10 xs:h-12 sm:h-14 lg:h-16" : "h-11 xs:h-13 sm:h-16 lg:h-18"
+                  } group-hover:scale-[1.04]`}
+                />
+              </div>
 
               {/* Title & Tagline Branding Block */}
-              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-1.5 xs:pl-2.5 sm:pl-3.5 min-w-0 max-w-[130px] min-[380px]:max-w-[170px] xs:max-w-[210px] sm:max-w-none">
+              <div className="flex flex-col text-left justify-center border-l-2 border-[#C15B3D]/30 pl-2 xs:pl-2.5 sm:pl-3.5 min-w-0 max-w-[130px] min-[380px]:max-w-[170px] xs:max-w-[210px] sm:max-w-none">
                 <span className="font-montserrat font-bold text-[8px] min-[360px]:text-[9px] xs:text-[10.5px] sm:text-sm md:text-[15px] lg:text-[16px] xl:text-[17px] leading-[1.15] uppercase tracking-tight text-[#C15B3D] group-hover:text-[#9E3E23] transition-colors duration-300">
                   {t("Chhattisgarh State Creator & Influencer Awards")}
                 </span>
@@ -321,11 +324,11 @@ export default function Navbar() {
             <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[#E8DFCF] bg-[#FFFDFC]/95">
               <div className="flex items-center gap-3">
                 <Image
-                  src="/assets/images/logoChattisgarh.png"
+                  src="/assets/images/image.png"
                   alt="Government of Chhattisgarh Logo"
-                  width={180}
-                  height={50}
-                  className="h-9 sm:h-10 w-auto object-contain shrink-0"
+                  width={60}
+                  height={60}
+                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-contain shrink-0 drop-shadow-sm"
                 />
                 <div className="flex flex-col text-left border-l-2 border-[#C15B3D]/30 pl-2.5">
                   <span className="font-montserrat font-bold text-[10.5px] sm:text-xs text-[#C15B3D] leading-tight uppercase tracking-tight">

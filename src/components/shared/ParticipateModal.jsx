@@ -90,10 +90,10 @@ export default function ParticipateModal() {
       fullName: "",
       email: "",
       phone: "",
-      gender: "",
-      age: "",
+      gender: "Male",
+      age: "18-40",
       state: "Chhattisgarh",
-      district: "",
+      district: "Raipur",
       nationality: "Indian",
     },
 
@@ -111,10 +111,10 @@ export default function ParticipateModal() {
       awardType: "National",
       phone: "",
       email: "",
-      gender: "",
-      age: "",
+      gender: "Male",
+      age: "18-40",
       state: "Chhattisgarh",
-      district: "",
+      district: "Raipur",
     },
 
     // Q9: Categories (Max 1 to 3 categories)
@@ -441,7 +441,10 @@ export default function ParticipateModal() {
         nationality: "Indian"
       },
       nominator: !isSelf ? formData.nominator : undefined,
-      nominee: !isSelf ? formData.nominee : undefined,
+      nominee: !isSelf ? {
+        ...formData.nominee,
+        gender: (formData.nominee?.gender && formData.nominee.gender.trim()) ? formData.nominee.gender : "Other"
+      } : undefined,
 
       category: firstSub.categoryId || firstSub.categoryTitle,
       categories: formData.categorySubmissions.map((sub) => ({
