@@ -40,10 +40,10 @@ export default function LoginPage() {
     setLoading(false);
 
     if (response.success) {
-      setSuccessMsg("Login Successful! Redirecting to Portal...");
+      setSuccessMsg("Login Successful! Redirecting to Dashboard...");
       setTimeout(() => {
-        router.push("/");
-      }, 800);
+        router.push("/dashboard");
+      }, 500);
     } else {
       setErrorMsg(response.message || "Invalid credentials. Please check your email and password.");
     }

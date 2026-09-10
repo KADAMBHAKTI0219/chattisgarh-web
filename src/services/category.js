@@ -20,6 +20,10 @@ export const categoryService = {
     return { ...res, categories: res.categories || [] };
   },
 
+  async getAllCategories(params = {}) {
+    return await this.getCategories(params);
+  },
+
   // 2. Get Category Details by Slug (Public)
   async getCategoryBySlug(slug) {
     const res = await fetchApi(`/categories/${encodeURIComponent(slug)}`, { method: "GET" });

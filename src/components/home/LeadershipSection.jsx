@@ -8,14 +8,14 @@ import { FaPlay, FaShareAlt, FaClock, FaYoutube } from "react-icons/fa";
 const videos = [
   {
     id: "T6FXNGynLI8",
-    title: "Chhattisgarh State Creator & Influencer Awards 2024 Keynote",
+    title: "PM Modi’s Message to Fellow Content Creators",
     channel: "Government of Chhattisgarh",
     initials: "CG",
     badge: "Official Vision"
   },
   {
     id: "Dgs159ODZko",
-    title: "Digital Creator Empowerment & Leadership Highlights",
+    title: "PM Modi’s Message: Empowering Creators Through Creators Award",
     channel: "Chhattisgarh Official",
     initials: "CG",
     badge: "Leadership Message"

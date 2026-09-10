@@ -41,17 +41,11 @@ export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
-  // Auth Guard: Redirect unauthenticated or non-admin visitors to /login
+  // Auth Guard: Redirect unauthenticated visitors to /login
   useEffect(() => {
     if (!loading) {
       if (!token && !user) {
         router.push("/login");
-      } else {
-        const roleUpper = String(user?.role || "").toUpperCase();
-        const isAdminRole = ["SUPER_ADMIN", "ADMIN", "MODERATOR", "JURY"].includes(roleUpper);
-        if (!isAdminRole) {
-          router.push("/login");
-        }
       }
     }
   }, [loading, token, user, router]);
@@ -129,7 +123,7 @@ export default function DashboardLayout({ children }) {
     { name: "Participants", href: "/dashboard/participants", tabKey: "participants", icon: FaUsers },
     { name: "Users", href: "/dashboard/users", tabKey: "users", icon: FaUserCircle },
     { name: "News & Press", href: "/dashboard/news", tabKey: "news", icon: FaNewspaper },
-    { name: "Reports & Analytics", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
+    // { name: "Reports & Analytics", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
     { name: "Settings", href: "/dashboard/settings", tabKey: "settings", icon: FaCog },
     { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
   ];

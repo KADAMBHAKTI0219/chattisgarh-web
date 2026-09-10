@@ -95,8 +95,13 @@ export async function fetchApi(endpoint, options = {}) {
     ...(body ? { body: body instanceof FormData ? body : JSON.stringify(body) } : {}),
   };
 
-  // Single source of truth backend base URL (Production Deployed Backend)
+  // Base URLs (Primary Render production backend + Localhost backend fallback when developing)
   const candidateBases = [PRIMARY_API_BASE_URL];
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    if (!candidateBases.includes("http://localhost:5000/api/v1")) {
+      candidateBases.push("http://localhost:5000/api/v1");
+    }
+  }
 
   let lastResponse = null;
   let lastError = null;
@@ -106,7 +111,15 @@ export async function fetchApi(endpoint, options = {}) {
     const targetUrl = buildUrl(currentBase, endpoint, params);
 
     try {
-      const response = await fetch(targetUrl, config);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), options.timeout || 12000);
+
+      const response = await fetch(targetUrl, {
+        ...config,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
       const contentType = response.headers.get("content-type");
       let data = {};
 
@@ -133,7 +146,7 @@ export async function fetchApi(endpoint, options = {}) {
         status: response.status,
       };
 
-      if (response.status === 401 && isClientInBrowser) {
+      if (response.status === 401 && typeof window !== "undefined") {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("token");
         localStorage.removeItem("user");

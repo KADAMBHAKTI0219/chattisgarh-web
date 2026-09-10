@@ -768,8 +768,8 @@ export const staticCategories = [
     categoryNumber: 31,
     title: "Gaming Creator",
     slug: "gaming-creator",
-    tier: "Lifestyle & Special Interest",
-    tierNumber: 10,
+    tier: "Creative & Entertainment",
+    tierNumber: 9,
     shortDescription: "Celebrating esports athletes, game streamers, and gaming content producers.",
     fullDescription: "Applauds creators in the gaming and esports ecosystem producing live streams, strategy guides, game reviews, and esports commentary.",
     taskBrief: "Share gaming live streams, esports walkthroughs, gameplay tutorials, or game reviews.",
@@ -1006,30 +1006,6 @@ export const staticCategories = [
       metaTitle: "Tribal Voice Award - Chhattisgarh State & National Creators Awards",
       metaDescription: "Honouring creators showcasing, preserving, and promoting tribal culture, heritage, language, and community achievements.",
       keywords: ["tribal voice award", "adivasi culture", "indigenous knowledge", "chhattisgarh tribal art", "heritage and traditions"]
-    }
-  },
-  {
-    categoryNumber: 41,
-    title: "Creative, Comedy, Entertainment & Gaming Award",
-    slug: "creative-comedy-entertainment-gaming-award",
-    tier: "Creative & Entertainment",
-    tierNumber: 3,
-    shortDescription: "Recognising creators who entertain, engage and inspire audiences through creative digital content, including gaming, esports, gameplay, comedy, music, dance, theatre and digital creativity.",
-    fullDescription: "Recognising creators who entertain, engage and inspire audiences through creative digital content, including gaming, esports, live streaming, gameplay, comedy, music, dance, theatre, entertainment and other forms of digital creativity. This category honours creators who showcase originality, talent and creativity while building engaging communities across digital platforms.",
-    taskBrief: "Showcase original, engaging digital content in comedy, gaming, live streaming, gameplay, music, dance, or theatre that entertains and inspires digital communities.",
-    hashtag: "#CreativeEntertainmentAward",
-    icon: "FaGamepad",
-    image: "/assets/images/category/category-41.jpg",
-    prizeTier: "MARQUEE",
-    cashPrizeMin: 300000,
-    cashPrizeMax: 500000,
-    order: 41,
-    isActive: true,
-    isFeatured: true,
-    seo: {
-      metaTitle: "Creative, Comedy, Entertainment & Gaming Award - State Creators Awards",
-      metaDescription: "Recognising creators entertaining and inspiring audiences through comedy, gaming, live streaming, music, dance, and digital creativity.",
-      keywords: ["gaming award", "comedy creator", "esports live streaming", "digital entertainment", "creative content"]
     }
   }
 ];

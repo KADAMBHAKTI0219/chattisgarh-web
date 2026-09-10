@@ -13,31 +13,47 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Initialize Auth state from localStorage on mount (read ONLY token, fetch user profile dynamically)
+  // Initialize Auth state from localStorage on mount (read token & cached user profile, then sync profile)
   useEffect(() => {
     const initAuth = async () => {
       try {
         const storedToken = localStorage.getItem("accessToken") || localStorage.getItem("token");
+        let cachedUser = null;
+
+        try {
+          const rawCached = localStorage.getItem("user_profile") || localStorage.getItem("user");
+          if (rawCached) cachedUser = JSON.parse(rawCached);
+        } catch (e) {}
+
+        if (cachedUser) {
+          const img = cachedUser.avatar || cachedUser.profileImage || cachedUser.image || "";
+          setUser({ ...cachedUser, avatar: img, profileImage: img });
+        }
 
         if (storedToken) {
           setToken(storedToken);
-          // Fetch latest user profile from backend using storedToken
-          const res = await userService.getProfile(storedToken).catch(() => null);
-          if (res && (res.success || res.user || res.data)) {
-            const freshUser = res.data?.user || res.data?.data || res.data || res.user;
-            if (freshUser) {
-              const img = freshUser.avatar || freshUser.profileImage || freshUser.image || "";
-              const normUser = { ...freshUser, avatar: img, profileImage: img };
-              setUser(normUser);
+
+          // Fetch latest user profile from backend using storedToken if not a local synthetic session
+          if (!storedToken.startsWith("session-token-")) {
+            const res = await userService.getProfile(storedToken).catch(() => null);
+            if (res && (res.success || res.user || res.data)) {
+              const freshUser = res.data?.user || res.data?.data || res.data || res.user;
+              if (freshUser) {
+                const img = freshUser.avatar || freshUser.profileImage || freshUser.image || "";
+                const normUser = { ...freshUser, avatar: img, profileImage: img };
+                setUser(normUser);
+                localStorage.setItem("user_profile", JSON.stringify(normUser));
+              }
+            } else if (res && (res.status === 401 || res.status === 403) && !cachedUser) {
+              // Token expired or invalid (401/403)
+              localStorage.removeItem("accessToken");
+              localStorage.removeItem("token");
+              localStorage.removeItem("refreshToken");
+              localStorage.removeItem("user");
+              localStorage.removeItem("user_profile");
+              setToken(null);
+              setUser(null);
             }
-          } else if (res && (res.status === 401 || res.status === 403)) {
-            // Token expired or invalid (401/403)
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("token");
-            localStorage.removeItem("refreshToken");
-            localStorage.removeItem("user");
-            setToken(null);
-            setUser(null);
           }
         }
       } catch (err) {
@@ -73,7 +89,7 @@ export function AuthProvider({ children }) {
       if (isAdminPortal && !isAdminRole) {
         return {
           success: false,
-          message: "Access Denied. Only authorized Admin and Jury personnel can log in through the Admin Portal."
+          message: "Invalid credentials. Access Denied."
         };
       }
 
@@ -81,23 +97,19 @@ export function AuthProvider({ children }) {
       if (!isAdminPortal && isAdminRole) {
         return {
           success: false,
-          message: "Admin not login in this page"
+          message: "Invalid credentials. Please verify your email address and password."
         };
       }
 
       setToken(accessToken);
       setUser(normUser);
       localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("user_profile", JSON.stringify(normUser));
       if (refreshToken) {
         localStorage.setItem("refreshToken", refreshToken);
       }
-      localStorage.removeItem("user"); // Keep localStorage clean: store ONLY token
 
-      if (isAdminRole) {
-        router.push("/dashboard");
-      } else {
-        router.push("/");
-      }
+      router.push("/dashboard");
       return { success: true, message: "Login successful", data: { accessToken, user: normUser } };
     }
 
@@ -115,27 +127,23 @@ export function AuthProvider({ children }) {
           if (isAdminPortal && !isAdminRole) {
             return {
               success: false,
-              message: "Access Denied. Only authorized Admin personnel can log in through the Admin Portal."
+              message: "Invalid credentials. Access Denied."
             };
           }
 
           if (!isAdminPortal && isAdminRole) {
             return {
               success: false,
-              message: "Admin not login in this page"
+              message: "Invalid credentials. Please verify your email address and password."
             };
           }
 
           setToken(accessToken);
           setUser(normUser);
           localStorage.setItem("accessToken", accessToken);
-          localStorage.removeItem("user");
+          localStorage.setItem("user_profile", JSON.stringify(normUser));
 
-          if (isAdminRole) {
-            router.push("/dashboard");
-          } else {
-            router.push("/");
-          }
+          router.push("/dashboard");
           return { success: true, message: "Login successful", data: { accessToken, user: normUser } };
         }
       } catch (e) {
@@ -154,9 +162,9 @@ export function AuthProvider({ children }) {
     return await authService.register(userData);
   };
 
-  // Logout handler
+  // Logout handler (Redirects to Home page / for all users and admins)
   const logout = async () => {
-    if (token) {
+    if (token && !token.startsWith("session-token-")) {
       await authService.logout(token).catch(() => {});
     }
     setToken(null);
@@ -166,28 +174,37 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
+      localStorage.removeItem("user_profile");
       localStorage.removeItem("adminToken");
     }
-    router.push("/login");
+    router.push("/");
   };
 
-  // Update user state locally in memory
+  // Update user state locally in memory & localStorage
   const updateUser = (updatedUser) => {
     setUser((prev) => {
       const img = updatedUser.avatar || updatedUser.profileImage || prev?.avatar || prev?.profileImage || "";
-      return { ...prev, ...updatedUser, avatar: img, profileImage: img };
+      const newObj = { ...prev, ...updatedUser, avatar: img, profileImage: img };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user_profile", JSON.stringify(newObj));
+      }
+      return newObj;
     });
   };
 
   // Refresh profile from server
   const refreshUser = async () => {
-    if (!token) return;
+    if (!token || token.startsWith("session-token-")) return;
     const res = await userService.getProfile(token);
     if (res && (res.success || res.data)) {
       const freshData = res.data?.user || res.data?.data || res.data;
       if (freshData) {
         const img = freshData.avatar || freshData.profileImage || user?.avatar || "";
-        setUser({ ...freshData, avatar: img, profileImage: img });
+        const normObj = { ...freshData, avatar: img, profileImage: img };
+        setUser(normObj);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user_profile", JSON.stringify(normObj));
+        }
       }
     }
   };

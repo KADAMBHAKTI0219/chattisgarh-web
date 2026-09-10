@@ -107,9 +107,9 @@ export default function AwardCategoriesSection() {
       {/* Centered Heading */}
       <Heading
         badge={t("AWARD CATEGORIES")}
-        title={t("41 CREATOR")}
+        title={t("40 CREATOR")}
         highlightText={t("CATEGORIES ACROSS 11 TIERS")}
-        description={t("Explore all 41 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.")}
+        description={t("Explore all 40 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.")}
         className="mb-8 md:mb-10"
       />
 

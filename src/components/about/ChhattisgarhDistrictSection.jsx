@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import Heading from "@/components/common/Heading";
+import { CG_DISTRICTS_33 } from "@/utils/constants";
 
-const DISTRICTS = [
-  "Raipur", "Bilaspur", "Durg", "Bastar", "Surguja", "Rajnandgaon", 
-  "Korba", "Raigarh", "Dhamtari", "Janjgir-Champa", "Kanker", "Kabirdham"
-];
+const DISTRICTS = CG_DISTRICTS_33;
 
 export default function ChhattisgarhDistrictSection() {
   const [selectedDistrict, setSelectedDistrict] = useState("Raipur");

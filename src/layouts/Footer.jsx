@@ -92,12 +92,9 @@ export default function Footer() {
                   <Phone className="w-3.5 h-3.5 text-[var(--secondary)]" />
                   {t("Helpline Number")}
                 </div>
-                <a
-                  href="tel:18004105353"
-                  className="text-zinc-800 hover:text-[var(--primary)] font-bold mt-0.5 text-sm xl:text-base break-words block transition-colors duration-200"
-                >
-                  Coming soon
-                </a>
+                <span className="text-zinc-700 font-bold mt-0.5 text-sm xl:text-base block">
+                  {t("Coming Soon")}
+                </span>
               </li>
               <li>
                 <div className="text-zinc-900 font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5">
@@ -108,7 +105,7 @@ export default function Footer() {
                   href="mailto:supportdeskcg@gmail.com"
                   className="text-zinc-800 hover:text-[var(--primary)] font-bold mt-0.5 text-sm xl:text-base break-words block transition-colors duration-200"
                 >
-                  supportdeskcg@gmail.com(working in)
+                  supportdeskcg@gmail.com
                 </a>
               </li>
               <li>

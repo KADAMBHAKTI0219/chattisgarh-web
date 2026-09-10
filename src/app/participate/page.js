@@ -157,21 +157,22 @@ function ParticipateForm() {
   // Currently Active Selected State
   const activeSelectedState = formData.nominationAs === "SELF" ? formData.state : formData.creatorState;
 
-  // Dynamic Cascading Cities / Districts List for Selected State - Static fallback to 33 CG districts
+  // Dynamic Cascading Cities / Districts List for Selected State - Always includes all 33 CG districts
   const availableDistricts = useMemo(() => {
-    if (activeSelectedState && Array.isArray(apiLocations) && apiLocations.length > 0) {
-      const targetNorm = normalizeStateName(activeSelectedState);
+    const targetNorm = normalizeStateName(activeSelectedState || "Chhattisgarh");
+    let citiesFromApi = [];
+    if (Array.isArray(apiLocations) && apiLocations.length > 0) {
       const locObj = apiLocations.find(
-        (l) => normalizeStateName(l.stateName) === targetNorm || l.stateName.toLowerCase() === activeSelectedState.trim().toLowerCase()
+        (l) => normalizeStateName(l.stateName) === targetNorm || l.stateName.toLowerCase() === (activeSelectedState || "").trim().toLowerCase()
       );
       if (locObj && Array.isArray(locObj.cities) && locObj.cities.length > 0) {
-        const validCities = locObj.cities
+        citiesFromApi = locObj.cities
           .filter((c) => c.isActive !== false)
           .map((c) => c.cityName || c);
-        if (validCities.length > 0) return validCities;
       }
     }
-    return CG_DISTRICTS_33;
+    const combined = Array.from(new Set([...CG_DISTRICTS_33, ...citiesFromApi])).sort();
+    return combined.length > 0 ? combined : CG_DISTRICTS_33;
   }, [apiLocations, activeSelectedState]);
 
   // Sync initial state to first available backend state on initial load
@@ -363,6 +364,16 @@ function ParticipateForm() {
     }
 
     if (step === 2) {
+      const ageValStr = isSelf ? formData.age : formData.creatorAge;
+      const ageNum = parseInt(ageValStr, 10);
+      const ageFieldKey = isSelf ? "age" : "creatorAge";
+
+      if (!ageValStr || isNaN(ageNum)) {
+        addErr(ageFieldKey, "Age is required (Must be between 10 and 63)");
+      } else if (ageNum < 10 || ageNum > 63) {
+        addErr(ageFieldKey, "Age must be between 10 and 63 years");
+      }
+
       if (!isSelf) {
         if (!formData.creatorFullName.trim()) addErr("creatorFullName", "Creator Full Name is required");
       } else {
@@ -1125,19 +1136,32 @@ function ParticipateForm() {
                     />
                   </div>
 
-                  {/* Age */}
+                  {/* Age (Manual input between 10 and 63) */}
                   <div className="flex flex-col gap-1.5">
-                    <SearchableSelect
-                      label="Q7. Age Bracket *"
-                      options={["18-40", "Above 40"]}
+                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
+                      Q7. Age (10 to 63 Years) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="10"
+                      max="63"
+                      name={formData.nominationAs === "SELF" ? "age" : "creatorAge"}
                       value={formData.nominationAs === "SELF" ? formData.age : formData.creatorAge}
-                      onChange={(val) => {
+                      onChange={(e) => {
+                        const val = e.target.value;
                         const targetField = formData.nominationAs === "SELF" ? "age" : "creatorAge";
                         setFormData((prev) => ({ ...prev, [targetField]: val }));
+                        if (errors[targetField]) setErrors((prev) => ({ ...prev, [targetField]: null }));
                       }}
-                      placeholder="Select Age Bracket"
-                      icon={null}
+                      placeholder="Enter Age (10 - 63)"
+                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors[formData.nominationAs === "SELF" ? "age" : "creatorAge"] ? "border-red-500 bg-red-50/20" : ""
+                        }`}
                     />
+                    {errors[formData.nominationAs === "SELF" ? "age" : "creatorAge"] && (
+                      <span className="text-red-500 text-[10px] font-bold">
+                        {errors[formData.nominationAs === "SELF" ? "age" : "creatorAge"]}
+                      </span>
+                    )}
                   </div>
 
                   {/* State (Fixed Read-Only) */}

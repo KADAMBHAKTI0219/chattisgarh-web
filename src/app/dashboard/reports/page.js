@@ -53,7 +53,7 @@ export default function ReportsDashboardPage() {
           if (analyticsRes?.success && analyticsRes?.data) {
             setAnalyticsData(analyticsRes.data);
           }
-        } catch (e) {}
+        } catch (e) { }
 
         // 1. Fetch Categories
         try {
@@ -62,7 +62,7 @@ export default function ReportsDashboardPage() {
           if (Array.isArray(catList) && catList.length > 0) {
             setRawCategories(catList);
           }
-        } catch (e) {}
+        } catch (e) { }
 
         // 2. Fetch Applications
         let apiApps = [];
@@ -72,7 +72,7 @@ export default function ReportsDashboardPage() {
             const list = appRes.applications || appRes.data || (Array.isArray(appRes) ? appRes : []);
             if (Array.isArray(list)) apiApps = list;
           }
-        } catch (e) {}
+        } catch (e) { }
 
         // Fallback: local submissions from localStorage if API applications are empty
         if (apiApps.length === 0 && typeof window !== "undefined") {
@@ -80,7 +80,7 @@ export default function ReportsDashboardPage() {
             const nomLocal = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
             const appLocal = JSON.parse(localStorage.getItem("user_applications") || "[]");
             apiApps = [...nomLocal, ...appLocal];
-          } catch (e) {}
+          } catch (e) { }
         }
         setRawApplications(apiApps);
 
@@ -93,7 +93,7 @@ export default function ReportsDashboardPage() {
           } else if (typeof userRes?.total === "number") {
             setRawUsersCount(userRes.total);
           }
-        } catch (e) {}
+        } catch (e) { }
 
         // 4. Fetch Admin Overview Stats
         try {
@@ -101,7 +101,7 @@ export default function ReportsDashboardPage() {
           if (dashRes?.success && dashRes?.data) {
             setOverviewStats(dashRes.data);
           }
-        } catch (e) {}
+        } catch (e) { }
 
       } catch (err) {
         console.warn("Error fetching analytics data:", err);
@@ -156,13 +156,13 @@ export default function ReportsDashboardPage() {
   const displayDistricts = sortedDistricts.length > 0
     ? sortedDistricts.slice(0, 6)
     : [
-        { name: "Raipur", nominations: 0, percentage: 0 },
-        { name: "Bastar", nominations: 0, percentage: 0 },
-        { name: "Bilaspur", nominations: 0, percentage: 0 },
-        { name: "Durg", nominations: 0, percentage: 0 },
-        { name: "Dhamtari", nominations: 0, percentage: 0 },
-        { name: "Surguja", nominations: 0, percentage: 0 }
-      ];
+      { name: "Raipur", nominations: 0, percentage: 0 },
+      { name: "Bastar", nominations: 0, percentage: 0 },
+      { name: "Bilaspur", nominations: 0, percentage: 0 },
+      { name: "Durg", nominations: 0, percentage: 0 },
+      { name: "Dhamtari", nominations: 0, percentage: 0 },
+      { name: "Surguja", nominations: 0, percentage: 0 }
+    ];
 
   // 2. Compute Dynamic Category Share Breakdown
   const categoryMap = new Map();
@@ -187,11 +187,11 @@ export default function ReportsDashboardPage() {
   const displayCategoryReports = sortedCategories.length > 0
     ? sortedCategories.slice(0, 6)
     : rawCategories.slice(0, 6).map((c, i) => ({
-        title: c.title || c.name || `Category ${i+1}`,
-        nominations: 0,
-        share: "0%",
-        color: ["bg-[#E6532B]", "bg-[#21593D]", "bg-amber-600", "bg-blue-600", "bg-purple-600", "bg-rose-600"][i % 6]
-      }));
+      title: c.title || c.name || `Category ${i + 1}`,
+      nominations: 0,
+      share: "0%",
+      color: ["bg-[#E6532B]", "bg-[#21593D]", "bg-amber-600", "bg-blue-600", "bg-purple-600", "bg-rose-600"][i % 6]
+    }));
 
   // Dynamic Key Performance Indicators Cards
   const reportStats = [
@@ -329,7 +329,7 @@ export default function ReportsDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6 animate-page-enter text-left w-full">
-      
+
       {/* 1. Header Banner */}
       <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-2xs">
         <div className="flex items-center gap-4">
@@ -430,7 +430,7 @@ export default function ReportsDashboardPage() {
 
           {/* 3. Detailed Data Analytics Section (2 Column Grid) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            
+
             {/* District Participation Breakdown (7 Columns) */}
             <div className="lg:col-span-7 bg-white border border-zinc-200/80 rounded-3xl p-6 shadow-2xs flex flex-col gap-5">
               <div className="flex items-center justify-between border-b border-zinc-150 pb-4">

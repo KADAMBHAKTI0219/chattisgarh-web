@@ -23,13 +23,20 @@ export default function ForgotPasswordPage() {
     setErrorMsg("");
     setSuccessMsg("");
 
-    const response = await authService.forgotPassword(email);
-    setLoading(false);
+    try {
+      const response = await authService.forgotPassword(email);
+      setLoading(false);
 
-    if (response.success) {
-      setSuccessMsg(response.message || "A password reset link has been dispatched to your email address.");
-    } else {
-      setErrorMsg(response.message || "Failed to send reset email. Please try again.");
+      if (response && response.success) {
+        setSuccessMsg(response.message || "Password reset instructions have been dispatched to your email address.");
+      } else if (response && response.message) {
+        setSuccessMsg(response.message);
+      } else {
+        setSuccessMsg("Password reset request processed. If your account exists, please check your inbox & spam folder.");
+      }
+    } catch (err) {
+      setLoading(false);
+      setSuccessMsg("Password reset request processed. Please check your registered email inbox.");
     }
   };
 

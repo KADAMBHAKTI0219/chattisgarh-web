@@ -94,7 +94,7 @@ export const HINDI_DICTIONARY = {
   // Award Categories & Tiers
   "AWARD CATEGORIES": "पुरस्कार श्रेणियां",
   "39 CREATOR": "39 क्रिएटर",
-  "41 CREATOR": "41 क्रिएटर",
+  "40 CREATOR": "40 क्रिएटर",
   "CATEGORIES ACROSS 11 TIERS": "श्रेणियां (11 स्तरों में)",
   "Explore all 39 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.":
     "शासन, तकनीक, संस्कृति और नवाचार के 11 प्रमुख स्तरों में विभाजित सभी 39 आधिकारिक राज्य पुरस्कार श्रेणियों का अवलोकन करें।",

@@ -93,7 +93,7 @@ export default function ParticipateModal() {
       email: "",
       phone: "",
       gender: "Male",
-      age: "18-40",
+      age: "",
       state: "Chhattisgarh",
       district: "Raipur",
       nationality: "Indian",
@@ -114,7 +114,7 @@ export default function ParticipateModal() {
       phone: "",
       email: "",
       gender: "Male",
-      age: "18-40",
+      age: "",
       state: "Chhattisgarh",
       district: "Raipur",
     },
@@ -174,17 +174,18 @@ export default function ParticipateModal() {
     ? Array.from(new Set(apiLocations.map((l) => l.stateName))).sort()
     : [formData.applicant?.state || "Chhattisgarh"];
 
-  // Dynamic Cities / Districts for given state from Backend API or static fallback
+  // Dynamic Cities / Districts for given state from Backend API - Always includes all 33 CG districts
   const getDistrictsForState = (stateName) => {
-    const norm = normalizeStateName(stateName || "");
+    const norm = normalizeStateName(stateName || "Chhattisgarh");
+    let cList = [];
     if (Array.isArray(apiLocations) && apiLocations.length > 0) {
       const matched = apiLocations.find((l) => normalizeStateName(l.stateName) === norm || l.stateName.toLowerCase() === (stateName || "").trim().toLowerCase());
       if (matched && Array.isArray(matched.cities) && matched.cities.length > 0) {
-        const cList = matched.cities.filter((c) => c.isActive !== false).map((c) => c.cityName || c);
-        if (cList.length > 0) return cList;
+        cList = matched.cities.filter((c) => c.isActive !== false).map((c) => c.cityName || c);
       }
     }
-    return CG_DISTRICTS_33;
+    const combined = Array.from(new Set([...CG_DISTRICTS_33, ...cList])).sort();
+    return combined.length > 0 ? combined : CG_DISTRICTS_33;
   };
 
   const applicantDistricts = getDistrictsForState(formData.applicant?.state);
@@ -335,11 +336,26 @@ export default function ParticipateModal() {
       if (!formData.applicant.fullName.trim()) errs.applicantFullName = "Full Name is required";
       if (!formData.applicant.email.trim()) errs.applicantEmail = "Email is required";
       if (!formData.applicant.phone.trim()) errs.applicantPhone = "Mobile Number is required";
+      
+      const ageNum = parseInt(formData.applicant.age, 10);
+      if (!formData.applicant.age || isNaN(ageNum)) {
+        errs.applicantAge = "Age is required (10 - 63 years)";
+      } else if (ageNum < 10 || ageNum > 63) {
+        errs.applicantAge = "Age must be between 10 and 63 years";
+      }
+
       if (formData.awardType === "National" && !formData.applicant.district) errs.applicantDistrict = "District is required";
     } else {
       if (!formData.nominator.fullName.trim()) errs.nominatorFullName = "Nominator Full Name is required";
       if (!formData.nominator.phone.trim()) errs.nominatorPhone = "Nominator Mobile is required";
       if (!formData.nominee.name.trim()) errs.nomineeName = "Nominee Name is required";
+      
+      const nomineeAgeNum = parseInt(formData.nominee.age, 10);
+      if (!formData.nominee.age || isNaN(nomineeAgeNum)) {
+        errs.nomineeAge = "Nominee Age is required (10 - 63 years)";
+      } else if (nomineeAgeNum < 10 || nomineeAgeNum > 63) {
+        errs.nomineeAge = "Nominee Age must be between 10 and 63 years";
+      }
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -782,15 +798,20 @@ export default function ParticipateModal() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-bold uppercase text-zinc-700">Age Bracket *</label>
-                  <select
+                  <label className="text-xs font-bold uppercase text-zinc-700">Age (10 - 63 Years) *</label>
+                  <input
+                    type="number"
+                    min="10"
+                    max="63"
+                    placeholder="Enter Age (10-63)"
                     value={formData.applicant.age}
-                    onChange={(e) => setFormData({ ...formData, applicant: { ...formData.applicant, age: e.target.value } })}
-                    className="rounded-xl border border-zinc-300 p-3 text-xs font-bold bg-white"
-                  >
-                    <option value="18-40">18-40 Years</option>
-                    <option value="Above 40">Above 40 Years</option>
-                  </select>
+                    onChange={(e) => {
+                      setFormData({ ...formData, applicant: { ...formData.applicant, age: e.target.value } });
+                      if (errors.applicantAge) setErrors((prev) => ({ ...prev, applicantAge: null }));
+                    }}
+                    className={`rounded-xl border p-3 text-xs font-bold bg-white ${errors.applicantAge ? "border-rose-500 bg-rose-50/20" : "border-zinc-300"}`}
+                  />
+                  {errors.applicantAge && <span className="text-rose-500 text-[10px] font-bold">{errors.applicantAge}</span>}
                 </div>
 
                 {formData.awardType === "National" && (
@@ -851,13 +872,25 @@ export default function ParticipateModal() {
 
                 <div>
                   <h4 className="font-poppins font-bold text-xs uppercase text-[#21593D] mb-3">Nominee Profile (The Creator)</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                     <input
                       type="text"
                       placeholder="Nominee Creator Name *"
                       value={formData.nominee.name}
                       onChange={(e) => setFormData({ ...formData, nominee: { ...formData.nominee, name: e.target.value } })}
                       className="rounded-xl border border-zinc-300 p-3 text-xs font-semibold"
+                    />
+                    <input
+                      type="number"
+                      min="10"
+                      max="63"
+                      placeholder="Nominee Age (10-63) *"
+                      value={formData.nominee.age}
+                      onChange={(e) => {
+                        setFormData({ ...formData, nominee: { ...formData.nominee, age: e.target.value } });
+                        if (errors.nomineeAge) setErrors((prev) => ({ ...prev, nomineeAge: null }));
+                      }}
+                      className={`rounded-xl border p-3 text-xs font-bold bg-white ${errors.nomineeAge ? "border-rose-500 bg-rose-50/20" : "border-zinc-300"}`}
                     />
                     <select
                       value={formData.nominee.gender}
@@ -876,6 +909,7 @@ export default function ParticipateModal() {
                       {nomineeDistricts.map((d, i) => <option key={i} value={d}>{d}</option>)}
                     </select>
                   </div>
+                  {errors.nomineeAge && <span className="text-rose-500 text-[10px] font-bold block mt-1">{errors.nomineeAge}</span>}
                 </div>
               </div>
             )}
