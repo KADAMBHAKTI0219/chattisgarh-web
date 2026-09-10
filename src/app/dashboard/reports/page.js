@@ -26,7 +26,16 @@ import {
   FaFileAlt
 } from "react-icons/fa";
 
+import { useRouter } from "next/navigation";
+
 export default function ReportsDashboardPage() {
+  const router = useRouter();
+
+  // Redirect away from Reports & Analytics page to Dashboard main view
+  useEffect(() => {
+    router.replace("/dashboard");
+  }, [router]);
+
   const { token } = useAuth();
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState("ALL_TIME");

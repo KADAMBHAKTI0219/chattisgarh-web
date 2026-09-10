@@ -95,13 +95,8 @@ export async function fetchApi(endpoint, options = {}) {
     ...(body ? { body: body instanceof FormData ? body : JSON.stringify(body) } : {}),
   };
 
-  // Base URLs (Primary Render production backend + Localhost backend fallback when developing)
+  // Base URL strictly set to production backend (https://chattisgarh-backend.onrender.com/api/v1)
   const candidateBases = [PRIMARY_API_BASE_URL];
-  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-    if (!candidateBases.includes("http://localhost:5000/api/v1")) {
-      candidateBases.push("http://localhost:5000/api/v1");
-    }
-  }
 
   let lastResponse = null;
   let lastError = null;

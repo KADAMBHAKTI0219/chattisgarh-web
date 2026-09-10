@@ -728,7 +728,10 @@ export default function AdminDashboard({ token, initialTab }) {
     try {
       // 1. PARTICIPANTS DATA LOADING
       try {
-        let partsRes = await participantService.getParticipants({ limit: 1000 }, authToken).catch(() => ({}));
+        let partsRes = await participantService.getParticipants(
+          { limit: 10, page: currentPage, paginate: true },
+          authToken
+        ).catch(() => ({}));
 
         const extractArray = (res) => {
           if (!res) return [];
@@ -756,7 +759,7 @@ export default function AdminDashboard({ token, initialTab }) {
         let partsList = extractArray(partsRes);
 
         if (partsList.length === 0) {
-          const appsRes = await applicationService.getApplications({ limit: 1000 }, authToken).catch(() => ({}));
+          const appsRes = await applicationService.getApplications({ limit: 10, page: currentPage }, authToken).catch(() => ({}));
           partsList = extractArray(appsRes);
         }
 
@@ -815,7 +818,7 @@ export default function AdminDashboard({ token, initialTab }) {
           return {
             _id: p._id || p.id || `p-${idx}`,
             raw: p,
-            num: String(idx + 1).padStart(2, "0"),
+            num: String((currentPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, "0"),
             applicationId: p.applicationId || p.applicationNo || p._id || `NCA-2026-${100000 + idx}`,
             name: displayName,
             title: displayTitle,
@@ -860,7 +863,7 @@ export default function AdminDashboard({ token, initialTab }) {
 
         const uniqueMap = new Map();
         fetchedParts.forEach((item) => {
-          const key = (item.email && item.email !== "N/A") ? item.email.toLowerCase().trim() : (item.applicationId || item._id);
+          const key = item._id || item.applicationId || item.id || (item.email && item.email !== "N/A" ? item.email.toLowerCase().trim() : null);
           if (key && !uniqueMap.has(key)) {
             uniqueMap.set(key, item);
           }
@@ -868,8 +871,10 @@ export default function AdminDashboard({ token, initialTab }) {
 
         const finalParticipants = Array.from(uniqueMap.values());
         setParticipants(finalParticipants);
-        setTotalServerItems(finalParticipants.length);
-        setTotalParticipantsCountState(finalParticipants.length);
+
+        const totalParticipants = partsRes?.total || partsRes?.pagination?.total || partsRes?.count || partsRes?.rawResponse?.total || finalParticipants.length;
+        setTotalServerItems(totalParticipants);
+        setTotalParticipantsCountState(totalParticipants);
       } catch (err) {
         console.error("Failed to fetch participants:", err);
         setParticipants(DEFAULT_DEMO_PARTICIPANTS);

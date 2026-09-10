@@ -1,3 +1,5 @@
+import fetchApi from "./client";
+
 export const dashboardService = {
   // 1. Get Admin System Overview Metrics
   async getAdminDashboard(token) {

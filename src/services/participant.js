@@ -37,9 +37,9 @@ export const participantService = {
     let authToken = token;
     if (typeof paramsOrToken === "string") {
       authToken = paramsOrToken;
-      params = { limit: 10 };
+      params = { limit: 10, page: 1, paginate: true };
     } else {
-      params = { limit: 10, ...params };
+      params = { limit: 10, page: 1, paginate: true, ...params };
     }
     return await fetchApi("/participants", { method: "GET", params, token: authToken });
   },

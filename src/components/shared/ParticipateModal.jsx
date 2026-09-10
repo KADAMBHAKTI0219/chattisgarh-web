@@ -440,7 +440,7 @@ export default function ParticipateModal() {
       phone: applicantPhone || "9999999999",
       email: applicantEmail || "",
       gender: applicantGender || "Other",
-      age: applicantAge || "18-40",
+      age: applicantAge || "25",
       state: applicantState || "Chhattisgarh",
       district: applicantDistrict || "Raipur",
       nationality: "Indian",
@@ -474,7 +474,7 @@ export default function ParticipateModal() {
         email: applicantEmail || "",
         phone: applicantPhone || "9999999999",
         gender: applicantGender || "Other",
-        age: applicantAge || "18-40",
+        age: applicantAge || "25",
         state: applicantState || "Chhattisgarh",
         district: applicantDistrict || "Raipur",
         nationality: "Indian"
