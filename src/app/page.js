@@ -66,9 +66,9 @@ export default function Home() {
       </div>
 
       {/* 6. Eligibility Section (Who Can Apply?) */}
-      {/* <div className="reveal-on-scroll">
+      <div className="reveal-on-scroll">
         <WhoCanApplySection />
-      </div> */}
+      </div>
 
       {/* 7. Timeline Section (How To Apply Step-by-Step) */}
       <div className="reveal-on-scroll">

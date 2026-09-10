@@ -4,13 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useParticipateModal } from "@/context/ParticipateModalContext";
+import { useAuth } from "@/context/AuthContext";
 import { categoryService } from "@/services/category";
 import { nominationService } from "@/services/nomination";
 import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
 import { recaptchaService } from "@/services/recaptcha";
 import locationService, { locationService as locServiceNamed } from "@/services/location";
-import { staticCategories } from "@/data/staticCategories";
+import { staticCategories, mergeWithStaticCategories } from "@/data/staticCategories";
 import { CG_DISTRICTS_33 } from "@/utils/constants";
 import {
   FaUser,
@@ -40,6 +41,7 @@ const RECAPTCHA_SITE_KEY =
 
 export default function ParticipateModal() {
   const { isOpen, selectedCategory, closeModal } = useParticipateModal();
+  const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   // Dynamic API Locations State
@@ -203,11 +205,8 @@ export default function ParticipateModal() {
         } else if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
           list = res.data;
         }
-        if (list.length > 0) {
-          setApiCategories(list);
-        } else {
-          setApiCategories(staticCategories);
-        }
+        const merged = mergeWithStaticCategories(list);
+        setApiCategories(merged);
       } catch (err) {
         console.warn("Failed to load categories in ParticipateModal:", err);
         setApiCategories(staticCategories);
@@ -219,6 +218,30 @@ export default function ParticipateModal() {
   // Reset or pre-fill on modal open
   useEffect(() => {
     if (isOpen) {
+      if (user) {
+        const normGender = user.gender
+          ? (["Male", "Female", "Other"].includes(user.gender) ? user.gender : user.gender.charAt(0).toUpperCase() + user.gender.slice(1).toLowerCase())
+          : "Male";
+        setFormData((prev) => ({
+          ...prev,
+          applicant: {
+            ...prev.applicant,
+            fullName: prev.applicant.fullName || user.name || user.fullName || "",
+            email: prev.applicant.email || user.email || user.emailId || "",
+            phone: prev.applicant.phone || (user.phone || user.mobileNumber || user.mobile || "").replace(/\D/g, "").slice(0, 10),
+            district: prev.applicant.district || user.district || "Raipur",
+            state: prev.applicant.state || user.state || "Chhattisgarh",
+            gender: prev.applicant.gender || normGender,
+          },
+          nominator: {
+            ...prev.nominator,
+            fullName: prev.nominator.fullName || user.name || user.fullName || "",
+            email: prev.nominator.email || user.email || user.emailId || "",
+            phone: prev.nominator.phone || (user.phone || user.mobileNumber || user.mobile || "").replace(/\D/g, "").slice(0, 10),
+          }
+        }));
+      }
+
       if (selectedCategory) {
         setFormData((prev) => ({
           ...prev,
@@ -246,7 +269,7 @@ export default function ParticipateModal() {
       setRegisteredData(null);
       captchaRef.current?.reset();
     }
-  }, [isOpen, selectedCategory]);
+  }, [isOpen, selectedCategory, user]);
 
   if (!mounted || !isOpen) return null;
 

@@ -41,10 +41,18 @@ export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
-  // Auth Guard: Redirect unauthenticated visitors to /login
+  // Auth Guard: Redirect unauthenticated or non-admin visitors to /login
   useEffect(() => {
-    if (!loading && !token && !user) {
-      router.push("/login");
+    if (!loading) {
+      if (!token && !user) {
+        router.push("/login");
+      } else {
+        const roleUpper = String(user?.role || "").toUpperCase();
+        const isAdminRole = ["SUPER_ADMIN", "ADMIN", "MODERATOR", "JURY"].includes(roleUpper);
+        if (!isAdminRole) {
+          router.push("/login");
+        }
+      }
     }
   }, [loading, token, user, router]);
 
@@ -118,12 +126,10 @@ export default function DashboardLayout({ children }) {
   // Sidebar links configuration (Admin vs Creator) - Only showing dynamic badge if notifications exist
   const adminMenuLinks = [
     { name: "Dashboard", href: "/dashboard", tabKey: "overview", icon: FaTachometerAlt },
-    { name: "Public Votes", href: "/dashboard?tab=votes", tabKey: "votes", icon: FaVoteYea },
-    { name: "Participants", href: "/dashboard?tab=participants", tabKey: "participants", icon: FaUsers },
-    { name: "Users", href: "/dashboard?tab=users", tabKey: "users", icon: FaUserCircle },
-    { name: "News & Press", href: "/dashboard?tab=news", tabKey: "news", icon: FaNewspaper },
-    { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: unreadNotificationsCount > 0 ? String(unreadNotificationsCount) : null },
-    { name: "Reports", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
+    { name: "Participants", href: "/dashboard/participants", tabKey: "participants", icon: FaUsers },
+    { name: "Users", href: "/dashboard/users", tabKey: "users", icon: FaUserCircle },
+    { name: "News & Press", href: "/dashboard/news", tabKey: "news", icon: FaNewspaper },
+    { name: "Reports & Analytics", href: "/dashboard/reports", tabKey: "reports", icon: FaChartPie },
     { name: "Settings", href: "/dashboard/settings", tabKey: "settings", icon: FaCog },
     { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
   ];
@@ -131,9 +137,7 @@ export default function DashboardLayout({ children }) {
   const creatorMenuLinks = [
     { name: "Dashboard", href: "/dashboard", tabKey: "overview", icon: FaThLarge },
     { name: "My Profile", href: "/dashboard/profile", tabKey: "profile", icon: FaUserCircle },
-    { name: "My Participation", href: "/dashboard?tab=participation", tabKey: "participation", icon: FaLayerGroup },
-    { name: "My Submissions", href: "/dashboard/applications", tabKey: "applications", icon: FaFileAlt },
-    { name: "Notifications", href: "/dashboard/notifications", tabKey: "notifications", icon: FaBell, badge: unreadNotificationsCount > 0 ? String(unreadNotificationsCount) : null },
+    { name: "My Participants", href: "/dashboard/applications", tabKey: "applications", icon: FaUsers },
     { name: "Move to Website", href: "/", tabKey: "website", icon: FaGlobe },
   ];
 
@@ -187,7 +191,7 @@ export default function DashboardLayout({ children }) {
           <div className="flex items-center gap-3 pb-5 border-b border-zinc-150 shrink-0">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200/80">
               <Image
-                src="/assets/images/logoChattisgarh.png"
+                src="/assets/images/image.png"
                 alt="Chhattisgarh Logo"
                 width={32}
                 height={32}
@@ -284,27 +288,7 @@ export default function DashboardLayout({ children }) {
           </div>
 
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <Link
-              href="/"
-              className="px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#E6532B] font-poppins font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
-              title="Return to Main Portal Website"
-            >
-              <FaGlobe className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Move to Website</span>
-            </Link>
-
-            <Link
-              href="/dashboard/notifications"
-              className="p-2.5 rounded-2xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-600 relative cursor-pointer shadow-2xs flex items-center justify-center"
-              title="Notifications"
-            >
-              <FaBell className="w-4.5 h-4.5" />
-              {unreadNotificationsCount > 0 && (
-                <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-2 right-2 ring-2 ring-white" />
-              )}
-            </Link>
-
-            <div className="flex items-center gap-3 pl-2 border-l border-zinc-200">
+            <div className="flex items-center gap-3">
               {user?.avatar ? (
                 <img
                   src={user.avatar}
@@ -320,7 +304,6 @@ export default function DashboardLayout({ children }) {
                 <span className="font-poppins font-bold text-xs text-zinc-950">{userName}</span>
                 <span className="text-[10px] font-inter text-zinc-400 font-medium">{userRoleLabel}</span>
               </div>
-              <FaChevronDown className="w-3 h-3 text-zinc-400" />
             </div>
           </div>
         </header>

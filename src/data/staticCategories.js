@@ -983,7 +983,93 @@ export const staticCategories = [
       metaDescription: "The flagship award recognizing the visionary creator who redefined digital content in India.",
       keywords: ["disruptor of the year", "flagship award", "creator of the year", "digital disruption", "national impact"]
     }
+  },
+  {
+    categoryNumber: 40,
+    title: "Tribal Voice Award",
+    slug: "tribal-voice-award",
+    tier: "Culture & Identity",
+    tierNumber: 1,
+    shortDescription: "Recognising creators who use digital platforms to showcase, preserve and promote tribal identity, culture, heritage, traditions, languages and community stories.",
+    fullDescription: "Recognising creators who use digital platforms to showcase, preserve and promote tribal identity, culture, heritage, traditions, languages and community stories. This category also honours creators who raise awareness about indigenous knowledge, tribal art, music, dance, literature, lifestyle, environment, livelihoods and the achievements of tribal communities through meaningful and authentic content.",
+    taskBrief: "Tribal Creator must covers: Tribal/Adivasi culture & traditions, Tribal language & literature, Tribal art, music & dance, Tribal heritage, festivals & customs, Tribal history & indigenous knowledge, Tribal environment, forests & traditional livelihoods, Tribal food, lifestyle & crafts, Tribal communities - stories, achievements & positive representation.",
+    hashtag: "#TribalVoiceAward",
+    icon: "FaUsers",
+    image: "/assets/images/category/category-40.jpg",
+    prizeTier: "FLAGSHIP",
+    cashPrizeMin: 500000,
+    cashPrizeMax: 1000000,
+    order: 40,
+    isActive: true,
+    isFeatured: true,
+    seo: {
+      metaTitle: "Tribal Voice Award - Chhattisgarh State & National Creators Awards",
+      metaDescription: "Honouring creators showcasing, preserving, and promoting tribal culture, heritage, language, and community achievements.",
+      keywords: ["tribal voice award", "adivasi culture", "indigenous knowledge", "chhattisgarh tribal art", "heritage and traditions"]
+    }
+  },
+  {
+    categoryNumber: 41,
+    title: "Creative, Comedy, Entertainment & Gaming Award",
+    slug: "creative-comedy-entertainment-gaming-award",
+    tier: "Creative & Entertainment",
+    tierNumber: 3,
+    shortDescription: "Recognising creators who entertain, engage and inspire audiences through creative digital content, including gaming, esports, gameplay, comedy, music, dance, theatre and digital creativity.",
+    fullDescription: "Recognising creators who entertain, engage and inspire audiences through creative digital content, including gaming, esports, live streaming, gameplay, comedy, music, dance, theatre, entertainment and other forms of digital creativity. This category honours creators who showcase originality, talent and creativity while building engaging communities across digital platforms.",
+    taskBrief: "Showcase original, engaging digital content in comedy, gaming, live streaming, gameplay, music, dance, or theatre that entertains and inspires digital communities.",
+    hashtag: "#CreativeEntertainmentAward",
+    icon: "FaGamepad",
+    image: "/assets/images/category/category-41.jpg",
+    prizeTier: "MARQUEE",
+    cashPrizeMin: 300000,
+    cashPrizeMax: 500000,
+    order: 41,
+    isActive: true,
+    isFeatured: true,
+    seo: {
+      metaTitle: "Creative, Comedy, Entertainment & Gaming Award - State Creators Awards",
+      metaDescription: "Recognising creators entertaining and inspiring audiences through comedy, gaming, live streaming, music, dance, and digital creativity.",
+      keywords: ["gaming award", "comedy creator", "esports live streaming", "digital entertainment", "creative content"]
+    }
   }
 ];
 
+export function mergeWithStaticCategories(apiList = [], staticList = staticCategories) {
+  if (!Array.isArray(apiList) || apiList.length === 0) {
+    return staticList;
+  }
+
+  const apiMap = new Map();
+  apiList.forEach((item) => {
+    const numKey = item.categoryNumber || item.order;
+    const slugKey = item.slug ? String(item.slug).toLowerCase().trim() : null;
+    const titleKey = item.title ? String(item.title).toLowerCase().trim() : null;
+
+    if (numKey) apiMap.set(`num-${numKey}`, item);
+    if (slugKey) apiMap.set(`slug-${slugKey}`, item);
+    if (titleKey) apiMap.set(`title-${titleKey}`, item);
+  });
+
+  const merged = [...apiList];
+
+  staticList.forEach((stCat) => {
+    const numKey = stCat.categoryNumber || stCat.order;
+    const slugKey = stCat.slug ? String(stCat.slug).toLowerCase().trim() : null;
+    const titleKey = stCat.title ? String(stCat.title).toLowerCase().trim() : null;
+
+    const exists =
+      (numKey && apiMap.has(`num-${numKey}`)) ||
+      (slugKey && apiMap.has(`slug-${slugKey}`)) ||
+      (titleKey && apiMap.has(`title-${titleKey}`));
+
+    if (!exists) {
+      merged.push(stCat);
+    }
+  });
+
+  merged.sort((a, b) => (a.categoryNumber || a.order || 999) - (b.categoryNumber || b.order || 999));
+  return merged;
+}
+
 export default staticCategories;
+

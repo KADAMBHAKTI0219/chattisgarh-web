@@ -7,11 +7,18 @@ import { FaPlay, FaShareAlt, FaClock, FaYoutube } from "react-icons/fa";
 
 const videos = [
   {
-    id: "zqwgKRdO0us",
-    title: "PM Narendra Modi Presents National Creators Award 2024 at Bharat Mandapam, New Delhi",
-    channel: "Narendra Modi",
-    initials: "NM",
-    badge: "Prime Minister"
+    id: "T6FXNGynLI8",
+    title: "Chhattisgarh State Creator & Influencer Awards 2024 Keynote",
+    channel: "Government of Chhattisgarh",
+    initials: "CG",
+    badge: "Official Vision"
+  },
+  {
+    id: "Dgs159ODZko",
+    title: "Digital Creator Empowerment & Leadership Highlights",
+    channel: "Chhattisgarh Official",
+    initials: "CG",
+    badge: "Leadership Message"
   }
 ];
 
@@ -50,21 +57,7 @@ function VideoCard({ video }) {
             {/* Dark Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/40 transition-opacity duration-300 group-hover/card:opacity-90" />
 
-            {/* Top Channel Bar */}
-            <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4 sm:p-6 z-10">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-xs sm:text-sm font-bold text-white shadow-md border border-white/30">
-                  {video.initials}
-                </span>
-                <span className="truncate text-sm sm:text-base font-bold text-white drop-shadow">
-                  {video.channel}
-                </span>
-              </div>
 
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md border border-white/30 uppercase tracking-wider">
-                {video.badge}
-              </span>
-            </div>
 
             {/* Play Button Icon with pulse hover effect */}
             <span className="absolute left-1/2 top-1/2 flex h-16 w-16 sm:h-20 sm:w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-[var(--primary)] shadow-2xl transition-all duration-300 group-hover/card:scale-110 group-hover/card:bg-[var(--primary)] group-hover/card:text-white">
@@ -111,8 +104,8 @@ export default function LeadershipSection() {
         className="mb-8 md:mb-12"
       />
 
-      {/* Single Video Card (Full Width Container) */}
-      <div className="w-full max-w-5xl mx-auto flex justify-center">
+      {/* Video Cards Grid (2 Videos - 50% / 50% Split) */}
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 justify-center">
         {videos.map((video) => (
           <VideoCard key={video.id} video={video} />
         ))}

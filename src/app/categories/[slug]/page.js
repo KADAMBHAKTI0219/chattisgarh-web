@@ -9,7 +9,7 @@ import { categoryService } from "@/services/api";
 import Heading from "@/components/common/Heading";
 import CategoryDetailModal from "@/components/common/CategoryDetailModal";
 import { extractDynamicTiers, getTierSlug, getTierColor, getTierTitle } from "@/utils/tierUtils";
-import { staticCategories } from "@/data/staticCategories";
+import { staticCategories, mergeWithStaticCategories } from "@/data/staticCategories";
 import {
     FaChevronLeft,
     FaChevronRight,
@@ -41,12 +41,12 @@ export default function CategorySlugPage({ params }) {
                     ? res.categories
                     : ((res?.data && Array.isArray(res.data) && res.data.length > 0)
                         ? res.data
-                        : null);
-                if (Array.isArray(list) && list.length > 0) {
-                    setApiCategories(list);
-                }
+                        : staticCategories);
+                const mergedList = mergeWithStaticCategories(list);
+                setApiCategories(mergedList);
             } catch (err) {
                 console.warn("Failed to fetch dynamic categories for category page:", err);
+                setApiCategories(staticCategories);
             } finally {
                 setIsLoading(false);
             }

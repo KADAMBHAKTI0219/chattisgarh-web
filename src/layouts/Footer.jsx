@@ -18,7 +18,7 @@ export default function Footer() {
     });
   };
 
-  const copyrightText = "© 2026 Directorate of Culture & Tourism. All rights reserved.";
+  const copyrightText = "© 2026 Government of Chhattisgarh. All rights reserved.";
   const backToTopText = "BACK TO TOP";
 
   const socialLinks = [
@@ -40,13 +40,13 @@ export default function Footer() {
       {/* Subtle Forest Green Ambient Watermark Glow */}
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[var(--secondary)]/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-6 pt-12 pb-8 md:pt-16 xl:pt-20 xl:pb-12 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 pt-12 pb-8 md:pt-16 xl:pt-20 xl:pb-12 relative z-10">
 
-        {/* Top Section: 4 Columns Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-zinc-300/60">
+        {/* Top Section: 3 Centered Columns Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-12 xl:gap-16 max-w-5xl mx-auto pb-12 border-b border-zinc-300/60 justify-items-start md:justify-items-center">
 
-          {/* Column 2: Navigation Links */}
-          <div className="flex flex-col gap-4">
+          {/* Column 1: Navigation Links (Strictly: About Us, Categories, Gallery, News & Updates, Privacy Policy) */}
+          <div className="flex flex-col gap-4 min-w-[180px]">
             <h4 className="font-poppins font-bold text-xs xl:text-sm uppercase tracking-widest text-[var(--secondary)] flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
               {t("Navigation")}
@@ -63,16 +63,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("About Chhattisgarh")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/winners" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Winners")}
-                </Link>
-              </li>
-              <li>
                 <Link href="/gallery" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
                   {t("Gallery")}
                 </Link>
@@ -83,65 +73,15 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/media-press" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Media & Press")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/participate" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Participate Now")}
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: GIGW Utility Links */}
-          <div className="flex flex-col gap-4">
-            <h4 className="font-poppins font-bold text-xs xl:text-sm uppercase tracking-widest text-[var(--secondary)] flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
-              {t("GIGW Utilities")}
-            </h4>
-            <ul className="flex flex-col gap-2.5 text-zinc-800 font-semibold text-sm xl:text-base">
-              <li>
-                <Link href="/gigw-utilities#privacy" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
+                <Link href="/privacy-policy" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
                   {t("Privacy Policy")}
                 </Link>
               </li>
-              <li>
-                <Link href="/gigw-utilities#accessibility" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Accessibility Statement")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/gigw-utilities#hyperlink" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Hyperlinking Policy")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/gigw-utilities#copyright" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Copyright Policy")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/gigw-utilities#rti" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Right to Information (RTI)")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/gigw-utilities#grievance" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Grievance Redressal")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/gigw-utilities#sitemap" className="hover:text-[var(--primary)] hover:pl-1 transition-all duration-200">
-                  {t("Sitemap")}
-                </Link>
-              </li>
             </ul>
           </div>
 
-          {/* Column 4: Support Desk */}
-          <div className="flex flex-col gap-4">
+          {/* Column 2: Support Desk */}
+          <div className="flex flex-col gap-4 min-w-[200px]">
             <h4 className="font-poppins font-bold text-xs xl:text-sm uppercase tracking-widest text-[var(--secondary)] flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
               {t("Support Desk")}
@@ -156,7 +96,7 @@ export default function Footer() {
                   href="tel:18004105353"
                   className="text-zinc-800 hover:text-[var(--primary)] font-bold mt-0.5 text-sm xl:text-base break-words block transition-colors duration-200"
                 >
-                  1800 410 5353
+                  Coming soon
                 </a>
               </li>
               <li>
@@ -168,7 +108,7 @@ export default function Footer() {
                   href="mailto:supportdeskcg@gmail.com"
                   className="text-zinc-800 hover:text-[var(--primary)] font-bold mt-0.5 text-sm xl:text-base break-words block transition-colors duration-200"
                 >
-                  supportdeskcg@gmail.com
+                  supportdeskcg@gmail.com(working in)
                 </a>
               </li>
               <li>
@@ -181,8 +121,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 5: Connect With Us */}
-          <div className="flex flex-col gap-4">
+          {/* Column 3: Connect With Us */}
+          <div className="flex flex-col gap-4 min-w-[200px]">
             <h4 className="font-poppins font-bold text-xs xl:text-sm uppercase tracking-widest text-[var(--secondary)] flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
               {t("Connect With Us")}
@@ -233,7 +173,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section: Back to Top & Copyright */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-zinc-300/60 mt-10">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-zinc-300/60 mt-10 max-w-5xl mx-auto">
           <p className="text-zinc-700 font-bold text-xs sm:text-sm">
             {t(copyrightText)}
           </p>

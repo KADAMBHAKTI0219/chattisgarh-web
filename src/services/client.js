@@ -1,6 +1,6 @@
 // Central Base API Client for Government Web Frontend
-const REMOTE_BACKEND_URL = "https://government-web-backend.onrender.com/api/v1";
-const LOCAL_BACKEND_URL = "http://localhost:5000/api/v1";
+const REMOTE_BACKEND_URL = "https://chattisgarh-backend.onrender.com/api/v1";
+// const LOCAL_BACKEND_URL = "http://localhost:5000/api/v1";
 
 function resolveApiBaseUrl() {
   let envUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -42,7 +42,7 @@ function buildUrl(baseUrl, endpoint, params) {
  * Universal Fetch Client with token authorization, FormData handling, 404 fallback & error formatting
  */
 export async function fetchApi(endpoint, options = {}) {
-  const { method = "GET", body = null, token = null, params = null, headers = {} } = options;
+  const { method = "GET", body = null, token = null, params = null, headers = {}, skipToken = false } = options;
 
   const isFormData =
     typeof FormData !== "undefined" &&
@@ -57,15 +57,26 @@ export async function fetchApi(endpoint, options = {}) {
     reqHeaders["Content-Type"] = "application/json";
   }
 
-  let rawToken =
-    token ||
-    (typeof window !== "undefined"
-      ? localStorage.getItem("accessToken") ||
-        localStorage.getItem("token") ||
-        localStorage.getItem("adminToken") ||
-        localStorage.getItem("auth_token") ||
-        localStorage.getItem("cg_auth_token")
-      : null);
+  // Check if endpoint is a public authentication route
+  const isPublicAuthEndpoint =
+    skipToken ||
+    endpoint.includes("/auth/login") ||
+    endpoint.includes("/auth/register") ||
+    endpoint.includes("/auth/forgot") ||
+    endpoint.includes("/auth/reset");
+
+  let rawToken = null;
+  if (!isPublicAuthEndpoint) {
+    rawToken =
+      token ||
+      (typeof window !== "undefined"
+        ? localStorage.getItem("accessToken") ||
+          localStorage.getItem("token") ||
+          localStorage.getItem("adminToken") ||
+          localStorage.getItem("auth_token") ||
+          localStorage.getItem("cg_auth_token")
+        : null);
+  }
 
   const isValidToken =
     rawToken &&
@@ -84,15 +95,8 @@ export async function fetchApi(endpoint, options = {}) {
     ...(body ? { body: body instanceof FormData ? body : JSON.stringify(body) } : {}),
   };
 
-  const isClientInBrowser = typeof window !== "undefined";
-  const isLocalHost = isClientInBrowser && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-
+  // Single source of truth backend base URL (Production Deployed Backend)
   const candidateBases = [PRIMARY_API_BASE_URL];
-  if (isLocalHost) {
-    if (!candidateBases.includes(LOCAL_BACKEND_URL)) {
-      candidateBases.push(LOCAL_BACKEND_URL);
-    }
-  }
 
   let lastResponse = null;
   let lastError = null;
@@ -114,7 +118,11 @@ export async function fetchApi(endpoint, options = {}) {
         return {
           success: true,
           message: data.message || "Operation successful",
+          total: data.total ?? data.totalCount ?? data.count ?? data.total_records ?? data.totalRecords ?? data.pagination?.total ?? data.meta?.total,
+          count: data.count ?? data.total ?? data.totalCount ?? data.pagination?.total ?? data.meta?.total,
+          pagination: data.pagination || data.meta || null,
           data: data.data !== undefined ? data.data : data,
+          rawResponse: data,
         };
       }
 

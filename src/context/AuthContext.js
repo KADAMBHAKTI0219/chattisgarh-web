@@ -13,47 +13,31 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Initialize Auth state from localStorage on mount
+  // Initialize Auth state from localStorage on mount (read ONLY token, fetch user profile dynamically)
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const storedToken = localStorage.getItem("accessToken");
-        const storedUser = localStorage.getItem("user");
+        const storedToken = localStorage.getItem("accessToken") || localStorage.getItem("token");
 
         if (storedToken) {
           setToken(storedToken);
-          if (storedUser) {
-            try {
-              const parsed = JSON.parse(storedUser);
-              const img = parsed.avatar || parsed.profileImage || "";
-              setUser({ ...parsed, avatar: img, profileImage: img });
-            } catch (e) {
-              console.error("Failed to parse stored user json:", e);
-            }
-          }
-          // Fetch latest profile from backend if storedToken is a valid remote JWT format
-          if (storedToken !== "creator-session-token" && typeof storedToken === "string" && storedToken.split(".").length === 3) {
-            const res = await userService.getProfile(storedToken).catch(() => null);
-            if (res && res.success && res.data) {
-              const freshUser = res.data.user || res.data.data || res.data;
-              const img =
-                freshUser.avatar ||
-                freshUser.profileImage ||
-                freshUser.image ||
-                (storedUser ? JSON.parse(storedUser)?.avatar || JSON.parse(storedUser)?.profileImage : "") ||
-                "";
+          // Fetch latest user profile from backend using storedToken
+          const res = await userService.getProfile(storedToken).catch(() => null);
+          if (res && (res.success || res.user || res.data)) {
+            const freshUser = res.data?.user || res.data?.data || res.data || res.user;
+            if (freshUser) {
+              const img = freshUser.avatar || freshUser.profileImage || freshUser.image || "";
               const normUser = { ...freshUser, avatar: img, profileImage: img };
               setUser(normUser);
-              localStorage.setItem("user", JSON.stringify(normUser));
-            } else if (res && res.status === 401) {
-              // Token expired, invalid or revoked (401)
-              localStorage.removeItem("accessToken");
-              localStorage.removeItem("token");
-              localStorage.removeItem("user");
-              localStorage.removeItem("adminToken");
-              setToken(null);
-              setUser(null);
             }
+          } else if (res && (res.status === 401 || res.status === 403)) {
+            // Token expired or invalid (401/403)
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("user");
+            setToken(null);
+            setUser(null);
           }
         }
       } catch (err) {
@@ -67,80 +51,102 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Login handler
-  const login = async (email, password) => {
+  const login = async (email, password, options = {}) => {
+    const { isAdminPortal = false } = options;
+    const cleanEmail = (email || "").trim().toLowerCase();
     let res;
+
     try {
-      res = await authService.login(email, password);
+      res = await authService.login(cleanEmail, password);
     } catch (e) {
-      res = { success: false, message: e?.message || "Failed to fetch" };
+      res = { success: false, message: e?.message || "Authentication request failed" };
     }
 
     if (res && res.success && res.data) {
-      const { accessToken, user: loggedUser } = res.data;
+      const { accessToken, refreshToken, user: loggedUser } = res.data;
       const img = loggedUser?.avatar || loggedUser?.profileImage || "";
       const normUser = { ...loggedUser, avatar: img, profileImage: img };
+      const roleUpper = String(loggedUser?.role || "").toUpperCase();
+      const isAdminRole = ["SUPER_ADMIN", "ADMIN", "SUPERADMIN", "MODERATOR", "JURY"].includes(roleUpper);
+
+      // Rule 1: On Admin Portal (/admin/login), user MUST be an Admin/Jury
+      if (isAdminPortal && !isAdminRole) {
+        return {
+          success: false,
+          message: "Access Denied. Only authorized Admin and Jury personnel can log in through the Admin Portal."
+        };
+      }
+
+      // Rule 2: On User Portal (/login), user MUST NOT be an Admin or Super Admin!
+      if (!isAdminPortal && isAdminRole) {
+        return {
+          success: false,
+          message: "Admin not login in this page"
+        };
+      }
+
       setToken(accessToken);
       setUser(normUser);
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("user", JSON.stringify(normUser));
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
+      localStorage.removeItem("user"); // Keep localStorage clean: store ONLY token
 
-      // Redirect Admin / Super Admin / Moderator / Jury / Creator to /dashboard
-      const roleUpper = String(loggedUser?.role || "").toUpperCase();
-      if (["SUPER_ADMIN", "ADMIN", "MODERATOR", "JURY"].includes(roleUpper)) {
+      if (isAdminRole) {
         router.push("/dashboard");
       } else {
         router.push("/");
       }
-      return res;
+      return { success: true, message: "Login successful", data: { accessToken, user: normUser } };
     }
 
-    // Fallback: Check local registered users or admin credentials if backend network fetch failed / rate-limited (429)
+    // Check registered users dataset if local session sync is enabled
     if (typeof window !== "undefined") {
       try {
         const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
-        const found = storedRegs.find((u) => u.email?.trim().toLowerCase() === email?.trim().toLowerCase());
+        const found = storedRegs.find((u) => (u.email || "").trim().toLowerCase() === cleanEmail);
         if (found) {
-          const accessToken = "creator-session-token";
+          const accessToken = `session-token-${Date.now()}`;
           const normUser = { ...found, avatar: found.avatar || "", profileImage: found.profileImage || "" };
+          const roleUpper = String(normUser?.role || "").toUpperCase();
+          const isAdminRole = ["SUPER_ADMIN", "ADMIN", "SUPERADMIN", "MODERATOR", "JURY"].includes(roleUpper);
+
+          if (isAdminPortal && !isAdminRole) {
+            return {
+              success: false,
+              message: "Access Denied. Only authorized Admin personnel can log in through the Admin Portal."
+            };
+          }
+
+          if (!isAdminPortal && isAdminRole) {
+            return {
+              success: false,
+              message: "Admin not login in this page"
+            };
+          }
+
           setToken(accessToken);
           setUser(normUser);
           localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("user", JSON.stringify(normUser));
+          localStorage.removeItem("user");
 
-          const roleUpper = String(normUser?.role || "").toUpperCase();
-          if (["SUPER_ADMIN", "ADMIN", "MODERATOR", "JURY"].includes(roleUpper)) {
+          if (isAdminRole) {
             router.push("/dashboard");
           } else {
             router.push("/");
           }
           return { success: true, message: "Login successful", data: { accessToken, user: normUser } };
         }
-
-        // Admin Fallback Login
-        const cleanEmail = (email || "").trim().toLowerCase();
-        if (cleanEmail === "admin@chattisgarh.gov.in" || cleanEmail === "admin@cg.gov.in" || cleanEmail === "admin@gmail.com") {
-          const accessToken = "admin-session-token";
-          const normUser = {
-            _id: "admin-1",
-            name: "System Administrator",
-            email: cleanEmail,
-            role: "SUPER_ADMIN",
-            status: "Active",
-            avatar: ""
-          };
-          setToken(accessToken);
-          setUser(normUser);
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("user", JSON.stringify(normUser));
-          router.push("/dashboard");
-          return { success: true, message: "Admin Login successful", data: { accessToken, user: normUser } };
-        }
       } catch (e) {
-        console.warn("Failed to check local registered users:", e);
+        console.warn("Failed to check registered users:", e);
       }
     }
 
-    return res;
+    return {
+      success: false,
+      message: res?.message || "Invalid credentials. Please verify your email address and password."
+    };
   };
 
   // Register handler
@@ -158,21 +164,18 @@ export function AuthProvider({ children }) {
     if (typeof window !== "undefined") {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
       localStorage.removeItem("adminToken");
-      localStorage.removeItem("submitted_nominations");
-      localStorage.removeItem("user_applications");
     }
     router.push("/login");
   };
 
-  // Update user state locally & sync with storage
+  // Update user state locally in memory
   const updateUser = (updatedUser) => {
     setUser((prev) => {
       const img = updatedUser.avatar || updatedUser.profileImage || prev?.avatar || prev?.profileImage || "";
-      const newObj = { ...prev, ...updatedUser, avatar: img, profileImage: img };
-      localStorage.setItem("user", JSON.stringify(newObj));
-      return newObj;
+      return { ...prev, ...updatedUser, avatar: img, profileImage: img };
     });
   };
 
@@ -180,18 +183,19 @@ export function AuthProvider({ children }) {
   const refreshUser = async () => {
     if (!token) return;
     const res = await userService.getProfile(token);
-    if (res.success && res.data) {
-      const img = res.data.avatar || res.data.profileImage || user?.avatar || "";
-      const normUser = { ...res.data, avatar: img, profileImage: img };
-      setUser(normUser);
-      localStorage.setItem("user", JSON.stringify(normUser));
+    if (res && (res.success || res.data)) {
+      const freshData = res.data?.user || res.data?.data || res.data;
+      if (freshData) {
+        const img = freshData.avatar || freshData.profileImage || user?.avatar || "";
+        setUser({ ...freshData, avatar: img, profileImage: img });
+      }
     }
   };
 
   const roleUpper = String(user?.role || "").trim().toUpperCase();
-  const isAdmin = !!user && !!user.role && ["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(roleUpper);
+  const isAdmin = !!user && !!user.role && ["SUPER_ADMIN", "ADMIN", "SUPERADMIN", "MODERATOR"].includes(roleUpper);
   const isJury = !!user && roleUpper === "JURY";
-  const isSuperAdmin = !!user && roleUpper === "SUPER_ADMIN";
+  const isSuperAdmin = !!user && (roleUpper === "SUPER_ADMIN" || roleUpper === "SUPERADMIN");
 
   return (
     <AuthContext.Provider

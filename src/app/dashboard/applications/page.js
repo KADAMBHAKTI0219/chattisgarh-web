@@ -8,12 +8,14 @@ import { participantService } from "@/services/participant";
 import { nominationService } from "@/services/nomination";
 import { reportService } from "@/services/report";
 import { FaFileAlt, FaEye, FaSearch, FaFilter, FaPlusCircle, FaFileExcel, FaFileCsv, FaUser } from "react-icons/fa";
+import ConfirmationModal from "@/components/common/ConfirmationModal";
 
 export default function MyApplicationsPage() {
   const { token, isAdmin } = useAuth();
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
+  const [exportModal, setExportModal] = useState({ isOpen: false, title: "", message: "" });
 
   const handleExportExcel = async () => {
     if (!token) return;
@@ -21,7 +23,11 @@ export default function MyApplicationsPage() {
       await reportService.exportApplicationsExcel(token);
     } catch (e) {
       console.error("Excel export error:", e);
-      alert("Downloading applications Excel report...");
+      setExportModal({
+        isOpen: true,
+        title: "Export Initiated",
+        message: "Downloading applications Excel (.XLSX) report."
+      });
     }
   };
 
@@ -31,7 +37,11 @@ export default function MyApplicationsPage() {
       await reportService.exportApplicationsCSV(token);
     } catch (e) {
       console.error("CSV export error:", e);
-      alert("Downloading applications CSV report...");
+      setExportModal({
+        isOpen: true,
+        title: "Export Initiated",
+        message: "Downloading applications CSV (.CSV) report."
+      });
     }
   };
 
@@ -143,10 +153,10 @@ export default function MyApplicationsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-inter font-bold uppercase tracking-widest text-[#C45A32]">
-            Nomination Records
+            Participants Records
           </span>
           <h1 className="text-2xl sm:text-3xl font-poppins font-extrabold text-zinc-950 uppercase tracking-tight mt-0.5">
-            {isAdmin ? "Platform Nominations Audit" : "My Applications"}
+            {isAdmin ? "Platform Nominations Audit" : "My Participants"}
           </h1>
         </div>
 
@@ -173,14 +183,14 @@ export default function MyApplicationsPage() {
             className="px-5 py-2.5 rounded-full bg-[#C45A32] hover:bg-[#A9492A] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-xs transition-all inline-flex items-center gap-2"
           >
             <FaPlusCircle className="w-4 h-4" />
-            <span>New Application</span>
+            <span>New Participant</span>
           </Link>
         )}
       </div>
 
       {/* Horizontal Status Filter Bar */}
       <div className="w-full bg-white p-2 sm:p-2.5 rounded-2xl border border-zinc-200/90 shadow-xs flex items-center gap-2 overflow-x-auto no-scrollbar">
-        {["All", "Draft", "Submitted", "Under Review", "Shortlisted", "Approved"].map((st) => {
+        {["All", "Draft", "Submitted", "Shortlisted", "Approved"].map((st) => {
           const isSelected = filterStatus === st;
           const count = st === "All"
             ? applications.length
@@ -284,6 +294,17 @@ export default function MyApplicationsPage() {
         )}
       </div>
 
+      {/* Export Report Notice Modal */}
+      <ConfirmationModal
+        isOpen={exportModal.isOpen}
+        onClose={() => setExportModal({ isOpen: false, title: "", message: "" })}
+        onConfirm={() => setExportModal({ isOpen: false, title: "", message: "" })}
+        title={exportModal.title}
+        message={exportModal.message}
+        confirmText="OK"
+        cancelText="Close"
+        type="info"
+      />
     </div>
   );
 }

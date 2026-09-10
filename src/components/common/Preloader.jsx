@@ -69,7 +69,7 @@ export default function Preloader() {
           {/* Logo with Smooth Zoom-In CSS Animation */}
           <div className="relative w-[220px] xs:w-[260px] sm:w-[320px] h-[75px] xs:h-[90px] sm:h-[105px] transform transition-transform duration-1000 ease-out animate-preloaderZoom">
             <Image
-              src="/assets/images/logoChattisgarh.png"
+              src="/assets/images/image.png"
               alt="Government of Chhattisgarh Logo"
               fill
               priority

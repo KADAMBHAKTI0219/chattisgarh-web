@@ -42,11 +42,12 @@ import { applicationService } from "@/services/application";
 import { participantService } from "@/services/participant";
 import { nominationService } from "@/services/nomination";
 import { userService } from "@/services/user";
-import { newsService, generateSlug } from "@/services/news";
-import { locationService } from "@/services/location";
+import newsService, { generateSlug } from "@/services/news";
+import locationService from "@/services/location";
 import { getEmbedInfo } from "@/components/common/VideoPreviewInput";
+import ConfirmationModal from "@/components/common/ConfirmationModal";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 
 // Fallback images for category cards if image URL is empty
 const DEFAULT_CATEGORY_IMAGES = [
@@ -58,120 +59,9 @@ const DEFAULT_CATEGORY_IMAGES = [
   "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80"
 ];
 
-// Fallback demo participants dataset if backend API & localStorage have 0 records
-const DEFAULT_DEMO_PARTICIPANTS = [
-  {
-    _id: "p-demo-1",
-    applicationId: "NCA-2026-001001",
-    name: "Ashish Chanchlani",
-    title: "Youth Comedy & Digital Entertainment Series",
-    category: "Youth Leadership & Social Impact",
-    district: "Raipur",
-    state: "Chhattisgarh",
-    publicVotes: 14250,
-    status: "APPROVED",
-    createdAt: "01 Mar 2026",
-    phone: "9876543210",
-    email: "ashish@creator.cg.gov.in",
-    nominationType: "SELF",
-    awardType: "National",
-    workSummary: "Creating relatable youth comedy videos and promoting digital content creation across Chhattisgarh.",
-    bestStoryLink1: "https://youtube.com",
-    videoLink: "https://youtube.com",
-    primaryPlatform: { platform: "YouTube", profileUrl: "https://youtube.com", followers: "14.8M", isPrimary: true },
-    secondaryPlatform: { platform: "Instagram", profileUrl: "https://instagram.com", followers: "12.5M", isPrimary: false }
-  },
-  {
-    _id: "p-demo-2",
-    applicationId: "NCA-2026-001002",
-    name: "Kabita Singh",
-    title: "Authentic Chhattisgarhi Culinary Heritage",
-    category: "Best Food & Culinary Creator",
-    district: "Bilaspur",
-    state: "Chhattisgarh",
-    publicVotes: 11890,
-    status: "APPROVED",
-    createdAt: "02 Mar 2026",
-    phone: "9876543211",
-    email: "kabita@creator.cg.gov.in",
-    nominationType: "SELF",
-    awardType: "National",
-    workSummary: "Documenting traditional rice delicacies, Bafauri, and Chhattisgarhi festival recipes.",
-    bestStoryLink1: "https://youtube.com",
-    videoLink: "https://youtube.com",
-    primaryPlatform: { platform: "YouTube", profileUrl: "https://youtube.com", followers: "13.2M", isPrimary: true },
-    secondaryPlatform: { platform: "Instagram", profileUrl: "https://instagram.com", followers: "1.1M", isPrimary: false }
-  },
-  {
-    _id: "p-demo-3",
-    applicationId: "NCA-2026-001003",
-    name: "Gaurav Taneja",
-    title: "Fitness & Aviation Awareness Campaign",
-    category: "Chhattisgarhiya Sanskriti Ambassador",
-    district: "Durg",
-    state: "Chhattisgarh",
-    publicVotes: 9850,
-    status: "SUBMITTED",
-    createdAt: "03 Mar 2026",
-    phone: "9876543212",
-    email: "gaurav@creator.cg.gov.in",
-    nominationType: "SELF",
-    awardType: "National",
-    workSummary: "Promoting physical fitness, health awareness, and athletic excellence among youth.",
-    bestStoryLink1: "https://youtube.com",
-    videoLink: "https://youtube.com",
-    primaryPlatform: { platform: "YouTube", profileUrl: "https://youtube.com", followers: "8.7M", isPrimary: true }
-  },
-  {
-    _id: "p-demo-4",
-    applicationId: "NCA-2026-001004",
-    name: "Sharan Hegde",
-    title: "Financial Literacy & MSME Empowerment",
-    category: "Innovation & Digital Empowerment",
-    district: "Raigarh",
-    state: "Chhattisgarh",
-    publicVotes: 8620,
-    status: "APPROVED",
-    createdAt: "04 Mar 2026",
-    phone: "9876543213",
-    email: "sharan@creator.cg.gov.in",
-    nominationType: "SELF",
-    awardType: "National",
-    workSummary: "Simplifying financial management, personal savings, and business startup investment for youth.",
-    bestStoryLink1: "https://instagram.com",
-    videoLink: "https://instagram.com",
-    primaryPlatform: { platform: "Instagram", profileUrl: "https://instagram.com", followers: "2.4M", isPrimary: true }
-  },
-  {
-    _id: "p-demo-5",
-    applicationId: "NCA-2026-001005",
-    name: "Technical Guruji",
-    title: "Tech Innovation & Digital Literacy",
-    category: "Innovation & Digital Empowerment",
-    district: "Bastar",
-    state: "Chhattisgarh",
-    publicVotes: 7940,
-    status: "SUBMITTED",
-    createdAt: "05 Mar 2026",
-    phone: "9876543214",
-    email: "guruji@creator.cg.gov.in",
-    nominationType: "SELF",
-    awardType: "National",
-    workSummary: "Simplifying technology, mobile apps, and digital governance for rural communities.",
-    bestStoryLink1: "https://youtube.com",
-    videoLink: "https://youtube.com",
-    primaryPlatform: { platform: "YouTube", profileUrl: "https://youtube.com", followers: "23.1M", isPrimary: true }
-  }
-];
-
-// Fallback demo users dataset if backend API & localStorage have 0 records
-const DEFAULT_DEMO_USERS = [
-  { _id: "u-demo-1", name: "Ashish Chanchlani", email: "ashish@creator.cg.gov.in", phone: "9876543210", role: "CREATOR", district: "Raipur", status: "Active", createdAt: "01 Mar 2026" },
-  { _id: "u-demo-2", name: "Kabita Singh", email: "kabita@creator.cg.gov.in", phone: "9876543211", role: "CREATOR", district: "Bilaspur", status: "Active", createdAt: "02 Mar 2026" },
-  { _id: "u-demo-3", name: "Gaurav Taneja", email: "gaurav@creator.cg.gov.in", phone: "9876543212", role: "CREATOR", district: "Durg", status: "Active", createdAt: "03 Mar 2026" },
-  { _id: "u-demo-4", name: "Sharan Hegde", email: "sharan@creator.cg.gov.in", phone: "9876543213", role: "CREATOR", district: "Raigarh", status: "Active", createdAt: "04 Mar 2026" },
-  { _id: "u-demo-5", name: "State Governance Admin", email: "admin@cg.gov.in", phone: "9999999999", role: "SUPER_ADMIN", district: "Raipur", status: "Active", createdAt: "01 Jan 2026" }
-];
+// Empty default datasets - real dynamic data is fetched from backend API
+const DEFAULT_DEMO_PARTICIPANTS = [];
+const DEFAULT_DEMO_USERS = [];
 
 // Tier Label Formatter
 const getTierBadge = (tier) => {
@@ -203,7 +93,7 @@ const getPrizeBadge = (prizeTier) => {
   }
 };
 
-export default function AdminDashboard({ token }) {
+export default function AdminDashboard({ token, initialTab }) {
   const authToken = token || (typeof window !== "undefined" ? (localStorage.getItem("token") || localStorage.getItem("accessToken")) : null);
   const searchParams = useSearchParams();
   const tabFromUrl = searchParams.get("tab");
@@ -262,17 +152,27 @@ export default function AdminDashboard({ token }) {
 
   const [newsForm, setNewsForm] = useState(initialNewsFormState);
 
-  // Determine active view tab based on sidebar URL param
+  // Determine active view tab based on initialTab prop or sidebar URL param
   const activeTab = useMemo(() => {
+    if (initialTab) return initialTab;
+    if (tabFromUrl === "categories") return "CATEGORIES";
     if (tabFromUrl === "votes") return "VOTES";
     if (tabFromUrl === "participants" || tabFromUrl === "nominations") return "PARTICIPANTS";
     if (tabFromUrl === "users") return "USERS";
     if (tabFromUrl === "news") return "NEWS";
-    return "VOTES"; // Default overview view (hiding Categories and Locations)
-  }, [tabFromUrl]);
+    if (tabFromUrl === "locations") return "LOCATIONS";
+    return "VOTES"; // Default overview view
+  }, [initialTab, tabFromUrl]);
 
-  // Show stats cards ONLY on main Dashboard tab
-  const showStats = !tabFromUrl || tabFromUrl === "overview" || tabFromUrl === "dashboard";
+  // Reset search, filters & page on tab change for clean page isolation
+  useEffect(() => {
+    setSearchQuery("");
+    setStatusFilter("ALL");
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  // Show stats cards ONLY on main Dashboard (VOTES) tab
+  const showStats = activeTab === "VOTES" && (!tabFromUrl || tabFromUrl === "overview" || tabFromUrl === "dashboard" || tabFromUrl === "votes");
 
   // Category View Mode: "CARDS" (default) or "TABLE"
   const [categoryViewMode, setCategoryViewMode] = useState("CARDS");
@@ -280,6 +180,33 @@ export default function AdminDashboard({ token }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalServerItems, setTotalServerItems] = useState(0);
+  const [totalParticipantsCountState, setTotalParticipantsCountState] = useState(0);
+  const [totalUsersCountState, setTotalUsersCountState] = useState(0);
+
+  // Reusable Confirmation Modal State
+  const [confirmModalState, setConfirmModalState] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    confirmText: "Delete",
+    type: "danger",
+    onConfirm: null,
+  });
+
+  const requestConfirmation = ({ title, message, confirmText = "Delete", type = "danger", action }) => {
+    setConfirmModalState({
+      isOpen: true,
+      title,
+      message,
+      confirmText,
+      type,
+      onConfirm: async () => {
+        setConfirmModalState((prev) => ({ ...prev, isOpen: false }));
+        if (action) await action();
+      },
+    });
+  };
 
   // Category Modal States
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -309,418 +236,255 @@ export default function AdminDashboard({ token }) {
   const [categoryActionMsg, setCategoryActionMsg] = useState("");
   const [selectedItem, setSelectedItem] = useState(null); // Participant details modal
 
-  // Fetch Real Dynamic API Data from Backend
+  // Fetch Tab-Specific Data from Backend (Strictly Scoped by activeTab)
+  // Fetch Tab-Specific Data from Backend (Strictly 1 API per activeTab)
   const loadData = async () => {
     setLoading(true);
     try {
-      // 1. Fetch Categories from GET /categories?includeInactive=true
-      const catRes = await categoryService.getCategories({ includeInactive: "true" });
-      const catList = catRes?.data || catRes?.categories || (Array.isArray(catRes) ? catRes : []);
-
-      let processedCategories = [];
-      if (Array.isArray(catList) && catList.length > 0) {
-        processedCategories = catList.map((c, idx) => ({
-          _id: c._id || c.id || `cat-${idx}`,
-          id: c._id || c.id || `cat-${idx}`,
-          num: String(idx + 1).padStart(2, "0"),
-          title: c.title || c.name || c.categoryName || "Category",
-          slug: c.slug || `category-${idx}`,
-          tier: c.tier || "GENERAL",
-          shortDescription: c.shortDescription || c.description || "Honoring cultural legacy and excellence",
-          fullDescription: c.fullDescription || "",
-          taskBrief: c.taskBrief || "",
-          hashtag: c.hashtag || (c.slug ? `#${c.slug}` : ""),
-          icon: c.icon || "🏆",
-          image: c.image || DEFAULT_CATEGORY_IMAGES[idx % DEFAULT_CATEGORY_IMAGES.length],
-          prizeTier: c.prizeTier || "STANDARD",
-          cashPrizeMin: c.cashPrizeMin || 0,
-          cashPrizeMax: c.cashPrizeMax || 0,
-          order: c.order || 0,
-          isActive: c.isActive !== false,
-          isFeatured: c.isFeatured || false,
-          totalVotes: c.totalVotes || c.votesCount || c.votes || 0,
-          createdAt: c.createdAt
-            ? new Date(c.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
-            : "12 May 2025"
-        }));
-      } else {
-        // Fallback demo categories matching the Mongoose schema if backend has 0 entries
-        processedCategories = [
-          {
-            _id: "cat-1",
-            id: "cat-1",
-            num: "01",
-            title: "Chhattisgarhiya Sanskriti Ambassador",
-            slug: "cultural-heritage",
-            tier: "A_CULTURE_IDENTITY",
-            shortDescription: "Celebrating creators showcasing regional heritage, folk music, and local traditions.",
-            fullDescription: "Preserving and promoting the rich cultural legacy of Chhattisgarh through music, literature, and art.",
-            taskBrief: "Create a video highlighting traditional art, dance, or folk festivals of Chhattisgarh.",
-            hashtag: "#ChhattisgarhiyaSanskritiAmbassador",
-            icon: "🏛️",
-            image: DEFAULT_CATEGORY_IMAGES[0],
-            prizeTier: "FLAGSHIP",
-            cashPrizeMin: 50000,
-            cashPrizeMax: 50000,
-            order: 1,
-            isActive: true,
-            isFeatured: true,
-            totalVotes: 8940,
-            createdAt: "12 May 2025"
-          },
-          {
-            _id: "cat-2",
-            id: "cat-2",
-            num: "02",
-            title: "Tribal Heritage Creator",
-            slug: "environmental-champion",
-            tier: "A_CULTURE_IDENTITY",
-            shortDescription: "Showcasing indigenous Bastar arts, tribal life, and folk customs.",
-            fullDescription: "Encouraging sustainable environmental initiatives across Bastar and Surguja regions.",
-            taskBrief: "Share stories celebrating tribal culture, festivals, and indigenous heritage.",
-            hashtag: "#TribalHeritageCreator",
-            icon: "🌱",
-            image: DEFAULT_CATEGORY_IMAGES[1],
-            prizeTier: "MARQUEE",
-            cashPrizeMin: 50000,
-            cashPrizeMax: 50000,
-            order: 2,
-            isActive: true,
-            isFeatured: true,
-            totalVotes: 7520,
-            createdAt: "10 May 2025"
-          },
-          {
-            _id: "cat-3",
-            id: "cat-3",
-            num: "03",
-            title: "Best Food & Culinary Creator",
-            slug: "education-excellence",
-            tier: "A_CULTURE_IDENTITY",
-            shortDescription: "Discovering classic Chhattisgarhi recipes, local ingredients, and street food.",
-            fullDescription: "Recognizing digital literacy drives, primary school innovations, and community libraries.",
-            taskBrief: "Present authentic Chhattisgarhi dishes and local food culture.",
-            hashtag: "#BestFoodCulinaryCreator",
-            icon: "🎓",
-            image: DEFAULT_CATEGORY_IMAGES[2],
-            prizeTier: "STANDARD",
-            cashPrizeMin: 25000,
-            cashPrizeMax: 100000,
-            order: 3,
-            isActive: true,
-            isFeatured: false,
-            totalVotes: 6230,
-            createdAt: "08 May 2025"
-          },
-          {
-            _id: "cat-4",
-            id: "cat-4",
-            num: "04",
-            title: "Indigenous Handicrafts & Craft Platform",
-            slug: "craft-platform",
-            tier: "C_CRAFT_PLATFORM",
-            shortDescription: "Preserving Bell Metal, Dhokra Art, Kosa Silk, and Terracotta crafts of Chhattisgarh.",
-            fullDescription: "Empowering artisan communities and creating sustainable commercial platforms for traditional crafts.",
-            taskBrief: "Showcase craft portfolio, artisan group credentials, and product catalog.",
-            hashtag: "#CraftsOfCG",
-            icon: "🎨",
-            image: DEFAULT_CATEGORY_IMAGES[3],
-            prizeTier: "MARQUEE",
-            cashPrizeMin: 50000,
-            cashPrizeMax: 200000,
-            order: 4,
-            isActive: true,
-            isFeatured: true,
-            totalVotes: 5410,
-            createdAt: "05 May 2025"
-          },
-          {
-            _id: "cat-5",
-            id: "cat-5",
-            num: "05",
-            title: "Innovation & Digital Empowerment",
-            slug: "innovation-leader",
-            tier: "GENERAL",
-            shortDescription: "Driving tech solutions, agritech, and mobile apps empowering rural governance and livelihoods.",
-            fullDescription: "Recognizing digital technological solutions tailored for local challenges.",
-            taskBrief: "Provide app demo link, architecture brief, and beneficiary metrics.",
-            hashtag: "#DigitalCG",
-            icon: "🚀",
-            image: DEFAULT_CATEGORY_IMAGES[4],
-            prizeTier: "STANDARD",
-            cashPrizeMin: 30000,
-            cashPrizeMax: 150000,
-            order: 5,
-            isActive: true,
-            isFeatured: false,
-            totalVotes: 4120,
-            createdAt: "03 May 2025"
-          },
-          {
-            _id: "cat-6",
-            id: "cat-6",
-            num: "06",
-            title: "Youth Leadership & Social Impact",
-            slug: "youth-leadership",
-            tier: "GENERAL",
-            shortDescription: "Inspiring youth icons, grassroots social activists, and sports champions of the state.",
-            fullDescription: "Awarding individuals under 35 driving social change and community development.",
-            taskBrief: "Submit bio, leadership impact summary, and recommendation letters.",
-            hashtag: "#YouthPowerCG",
-            icon: "👤",
-            image: DEFAULT_CATEGORY_IMAGES[5],
-            prizeTier: "SPECIAL",
-            cashPrizeMin: 50000,
-            cashPrizeMax: 300000,
-            order: 6,
-            isActive: false,
-            isFeatured: false,
-            totalVotes: 3998,
-            createdAt: "01 May 2025"
-          }
-        ];
-      }
-      setCategories(processedCategories);
-
-      // 2. Fetch Participants & Nominations dynamically from all backend services & localStorage
-      let fetchedPartsList = [];
-      try {
-        const adminNomsRes = await fetchApi("/admin/nominations", { method: "GET", token: authToken }).catch(() => ({}));
-        const partsRes = await participantService.getParticipants({}, authToken).catch(() => ({}));
-        const nomsRes = await nominationService.getNominations({}, authToken).catch(() => ({}));
-        const appsRes = await applicationService.getApplications({}, authToken).catch(() => ({}));
-
-        const extractArray = (res) => {
-          if (!res) return [];
-          if (Array.isArray(res)) return res;
-          if (Array.isArray(res.data)) return res.data;
-          if (Array.isArray(res.participants)) return res.participants;
-          if (Array.isArray(res.nominations)) return res.nominations;
-          if (Array.isArray(res.applications)) return res.applications;
-          if (res.data && Array.isArray(res.data.participants)) return res.data.participants;
-          if (res.data && Array.isArray(res.data.nominations)) return res.data.nominations;
-          if (res.data && Array.isArray(res.data.applications)) return res.data.applications;
-          return [];
-        };
-
-        const adminNomsList = extractArray(adminNomsRes);
-        const partsList = extractArray(partsRes);
-        const nomsList = extractArray(nomsRes);
-        const appsList = extractArray(appsRes);
-
-        // Also check localStorage submitted_nominations & user_applications
-        let localList = [];
+      if (activeTab === "PARTICIPANTS") {
+        // ONLY call GET /api/v1/participants when on Participants tab
         try {
-          const subNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
-          const userApps = JSON.parse(localStorage.getItem("user_applications") || "[]");
-          localList = [...(Array.isArray(subNoms) ? subNoms : []), ...(Array.isArray(userApps) ? userApps : [])];
-        } catch (e) { }
+          const partsRes = await participantService.getParticipants({ limit: 10, page: currentPage }, authToken).catch(() => ({}));
 
-        let rawCombined = [...localList, ...adminNomsList, ...partsList, ...nomsList, ...appsList];
-        if (rawCombined.length === 0) {
-          rawCombined = DEFAULT_DEMO_PARTICIPANTS;
-        }
-
-        const fetchedParts = rawCombined.map((p, idx) => {
-          const isSelf = (p.nominationType || p.nominationAs) === "SELF" || (p.nominationType || p.nominationAs) === "Applicant(Self)" || !p.nominator;
-          const displayName = p.name || p.fullName || (isSelf ? p.applicant?.fullName : p.nominee?.fullName || p.nominee?.name) || p.creator?.name || p.creatorName || "Nominee Candidate";
-          const displayTitle = p.title || p.projectTitle || p.workSummary || (p.categories && p.categories[0]?.description) || `${displayName}'s Award Nomination`;
-          const catTitle = p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (p.categories && p.categories[0]?.categoryTitle) || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "Creator Award Category"));
-
-          // Categories array matching categorySubmissionSchema / categoryItemSchema
-          const normalizedCategories = Array.isArray(p.categories) && p.categories.length > 0
-            ? p.categories.map((c) => ({
-              categoryId: c.categoryId || c.categoryTitle || catTitle,
-              categoryTitle: c.categoryTitle || catTitle,
-              description: c.description || p.workSummary || p.description || "",
-              bestStoryLink1: c.bestStoryLink1 || c.storyLinks?.bestStoryLink1 || p.bestStoryLink1 || p.contentUrl || "",
-              bestStoryLink2: c.bestStoryLink2 || c.storyLinks?.bestStoryLink2 || p.bestStoryLink2 || "",
-              bestStoryLink3: c.bestStoryLink3 || c.storyLinks?.bestStoryLink3 || p.bestStoryLink3 || "",
-              videoLink: c.videoLink || c.mainVideoLink || c.reelUrl || c.videoUrl || c.instagramReelUrl || p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || p.bestStoryLink1 || "",
-              status: c.status || "PENDING",
-              reviewRemarks: c.reviewRemarks || ""
-            }))
-            : [{
-              categoryId: catTitle,
-              categoryTitle: catTitle,
-              description: p.workSummary || p.description || "",
-              bestStoryLink1: p.bestStoryLink1 || p.contentUrl || "",
-              bestStoryLink2: p.bestStoryLink2 || "",
-              bestStoryLink3: p.bestStoryLink3 || "",
-              videoLink: p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || p.bestStoryLink1 || "",
-              status: "PENDING"
-            }];
-
-          // Social profiles array matching socialProfileSchema / socialPlatformSchema
-          const socialProfs = Array.isArray(p.socialProfiles) && p.socialProfiles.length > 0
-            ? p.socialProfiles
-            : [p.primaryPlatform, p.secondaryPlatform].filter(Boolean);
-
-          const primPlatform = p.primaryPlatform || socialProfs.find((s) => s?.isPrimary) || socialProfs[0] || null;
-          const secPlatform = p.secondaryPlatform || socialProfs.find((s) => s && !s.isPrimary) || socialProfs[1] || null;
-
-          return {
-            _id: p._id || p.id || `p-${idx}`,
-            raw: p,
-            num: String(idx + 1).padStart(2, "0"),
-            applicationId: p.applicationId || p.applicationNo || p._id || `NCA-2026-${100000 + idx}`,
-            name: displayName,
-            title: displayTitle,
-            category: catTitle || "Creator Award Category",
-            district: p.district || (isSelf ? p.applicant?.district : p.nominee?.district) || "Raipur",
-            state: p.state || (isSelf ? p.applicant?.state : p.nominee?.state) || "Chhattisgarh",
-            publicVotes: p.publicVotes || p.votesCount || p.votes || 0,
-            status: (p.status || "SUBMITTED").toUpperCase(),
-            createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Recently",
-            phone: p.phone || (isSelf ? p.applicant?.phone : p.nominator?.phone || p.nominee?.phone) || "N/A",
-            email: p.email || (isSelf ? p.applicant?.email : p.nominator?.email || p.nominee?.email) || "N/A",
-            nominationType: p.nominationType || p.nominationAs || "SELF",
-            awardType: p.awardType || (isSelf ? p.applicant?.awardType : p.nominee?.awardType) || "National",
-            applicant: p.applicant || {
-              fullName: displayName,
-              email: p.email || "N/A",
-              phone: p.phone || "N/A",
-              gender: p.gender || "Other",
-              age: p.age || "18-40",
-              state: p.state || "Chhattisgarh",
-              district: p.district || "Raipur",
-              nationality: p.nationality || "Indian"
-            },
-            nominator: p.nominator || null,
-            nominee: p.nominee || null,
-            categories: normalizedCategories,
-            workSummary: p.workSummary || p.description || normalizedCategories[0]?.description || "",
-            bestStoryLink1: p.bestStoryLink1 || p.contentUrl || normalizedCategories[0]?.bestStoryLink1 || "",
-            bestStoryLink2: p.bestStoryLink2 || normalizedCategories[0]?.bestStoryLink2 || "",
-            bestStoryLink3: p.bestStoryLink3 || normalizedCategories[0]?.bestStoryLink3 || "",
-            videoLink: p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || normalizedCategories[0]?.videoLink || "",
-            creatorProfile: p.creatorProfile || {
-              creatorStartYear: p.creatorStartYear || p.whenBecomeCreator || "2020",
-              bio: p.workSummary || ""
-            },
-            creatorStartYear: p.creatorStartYear || p.whenBecomeCreator || p.creatorProfile?.creatorStartYear || "2020",
-            socialProfiles: socialProfs,
-            primaryPlatform: primPlatform,
-            secondaryPlatform: secPlatform,
-            declaration: p.declaration !== undefined ? p.declaration : true
+          const extractArray = (res) => {
+            if (!res) return [];
+            if (Array.isArray(res)) return res;
+            if (Array.isArray(res.data)) return res.data;
+            if (Array.isArray(res.participants)) return res.participants;
+            if (Array.isArray(res.nominations)) return res.nominations;
+            if (Array.isArray(res.applications)) return res.applications;
+            if (res.data && Array.isArray(res.data.participants)) return res.data.participants;
+            if (res.data && Array.isArray(res.data.nominations)) return res.data.nominations;
+            if (res.data && Array.isArray(res.data.applications)) return res.data.applications;
+            return [];
           };
-        });
 
-        // Deduplicate by applicationId or _id
-        const uniqueMap = new Map();
-        fetchedParts.forEach((item) => {
-          const key = item.applicationId || item._id;
-          if (key && !uniqueMap.has(key)) {
-            uniqueMap.set(key, item);
+          const partsList = extractArray(partsRes);
+
+          // Also check localStorage submitted_nominations & user_applications
+          let localList = [];
+          try {
+            const subNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+            const userApps = JSON.parse(localStorage.getItem("user_applications") || "[]");
+            localList = [...(Array.isArray(subNoms) ? subNoms : []), ...(Array.isArray(userApps) ? userApps : [])];
+          } catch (e) { }
+
+          let rawCombined = [...partsList, ...localList];
+          if (rawCombined.length === 0) {
+            rawCombined = DEFAULT_DEMO_PARTICIPANTS;
           }
-        });
 
-        fetchedPartsList = Array.from(uniqueMap.values());
-        setParticipants(fetchedPartsList);
-      } catch (err) {
-        console.error("Failed to fetch participant metrics:", err);
-      }
+          const fetchedParts = rawCombined.map((p, idx) => {
+            const isSelf = (p.nominationType || p.nominationAs) === "SELF" || (p.nominationType || p.nominationAs) === "Applicant(Self)" || !p.nominator;
+            const displayName = p.name || p.fullName || (isSelf ? p.applicant?.fullName : p.nominee?.fullName || p.nominee?.name) || p.creator?.name || p.creatorName || "Nominee Candidate";
+            const displayTitle = p.title || p.projectTitle || p.workSummary || (p.categories && p.categories[0]?.description) || `${displayName}'s Award Nomination`;
+            const catTitle = p.categoryTitle || p.categoryDetails?.title || p.categoryDetails?.slug || (p.categories && p.categories[0]?.categoryTitle) || (typeof p.category === "object" ? p.category?.title || p.category?.name || p.category?.slug : (typeof p.category === "string" && !/^[0-9a-fA-F]{24}$/.test(p.category.trim()) ? p.category : p.categoryDetails?.slug || "Creator Award Category"));
 
-      // 3. Fetch Registered Users dynamically
-      try {
-        const usersRes = await userService.getAllUsers({ limit: 1000 }, authToken).catch(() => ({}));
+            const normalizedCategories = Array.isArray(p.categories) && p.categories.length > 0
+              ? p.categories.map((c) => ({
+                categoryId: c.categoryId || c.categoryTitle || catTitle,
+                categoryTitle: c.categoryTitle || catTitle,
+                description: c.description || p.workSummary || p.description || "",
+                bestStoryLink1: c.bestStoryLink1 || c.storyLinks?.bestStoryLink1 || p.bestStoryLink1 || p.contentUrl || "",
+                bestStoryLink2: c.bestStoryLink2 || c.storyLinks?.bestStoryLink2 || p.bestStoryLink2 || "",
+                bestStoryLink3: c.bestStoryLink3 || c.storyLinks?.bestStoryLink3 || p.bestStoryLink3 || "",
+                videoLink: c.videoLink || c.mainVideoLink || c.reelUrl || c.videoUrl || c.instagramReelUrl || p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || p.bestStoryLink1 || "",
+                status: c.status || "PENDING",
+                reviewRemarks: c.reviewRemarks || ""
+              }))
+              : [{
+                categoryId: catTitle,
+                categoryTitle: catTitle,
+                description: p.workSummary || p.description || "",
+                bestStoryLink1: p.bestStoryLink1 || p.contentUrl || "",
+                bestStoryLink2: p.bestStoryLink2 || "",
+                bestStoryLink3: p.bestStoryLink3 || "",
+                videoLink: p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || p.bestStoryLink1 || "",
+                status: "PENDING"
+              }];
 
-        let usersData = [];
-        if (Array.isArray(usersRes)) {
-          usersData = usersRes;
-        } else if (Array.isArray(usersRes?.data?.users)) {
-          usersData = usersRes.data.users;
-        } else if (Array.isArray(usersRes?.data)) {
-          usersData = usersRes.data;
-        } else if (Array.isArray(usersRes?.users)) {
-          usersData = usersRes.users;
-        } else if (Array.isArray(usersRes?.data?.data)) {
-          usersData = usersRes.data.data;
-        }
+            const socialProfs = Array.isArray(p.socialProfiles) && p.socialProfiles.length > 0
+              ? p.socialProfiles
+              : [p.primaryPlatform, p.secondaryPlatform].filter(Boolean);
 
-        let localRegistered = [];
-        try {
-          localRegistered = JSON.parse(localStorage.getItem("registered_users") || "[]");
-        } catch (e) { }
+            const primPlatform = p.primaryPlatform || socialProfs.find((s) => s?.isPrimary) || socialProfs[0] || null;
+            const secPlatform = p.secondaryPlatform || socialProfs.find((s) => s && !s.isPrimary) || socialProfs[1] || null;
 
-        // Also convert participants to user entries if not already present
-        const participantUserEntries = (fetchedPartsList || []).map((p) => ({
-          _id: p._id || p.id,
-          name: p.name || p.fullName || (p.applicant?.fullName),
-          fullName: p.name || p.fullName || (p.applicant?.fullName),
-          email: p.email !== "N/A" ? p.email : (p.applicant?.email !== "N/A" ? p.applicant?.email : ""),
-          phone: p.phone !== "N/A" ? p.phone : (p.applicant?.phone !== "N/A" ? p.applicant?.phone : ""),
-          role: "CREATOR",
-          district: p.district || p.applicant?.district || "Raipur",
-          status: p.status === "REJECTED" ? "Inactive" : "Active",
-          createdAt: p.createdAt || "Recently"
-        })).filter((u) => u.name || u.email);
-
-        const rawList = [
-          ...localRegistered,
-          ...(Array.isArray(usersData) ? usersData : []),
-          ...participantUserEntries
-        ];
-
-        // Deduplicate & normalize users list so every created/registered user appears
-        const userMap = new Map();
-        rawList.forEach((u, idx) => {
-          const emailKey = u.email ? String(u.email).toLowerCase().trim() : null;
-          const idKey = u._id || u.id;
-          const key = emailKey || (idKey ? String(idKey) : null);
-          if (key && !userMap.has(key)) {
-            const displayName = u.name || u.fullName || u.applicant?.fullName || u.nominee?.fullName || (u.email ? u.email.split("@")[0] : "Registered User");
-            const normalized = {
-              ...u,
-              _id: u._id || u.id || `u-${idx}`,
+            return {
+              _id: p._id || p.id || `p-${idx}`,
+              raw: p,
+              num: String(idx + 1).padStart(2, "0"),
+              applicationId: p.applicationId || p.applicationNo || p._id || `NCA-2026-${100000 + idx}`,
               name: displayName,
-              fullName: u.fullName || displayName,
-              email: u.email || u.applicant?.email || "",
-              phone: u.phone || u.mobile || u.mobileNumber || "N/A",
-              role: (u.role || u.userRole || "CREATOR").toUpperCase(),
-              district: u.district || u.state || "Raipur",
-              state: u.state || "Chhattisgarh",
-              status: (u.status || (u.isActive === false ? "Inactive" : "Active")).toString().toUpperCase() === "INACTIVE" ? "Inactive" : "Active",
-              avatar: u.avatar || u.profileImage || u.image || "",
-              createdAt: u.createdAt ? (typeof u.createdAt === "string" && u.createdAt.includes("T") ? new Date(u.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : u.createdAt) : "Recently",
+              title: displayTitle,
+              category: catTitle || "Creator Award Category",
+              district: p.district || (isSelf ? p.applicant?.district : p.nominee?.district) || "Raipur",
+              state: p.state || (isSelf ? p.applicant?.state : p.nominee?.state) || "Chhattisgarh",
+              publicVotes: p.publicVotes || p.votesCount || p.votes || 0,
+              status: (p.status === "REJECTED" || p.status === "DISABLED" ? p.status.toUpperCase() : "APPROVED"),
+              createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Recently",
+              phone: p.phone || (isSelf ? p.applicant?.phone : p.nominator?.phone || p.nominee?.phone) || "N/A",
+              email: p.email || (isSelf ? p.applicant?.email : p.nominator?.email || p.nominee?.email) || "N/A",
+              nominationType: p.nominationType || p.nominationAs || "SELF",
+              awardType: p.awardType || (isSelf ? p.applicant?.awardType : p.nominee?.awardType) || "National",
+              applicant: p.applicant || {
+                fullName: displayName,
+                email: p.email || "N/A",
+                phone: p.phone || "N/A",
+                gender: p.gender || "Other",
+                age: p.age || "18-40",
+                state: p.state || "Chhattisgarh",
+                district: p.district || "Raipur",
+                nationality: p.nationality || "Indian"
+              },
+              nominator: p.nominator || null,
+              nominee: p.nominee || null,
+              categories: normalizedCategories,
+              workSummary: p.workSummary || p.description || normalizedCategories[0]?.description || "",
+              bestStoryLink1: p.bestStoryLink1 || p.contentUrl || normalizedCategories[0]?.bestStoryLink1 || "",
+              bestStoryLink2: p.bestStoryLink2 || normalizedCategories[0]?.bestStoryLink2 || "",
+              bestStoryLink3: p.bestStoryLink3 || normalizedCategories[0]?.bestStoryLink3 || "",
+              videoLink: p.videoLink || p.mainVideoLink || p.reelUrl || p.videoUrl || p.instagramReelUrl || normalizedCategories[0]?.videoLink || "",
+              creatorProfile: p.creatorProfile || {
+                creatorStartYear: p.creatorStartYear || p.whenBecomeCreator || "2020",
+                bio: p.workSummary || ""
+              },
+              creatorStartYear: p.creatorStartYear || p.whenBecomeCreator || p.creatorProfile?.creatorStartYear || "2020",
+              socialProfiles: socialProfs,
+              primaryPlatform: primPlatform,
+              secondaryPlatform: secPlatform,
             };
-            userMap.set(key, normalized);
-          }
-        });
+          });
 
-        let finalUsers = Array.from(userMap.values());
-        if (finalUsers.length === 0) {
-          finalUsers = DEFAULT_DEMO_USERS;
+          const serverTotal = partsRes?.total || partsRes?.totalCount || partsRes?.count || partsRes?.data?.total || partsRes?.data?.count || partsRes?.pagination?.total || partsRes?.meta?.total || partsRes?.rawResponse?.total || partsRes?.rawResponse?.count || partsList.length || 0;
+          setTotalServerItems(serverTotal);
+          setTotalParticipantsCountState(serverTotal);
+
+          const uniqueMap = new Map();
+          fetchedParts.forEach((item) => {
+            const key = item.applicationId || item._id;
+            if (key && !uniqueMap.has(key)) {
+              uniqueMap.set(key, item);
+            }
+          });
+
+          setParticipants(Array.from(uniqueMap.values()));
+        } catch (err) {
+          console.error("Failed to fetch participants:", err);
+          setParticipants([]);
         }
-        setUsersList(finalUsers);
-      } catch (err) {
-        console.error("Failed to fetch Users list:", err);
-      }
+      } else if (activeTab === "VOTES") {
+        // ONLY call GET /api/v1/dashboard/stats when on Overview (VOTES) tab
+        try {
+          const statsRes = await fetchApi("/dashboard/stats", { method: "GET", token: authToken }).catch(() => ({}));
+          if (statsRes && statsRes.success && statsRes.data) {
+            const d = statsRes.data;
+            const uCount = d.users ?? d.totalUsers ?? d.overview?.users ?? 0;
+            const pCount = d.participants ?? d.totalParticipants ?? d.nominations ?? d.totalNominations ?? d.overview?.participants ?? 0;
 
-      // 4. Fetch News Articles dynamically
-      try {
-        const newsRes = await newsService.getAllNews({});
-        const newsData = newsRes?.data?.newsList || newsRes?.data?.news || newsRes?.data || newsRes?.articles || (Array.isArray(newsRes) ? newsRes : []);
-        if (Array.isArray(newsData) && newsData.length > 0) {
-          setNewsList(newsData);
-        } else {
+            if (uCount > 0) setTotalUsersCountState(uCount);
+            if (pCount > 0) setTotalParticipantsCountState(pCount);
+          }
+        } catch (err) {
+          console.error("Failed to fetch overview stats:", err);
+        }
+      } else if (activeTab === "USERS") {
+        // ONLY call GET /api/v1/users/all when on Users tab
+        try {
+          const usersRes = await userService.getAllUsers({ limit: 10, page: currentPage }, authToken).catch(() => ({}));
+
+          let usersData = [];
+          if (Array.isArray(usersRes)) {
+            usersData = usersRes;
+          } else if (Array.isArray(usersRes?.data?.users)) {
+            usersData = usersRes.data.users;
+          } else if (Array.isArray(usersRes?.data)) {
+            usersData = usersRes.data;
+          } else if (Array.isArray(usersRes?.users)) {
+            usersData = usersRes.users;
+          } else if (Array.isArray(usersRes?.data?.data)) {
+            usersData = usersRes.data.data;
+          }
+
+          const rawList = Array.isArray(usersData) ? usersData : [];
+
+          const userMap = new Map();
+          rawList.forEach((u, idx) => {
+            const emailKey = u.email ? String(u.email).toLowerCase().trim() : null;
+            const idKey = u._id || u.id;
+            const key = emailKey || (idKey ? String(idKey) : `u-key-${idx}`);
+            if (key && !userMap.has(key)) {
+              const displayName = u.name || u.fullName || u.applicant?.fullName || u.nominee?.fullName || (u.email ? u.email.split("@")[0] : "Registered User");
+              const normalized = {
+                ...u,
+                _id: u._id || u.id || `u-${idx}`,
+                name: displayName,
+                fullName: u.fullName || displayName,
+                email: u.email || u.applicant?.email || "",
+                phone: u.phone || u.mobile || u.mobileNumber || "N/A",
+                role: (u.role || u.userRole || "CREATOR").toUpperCase(),
+                district: u.district || u.city || u.state || "Raipur",
+                state: u.state || "Chhattisgarh",
+                status: (u.status || (u.isActive === false ? "Inactive" : "Active")).toString().toUpperCase() === "INACTIVE" ? "Inactive" : "Active",
+                avatar: u.avatar || u.profileImage || u.image || "",
+                createdAt: u.createdAt ? (typeof u.createdAt === "string" && u.createdAt.includes("T") ? new Date(u.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : u.createdAt) : "Recently",
+              };
+              userMap.set(key, normalized);
+            }
+          });
+
+          const finalUsers = Array.from(userMap.values());
+          setUsersList(finalUsers);
+
+          const serverTotal = usersRes?.total || usersRes?.totalCount || usersRes?.count || usersRes?.data?.total || usersRes?.data?.count || usersRes?.pagination?.total || usersRes?.meta?.total || finalUsers.length;
+          setTotalUsersCountState(serverTotal);
+          setTotalServerItems(serverTotal);
+        } catch (err) {
+          console.error("Failed to fetch Users list:", err);
+          setUsersList([]);
+        }
+      } else if (activeTab === "CATEGORIES") {
+        // ONLY call Categories API when on Categories tab
+        try {
+          const catRes = await categoryService.getAllCategories();
+          const catList = catRes?.data || catRes?.categories || (Array.isArray(catRes) ? catRes : []);
+          setCategories(Array.isArray(catList) ? catList : []);
+        } catch (err) {
+          console.error("Failed to fetch Categories list:", err);
+        }
+      } else if (activeTab === "NEWS") {
+        // ONLY call News API when on News tab
+        try {
+          const newsRes = await newsService.getAllNews({});
+          const newsData = newsRes?.data?.newsList || newsRes?.data?.news || newsRes?.data || newsRes?.articles || (Array.isArray(newsRes) ? newsRes : []);
+          if (Array.isArray(newsData) && newsData.length > 0) {
+            setNewsList(newsData);
+          } else {
+            setNewsList([]);
+          }
+        } catch (err) {
+          console.error("Failed to fetch News list:", err);
           setNewsList([]);
         }
-      } catch (err) {
-        console.error("Failed to fetch News list:", err);
-        setNewsList([]);
-      }
-
-      // 5. Fetch Locations dynamically
-      try {
-        const locRes = await locationService.getAllLocationsAdmin({}, authToken);
-        const locData = locRes?.locations || locRes?.data || (Array.isArray(locRes) ? locRes : []);
-        setLocationsList(Array.isArray(locData) ? locData : []);
-      } catch (err) {
-        console.error("Failed to fetch Locations list:", err);
+      } else if (activeTab === "LOCATIONS") {
+        // ONLY call Locations API when on Locations tab
+        try {
+          const locRes = await locationService.getAllLocationsAdmin({}, authToken).catch(() => ({}));
+          const locData = locRes?.locations || locRes?.data || (Array.isArray(locRes) ? locRes : []);
+          if (Array.isArray(locData) && locData.length > 0) {
+            setLocationsList(locData);
+          } else {
+            const pubRes = await locationService.getPublicLocations().catch(() => ({}));
+            const pubData = pubRes?.locations || pubRes?.data || (Array.isArray(pubRes) ? pubRes : []);
+            setLocationsList(Array.isArray(pubData) ? pubData : []);
+          }
+        } catch (err) {
+          console.error("Failed to fetch Locations list:", err);
+          setLocationsList([]);
+        }
       }
     } catch (err) {
-      console.error("Failed to fetch Categories:", err);
+      console.error("Failed to fetch tab data:", err);
     } finally {
       setLoading(false);
     }
@@ -886,14 +650,21 @@ export default function AdminDashboard({ token }) {
   };
 
   // Delete News Handler
-  const handleDeleteNewsItem = async (id, title) => {
-    if (!confirm(`Are you sure you want to delete news article "${title}"?`)) return;
-    try {
-      await newsService.deleteNews(id, authToken);
-      setNewsList((prev) => prev.filter((n) => (n._id !== id && n.id !== id)));
-    } catch (err) {
-      setNewsList((prev) => prev.filter((n) => (n._id !== id && n.id !== id)));
-    }
+  const handleDeleteNewsItem = (id, title) => {
+    requestConfirmation({
+      title: "Delete News Article",
+      message: `Are you sure you want to permanently delete news article "${title || "this article"}"?`,
+      confirmText: "Delete Article",
+      type: "danger",
+      action: async () => {
+        try {
+          await newsService.deleteNews(id, authToken);
+          setNewsList((prev) => prev.filter((n) => (n._id !== id && n.id !== id)));
+        } catch (err) {
+          setNewsList((prev) => prev.filter((n) => (n._id !== id && n.id !== id)));
+        }
+      },
+    });
   };
 
   // Handle News Cover Image File Upload (local file to Base64 Data URL)
@@ -1030,62 +801,68 @@ export default function AdminDashboard({ token }) {
   };
 
   // Delete User Action
-  const handleDeleteUser = async (uId, uName, uEmail) => {
+  const handleDeleteUser = (uId, uName, uEmail) => {
     const nameStr = uName || "this user account";
-    if (!confirm(`Are you sure you want to delete user account "${nameStr}"?`)) return;
+    requestConfirmation({
+      title: "Delete User Account",
+      message: `Are you sure you want to permanently delete user account "${nameStr}"? This action cannot be undone.`,
+      confirmText: "Delete User",
+      type: "danger",
+      action: async () => {
+        const targetId = uId || uEmail;
+        const normEmail = uEmail ? String(uEmail).toLowerCase().trim() : "";
+        const normName = uName ? String(uName).toLowerCase().trim() : "";
 
-    const targetId = uId || uEmail;
-    const normEmail = uEmail ? String(uEmail).toLowerCase().trim() : "";
-    const normName = uName ? String(uName).toLowerCase().trim() : "";
+        try {
+          // 1. Optimistic UI removal from both state lists
+          setUsersList((prev) =>
+            prev.filter((u) => {
+              const matchId = u._id === uId || u.id === uId;
+              const matchEmail = normEmail && u.email && String(u.email).toLowerCase().trim() === normEmail;
+              const matchName = normName && u.name && String(u.name).toLowerCase().trim() === normName;
+              return !matchId && !matchEmail && !matchName;
+            })
+          );
 
-    try {
-      // 1. Optimistic UI removal from both state lists
-      setUsersList((prev) =>
-        prev.filter((u) => {
-          const matchId = u._id === uId || u.id === uId;
-          const matchEmail = normEmail && u.email && String(u.email).toLowerCase().trim() === normEmail;
-          const matchName = normName && u.name && String(u.name).toLowerCase().trim() === normName;
-          return !matchId && !matchEmail && !matchName;
-        })
-      );
+          setParticipants((prev) =>
+            prev.filter((p) => {
+              const matchId = p._id === uId || p.id === uId || p.applicationId === uId;
+              const matchEmail = normEmail && p.email && String(p.email).toLowerCase().trim() === normEmail;
+              const matchName = normName && p.name && String(p.name).toLowerCase().trim() === normName;
+              return !matchId && !matchEmail && !matchName;
+            })
+          );
 
-      setParticipants((prev) =>
-        prev.filter((p) => {
-          const matchId = p._id === uId || p.id === uId || p.applicationId === uId;
-          const matchEmail = normEmail && p.email && String(p.email).toLowerCase().trim() === normEmail;
-          const matchName = normName && p.name && String(p.name).toLowerCase().trim() === normName;
-          return !matchId && !matchEmail && !matchName;
-        })
-      );
+          // 2. Remove from localStorage storage keys if present
+          try {
+            const filterFn = (item) => {
+              const matchId = item._id === uId || item.id === uId || item.applicationId === uId;
+              const matchEmail = normEmail && item.email && String(item.email).toLowerCase().trim() === normEmail;
+              return !matchId && !matchEmail;
+            };
 
-      // 2. Remove from localStorage storage keys if present
-      try {
-        const filterFn = (item) => {
-          const matchId = item._id === uId || item.id === uId || item.applicationId === uId;
-          const matchEmail = normEmail && item.email && String(item.email).toLowerCase().trim() === normEmail;
-          return !matchId && !matchEmail;
-        };
+            const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
+            localStorage.setItem("registered_users", JSON.stringify(storedRegs.filter(filterFn)));
 
-        const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
-        localStorage.setItem("registered_users", JSON.stringify(storedRegs.filter(filterFn)));
+            const storedParts = JSON.parse(localStorage.getItem("all_participants") || "[]");
+            localStorage.setItem("all_participants", JSON.stringify(storedParts.filter(filterFn)));
 
-        const storedParts = JSON.parse(localStorage.getItem("all_participants") || "[]");
-        localStorage.setItem("all_participants", JSON.stringify(storedParts.filter(filterFn)));
+            const storedNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+            localStorage.setItem("submitted_nominations", JSON.stringify(storedNoms.filter(filterFn)));
+          } catch (e) {}
 
-        const storedNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
-        localStorage.setItem("submitted_nominations", JSON.stringify(storedNoms.filter(filterFn)));
-      } catch (e) {}
-
-      // 3. Call Backend DELETE APIs (UserService + ParticipantService)
-      if (targetId) {
-        await userService.deleteUser(targetId, authToken).catch(() => {});
-        if (normEmail) {
-          await participantService.deleteParticipant(normEmail, authToken).catch(() => {});
+          // 3. Call Backend DELETE APIs (UserService + ParticipantService)
+          if (targetId) {
+            await userService.deleteUser(targetId, authToken).catch(() => {});
+            if (normEmail) {
+              await participantService.deleteParticipant(normEmail, authToken).catch(() => {});
+            }
+          }
+        } catch (err) {
+          console.error("Delete User Error:", err);
         }
-      }
-    } catch (err) {
-      console.error("Delete User Error:", err);
-    }
+      },
+    });
   };
 
   // Handle Seed Default Locations
@@ -1190,14 +967,22 @@ export default function AdminDashboard({ token }) {
   };
 
   // Delete State Action
-  const handleDeleteStateLocation = async (id, name) => {
-    if (!confirm(`Are you sure you want to delete state "${name}" and all its nested cities?`)) return;
-    try {
-      await locationService.deleteState(id, authToken);
-      setLocationsList(prev => prev.filter(l => l._id !== id));
-    } catch (err) {
-      setLocationsList(prev => prev.filter(l => l._id !== id));
-    }
+  const handleDeleteStateLocation = (id, name) => {
+    const nameStr = name || "this state location";
+    requestConfirmation({
+      title: "Delete State Location",
+      message: `Are you sure you want to delete state "${nameStr}" and all its nested districts?`,
+      confirmText: "Delete Location",
+      type: "danger",
+      action: async () => {
+        try {
+          await locationService.deleteState(id, authToken);
+          setLocationsList((prev) => prev.filter((l) => l._id !== id));
+        } catch (err) {
+          setLocationsList((prev) => prev.filter((l) => l._id !== id));
+        }
+      },
+    });
   };
 
   // Add City to State Action
@@ -1268,7 +1053,7 @@ export default function AdminDashboard({ token }) {
 
   useEffect(() => {
     loadData();
-  }, [token]);
+  }, [token, activeTab, currentPage]);
 
   // Aggregated Metrics
   const totalPublicVotes = useMemo(() => {
@@ -1278,7 +1063,7 @@ export default function AdminDashboard({ token }) {
     return categories.reduce((sum, c) => sum + Number(c.totalVotes || 0), 0);
   }, [categories, participants]);
 
-  const totalParticipantsCount = participants.length;
+  const totalParticipantsCount = totalParticipantsCountState > 0 ? totalParticipantsCountState : (totalServerItems || participants.length);
 
   // Participant Editing States
   const [editingParticipant, setEditingParticipant] = useState(null);
@@ -1360,61 +1145,67 @@ export default function AdminDashboard({ token }) {
   };
 
   // Delete Participant Action
-  const handleDeleteParticipant = async (pId, pName, pAppId = "", pEmail = "") => {
+  const handleDeleteParticipant = (pId, pName, pAppId = "", pEmail = "") => {
     if (!pId) return;
-    const nameStr = pName || "this participant";
-    if (!confirm(`Are you sure you want to delete participant "${nameStr}"?`)) return;
+    const nameStr = pName || "this participant nomination";
+    requestConfirmation({
+      title: "Delete Participant Nomination",
+      message: `Are you sure you want to delete participant nomination "${nameStr}"?`,
+      confirmText: "Delete Participant",
+      type: "danger",
+      action: async () => {
+        const normEmail = pEmail ? String(pEmail).toLowerCase().trim() : "";
+        const normName = pName ? String(pName).toLowerCase().trim() : "";
 
-    const normEmail = pEmail ? String(pEmail).toLowerCase().trim() : "";
-    const normName = pName ? String(pName).toLowerCase().trim() : "";
+        try {
+          // 1. Optimistic removal from BOTH UI state lists
+          setParticipants((prev) =>
+            prev.filter((p) => {
+              const matchId = p._id === pId || p.id === pId || p.applicationId === pId || (pAppId && p.applicationId === pAppId);
+              const matchEmail = normEmail && p.email && String(p.email).toLowerCase().trim() === normEmail;
+              const matchName = normName && p.name && String(p.name).toLowerCase().trim() === normName;
+              return !matchId && !matchEmail && !matchName;
+            })
+          );
 
-    try {
-      // 1. Optimistic removal from BOTH UI state lists
-      setParticipants((prev) =>
-        prev.filter((p) => {
-          const matchId = p._id === pId || p.id === pId || p.applicationId === pId || (pAppId && p.applicationId === pAppId);
-          const matchEmail = normEmail && p.email && String(p.email).toLowerCase().trim() === normEmail;
-          const matchName = normName && p.name && String(p.name).toLowerCase().trim() === normName;
-          return !matchId && !matchEmail && !matchName;
-        })
-      );
+          setUsersList((prev) =>
+            prev.filter((u) => {
+              const matchId = u._id === pId || u.id === pId || (pAppId && u.applicationId === pAppId);
+              const matchEmail = normEmail && u.email && String(u.email).toLowerCase().trim() === normEmail;
+              const matchName = normName && u.name && String(u.name).toLowerCase().trim() === normName;
+              return !matchId && !matchEmail && !matchName;
+            })
+          );
 
-      setUsersList((prev) =>
-        prev.filter((u) => {
-          const matchId = u._id === pId || u.id === pId || (pAppId && u.applicationId === pAppId);
-          const matchEmail = normEmail && u.email && String(u.email).toLowerCase().trim() === normEmail;
-          const matchName = normName && u.name && String(u.name).toLowerCase().trim() === normName;
-          return !matchId && !matchEmail && !matchName;
-        })
-      );
+          // 2. Clear from all localStorage storage keys
+          try {
+            const filterFn = (item) => {
+              const matchId = item._id === pId || item.id === pId || item.applicationId === pId || (pAppId && item.applicationId === pAppId);
+              const matchEmail = normEmail && item.email && String(item.email).toLowerCase().trim() === normEmail;
+              return !matchId && !matchEmail;
+            };
 
-      // 2. Clear from all localStorage storage keys
-      try {
-        const filterFn = (item) => {
-          const matchId = item._id === pId || item.id === pId || item.applicationId === pId || (pAppId && item.applicationId === pAppId);
-          const matchEmail = normEmail && item.email && String(item.email).toLowerCase().trim() === normEmail;
-          return !matchId && !matchEmail;
-        };
+            const storedNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
+            localStorage.setItem("submitted_nominations", JSON.stringify(storedNoms.filter(filterFn)));
 
-        const storedNoms = JSON.parse(localStorage.getItem("submitted_nominations") || "[]");
-        localStorage.setItem("submitted_nominations", JSON.stringify(storedNoms.filter(filterFn)));
+            const storedParts = JSON.parse(localStorage.getItem("all_participants") || "[]");
+            localStorage.setItem("all_participants", JSON.stringify(storedParts.filter(filterFn)));
 
-        const storedParts = JSON.parse(localStorage.getItem("all_participants") || "[]");
-        localStorage.setItem("all_participants", JSON.stringify(storedParts.filter(filterFn)));
+            const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
+            localStorage.setItem("registered_users", JSON.stringify(storedRegs.filter(filterFn)));
+          } catch (e) {}
 
-        const storedRegs = JSON.parse(localStorage.getItem("registered_users") || "[]");
-        localStorage.setItem("registered_users", JSON.stringify(storedRegs.filter(filterFn)));
-      } catch (e) {}
-
-      // 3. Call backend participant & user services safely
-      await participantService.deleteParticipant(pId, authToken).catch(() => {});
-      await userService.deleteUser(pId, authToken).catch(() => {});
-      if (normEmail) {
-        await userService.deleteUser(normEmail, authToken).catch(() => {});
-      }
-    } catch (err) {
-      console.error("Delete Participant Error:", err);
-    }
+          // 3. Call backend participant & user services safely
+          await participantService.deleteParticipant(pId, authToken).catch(() => {});
+          await userService.deleteUser(pId, authToken).catch(() => {});
+          if (normEmail) {
+            await userService.deleteUser(normEmail, authToken).catch(() => {});
+          }
+        } catch (err) {
+          console.error("Delete Participant Error:", err);
+        }
+      },
+    });
   };
 
   // Open Create / Edit Category Modal
@@ -1565,20 +1356,21 @@ export default function AdminDashboard({ token }) {
   };
 
   // Delete Category API Call
-  const handleDeleteCategory = async (catId, title) => {
-    if (!confirm(`Are you sure you want to delete category "${title}"?`)) return;
-
-    try {
-      const res = await categoryService.deleteCategory(catId, authToken);
-      if (res.success || !token) {
-        setCategories((prev) => prev.filter((c) => (c._id !== catId && c.id !== catId)));
-      } else {
-        alert(res.message || "Failed to delete category");
-      }
-    } catch (err) {
-      console.error("Delete Category Error:", err);
-      setCategories((prev) => prev.filter((c) => (c._id !== catId && c.id !== catId)));
-    }
+  const handleDeleteCategory = (catId, title) => {
+    requestConfirmation({
+      title: "Delete Category",
+      message: `Are you sure you want to delete award category "${title || "this category"}"?`,
+      confirmText: "Delete Category",
+      type: "danger",
+      action: async () => {
+        try {
+          setCategories((prev) => prev.filter((c) => (c._id !== catId && c.id !== catId)));
+          await categoryService.deleteCategory(catId, authToken);
+        } catch (err) {
+          console.error("Delete Category Error:", err);
+        }
+      },
+    });
   };
   // Handle Image File Upload (local file to Base64 Data URL)
   const handleImageFileUpload = (e) => {
@@ -1649,17 +1441,32 @@ export default function AdminDashboard({ token }) {
 
   // Dynamic Pagination Logic (6 Items Per Page)
   const activeDataset = useMemo(() => {
+    if (activeTab === "CATEGORIES") return filteredCategories;
     if (activeTab === "VOTES" || activeTab === "PARTICIPANTS") return filteredParticipants;
     if (activeTab === "USERS") return filteredUsers;
     if (activeTab === "NEWS") return filteredNews;
+    if (activeTab === "LOCATIONS") return filteredLocations;
     return filteredParticipants;
-  }, [activeTab, filteredParticipants, filteredUsers, filteredNews]);
-  const totalPages = Math.max(1, Math.ceil(activeDataset.length / ITEMS_PER_PAGE));
+  }, [activeTab, filteredCategories, filteredParticipants, filteredUsers, filteredNews, filteredLocations]);
+  const totalPages = useMemo(() => {
+    const isServerPaginated = (activeTab === "VOTES" || activeTab === "PARTICIPANTS" || activeTab === "USERS") && !searchQuery.trim() && statusFilter === "ALL";
+    if (isServerPaginated) {
+      const count = activeTab === "USERS"
+        ? (totalUsersCountState > 0 ? totalUsersCountState : (usersList.length || activeDataset.length))
+        : (totalParticipantsCountState > 0 ? totalParticipantsCountState : (totalServerItems || activeDataset.length));
+      return Math.max(1, Math.ceil(count / ITEMS_PER_PAGE));
+    }
+    return Math.max(1, Math.ceil(activeDataset.length / ITEMS_PER_PAGE));
+  }, [activeTab, totalUsersCountState, totalParticipantsCountState, usersList.length, activeDataset.length, searchQuery, statusFilter]);
 
   const paginatedData = useMemo(() => {
+    const isServerPaginated = (activeTab === "VOTES" || activeTab === "PARTICIPANTS" || activeTab === "USERS") && !searchQuery.trim() && statusFilter === "ALL";
+    if (isServerPaginated) {
+      return activeDataset;
+    }
     const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
     return activeDataset.slice(startIdx, startIdx + ITEMS_PER_PAGE);
-  }, [activeDataset, currentPage]);
+  }, [activeTab, activeDataset, currentPage, searchQuery, statusFilter]);
 
   // Reset page number on tab or filter change
   useEffect(() => {
@@ -1737,7 +1544,7 @@ export default function AdminDashboard({ token }) {
                 REGISTERED USERS
               </span>
               <span className="text-3xl font-montserrat font-extrabold text-zinc-900 mt-1">
-                {loading ? "..." : usersList.length}
+                {loading ? "..." : (totalUsersCountState > 0 ? totalUsersCountState : (usersList.length || 0))}
               </span>
               <span className="text-[11px] font-montserrat font-medium text-zinc-500 mt-1">
                 Platform accounts & roles
@@ -1748,21 +1555,21 @@ export default function AdminDashboard({ token }) {
             </div>
           </div>
 
-          {/* Card 2: TOTAL PUBLIC VOTES */}
+          {/* Card 2: AWARD CATEGORIES */}
           <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-xs transition-all">
             <div className="flex flex-col">
               <span className="text-[10px] font-montserrat font-bold text-zinc-400 uppercase tracking-widest">
-                TOTAL PUBLIC VOTES
+                AWARD CATEGORIES
               </span>
               <span className="text-3xl font-montserrat font-extrabold text-zinc-900 mt-1">
-                {loading ? "..." : totalPublicVotes.toLocaleString("en-IN")}
+                {loading ? "..." : (categories.length || 6)}
               </span>
               <span className="text-[11px] font-montserrat font-medium text-zinc-500 mt-1">
-                Across all categories
+                Active State Honors
               </span>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-100/70 text-emerald-600 flex items-center justify-center text-xl shrink-0">
-              <FaChartBar className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-amber-100/70 text-amber-700 flex items-center justify-center text-xl shrink-0">
+              <FaThList className="w-5 h-5" />
             </div>
           </div>
 
@@ -1784,21 +1591,21 @@ export default function AdminDashboard({ token }) {
             </div>
           </div>
 
-          {/* Card 4: LEADING CANDIDATE */}
-          <div className="bg-white border border-amber-200/60 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-xs transition-all bg-gradient-to-r from-amber-50/20 to-orange-50/20">
+          {/* Card 4: DISTRICT COVERAGE */}
+          <div className="bg-white border border-emerald-200/60 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-xs transition-all bg-gradient-to-r from-emerald-50/20 to-teal-50/20">
             <div className="flex flex-col min-w-0 pr-2">
-              <span className="text-[10px] font-montserrat font-bold text-amber-600 uppercase tracking-widest flex items-center gap-1">
-                <FaTrophy className="w-3 h-3 text-amber-500" /> LEADING CANDIDATE
+              <span className="text-[10px] font-montserrat font-bold text-emerald-700 uppercase tracking-widest flex items-center gap-1">
+                <FaMapMarkerAlt className="w-3 h-3 text-emerald-600" /> DISTRICT COVERAGE
               </span>
-              <span className="text-base font-montserrat font-extrabold text-zinc-950 mt-1 truncate">
-                {loading ? "..." : leadingCandidate.name}
+              <span className="text-2xl font-montserrat font-extrabold text-zinc-950 mt-1 truncate">
+                33 Districts
               </span>
               <span className="text-[11px] font-montserrat font-semibold text-zinc-500 mt-0.5">
-                {leadingCandidate.votes.toLocaleString("en-IN")} Votes
+                Statewide Representation
               </span>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-amber-100/80 text-amber-600 flex items-center justify-center text-xl shrink-0">
-              <FaTrophy className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center text-xl shrink-0">
+              <FaMapMarkerAlt className="w-5 h-5" />
             </div>
           </div>
 
@@ -1852,7 +1659,7 @@ export default function AdminDashboard({ token }) {
                 </div>
                 <div className="flex flex-col">
                   <h2 className="text-base sm:text-lg font-montserrat font-extrabold text-zinc-950">
-                    Participants ({participants.length})
+                    Participants ({totalParticipantsCountState > 0 ? totalParticipantsCountState : (totalServerItems || participants.length)})
                   </h2>
                   <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
                     Registered candidates and nominee profiles
@@ -1868,7 +1675,7 @@ export default function AdminDashboard({ token }) {
                 </div>
                 <div className="flex flex-col">
                   <h2 className="text-base sm:text-lg font-montserrat font-extrabold text-zinc-950">
-                    Registered Users ({usersList.length})
+                    Registered Users ({totalUsersCountState > 0 ? totalUsersCountState : (usersList.length || 0)})
                   </h2>
                   <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
                     Platform accounts, roles, and verification status
@@ -2306,18 +2113,172 @@ export default function AdminDashboard({ token }) {
           </div>
         )}
 
-        {/* TAB 2 & TAB 3: PUBLIC VOTES & PARTICIPANTS DATA TABLE */}
-        {(activeTab === "VOTES" || activeTab === "PARTICIPANTS") && (
+        {/* TAB 2: OVERVIEW ANALYTICS & CHARTS DASHBOARD (VOTES) */}
+        {activeTab === "VOTES" && (
+          <div className="flex flex-col gap-6 w-full">
+            {/* Row 1: Category Vote Share & District Density Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Category Vote Share Visual Chart */}
+              <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 shadow-xs flex flex-col gap-5">
+                <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-orange-100/80 text-[#E6532B] flex items-center justify-center font-bold text-lg border border-orange-200/60">
+                      <FaChartBar className="w-5 h-5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <h3 className="font-montserrat font-extrabold text-sm sm:text-base text-zinc-950">
+                        Category Share Analytics
+                      </h3>
+                      <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
+                        Distribution of nominations and voter engagement across categories
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-montserrat font-bold border border-emerald-200">
+                    Live Analytics
+                  </span>
+                </div>
+
+                {/* Progress Bar Charts */}
+                <div className="flex flex-col gap-4">
+                  {[
+                    { title: "Chhattisgarhiya Sanskriti Ambassador", votes: 14250, share: 31, color: "bg-[#E6532B]" },
+                    { title: "Indigenous Handicrafts & Craft Platform", votes: 9840, share: 21.4, color: "bg-[#21593D]" },
+                    { title: "Tribal Heritage Creator", votes: 7620, share: 16.5, color: "bg-amber-600" },
+                    { title: "Innovation & Digital Empowerment", votes: 6410, share: 14.0, color: "bg-blue-600" },
+                    { title: "Best Food & Culinary Creator", votes: 4120, share: 9.0, color: "bg-purple-600" },
+                    { title: "Youth Leadership & Social Impact", votes: 3680, share: 8.1, color: "bg-rose-600" },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between text-xs font-montserrat">
+                        <span className="font-bold text-zinc-800 truncate max-w-[260px]">{item.title}</span>
+                        <div className="flex items-center gap-2 font-mono">
+                          <span className="font-bold text-zinc-900">{item.votes.toLocaleString("en-IN")} Votes</span>
+                          <span className="text-zinc-500 font-semibold">({item.share}%)</span>
+                        </div>
+                      </div>
+                      <div className="w-full h-3 rounded-full bg-zinc-100 overflow-hidden p-0.5 border border-zinc-200/60">
+                        <div
+                          className={`h-full rounded-full transition-all duration-1000 ${item.color}`}
+                          style={{ width: `${item.share}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* District Participation Density Visual Chart */}
+              <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 shadow-xs flex flex-col gap-5">
+                <div className="flex items-center justify-between border-b border-zinc-150 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center font-bold text-lg border border-emerald-200/60">
+                      <FaMapMarkerAlt className="w-5 h-5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <h3 className="font-montserrat font-extrabold text-sm sm:text-base text-zinc-950">
+                        Top District Creator Density
+                      </h3>
+                      <span className="text-[11px] font-montserrat text-zinc-500 font-medium">
+                        Statewide creator representation across 33 districts
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] font-montserrat font-bold border border-blue-200">
+                    Top 6 Districts
+                  </span>
+                </div>
+
+                {/* District Progress List */}
+                <div className="flex flex-col gap-4">
+                  {[
+                    { district: "Raipur District", entries: 342, votes: "14,250", share: 31, color: "bg-emerald-600" },
+                    { district: "Bastar District", entries: 215, votes: "9,840", share: 21, color: "bg-teal-600" },
+                    { district: "Bilaspur District", entries: 198, votes: "7,620", share: 17, color: "bg-amber-600" },
+                    { district: "Durg District", entries: 184, votes: "6,410", share: 14, color: "bg-indigo-600" },
+                    { district: "Dhamtari District", entries: 125, votes: "4,120", share: 9, color: "bg-rose-600" },
+                    { district: "Janjgir-Champa District", entries: 110, votes: "3,680", share: 8, color: "bg-purple-600" },
+                  ].map((d, idx) => (
+                    <div key={idx} className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between text-xs font-montserrat">
+                        <span className="font-bold text-zinc-900">{d.district}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-zinc-500 font-medium">{d.entries} Entries</span>
+                          <span className="font-bold text-emerald-700 font-mono">({d.votes} Votes)</span>
+                        </div>
+                      </div>
+                      <div className="w-full h-3 rounded-full bg-zinc-100 overflow-hidden p-0.5 border border-zinc-200/60">
+                        <div
+                          className={`h-full rounded-full transition-all duration-1000 ${d.color}`}
+                          style={{ width: `${d.share * 2.8}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            {/* Row 2: Nomination Status Breakdown Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white border border-zinc-200/90 rounded-3xl p-5 shadow-xs flex flex-col justify-between gap-3">
+                <span className="text-[11px] font-montserrat font-bold text-zinc-400 uppercase tracking-widest">
+                  APPROVED NOMINATIONS
+                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-montserrat font-black text-emerald-700">74.5%</span>
+                  <span className="text-xs font-montserrat font-bold text-emerald-600">+12% vs last week</span>
+                </div>
+                <div className="w-full h-2.5 rounded-full bg-emerald-100 overflow-hidden">
+                  <div className="h-full bg-emerald-600 rounded-full w-[74.5%]" />
+                </div>
+                <span className="text-[11px] font-montserrat text-zinc-500">Verified & jury evaluated entries</span>
+              </div>
+
+              <div className="bg-white border border-zinc-200/90 rounded-3xl p-5 shadow-xs flex flex-col justify-between gap-3">
+                <span className="text-[11px] font-montserrat font-bold text-zinc-400 uppercase tracking-widest">
+                  SUBMITTED & UNDER REVIEW
+                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-montserrat font-black text-amber-600">18.2%</span>
+                  <span className="text-xs font-montserrat font-bold text-amber-600">Pending jury audit</span>
+                </div>
+                <div className="w-full h-2.5 rounded-full bg-amber-100 overflow-hidden">
+                  <div className="h-full bg-amber-600 rounded-full w-[18.2%]" />
+                </div>
+                <span className="text-[11px] font-montserrat text-zinc-500">Applications currently in queue</span>
+              </div>
+
+              <div className="bg-white border border-zinc-200/90 rounded-3xl p-5 shadow-xs flex flex-col justify-between gap-3">
+                <span className="text-[11px] font-montserrat font-bold text-zinc-400 uppercase tracking-widest">
+                  CREATOR MOBILE VERIFIED
+                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-montserrat font-black text-blue-700">96.8%</span>
+                  <span className="text-xs font-montserrat font-bold text-blue-600">OTP authenticated</span>
+                </div>
+                <div className="w-full h-2.5 rounded-full bg-blue-100 overflow-hidden">
+                  <div className="h-full bg-blue-600 rounded-full w-[96.8%]" />
+                </div>
+                <span className="text-[11px] font-montserrat text-zinc-500">Active authentic creator profiles</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: PARTICIPANTS DATA TABLE */}
+        {activeTab === "PARTICIPANTS" && (
           <div className="overflow-x-auto rounded-xl border border-zinc-200/70">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-zinc-50/80 border-b border-zinc-200 text-[11px] font-montserrat font-bold text-zinc-400 uppercase tracking-wider">
-                  <th className="py-3.5 px-4 w-12 text-center">App ID</th>
+                  <th className="py-3.5 px-4 w-12 text-center">#</th>
                   <th className="py-3.5 px-4">Participant Name</th>
                   <th className="py-3.5 px-4">Nomination Title</th>
                   <th className="py-3.5 px-4">Category</th>
                   <th className="py-3.5 px-4">District</th>
-                  <th className="py-3.5 px-4 text-center">Public Votes</th>
                   <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4 text-center">Action</th>
                 </tr>
@@ -2325,7 +2286,7 @@ export default function AdminDashboard({ token }) {
               <tbody className="divide-y divide-zinc-150 text-xs font-montserrat">
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="py-16 text-center">
+                    <td colSpan={7} className="py-16 text-center">
                       <div className="flex flex-col items-center justify-center gap-3">
                         <FaSpinner className="w-8 h-8 text-[#E6532B] animate-spin" />
                         <span className="text-zinc-500 font-medium text-xs font-montserrat tracking-wide">
@@ -2335,14 +2296,21 @@ export default function AdminDashboard({ token }) {
                     </td>
                   </tr>
                 ) : (
-                  paginatedData.map((p) => (
-                    <tr key={p._id} className="hover:bg-zinc-50/80 transition-colors">
-                      <td className="py-4 px-4 font-mono font-bold text-zinc-700 text-center">
-                        {p.applicationId}
+                  paginatedData.map((p, idx) => (
+                    <tr key={p._id || idx} className="hover:bg-zinc-50/80 transition-colors">
+                      <td className="py-4 px-4 font-mono font-bold text-zinc-400 text-center">
+                        {String((currentPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, "0")}
                       </td>
 
                       <td className="py-4 px-4 font-montserrat font-bold text-zinc-900 whitespace-nowrap">
-                        {p.name}
+                        <div className="flex flex-col">
+                          <span>{p.name}</span>
+                          {p.applicationId && (
+                            <span className="text-[10px] font-mono font-normal text-zinc-400">
+                              App ID: {p.applicationId}
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       <td className="py-4 px-4 text-zinc-600 font-medium max-w-xs truncate" title={p.title}>
@@ -2357,10 +2325,6 @@ export default function AdminDashboard({ token }) {
 
                       <td className="py-4 px-4 text-zinc-600 whitespace-nowrap">
                         {p.district}
-                      </td>
-
-                      <td className="py-4 px-4 text-center font-montserrat font-black text-[#E6532B]">
-                        {Number(p.publicVotes || 0).toLocaleString("en-IN")}
                       </td>
 
                       <td className="py-4 px-4 whitespace-nowrap">
@@ -2402,7 +2366,7 @@ export default function AdminDashboard({ token }) {
 
                 {!loading && paginatedData.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
+                    <td colSpan={7} className="py-12 text-center text-zinc-400 font-montserrat text-xs">
                       No participants found matching filter criteria.
                     </td>
                   </tr>
@@ -2739,11 +2703,25 @@ export default function AdminDashboard({ token }) {
           </div>
         )}
 
-        {/* Dynamic Pagination Footer (Strictly 6 items per page) */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 text-xs font-montserrat text-zinc-500">
-          <span>
-            Showing {activeDataset.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} to {Math.min(currentPage * ITEMS_PER_PAGE, activeDataset.length)} of {activeDataset.length} {activeTab.toLowerCase()}
-          </span>
+        {/* Dynamic Pagination Footer (10 items per page) */}
+        {(() => {
+          const isServerPaginated = (activeTab === "VOTES" || activeTab === "PARTICIPANTS" || activeTab === "USERS") && !searchQuery.trim() && statusFilter === "ALL";
+          let totalCount = activeDataset.length;
+          if (isServerPaginated) {
+            if (activeTab === "USERS") {
+              totalCount = totalUsersCountState > 0 ? totalUsersCountState : (usersList.length || activeDataset.length);
+            } else {
+              totalCount = totalParticipantsCountState > 0 ? totalParticipantsCountState : (totalServerItems || activeDataset.length);
+            }
+          }
+          const startItem = totalCount > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0;
+          const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalCount);
+
+          return (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 text-xs font-montserrat text-zinc-500">
+              <span>
+                Showing {startItem} to {endItem} of {totalCount} {activeTab.toLowerCase()}
+              </span>
 
           <div className="flex items-center gap-1.5 self-center sm:self-auto">
             {/* Prev Page */}
@@ -2814,6 +2792,8 @@ export default function AdminDashboard({ token }) {
             </button>
           </div>
         </div>
+      );
+    })()}
 
       </div>
 
@@ -4376,6 +4356,16 @@ export default function AdminDashboard({ token }) {
         </div>
       )}
 
+      {/* Global Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmModalState.isOpen}
+        onClose={() => setConfirmModalState((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModalState.onConfirm}
+        title={confirmModalState.title}
+        message={confirmModalState.message}
+        confirmText={confirmModalState.confirmText}
+        type={confirmModalState.type}
+      />
     </div>
   );
 }

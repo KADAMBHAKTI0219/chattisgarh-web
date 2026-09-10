@@ -22,6 +22,7 @@ import {
   FaVideo
 } from "react-icons/fa";
 import DownloadGuidelinesButton from "@/components/common/DownloadGuidelinesButton";
+import SearchableSelect from "@/components/common/SearchableSelect";
 import { CG_DISTRICTS_33 } from "@/utils/constants";
 
 // Generator for random 6-character Captcha Code
@@ -266,7 +267,6 @@ export default function RegisterPage() {
       }
 
       localStorage.setItem("accessToken", tokenObj);
-      localStorage.setItem("user", JSON.stringify(userObj));
 
       setTimeout(() => {
         window.location.href = "/";
@@ -304,7 +304,6 @@ export default function RegisterPage() {
       }
 
       localStorage.setItem("accessToken", tokenObj);
-      localStorage.setItem("user", JSON.stringify(userObj));
 
       setTimeout(() => {
         window.location.href = "/";
@@ -319,7 +318,7 @@ export default function RegisterPage() {
 
       {/* Background Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] pointer-events-none opacity-[0.015] -z-10">
-        <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill sizes="(max-width: 768px) 100vw, 700px" className="object-contain" />
+        <Image src="/assets/images/image.png" alt="State Watermark" fill sizes="(max-width: 768px) 100vw, 700px" className="object-contain" />
       </div>
 
       {/* Top Header Navigation */}
@@ -340,7 +339,7 @@ export default function RegisterPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-150 pb-4">
           <div className="flex items-center gap-3.5">
             <Image
-              src="/assets/images/logoChattisgarh.png"
+              src="/assets/images/image.png"
               alt="Government of Chhattisgarh Logo"
               width={180}
               height={55}
@@ -445,62 +444,49 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Row 2: Column 1 - State Location */}
+          {/* Row 2: Column 1 - State Location (Fixed Read-Only) */}
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               State Location
             </label>
             <div className="relative">
-              <FaMapMarkerAlt className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
-              <select
+              <FaMapMarkerAlt className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--primary)] w-3.5 h-3.5" />
+              <input
+                type="text"
                 name="state"
-                value={formData.state}
-                onChange={handleChange}
-                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-              >
-                {availableStates.map((st) => (
-                  <option key={st} value={st}>{st}</option>
-                ))}
-              </select>
+                value="Chhattisgarh"
+                readOnly
+                disabled
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-200 bg-zinc-100/80 text-zinc-800 font-bold text-xs cursor-not-allowed select-none"
+              />
             </div>
           </div>
 
-          {/* Row 2: Column 2 - District Location */}
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
-              District Location
-            </label>
-            <div className="relative">
-              <FaMapMarkerAlt className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
-              <select
-                name="district"
-                value={formData.district}
-                onChange={handleChange}
-                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-              >
-                <option value="">Select District</option>
-                {availableDistricts.map((d) => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+          {/* Row 2: Column 2 - District Location (Searchable Dropdown) */}
+          <SearchableSelect
+            label="District Location"
+            options={availableDistricts}
+            value={formData.district}
+            onChange={(val) => setFormData((prev) => ({ ...prev, district: val }))}
+            placeholder="Select District"
+            icon={FaMapMarkerAlt}
+          />
 
-          {/* Row 2: Column 2 - Account Role */}
+          {/* Row 2: Column 2 - Account Role (Fixed Read-Only) */}
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-inter font-bold uppercase tracking-wider text-zinc-700">
               Account Role / Type <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
-              <select
+              <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--primary)] w-3.5 h-3.5" />
+              <input
+                type="text"
                 name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-zinc-300 bg-zinc-50/50 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-              >
-                <option value="CREATOR">Digital Creator / Nominee (CREATOR)</option>
-              </select>
+                value="Digital Creator / Nominee (CREATOR)"
+                readOnly
+                disabled
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-200 bg-zinc-100/80 text-zinc-800 font-bold text-xs cursor-not-allowed select-none"
+              />
             </div>
           </div>
 

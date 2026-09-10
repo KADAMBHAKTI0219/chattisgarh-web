@@ -17,6 +17,8 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 
+import ConfirmationModal from "@/components/common/ConfirmationModal";
+
 export default function NewsDetailPage({ params }) {
   const resolvedParams = use(params);
   const articleSlugOrId = resolvedParams?.id;
@@ -25,6 +27,8 @@ export default function NewsDetailPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [article, setArticle] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     async function loadArticle() {
@@ -66,17 +70,24 @@ export default function NewsDetailPage({ params }) {
     }
   };
 
-  const handleDelete = async () => {
-    if (!article || !token || !confirm("Are you sure you want to delete this news article?")) return;
+  const confirmDeleteAction = async () => {
+    if (!article || !token) return;
+    setIsDeleting(true);
     try {
       const id = article._id || article.id;
       await newsService.deleteNews(id, token);
-      alert("News article deleted.");
       window.location.href = "/news";
     } catch (e) {
-      alert("News article deleted.");
       window.location.href = "/news";
+    } finally {
+      setIsDeleting(false);
+      setConfirmDelete(false);
     }
+  };
+
+  const handleDelete = () => {
+    if (!article || !token) return;
+    setConfirmDelete(true);
   };
 
   const articleTags = Array.isArray(article?.tags) && article.tags.length > 0
@@ -225,6 +236,17 @@ export default function NewsDetailPage({ params }) {
         </article>
       )}
 
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        onConfirm={confirmDeleteAction}
+        loading={isDeleting}
+        title="Delete News Article"
+        message={`Are you sure you want to delete news article "${article?.title || "this article"}"?`}
+        confirmText="Delete Article"
+        type="danger"
+      />
     </div>
   );
 }

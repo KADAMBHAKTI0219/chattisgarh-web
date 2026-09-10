@@ -6,6 +6,7 @@ import Heading from "@/components/common/Heading";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { newsService, generateSlug } from "@/services/news";
+import ConfirmationModal from "@/components/common/ConfirmationModal";
 import {
   FaNewspaper,
   FaCalendarAlt,
@@ -38,6 +39,14 @@ export default function NewsPage() {
   const [onlyFeatured, setOnlyFeatured] = useState(false);
   const [loading, setLoading] = useState(true);
   const [newsArticles, setNewsArticles] = useState([]);
+
+  // Confirmation Modal State
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
 
   // Modal State (Create & Edit)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -241,18 +250,25 @@ export default function NewsPage() {
   };
 
   // Delete Handler
-  const handleDeleteNews = async (id) => {
-    if (!confirm("Are you sure you want to delete this news article permanently?")) return;
-    try {
-      const res = await newsService.deleteNews(id, token);
-      if (res.success) {
-        setNotice({ type: "success", text: "News article deleted successfully!" });
-      }
-      setNewsArticles((prev) => prev.filter((item) => (item._id || item.id) !== id));
-    } catch (e) {
-      setNewsArticles((prev) => prev.filter((item) => (item._id || item.id) !== id));
-      setNotice({ type: "success", text: "News article deleted." });
-    }
+  const handleDeleteNews = (id, title) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Delete News Article",
+      message: `Are you sure you want to permanently delete news article "${title || "this article"}"?`,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          const res = await newsService.deleteNews(id, token);
+          if (res.success) {
+            setNotice({ type: "success", text: "News article deleted successfully!" });
+          }
+          setNewsArticles((prev) => prev.filter((item) => (item._id || item.id) !== id));
+        } catch (e) {
+          setNewsArticles((prev) => prev.filter((item) => (item._id || item.id) !== id));
+          setNotice({ type: "success", text: "News article deleted." });
+        }
+      },
+    });
   };
 
   // Filtered List
@@ -817,6 +833,16 @@ export default function NewsPage() {
         </div>
       )}
 
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText="Delete Article"
+        type="danger"
+      />
     </div>
   );
 }

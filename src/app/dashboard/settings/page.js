@@ -18,9 +18,12 @@ import {
   FaEdit
 } from "react-icons/fa";
 
+import ConfirmationModal from "@/components/common/ConfirmationModal";
+
 export default function DashboardSettingsPage() {
   const { token, logout, isAdmin } = useAuth();
   const [saved, setSaved] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [settings, setSettings] = useState({
     emailNotif: true,
     smsNotif: true,
@@ -80,7 +83,7 @@ export default function DashboardSettingsPage() {
       try {
         parsed = JSON.parse(cmsContentJson);
       } catch (e) {
-        alert("Invalid JSON format for CMS content.");
+        setCmsNotice("Error: Invalid JSON format for CMS content.");
         setCmsSaving(false);
         return;
       }
@@ -135,15 +138,20 @@ export default function DashboardSettingsPage() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!token || !confirm("CRITICAL: Are you sure you want to permanently delete your account and all nomination submissions? This action cannot be undone.")) return;
+  const handleDeleteAccount = () => {
+    if (!token) return;
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    if (!token) return;
     setDeleting(true);
     try {
       await userService.deleteAccount(token);
-      alert("Your account has been deleted.");
+      setIsDeleteModalOpen(false);
       logout();
     } catch (err) {
-      alert("Account deleted.");
+      setIsDeleteModalOpen(false);
       logout();
     } finally {
       setDeleting(false);
@@ -375,11 +383,22 @@ export default function DashboardSettingsPage() {
               className="self-start px-5 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 mt-1"
             >
               <FaTrashAlt className="w-3.5 h-3.5" />
-              <span>{deleting ? "Deleting..." : "Permanently Delete Account"}</span>
             </button>
           </div>
         </div>
       </div>
+
+      {/* Account Deletion Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteAccount}
+        loading={deleting}
+        title="Delete Account"
+        message="CRITICAL: Are you sure you want to permanently delete your account and all nomination submissions? This action cannot be undone."
+        confirmText="Delete Account"
+        type="danger"
+      />
     </div>
   );
 }

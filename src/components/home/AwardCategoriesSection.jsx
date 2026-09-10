@@ -7,7 +7,7 @@ import Heading from "@/components/common/Heading";
 import CategoryDetailModal from "@/components/common/CategoryDetailModal";
 import { categoryService } from "@/services/api";
 import { extractDynamicTiers, getTierSlug, getTierColor, getTierTitle } from "@/utils/tierUtils";
-import { staticCategories } from "@/data/staticCategories";
+import { staticCategories, mergeWithStaticCategories } from "@/data/staticCategories";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 export default function AwardCategoriesSection() {
@@ -28,12 +28,12 @@ export default function AwardCategoriesSection() {
           ? res.categories
           : ((res?.data && Array.isArray(res.data) && res.data.length > 0)
             ? res.data
-            : null);
-        if (Array.isArray(list) && list.length > 0) {
-          setCategoriesList(list);
-        }
+            : staticCategories);
+        const mergedList = mergeWithStaticCategories(list);
+        setCategoriesList(mergedList);
       } catch (err) {
         console.warn("Failed to fetch dynamic categories for homepage:", err);
+        setCategoriesList(staticCategories);
       }
     }
     fetchCategories();
@@ -107,9 +107,9 @@ export default function AwardCategoriesSection() {
       {/* Centered Heading */}
       <Heading
         badge={t("AWARD CATEGORIES")}
-        title={t("39 CREATOR")}
+        title={t("41 CREATOR")}
         highlightText={t("CATEGORIES ACROSS 11 TIERS")}
-        description={t("Explore all 39 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.")}
+        description={t("Explore all 41 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.")}
         className="mb-8 md:mb-10"
       />
 

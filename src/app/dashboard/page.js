@@ -232,13 +232,13 @@ export default function DashboardOverviewPage() {
             )}
           </div>
 
-          {/* Card 2: Your Progress (3 Metric Cards) */}
+          {/* Card 2: Your Progress (2 Metric Cards) */}
           <div className="flex flex-col gap-3">
             <h3 className="font-poppins font-bold text-sm text-zinc-900">
               Your Progress
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               {/* Metric 1: Submissions */}
               <div className="bg-white border border-zinc-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-2xs">
@@ -252,19 +252,7 @@ export default function DashboardOverviewPage() {
                 </div>
               </div>
 
-              {/* Metric 2: Under Review */}
-              <div className="bg-white border border-zinc-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-2xs">
-                <div className="w-12 h-12 rounded-xl bg-indigo-500 text-white flex items-center justify-center text-lg shrink-0">
-                  <FaFileAlt className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-poppins font-bold text-zinc-500">Under Review</span>
-                  <span className="text-xl font-poppins font-extrabold text-zinc-950">{underReviewCount}</span>
-                  <span className="text-[10px] font-inter text-zinc-400">Currently Under Review</span>
-                </div>
-              </div>
-
-              {/* Metric 3: Shortlisted */}
+              {/* Metric 2: Shortlisted */}
               <div className="bg-white border border-zinc-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-2xs">
                 <div className="w-12 h-12 rounded-xl bg-cyan-600 text-white flex items-center justify-center text-lg shrink-0">
                   <FaAward className="w-5 h-5" />

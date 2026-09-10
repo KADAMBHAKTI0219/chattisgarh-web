@@ -68,6 +68,7 @@ export default function TermsSection() {
           align="left"
           className="px-0 mx-0"
         />
+        <DownloadGuidelinesButton />
       </div>
 
       {/* Accordion list */}

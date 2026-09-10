@@ -7,7 +7,9 @@ export const applicationService = {
     let authToken = token;
     if (typeof paramsOrToken === "string") {
       authToken = paramsOrToken;
-      params = {};
+      params = { limit: 10 };
+    } else {
+      params = { limit: 10, ...params };
     }
     return await fetchApi("/applications", { method: "GET", params, token: authToken });
   },

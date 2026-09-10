@@ -22,15 +22,15 @@ export const userService = {
     return await fetchApi("/users/account", { method: "DELETE", token });
   },
 
-  // 5. Get All Users (Admin only)
+  // 5. Get All Users (Admin only) - Default limit: 10
   async getAllUsers(paramsOrToken = {}, token = null) {
     let params = paramsOrToken;
     let authToken = token;
     if (typeof paramsOrToken === "string") {
       authToken = paramsOrToken;
-      params = { limit: 1000 };
+      params = { limit: 10 };
     } else {
-      params = { limit: 1000, ...params };
+      params = { limit: 10, ...params };
     }
 
     // Try /users/all

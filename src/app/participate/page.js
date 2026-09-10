@@ -26,10 +26,12 @@ import {
   FaMobileAlt,
   FaEnvelope,
   FaCheck,
-  FaSpinner
+  FaSpinner,
+  FaMapMarkerAlt
 } from "react-icons/fa";
 import VideoPreviewInput from "@/components/common/VideoPreviewInput";
-import { staticCategories } from "@/data/staticCategories";
+import SearchableSelect from "@/components/common/SearchableSelect";
+import { staticCategories, mergeWithStaticCategories } from "@/data/staticCategories";
 import { CG_DISTRICTS_33 } from "@/utils/constants";
 
 // Generates Creator Start Years (e.g. 2000 to Current Year)
@@ -42,7 +44,14 @@ function ParticipateForm() {
   const categoryParam = searchParams.get("category");
 
   const { t } = useLanguage();
-  const { user, token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
+
+  // Redirect to login if user is not authenticated
+  useEffect(() => {
+    if (!authLoading && !user && !token) {
+      router.push("/login?redirect=/participate");
+    }
+  }, [user, token, authLoading, router]);
 
   // Wizard Step State
   const [currentStep, setCurrentStep] = useState(1);
@@ -249,12 +258,45 @@ function ParticipateForm() {
     fetchCats();
   }, [categoryParam]);
 
+  // Auto-fill logged-in user data into form
+  useEffect(() => {
+    if (user) {
+      const normGender = user.gender
+        ? (["Male", "Female", "Other"].includes(user.gender) ? user.gender : user.gender.charAt(0).toUpperCase() + user.gender.slice(1).toLowerCase())
+        : "";
+      setFormData((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.name || user.fullName || "",
+        emailId: prev.emailId || user.email || user.emailId || "",
+        mobileNumber: prev.mobileNumber || (user.phone || user.mobileNumber || user.mobile || "").replace(/\D/g, "").slice(0, 10),
+        gender: prev.gender || normGender || "",
+        district: prev.district || user.district || "Raipur",
+        state: prev.state || user.state || "Chhattisgarh",
+
+        nominatorFullName: prev.nominatorFullName || user.name || user.fullName || "",
+        nominatorEmail: prev.nominatorEmail || user.email || user.emailId || "",
+        nominatorMobile: prev.nominatorMobile || (user.phone || user.mobileNumber || user.mobile || "").replace(/\D/g, "").slice(0, 10),
+
+        creatorFullName: prev.creatorFullName || user.name || user.fullName || "",
+        creatorEmailId: prev.creatorEmailId || user.email || user.emailId || "",
+        creatorMobileNumber: prev.creatorMobileNumber || (user.phone || user.mobileNumber || user.mobile || "").replace(/\D/g, "").slice(0, 10),
+        creatorDistrict: prev.creatorDistrict || user.district || "Raipur",
+        creatorState: prev.creatorState || user.state || "Chhattisgarh",
+        creatorGender: prev.creatorGender || normGender || ""
+      }));
+    }
+  }, [user]);
+
   // Generic Field Change Handler
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let val = type === "checkbox" ? checked : (value ?? "");
+    if (name === "mobileNumber" || name === "nominatorMobile" || name === "creatorMobileNumber") {
+      val = String(val).replace(/\D/g, "").slice(0, 10);
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : (value ?? ""),
+      [name]: val,
     }));
 
     if (errors[name]) {
@@ -282,70 +324,100 @@ function ParticipateForm() {
   const validateStep = (step) => {
     const newErrors = {};
     const isSelf = formData.nominationAs === "SELF";
+    let firstErrorField = null;
+
+    const addErr = (field, msg) => {
+      newErrors[field] = msg;
+      if (!firstErrorField) firstErrorField = field;
+    };
 
     if (step === 1) {
       if (isSelf) {
-        if (!formData.fullName.trim()) newErrors.fullName = "Full Name is required";
+        if (!formData.fullName.trim()) addErr("fullName", "Full Name is required");
         const scope = formData.awardCategoryAppliedFor || "National";
         if (scope === "National") {
-          if (!formData.mobileNumber.trim()) newErrors.mobileNumber = "Mobile Number is required for National applications";
+          const mob = (formData.mobileNumber || "").replace(/\D/g, "");
+          if (!mob) {
+            addErr("mobileNumber", "Mobile Number is required (10 digits)");
+          } else if (mob.length !== 10) {
+            addErr("mobileNumber", "Mobile Number must be exactly 10 digits");
+          }
         } else {
-          if (!formData.emailId.trim()) newErrors.emailId = "Email ID is required for International applications";
+          if (!formData.emailId.trim()) addErr("emailId", "Email ID is required for International applications");
         }
       } else {
         // THIRD_PARTY (Nominator for Others)
-        if (!formData.nominatorFullName.trim()) newErrors.nominatorFullName = "Nominator Full Name is required";
+        if (!formData.nominatorFullName.trim()) addErr("nominatorFullName", "Nominator Full Name is required");
         const nomNat = formData.nominatorNationality || "Indian";
         if (nomNat === "Indian") {
-          if (!formData.nominatorMobile.trim()) newErrors.nominatorMobile = "Nominator Mobile Number is required";
+          const nomMob = (formData.nominatorMobile || "").replace(/\D/g, "");
+          if (!nomMob) {
+            addErr("nominatorMobile", "Nominator Mobile Number is required (10 digits)");
+          } else if (nomMob.length !== 10) {
+            addErr("nominatorMobile", "Nominator Mobile Number must be exactly 10 digits");
+          }
         } else {
-          if (!formData.nominatorEmail.trim()) newErrors.nominatorEmail = "Nominator Email ID is required";
+          if (!formData.nominatorEmail.trim()) addErr("nominatorEmail", "Nominator Email ID is required");
         }
       }
     }
 
     if (step === 2) {
       if (!isSelf) {
-        if (!formData.creatorFullName.trim()) newErrors.creatorFullName = "Creator Full Name is required";
+        if (!formData.creatorFullName.trim()) addErr("creatorFullName", "Creator Full Name is required");
       } else {
         const scope = formData.awardCategoryAppliedFor || "National";
         if (scope === "National") {
-          if (!formData.state) newErrors.state = "State is required";
-          if (!formData.district) newErrors.district = "District is required";
+          if (!formData.state) addErr("state", "State is required");
+          if (!formData.district) addErr("district", "District is required");
         }
       }
     }
 
     if (step === 3) {
-      if (!formData.selectedCategory) newErrors.selectedCategory = "Please select a Nomination Category";
+      if (!formData.selectedCategory) addErr("selectedCategory", "Please select a Nomination Category");
       if (!formData.workDescription.trim()) {
-        newErrors.workDescription = "Work description is required";
+        addErr("workDescription", "Work description is required");
       } else if (formData.workDescription.length > 2000) {
-        newErrors.workDescription = "Work description cannot exceed 2000 characters";
+        addErr("workDescription", "Work description cannot exceed 2000 characters");
       }
 
       if (!formData.bestStoryLink1.trim()) {
-        newErrors.bestStoryLink1 = "Best Story Link 1 is mandatory";
+        addErr("bestStoryLink1", "Best Story Link 1 is mandatory");
       } else if (!/^https?:\/\//i.test(formData.bestStoryLink1.trim())) {
-        newErrors.bestStoryLink1 = "Please enter a valid URL starting with http:// or https://";
+        addErr("bestStoryLink1", "Please enter a valid URL starting with http:// or https://");
       }
     }
 
     if (step === 4) {
-      if (!formData.primaryPlatform) newErrors.primaryPlatform = "Primary Platform is required";
-      if (!formData.primaryProfileUrl.trim()) newErrors.primaryProfileUrl = "Primary Profile URL is required";
-      if (!formData.primaryFollowers.trim()) newErrors.primaryFollowers = "Followers count is required";
+      if (!formData.primaryPlatform) addErr("primaryPlatform", "Primary Platform is required");
+      if (!formData.primaryProfileUrl.trim()) addErr("primaryProfileUrl", "Primary Profile URL is required");
+      if (!formData.primaryFollowers.trim()) addErr("primaryFollowers", "Followers count is required");
 
       if (formData.hasSecondaryPlatform) {
-        if (!formData.secondaryProfileUrl.trim()) newErrors.secondaryProfileUrl = "Secondary Profile URL is required";
-        if (!formData.secondaryFollowers.trim()) newErrors.secondaryFollowers = "Secondary Followers count is required";
+        if (!formData.secondaryProfileUrl.trim()) addErr("secondaryProfileUrl", "Secondary Profile URL is required");
+        if (!formData.secondaryFollowers.trim()) addErr("secondaryFollowers", "Secondary Followers count is required");
       }
 
-      if (!formData.agreeTerms) newErrors.agreeTerms = "You must accept the terms and guidelines to submit";
+      if (!formData.agreeTerms) addErr("agreeTerms", "You must accept the terms and guidelines to submit");
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      setTimeout(() => {
+        const targetEl = document.getElementsByName(firstErrorField)[0] || document.getElementById(firstErrorField);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (typeof targetEl.focus === "function") {
+            targetEl.focus();
+          }
+        }
+      }, 50);
+      return false;
+    }
+
+    return true;
   };
 
   const handleNext = async () => {
@@ -487,7 +559,7 @@ function ParticipateForm() {
             district: isSelf ? formData.district : formData.creatorDistrict
           }],
           declaration: formData.agreeTerms,
-          status: "SUBMITTED"
+          status: "APPROVED"
         };
 
         let result = null;
@@ -637,6 +709,30 @@ function ParticipateForm() {
     { num: 3, title: "Award Category & Work Story", icon: FaLayerGroup },
     { num: 4, title: "Social Handles & Submission", icon: FaShareAlt },
   ];
+
+  if (!authLoading && !user && !token) {
+    return (
+      <section className="relative w-full max-w-4xl mx-auto py-16 px-4 text-center">
+        <div className="bg-white rounded-3xl border border-zinc-200/90 p-8 sm:p-12 shadow-xl flex flex-col items-center gap-5">
+          <div className="w-16 h-16 rounded-full bg-amber-100 text-[var(--primary)] flex items-center justify-center font-bold text-2xl">
+            🔒
+          </div>
+          <h2 className="text-xl sm:text-2xl font-poppins font-extrabold text-zinc-900">
+            Authentication Required
+          </h2>
+          <p className="text-xs sm:text-sm text-zinc-600 max-w-md font-medium">
+            Please log in to your Creator account to file nominations and participate in the Chhattisgarh State Awards 2026.
+          </p>
+          <Link
+            href="/login?redirect=/participate"
+            className="px-8 py-3.5 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all"
+          >
+            Sign In To Continue →
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 sm:px-6 md:px-10 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
@@ -817,19 +913,14 @@ function ParticipateForm() {
 
                       {/* Award Category applied for: National / International */}
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                          Q3. Award Scope Applied For <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          name="awardCategoryAppliedFor"
+                        <SearchableSelect
+                          label="Q3. Award Scope Applied For *"
+                          options={["National", "International"]}
                           value={formData.awardCategoryAppliedFor}
-                          onChange={handleInputChange}
-                          className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                        >
-                          <option value="">Select Scope</option>
-                          <option value="National">National (India)</option>
-                          <option value="International">International</option>
-                        </select>
+                          onChange={(val) => setFormData((prev) => ({ ...prev, awardCategoryAppliedFor: val }))}
+                          placeholder="Select Scope"
+                          icon={null}
+                        />
                       </div>
 
                       {/* Mobile Number (Mandatory for National) */}
@@ -896,19 +987,14 @@ function ParticipateForm() {
 
                       {/* Nominator Nationality */}
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                          Nominator Nationality <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          name="nominatorNationality"
+                        <SearchableSelect
+                          label="Nominator Nationality *"
+                          options={["Indian", "Non-Indian"]}
                           value={formData.nominatorNationality}
-                          onChange={handleInputChange}
-                          className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                        >
-                          <option value="">Select Nationality</option>
-                          <option value="Indian">Indian</option>
-                          <option value="Non-Indian">Non-Indian</option>
-                        </select>
+                          onChange={(val) => setFormData((prev) => ({ ...prev, nominatorNationality: val }))}
+                          placeholder="Select Nationality"
+                          icon={null}
+                        />
                       </div>
 
                       {/* Nominator Mobile Number */}
@@ -983,19 +1069,14 @@ function ParticipateForm() {
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                        Award Scope Applied For <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        name="creatorAwardCategoryAppliedFor"
+                      <SearchableSelect
+                        label="Award Scope Applied For *"
+                        options={["National", "International"]}
                         value={formData.creatorAwardCategoryAppliedFor}
-                        onChange={handleInputChange}
-                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                      >
-                        <option value="">Select Scope</option>
-                        <option value="National">National (India)</option>
-                        <option value="International">International</option>
-                      </select>
+                        onChange={(val) => setFormData((prev) => ({ ...prev, creatorAwardCategoryAppliedFor: val }))}
+                        placeholder="Select Scope"
+                        icon={null}
+                      />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
@@ -1031,80 +1112,67 @@ function ParticipateForm() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {/* Gender */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Q6. Gender <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name={formData.nominationAs === "SELF" ? "gender" : "creatorGender"}
+                    <SearchableSelect
+                      label="Q6. Gender *"
+                      options={["Male", "Female", "Other"]}
                       value={formData.nominationAs === "SELF" ? formData.gender : formData.creatorGender}
-                      onChange={handleInputChange}
-                      className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                    >
-                      <option value="">Select Gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
+                      onChange={(val) => {
+                        const targetField = formData.nominationAs === "SELF" ? "gender" : "creatorGender";
+                        setFormData((prev) => ({ ...prev, [targetField]: val }));
+                      }}
+                      placeholder="Select Gender"
+                      icon={FaUser}
+                    />
                   </div>
 
                   {/* Age */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Q7. Age Bracket <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name={formData.nominationAs === "SELF" ? "age" : "creatorAge"}
+                    <SearchableSelect
+                      label="Q7. Age Bracket *"
+                      options={["18-40", "Above 40"]}
                       value={formData.nominationAs === "SELF" ? formData.age : formData.creatorAge}
-                      onChange={handleInputChange}
-                      className="w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                    >
-                      <option value="">Select Age Bracket</option>
-                      <option value="18-40">18-40 Years</option>
-                      <option value="Above 40">Above 40 Years</option>
-                    </select>
+                      onChange={(val) => {
+                        const targetField = formData.nominationAs === "SELF" ? "age" : "creatorAge";
+                        setFormData((prev) => ({ ...prev, [targetField]: val }));
+                      }}
+                      placeholder="Select Age Bracket"
+                      icon={null}
+                    />
                   </div>
 
-                  {/* State */}
+                  {/* State (Fixed Read-Only) */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
                       Q8. State {formData.nominationAs === "SELF" && formData.awardCategoryAppliedFor === "National" && <span className="text-red-500">*</span>}
                     </label>
-                    <select
-                      name={formData.nominationAs === "SELF" ? "state" : "creatorState"}
-                      value={formData.nominationAs === "SELF" ? formData.state : formData.creatorState}
-                      onChange={handleInputChange}
-                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.state ? "border-red-500 bg-red-50/20" : ""
-                        }`}
-                    >
-                      {availableStates.map((st) => (
-                        <option key={st} value={st}>
-                          {st}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <FaMapMarkerAlt className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--primary)] w-3.5 h-3.5" />
+                      <input
+                        type="text"
+                        value="Chhattisgarh"
+                        readOnly
+                        disabled
+                        className="w-full pl-10 pr-3.5 py-3 rounded-2xl border border-zinc-200 bg-zinc-100/80 text-zinc-800 font-bold text-xs sm:text-sm cursor-not-allowed select-none"
+                      />
+                    </div>
                     {errors.state && <span className="text-red-500 text-[10px] font-bold">{errors.state}</span>}
                   </div>
 
-                  {/* District */}
+                  {/* District (Searchable Dropdown) */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Q9. District {formData.nominationAs === "SELF" && formData.awardCategoryAppliedFor === "National" && <span className="text-red-500">*</span>}
-                    </label>
-                    <select
-                      name={formData.nominationAs === "SELF" ? "district" : "creatorDistrict"}
+                    <SearchableSelect
+                      label={`Q9. District ${formData.nominationAs === "SELF" && formData.awardCategoryAppliedFor === "National" ? "*" : ""}`}
+                      options={availableDistricts}
                       value={formData.nominationAs === "SELF" ? formData.district : formData.creatorDistrict}
-                      onChange={handleInputChange}
-                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.district ? "border-red-500 bg-red-50/20" : ""
-                        }`}
-                    >
-                      <option value="">Select District</option>
-                      {availableDistricts.map((dist) => (
-                        <option key={dist} value={dist}>
-                          {dist}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.district && <span className="text-red-500 text-[10px] font-bold">{errors.district}</span>}
+                      onChange={(val) => {
+                        const targetField = formData.nominationAs === "SELF" ? "district" : "creatorDistrict";
+                        setFormData((prev) => ({ ...prev, [targetField]: val }));
+                        if (errors.district) setErrors((prev) => ({ ...prev, district: null }));
+                      }}
+                      placeholder="Select District"
+                      error={errors.district}
+                      icon={FaMapMarkerAlt}
+                    />
                   </div>
                 </div>
               </div>
@@ -1123,23 +1191,18 @@ function ParticipateForm() {
                 <div className="flex flex-col gap-5">
                   {/* Select Nomination Category */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-inter font-bold uppercase tracking-wider text-zinc-700">
-                      Q9. Select Nomination Category (39 Official Categories) <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="selectedCategory"
+                    <SearchableSelect
+                      label="Q9. Select Nomination Category (39 Official Categories) *"
+                      options={categoriesList.map((cat) => ({
+                        value: cat._id || cat.slug || cat.title,
+                        label: `${cat.categoryNumber ? cat.categoryNumber + ". " : ""}${cat.title || cat.name} (${cat.tier || cat.tierName || "General"})`,
+                      }))}
                       value={formData.selectedCategory}
-                      onChange={handleInputChange}
-                      className={`w-full rounded-xl border border-zinc-300 bg-zinc-50/50 px-4 py-3 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${errors.selectedCategory ? "border-red-500 bg-red-50/20" : ""
-                        }`}
-                    >
-                      {categoriesList.map((cat) => (
-                        <option key={cat._id || cat.slug || cat.title} value={cat._id || cat.slug || cat.title}>
-                          {cat.categoryNumber ? `${cat.categoryNumber}. ` : ""}{cat.title || cat.name} ({cat.tier || cat.tierName || "General"})
-                        </option>
-                      ))}
-                    </select>
-                    {errors.selectedCategory && <span className="text-red-500 text-[10px] font-bold">{errors.selectedCategory}</span>}
+                      onChange={(val) => setFormData((prev) => ({ ...prev, selectedCategory: val }))}
+                      placeholder="Select Category"
+                      error={errors.selectedCategory}
+                      icon={null}
+                    />
                   </div>
 
                   {/* Selected Category Visual Card (Image, Hashtag, Task Brief) */}

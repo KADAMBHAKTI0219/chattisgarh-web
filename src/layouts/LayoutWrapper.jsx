@@ -40,7 +40,7 @@ export default function LayoutWrapper({ children }) {
       {/* Subtle giant Chhattisgarh Map logo watermark */}
       <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none select-none opacity-[0.012] -z-10">
         <Image
-          src="/assets/images/logoChattisgarh.png"
+          src="/assets/images/image.png"
           alt="State Watermark Map"
           fill
           priority

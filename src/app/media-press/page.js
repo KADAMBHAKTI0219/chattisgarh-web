@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Heading from "@/components/common/Heading";
 import { useLanguage } from "@/context/LanguageContext";
 import { FaDownload, FaNewspaper, FaBullhorn, FaFilePdf } from "react-icons/fa";
+import ConfirmationModal from "@/components/common/ConfirmationModal";
 
 export default function MediaPressPage() {
   const { t } = useLanguage();
+  const [downloadModal, setDownloadModal] = useState({ isOpen: false, title: "", message: "" });
 
   return (
     <div className="min-h-screen bg-background font-sans text-zinc-950 px-4 md:px-8 lg:px-12 py-8 md:py-12 flex flex-col gap-10 relative overflow-x-hidden animate-page-enter">
@@ -30,7 +33,11 @@ export default function MediaPressPage() {
             Includes high-resolution Government logos, brand guidelines, award trophy renders, and official state citations.
           </p>
           <button
-            onClick={() => alert("Downloading Official Media Kit ZIP...")}
+            onClick={() => setDownloadModal({
+              isOpen: true,
+              title: "Media Kit Download",
+              message: "Downloading Official Media Kit ZIP containing logos, vectors, and brand assets."
+            })}
             className="self-start px-6 py-3 rounded-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md transition-all inline-flex items-center gap-2 cursor-pointer mt-2"
           >
             <FaDownload className="w-3.5 h-3.5" />
@@ -48,7 +55,11 @@ export default function MediaPressPage() {
             Official gazette notifications, jury appointments, and venue announcements for Raipur Sept 2026.
           </p>
           <button
-            onClick={() => alert("Downloading State Declaration PDF...")}
+            onClick={() => setDownloadModal({
+              isOpen: true,
+              title: "State Declaration Download",
+              message: "Downloading Official State Gazette Notification PDF."
+            })}
             className="self-start px-6 py-3 rounded-full bg-[#21593D] hover:bg-[#1b4731] text-white font-poppins font-bold text-xs uppercase tracking-wider shadow-md transition-all inline-flex items-center gap-2 cursor-pointer mt-2"
           >
             <FaDownload className="w-3.5 h-3.5" />
@@ -56,6 +67,18 @@ export default function MediaPressPage() {
           </button>
         </div>
       </div>
+
+      {/* Confirmation / Download Modal */}
+      <ConfirmationModal
+        isOpen={downloadModal.isOpen}
+        onClose={() => setDownloadModal({ isOpen: false, title: "", message: "" })}
+        onConfirm={() => setDownloadModal({ isOpen: false, title: "", message: "" })}
+        title={downloadModal.title}
+        message={downloadModal.message}
+        confirmText="OK"
+        cancelText="Close"
+        type="info"
+      />
 
     </div>
   );

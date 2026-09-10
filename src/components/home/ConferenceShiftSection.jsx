@@ -145,7 +145,7 @@ export default function ConferenceShiftSection() {
         {/* Faded Watermark Chhattisgarh Map */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] opacity-[0.018] blur-[1px]">
           <Image
-            src="/assets/images/logoChattisgarh.png"
+            src="/assets/images/image.png"
             alt="State Map Watermark"
             fill
             sizes="900px"

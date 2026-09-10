@@ -36,21 +36,13 @@ export default function LoginPage() {
     setErrorMsg("");
     setSuccessMsg("");
 
-    const response = await login(formData.email, formData.password);
+    const response = await login(formData.email, formData.password, { isAdminPortal: false });
     setLoading(false);
 
     if (response.success) {
-      const loggedUser = response.data?.user || response.data?.data?.user;
-      const roleUpper = String(loggedUser?.role || "").toUpperCase();
-      const isAdminRole = ["SUPER_ADMIN", "ADMIN", "MODERATOR", "JURY"].includes(roleUpper);
-
-      setSuccessMsg(
-        isAdminRole
-          ? "Admin Login Successful! Redirecting to Admin Dashboard..."
-          : "Login Successful! Redirecting to Website..."
-      );
+      setSuccessMsg("Login Successful! Redirecting to Portal...");
       setTimeout(() => {
-        router.push(isAdminRole ? "/dashboard" : "/");
+        router.push("/");
       }, 800);
     } else {
       setErrorMsg(response.message || "Invalid credentials. Please check your email and password.");
@@ -62,7 +54,7 @@ export default function LoginPage() {
       
       {/* Background Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-[0.02] -z-10">
-        <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill sizes="(max-width: 768px) 100vw, 600px" className="object-contain" />
+        <Image src="/assets/images/image.png" alt="State Watermark" fill sizes="(max-width: 768px) 100vw, 600px" className="object-contain" />
       </div>
 
       {/* Return Home Button */}
@@ -82,7 +74,7 @@ export default function LoginPage() {
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center gap-3 border-b border-zinc-150 pb-5">
           <Image
-            src="/assets/images/logoChattisgarh.png"
+            src="/assets/images/image.png"
             alt="Government of Chhattisgarh Logo"
             width={200}
             height={60}
@@ -191,7 +183,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Register Redirect CTA */}
+        {/* Register CTA */}
         <div className="border-t border-zinc-150 pt-4 text-center">
           <p className="text-xs text-zinc-600 font-inter">
             Don’t have a creator account yet?{" "}

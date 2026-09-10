@@ -36,8 +36,16 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
-      setErrorMsg("Please enter both email address and password");
+
+    const cleanEmail = (formData.email || "").trim().toLowerCase();
+    if (!cleanEmail || !formData.password) {
+      setErrorMsg("Please enter both Admin Email Address and Security Password.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      setErrorMsg("Please enter a valid email address.");
       return;
     }
 
@@ -46,40 +54,15 @@ export default function AdminLoginPage() {
     setSuccessMsg("");
 
     try {
-      const response = await login(formData.email, formData.password);
+      const response = await login(cleanEmail, formData.password, { isAdminPortal: true });
 
-      if (response.success || response.status === 200) {
-        setSuccessMsg("Admin Authentication Verified! Opening Admin Dashboard...");
-
-        // Ensure Admin Role in session storage
-        const userObj = response.data?.user || response.data?.data?.user || {
-          _id: `admin-${Date.now()}`,
-          name: "State Governance Admin",
-          email: formData.email,
-          role: "SUPER_ADMIN"
-        };
-        const tokenObj = response.data?.accessToken || response.data?.data?.accessToken || "admin-session-token-2026";
-
-        // Enforce Admin role if logging through admin portal
-        const adminEnforcedUser = {
-          ...userObj,
-          role: ["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(String(userObj.role).toUpperCase())
-            ? userObj.role
-            : "ADMIN"
-        };
-
-        localStorage.setItem("accessToken", tokenObj);
-        localStorage.setItem("token", tokenObj);
-        localStorage.setItem("adminToken", tokenObj);
-        localStorage.setItem("user", JSON.stringify(adminEnforcedUser));
-        if (updateUser) updateUser(adminEnforcedUser);
-
+      if (response && response.success) {
+        setSuccessMsg("Admin Authentication Verified! Redirecting to Dashboard...");
         setTimeout(() => {
           window.location.href = "/dashboard";
-        }, 600);
+        }, 500);
       } else {
-        // Fallback for direct Admin demo access if backend DB lacks seeded admin
-        setErrorMsg(response.message || "Invalid Admin credentials. Try standard Admin email or use quick Admin login.");
+        setErrorMsg(response?.message || "Invalid Admin credentials or unauthorized role.");
       }
     } catch (err) {
       console.error("Admin Login Error:", err);
@@ -89,35 +72,12 @@ export default function AdminLoginPage() {
     }
   };
 
-  // Direct Quick Admin Login for testing/demo
-  const handleQuickAdminLogin = () => {
-    setLoading(true);
-    setErrorMsg("");
-    setSuccessMsg("Bypassing Auth: Accessing Admin Dashboard as SUPER_ADMIN...");
-
-    const adminUser = {
-      _id: "admin-super-2026",
-      name: "State Governance Admin",
-      email: formData.email || "admin@cg.gov.in",
-      role: "SUPER_ADMIN",
-      district: "Raipur"
-    };
-
-    localStorage.setItem("accessToken", "super-admin-session-token-2026");
-    localStorage.setItem("user", JSON.stringify(adminUser));
-    if (updateUser) updateUser(adminUser);
-
-    setTimeout(() => {
-      window.location.href = "/dashboard";
-    }, 600);
-  };
-
   return (
     <div className="min-h-screen bg-[#FAF7F0] font-sans text-zinc-950 px-4 py-8 md:py-12 flex flex-col items-center justify-center relative overflow-hidden animate-page-enter">
 
       {/* Background Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-[0.02] -z-10">
-        <Image src="/assets/images/logoChattisgarh.png" alt="State Watermark" fill sizes="600px" className="object-contain" />
+        <Image src="/assets/images/image.png" alt="State Watermark" fill sizes="600px" className="object-contain" />
       </div>
 
       {/* Top Header Navigation */}
@@ -258,25 +218,21 @@ export default function AdminLoginPage() {
               </span>
             )}
           </button>
-
-          {/* Quick Demo Admin Button */}
-          <div className="pt-2 text-center">
-            <button
-              type="button"
-              onClick={handleQuickAdminLogin}
-              className="w-full py-2.5 px-4 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#E6532B] font-poppins font-bold text-xs border border-orange-200 transition-colors cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>⚡ Direct Admin Dashboard Access (Demo Mode)</span>
-            </button>
-          </div>
-
         </form>
       </div>
 
       {/* Footer System Info */}
-      <p className="text-[11px] font-inter text-zinc-400 mt-8 text-center">
-        © 2026 Government of Chhattisgarh • Admin Security Portal
-      </p>
+      <div className="flex flex-col items-center gap-2 mt-8 text-center">
+        <p className="text-xs text-zinc-600 font-inter">
+          Not an Administrator?{" "}
+          <Link href="/login" className="font-poppins font-bold text-[#21593D] hover:underline">
+            Go to Creator Login Portal →
+          </Link>
+        </p>
+        <p className="text-[11px] font-inter text-zinc-400">
+          © 2026 Government of Chhattisgarh • Admin Security Portal
+        </p>
+      </div>
     </div>
   );
 }

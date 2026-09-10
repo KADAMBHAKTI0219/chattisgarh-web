@@ -94,9 +94,12 @@ export const HINDI_DICTIONARY = {
   // Award Categories & Tiers
   "AWARD CATEGORIES": "पुरस्कार श्रेणियां",
   "39 CREATOR": "39 क्रिएटर",
+  "41 CREATOR": "41 क्रिएटर",
   "CATEGORIES ACROSS 11 TIERS": "श्रेणियां (11 स्तरों में)",
   "Explore all 39 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.":
     "शासन, तकनीक, संस्कृति और नवाचार के 11 प्रमुख स्तरों में विभाजित सभी 39 आधिकारिक राज्य पुरस्कार श्रेणियों का अवलोकन करें।",
+  "Explore all 41 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.":
+    "शासन, तकनीक, संस्कृति और नवाचार के 11 प्रमुख स्तरों में विभाजित सभी 41 आधिकारिक राज्य पुरस्कार श्रेणियों का अवलोकन करें।",
   "Search Categories...": "श्रेणियां खोजें...",
   "No categories match your search.": "आपकी खोज से मेल खाती कोई श्रेणी नहीं मिली।",
   "No categories match your query.": "आपकी खोज से मेल खाती कोई श्रेणी नहीं मिली।",
@@ -178,6 +181,8 @@ export const HINDI_DICTIONARY = {
   "Home & Lifestyle Creator": "होम एवं जीवनशैली क्रिएटर",
   "Food Creator": "फूड एवं खान-पान क्रिएटर",
   "Disruptor of the Year": "डिसरप्टर ऑफ द ईयर",
+  "Tribal Voice Award": "ट्राइबल वॉइस अवार्ड",
+  "Creative, Comedy, Entertainment & Gaming Award": "क्रिएटिव, कॉमेडी, एंटरटेनमेंट एवं गेमिंग अवार्ड",
   "International Creator": "अंतरराष्ट्रीय क्रिएटर",
   "Celebrity Creator": "सेलिब्रिटी क्रिएटर",
   "Fact-Checking & Legal Awareness Creator": "फैक्ट-चेकिंग एवं कानूनी जागरूकता क्रिएटर",
@@ -459,9 +464,12 @@ export const CG_DICTIONARY = {
   // Award Categories & Tiers
   "AWARD CATEGORIES": "पुरस्कार के किसम मन",
   "39 CREATOR": "39 क्रिएटर",
+  "41 CREATOR": "41 क्रिएटर",
   "CATEGORIES ACROSS 11 TIERS": "किसम (11 भाग मां)",
   "Explore all 39 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.":
     "सबो 39 सरकारी राज्य पुरस्कार के किसम मन ला देखव अउ समझव।",
+  "Explore all 41 official state award categories structured across 11 key governance, technology, culture, and innovation tiers.":
+    "सबो 41 सरकारी राज्य पुरस्कार के किसम मन ला देखव अउ समझव।",
   "Search Categories...": "श्रेणी खोजव...",
   "No categories match your search.": "तुंहर खोजे किसम नइ मिलिस।",
   "No categories match your query.": "तुंहर खोजे किसम नइ मिलिस।",

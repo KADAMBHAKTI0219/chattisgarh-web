@@ -6,12 +6,15 @@ import { certificateService } from "@/services/certificate";
 import Link from "next/link";
 import { FaAward, FaDownload, FaCheckCircle, FaLock, FaPlusCircle, FaQrcode } from "react-icons/fa";
 
+import ConfirmationModal from "@/components/common/ConfirmationModal";
+
 export default function CertificatesPage() {
   const { token, isAdmin } = useAuth();
   const [loading, setLoading] = useState(true);
   const [certsList, setCertsList] = useState([]);
   const [generating, setGenerating] = useState(false);
   const [genNotice, setGenNotice] = useState("");
+  const [certModal, setCertModal] = useState({ isOpen: false, title: "", message: "" });
 
   const handleGenerateCertificate = async () => {
     if (!token) return;
@@ -150,7 +153,11 @@ export default function CertificatesPage() {
                   onClick={(e) => {
                     if (!cert.pdfUrl) {
                       e.preventDefault();
-                      alert("Downloading official PDF certificate file...");
+                      setCertModal({
+                        isOpen: true,
+                        title: "Certificate Download",
+                        message: "Downloading official PDF certificate file issued by Department of Culture & Tourism."
+                      });
                     }
                   }}
                   target="_blank"
@@ -170,6 +177,18 @@ export default function CertificatesPage() {
           ))}
         </div>
       )}
+
+      {/* Certificate Modal */}
+      <ConfirmationModal
+        isOpen={certModal.isOpen}
+        onClose={() => setCertModal({ isOpen: false, title: "", message: "" })}
+        onConfirm={() => setCertModal({ isOpen: false, title: "", message: "" })}
+        title={certModal.title}
+        message={certModal.message}
+        confirmText="OK"
+        cancelText="Close"
+        type="info"
+      />
     </div>
   );
 }

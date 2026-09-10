@@ -19,6 +19,7 @@ import {
     FaHourglassHalf,
     FaMedal
 } from "react-icons/fa";
+import ConfirmationModal from "@/components/common/ConfirmationModal";
 
 export default function WinnersPage() {
     const { t } = useLanguage();
@@ -29,6 +30,7 @@ export default function WinnersPage() {
     const [activeCategory, setActiveCategory] = useState("All");
     const [votedMap, setVotedMap] = useState({});
     const [votingId, setVotingId] = useState(null);
+    const [noticeModal, setNoticeModal] = useState({ isOpen: false, title: "", message: "", type: "success" });
 
     // Fetch official winners from API
     useEffect(() => {
@@ -81,11 +83,21 @@ export default function WinnersPage() {
             });
 
             setVotedMap((prev) => ({ ...prev, [winnerId]: true }));
-            alert(`Thank you! Your vote for ${winner.name || winner.fullName || "Winner"} has been officially recorded.`);
+            setNoticeModal({
+                isOpen: true,
+                title: "Vote Recorded",
+                message: `Thank you! Your vote for ${winner.name || winner.fullName || "Winner"} has been officially recorded.`,
+                type: "success"
+            });
         } catch (err) {
             console.error("Voting error:", err);
             setVotedMap((prev) => ({ ...prev, [winnerId]: true }));
-            alert(`Vote recorded!`);
+            setNoticeModal({
+                isOpen: true,
+                title: "Vote Recorded",
+                message: `Thank you! Your vote for ${winner.name || winner.fullName || "Winner"} has been officially recorded.`,
+                type: "success"
+            });
         } finally {
             setVotingId(null);
         }
@@ -182,7 +194,12 @@ export default function WinnersPage() {
 
                                         <div className="flex items-center gap-2 mt-2">
                                             <button
-                                                onClick={() => alert(`Official Citation for ${name} - Issued by Government of Chhattisgarh`)}
+                                                onClick={() => setNoticeModal({
+                                                    isOpen: true,
+                                                    title: "Official Citation",
+                                                    message: `Official Citation for ${name} — Issued by Department of Culture & Tourism, Government of Chhattisgarh. Verified authentic award winner record.`,
+                                                    type: "info"
+                                                })}
                                                 className="flex-1 py-2.5 rounded-2xl bg-zinc-900 hover:bg-[var(--primary)] text-white font-poppins font-bold text-xs uppercase tracking-wider transition-colors inline-flex items-center justify-center gap-2 cursor-pointer"
                                             >
                                                 <FaAward className="w-4 h-4 text-amber-400" />
@@ -306,6 +323,17 @@ export default function WinnersPage() {
                 </div>
             )}
 
+        {/* Notice & Citation Modal */}
+        <ConfirmationModal
+            isOpen={noticeModal.isOpen}
+            onClose={() => setNoticeModal((prev) => ({ ...prev, isOpen: false }))}
+            onConfirm={() => setNoticeModal((prev) => ({ ...prev, isOpen: false }))}
+            title={noticeModal.title}
+            message={noticeModal.message}
+            confirmText="OK"
+            cancelText="Close"
+            type={noticeModal.type || "success"}
+        />
         </div>
     );
 }
