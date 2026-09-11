@@ -729,7 +729,7 @@ export default function AdminDashboard({ token, initialTab }) {
       // 1. PARTICIPANTS DATA LOADING
       try {
         let partsRes = await participantService.getParticipants(
-          { limit: 10, page: currentPage, paginate: true },
+          { limit: 1000 },
           authToken
         ).catch(() => ({}));
 
@@ -1003,6 +1003,11 @@ export default function AdminDashboard({ token, initialTab }) {
       setLoading(false);
     }
   };
+
+  // Automatically trigger data loading on component mount & when active tab/authToken changes
+  useEffect(() => {
+    loadData();
+  }, [activeTab, authToken]);
 
   // Filter Users with All-Over Search
   const filteredUsers = useMemo(() => {

@@ -71,10 +71,10 @@ export async function fetchApi(endpoint, options = {}) {
       token ||
       (typeof window !== "undefined"
         ? localStorage.getItem("accessToken") ||
-          localStorage.getItem("token") ||
-          localStorage.getItem("adminToken") ||
-          localStorage.getItem("auth_token") ||
-          localStorage.getItem("cg_auth_token")
+        localStorage.getItem("token") ||
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("auth_token") ||
+        localStorage.getItem("cg_auth_token")
         : null);
   }
 
@@ -105,15 +105,44 @@ export async function fetchApi(endpoint, options = {}) {
     const currentBase = candidateBases[i];
     const targetUrl = buildUrl(currentBase, endpoint, params);
 
+    let timeoutId = null;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), options.timeout || 12000);
+      const timeoutMs = options.timeout !== undefined ? options.timeout : 60000;
+
+      if (timeoutMs > 0) {
+        timeoutId = setTimeout(() => {
+          try {
+            controller.abort(new DOMException("Request timed out", "TimeoutError"));
+          } catch (_) {
+            controller.abort();
+          }
+        }, timeoutMs);
+      }
+
+      if (options.signal) {
+        if (options.signal.aborted) {
+          controller.abort(options.signal.reason);
+        } else {
+          options.signal.addEventListener("abort", () => {
+            try {
+              controller.abort(options.signal.reason);
+            } catch (_) {
+              controller.abort();
+            }
+          }, { once: true });
+        }
+      }
 
       const response = await fetch(targetUrl, {
         ...config,
-        signal: controller.signal
+        signal: controller.signal,
       });
-      clearTimeout(timeoutId);
+
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
 
       const contentType = response.headers.get("content-type");
       let data = {};
@@ -151,14 +180,27 @@ export async function fetchApi(endpoint, options = {}) {
       return lastResponse;
     } catch (err) {
       lastError = err;
+    } finally {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     }
   }
+
+  const isTimeoutOrAbort =
+    lastError?.name === "AbortError" ||
+    lastError?.name === "TimeoutError" ||
+    lastError?.message?.includes("aborted") ||
+    lastError?.message?.includes("timeout");
 
   return (
     lastResponse || {
       success: false,
       isNetworkError: true,
-      message: lastError?.message || "Network connection error. Please check your backend server.",
+      isTimeout: isTimeoutOrAbort,
+      message: isTimeoutOrAbort
+        ? "Server response timed out. Please try again."
+        : lastError?.message || "Network connection error. Please check your backend server.",
     }
   );
 }

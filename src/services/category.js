@@ -1,23 +1,28 @@
 import fetchApi from "./client";
+import { staticCategories } from "@/data/staticCategories";
 
 export const categoryService = {
   // 1. Get All Award Categories (Public)
   async getCategories(params = {}) {
-    const res = await fetchApi("/categories", { method: "GET", params });
-    if (res.success && res.data) {
-      let categories = [];
-      if (Array.isArray(res.data)) {
-        categories = res.data;
-      } else if (Array.isArray(res.data.categories)) {
-        categories = res.data.categories;
-      } else if (Array.isArray(res.data.data)) {
-        categories = res.data.data;
-      } else if (Array.isArray(res.categories)) {
-        categories = res.categories;
+    try {
+      const res = await fetchApi("/categories", { method: "GET", params }).catch(() => null);
+      if (res && res.success && res.data) {
+        let categories = [];
+        if (Array.isArray(res.data)) {
+          categories = res.data;
+        } else if (Array.isArray(res.data.categories)) {
+          categories = res.data.categories;
+        } else if (Array.isArray(res.data.data)) {
+          categories = res.data.data;
+        } else if (Array.isArray(res.categories)) {
+          categories = res.categories;
+        }
+        if (categories.length > 0) {
+          return { ...res, categories };
+        }
       }
-      return { ...res, categories };
-    }
-    return { ...res, categories: res.categories || [] };
+    } catch (e) {}
+    return { success: false, categories: staticCategories };
   },
 
   async getAllCategories(params = {}) {
